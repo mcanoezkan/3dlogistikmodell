@@ -1,6 +1,6 @@
 # Klinikum Bielefeld-Mitte · Logistikmodell 3D
 
-Interaktives 3D-Strukturmodell des Campus Klinikum Bielefeld-Mitte mit Schwerpunkt Ver- und Entsorgungslogistik. Die Anwendung ist eine einzige Datei (`index.html`) und läuft auch offline, weil three.js r160 am Dateiende eingebettet ist. Gebäude, Höhen, Straßen und Außenwege stammen aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL).
+Interaktives 3D-Strukturmodell des Campus Klinikum Bielefeld-Mitte mit Schwerpunkt Ver- und Entsorgungslogistik. Die Anwendung ist eine einzige Datei (`index.html`) und läuft auch offline, weil three.js r160 am Dateiende eingebettet ist. Gebäude, Höhen, Straßen und Außenwege stammen aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL); Ebenen, Stationen, NIZ-Funktionen und Hausnutzungen aus Veröffentlichungen des Klinikums (Quellen in der App unter „Annahmen“).
 
 ## Start über localhost
 
@@ -63,9 +63,12 @@ Fehlende Knoten, unbekannte Bereiche und nicht routbare Relationen zeigt die Dat
 
 ## Grundlage und Grenzen
 
-- Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Klinikumsgelände: Weg 689365264, Haupthaus: Relation 18889904). Geschosse im Modell = OSM-Höhe / 3,8 m. Die Nutzungen der Häuser folgen der Legende des Lageplans „Klinikum Bielefeld – Mitte“ (Stand Okt. 2025).
+- Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Klinikumsgelände: Weg 689365264, Hauptgebäude: Relation 18889904). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl. Die Nutzungen der Häuser folgen dem Lageplan „Klinikum Bielefeld – Mitte“ (Stand Juli 2026).
+- Ebenen wie im Klinikum: U1 (Haupteingang), E, 1–12. Hauptgebäude: dreigeschossiger Breitfuß (U1–1), Luftgeschoss (2), zehngeschossiger Bettenturm (3–12) mit vier Armen, zentralem Aufzugskern und vier Treppentürmen. Diese Ebenen sind in `tools/osm_import.py` (`PART_LEVELS`, `turm`) hinterlegt.
+- Recherchierte Stationen (3.3, 4.1, 4.3, 5.1, 7.1, 7.3, 8.1, 8.2, 9.1, 9.3, 11.3, 11.4, Babytown auf Ebene 12) sind einzelnen Turmarmen zugeordnet; die Zuordnung Nummer ↔ Arm ist angenommen.
+- NIZ laut Klinikum: Eingangshalle U1, Notaufnahme mit Notfall-CT, Schockräumen und Aufnahmestation auf E, Intensivmedizin auf Ebene 1, Rampe für Rettungswagen, Brücke vom Landeplatz durch die Eingangshalle, Brücke ins AOZ.
 - Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht; der Nordpfeil zeigt die tatsächliche Nordrichtung. Die frühere Digitalisierung aus dem Lageplan war um ca. 26 % zu groß und um ca. 90° falsch genordet.
-- Belegt aus OSM sind außerdem: beide Warenannahmen („Steri (im UG) & Küche“, „Zentrallager“), Haupteingang im NIZ, Rettungszufahrt mit 2,4 m Durchfahrtshöhe und Hubschrauberlandeplatz auf Parkhaus P1.
+- Belegt aus OSM sind außerdem: beide Warenannahmen („Steri (im UG) & Küche“, „Zentrallager“), Haupteingang im NIZ, Rampe der Liegendkrankenvorfahrt (nur Rettungsdienst), Tiefgaragenzufahrt (2,4 m) und Hubschrauberlandeplatz auf Parkhaus P1.
 - Das Notfall- und Intensivmedizinische Zentrum (NIZ) ist laut Klinikum seit dem 12.06.2026 in Betrieb und im Ist-Zustand abgebildet.
 - Innenwege, Aufzüge, Treppenhäuser, die Lage der meisten Funktionsbereiche, Mengen und Zeiten sind Annahmen. Eine vollständige Liste steht in der App unter „Annahmen“.
 - Die Soll-Variante dient der Veranschaulichung und ist keine Planung.

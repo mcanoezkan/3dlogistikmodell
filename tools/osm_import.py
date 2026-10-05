@@ -45,25 +45,34 @@ out geom;"""
 # minus: Umrisse, die abgezogen werden; clip: Ausschnitt im Modellraster (Abgrenzung aus dem Lageplan)
 # std: Geschosse (von, bis) für Flächen ohne Höhenangabe; ug: Untergeschoss U1 ergänzen
 BUILDINGS = {
-    'H1':  {'osm': ['r18889904'], 'minus': ['p1529410147'], 'ug': True, 'std': (-1, 3)},
-    'NB':  {'osm': ['p1529410147'], 'ug': True, 'std': (-1, 1)},
+    # Hauptgebäude: dreigeschossiger Breitfuß (U1, E, 1), Luftgeschoss (2), zehngeschossiger Bettenturm (3–12);
+    # oberste Etage Ebene 12 (Babytown). Quellen: bhp Architekten, Klinikum Bielefeld. Teile ab 17 m Mindesthöhe = Bettenturm.
+    'H1':  {'osm': ['r18889904'], 'minus': ['p1529410147'], 'ug': True, 'std': (-1, 1), 'levels_vor_hoehe': True,
+            'turm': {'ab': 17, 'von': 3}, 'max': 12},
+    # NIZ: dreigeschossig – U1 Eingangshalle, E Notaufnahme, 1 Intensivmedizin (Klinikum Bielefeld)
+    'NB':  {'osm': ['p1529410147'], 'ug': True, 'std': (-1, 1), 'force': (-1, 1)},
     'H2':  {'osm': ['w1387046452']},
     'H3':  {'osm': ['w106793193'], 'std': (0, 0)},
     'H4':  {'osm': ['w125762135'], 'std': (0, 3)},
     'H5':  {'osm': ['w26976857']},
-    'H6':  {'osm': ['w106568488'], 'minus_clip': [(-185, 0, -140, 40)]},
+    'H6':  {'osm': ['w106568488'], 'minus_clip': [(-185, 0, -140, 40)], 'ug': True},   # Tunnel zum Hauptgebäude im UG
     'H9':  {'osm': ['w106568488'], 'clip': (-185, 0, -140, 40)},
     'H7':  {'osm': ['w27154136']},
     'H8':  {'osm': ['w27154135']},
     'H10': {'osm': ['w205162934'], 'std': (0, 3)},
     'H11': {'osm': ['w765142737'], 'std': (0, 1)},
     'H12': {'osm': ['w693994791']},
-    'P1':  {'osm': ['w26976760'], 'ug': True, 'std': (-1, 0)},
+    # Parkhaus 1 liegt überwiegend unter Gelände (Halbgeschosse U1–U5), Dach mit Landeplatz auf Höhe Ebene E
+    'P1':  {'osm': ['w26976760'], 'ug': True, 'std': (-1, -1), 'force': (-1, -1)},
     'P2':  {'osm': ['w570299313']},
 }
 # Namen für Gebäudeteile, auf die sich Funktionsbereiche beziehen (OSM-Teil-ID -> Teil-ID)
 PART_IDS = {595918835: 'BT', 594755592: 'HH', 1370956694: 'TG', 594227584: 'OB', 594227583: 'OA',
             595065314: 'WH', 1373172797: 'OS', 594493032: 'OE'}
+# Ebenen einzelner Teile laut Klinikum/Architekt (Vorrang vor OSM-Höhen)
+PART_LEVELS = {595918835: (-1, 1),    # Breitfuß
+               1370956694: (2, 2),    # Luftgeschoss zwischen Breitfuß und Bettenturm
+               594755592: (3, 12)}    # Bettenturm, zehn Geschosse
 # Teile ab dieser Mindesthöhe sind Dachaufbauten und werden nicht übernommen
 DACH_MIN = 50
 SKIP_PARTS = {106793195}           # Hubschrauberplattform: eigener Bereich im Modell
@@ -76,7 +85,7 @@ ANCHORS = {
     'WA_N':  {'p': (-6.7, -66), 'name': 'Warenannahme Steri (UG) & Küche', 'osm': 7669730280, 'filter': 'Zufahrt'},
     'WA_ZL': {'p': (80.2, -66), 'name': 'Warenannahme Zentrallager', 'osm': 7669730281, 'filter': 'Zufahrt'},
     'HE':    {'p': (-10.4, 77), 'name': 'Haupteingang Neubau (NIZ)', 'osm': 12437038569},
-    'LKV':   {'p': (40, 88), 'name': 'Liegendkrankenvorfahrt NIZ', 'filter': 'Rettungsdienst'},
+    'LKV':   {'p': (30, 79), 'name': 'Liegendkrankenvorfahrt NIZ (Rampe, Ebene E)', 'osm': 1370558730, 'filter': 'Rettungsdienst'},
     'ABF':   {'p': (68, -74), 'name': 'Abfallsammelstelle (Annahme)', 'filter': 'Zufahrt'},
     'P1O':   {'p': (-21, 69), 'name': 'Ausgang Parkhaus P1 Ost', 'osm': 13938746515},
     'E_H4':  {'p': (-57.2, -120), 'name': 'Eingang Haus 4', 'osm': 6515760684},
@@ -143,12 +152,14 @@ def polys(g):
     return [q for p in getattr(g, 'geoms', []) if isinstance(p, (Polygon, MultiPolygon)) for q in polys(p)]
 
 
-def levels_of(t, std, ug):
+def levels_of(t, std, ug, levels_vor_hoehe=False):
     """Geschossbereich (von, bis) im Modell aus den OSM-Höhenangaben."""
     h, mh = num(t.get('height')), num(t.get('min_height'))
     lv, ml = num(t.get('building:levels')), num(t.get('building:min_level') or t.get('min_level'))
     under = num(t.get('building:levels:underground')) or 0
-    if h is not None:
+    if levels_vor_hoehe and lv and not mh:
+        von, bis, src = 0, math.ceil(lv) - 1, 'Geschosse'
+    elif h is not None:
         von = round(mh / FH) if mh else 0
         bis = max(von, round(h / FH) - 1)
         src = 'Höhe'
@@ -213,7 +224,12 @@ def main():
             if t.get('building:part') in ('roof',): continue
             if not fp.contains(g.representative_point()): continue
             if 'p' + str(e['id']) in cfg['osm']: continue
-            von, bis, src = levels_of(t, std, ug)
+            von, bis, src = levels_of(t, std, ug, cfg.get('levels_vor_hoehe'))
+            if e['id'] in PART_LEVELS: von, bis, src = *PART_LEVELS[e['id']], 'Klinikum'
+            elif 'turm' in cfg and (num(t.get('min_height')) or 0) >= cfg['turm']['ab']: von, src = cfg['turm']['von'], 'Klinikum'
+            if 'max' in cfg: bis = min(bis, cfg['max'])
+            if 'force' in cfg: von, bis, src = *cfg['force'], 'Klinikum'
+            if bis < von: continue
             cand.append((e['id'], g.intersection(fp), von, bis, src, t))
         cand.sort(key=lambda c: (-c[3], -c[1].area))
         taken, teile = {}, []
@@ -238,7 +254,7 @@ def main():
         # Grundfläche, die von keinem Gebäudeteil erfasst ist: Standardgeschosse (Annahme)
         covered = unary_union([c[1] for c in cand]) if cand else Polygon()
         rest = fp.difference(covered).buffer(-0.4).buffer(0.4)
-        emit(None, rest, std[0], std[1], 'Annahme' if cand or not num(main_tags.get('height')) else 'Höhe')
+        emit(None, rest, std[0], std[1], 'Klinikum' if 'force' in cfg else ('Annahme' if cand or not num(main_tags.get('height')) else 'Höhe'))
         mh = max((num(c[5].get('height')) or 0) for c in cand) if cand else num(main_tags.get('height'))
         gebaeude[bid] = {
             'osm': cfg['osm'][0], 'umriss': [rnd(p) for p in polys(fp.simplify(0.4))],
