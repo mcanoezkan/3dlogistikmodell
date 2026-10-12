@@ -2,6 +2,10 @@
 
 Interaktives 3D-Strukturmodell des Campus Klinikum Bielefeld-Mitte mit Schwerpunkt Ver- und Entsorgungslogistik. Die Anwendung ist eine einzige Datei (`index.html`) und läuft auch offline, weil three.js r160 am Dateiende eingebettet ist.
 
+## Weiteres Modell im Repository
+
+`recyclinghalle/` enthält im gleichen Stil das 3D-Modell einer Indoor-Recyclingannahmestelle (Machbarkeitsstudie mit Varianten A–D und Outdoor-Vergleich). Start: `python3 recyclinghalle/start.py`, Details in [`recyclinghalle/README.md`](recyclinghalle/README.md).
+
 ## Start über localhost
 
 ```bash
