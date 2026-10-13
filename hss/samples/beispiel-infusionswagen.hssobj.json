@@ -1,0 +1,120 @@
+{
+ "format": "hss-object",
+ "version": 1,
+ "id": "eigen.infusionswagen",
+ "name": "Infusionswagen (Beispiel)",
+ "category": "Eigene Objekte/Pflegewagen",
+ "tags": [
+  "Infusion",
+  "Beispiel"
+ ],
+ "size": {
+  "w": 0.7,
+  "d": 0.5,
+  "h": 1.1
+ },
+ "anchor": "boden",
+ "meta": {
+  "quelle": "Beispielvorlage"
+ },
+ "logistik": {
+  "reinheit": "rein"
+ },
+ "parts": [
+  {
+   "t": "box",
+   "p": [
+    0,
+    0.5,
+    0
+   ],
+   "s": [
+    0.66,
+    0.8,
+    0.46
+   ],
+   "c": "#eef1f4",
+   "m": "lack",
+   "rr": 0.02
+  },
+  {
+   "t": "box",
+   "p": [
+    0,
+    0.93,
+    0
+   ],
+   "s": [
+    0.7,
+    0.04,
+    0.5
+   ],
+   "c": "#bfc6ce",
+   "m": "kunststoff"
+  },
+  {
+   "t": "cyl",
+   "p": [
+    0.28,
+    1.05,
+    -0.18
+   ],
+   "r": 0.012,
+   "h": 0.25,
+   "c": "#c3c9d0",
+   "m": "metall"
+  },
+  {
+   "t": "cyl",
+   "p": [
+    -0.24,
+    0.05,
+    -0.14
+   ],
+   "r": 0.05,
+   "h": 0.035,
+   "c": "#2d3238",
+   "m": "gummi",
+   "ax": "x"
+  },
+  {
+   "t": "cyl",
+   "p": [
+    -0.24,
+    0.05,
+    0.14
+   ],
+   "r": 0.05,
+   "h": 0.035,
+   "c": "#2d3238",
+   "m": "gummi",
+   "ax": "x"
+  },
+  {
+   "t": "cyl",
+   "p": [
+    0.24,
+    0.05,
+    -0.14
+   ],
+   "r": 0.05,
+   "h": 0.035,
+   "c": "#2d3238",
+   "m": "gummi",
+   "ax": "x"
+  },
+  {
+   "t": "cyl",
+   "p": [
+    0.24,
+    0.05,
+    0.14
+   ],
+   "r": 0.05,
+   "h": 0.035,
+   "c": "#2d3238",
+   "m": "gummi",
+   "ax": "x"
+  }
+ ]
+}

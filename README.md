@@ -1,3 +1,16 @@
+# UNITY · 3D-Logistikmodelle
+
+## Healthcare Simulation Suite (neu)
+
+Im Ordner [`hss/`](hss/README.md): Baukasten für Krankenhaus-Campus in 3D (Gebäude mit anpassbaren Fassaden und Rundungen, Brücken, Gelände, Wege, Verkehr, Etagen-Innenausbau, AWT) mit Objektbibliothek, Stationsplaner und Simulation der Material-, Waren- und Personenflüsse inklusive Hotspot-Analyse, Fahrzeugbedarf und Ich-Perspektive. Demo-Modus „UNITY Hospital“.
+
+```bash
+python3 start.py          # öffnet die Healthcare Simulation Suite
+python3 start.py kbm      # öffnet das bisherige Modell Klinikum Bielefeld-Mitte
+```
+
+---
+
 # Klinikum Bielefeld-Mitte · Logistikmodell 3D
 
 Interaktives 3D-Strukturmodell des Campus Klinikum Bielefeld-Mitte mit Schwerpunkt Ver- und Entsorgungslogistik. Die Anwendung ist eine einzige Datei (`index.html`) und läuft auch offline, weil three.js r160 am Dateiende eingebettet ist.
@@ -5,8 +18,8 @@ Interaktives 3D-Strukturmodell des Campus Klinikum Bielefeld-Mitte mit Schwerpun
 ## Start über localhost
 
 ```bash
-python3 start.py          # wählt einen freien Port und öffnet den Browser
-python3 start.py 8090     # alternativ mit festem Port
+python3 start.py kbm          # wählt einen freien Port und öffnet den Browser
+python3 start.py kbm 8090     # alternativ mit festem Port
 ```
 
 Ohne Startskript geht es auch so:

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Healthcare Simulation Suite</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/hss.css">
+<!-- =====================================================================
+     HEALTHCARE SIMULATION SUITE · UNITY
+     Läuft offline (three.js r160 liegt in vendor/). Start: python3 start.py
+     Aufbau:
+       js/core.js            Projektmodell, Undo/Redo, Speichern (Datei, Browser-Projektablage)
+       js/library.js         Objektbibliothek (Format hss-object / hss-library / GLB-Upload)
+       library/*.js          Bibliothekspakete – neue Objekte hier oder per Upload ergänzen
+       js/build-*.js         Bausteine: Gebäude/Fassaden/Brücken/Innenausbau, Gelände/Wege/Flächen/Verkehr
+       js/network.js         automatisches Wegenetz und Routing
+       js/sim.js             Flüsse, Regeln, Simulation, Fahrzeugbedarf, Hotspots, 3D-Wiedergabe
+       js/station.js         Stations-Planungshelfer
+       js/fpv.js             Ich-Perspektive (Begleitfahrt, Aufzug, Rundgang)
+       js/ui*.js, demo.js    Oberfläche, Demo „UNITY Hospital“
+     ===================================================================== -->
+</head>
+<body>
+<div id="viewport"></div>
+
+<header id="top">
+  <div class="brand"><img class="logo" src="assets/unity-logo.png" alt="UNITY"><div><div class="t1">Healthcare Simulation Suite</div><div class="t2" id="prjName" title="Projektname – klicken zum Umbenennen">Neues Projekt</div></div></div>
+  <div class="grp">
+    <button id="bNew" title="Neues, leeres Projekt">Neu</button>
+    <button id="bOpen" title="Projekt öffnen (Datei oder Projektablage im Browser)">Öffnen</button>
+    <button id="bSave" title="Projekt speichern (Strg+S)">Speichern</button>
+    <input type="file" id="fOpen" accept=".json,.hss.json" hidden>
+  </div>
+  <div class="grp">
+    <button id="bUndo" class="ico" title="Rückgängig (Strg+Z)">↶</button>
+    <button id="bRedo" class="ico" title="Wiederholen (Strg+Y)">↷</button>
+  </div>
+  <div class="sp"></div>
+  <span class="badge" id="saveState" title="Automatische Sicherung im Browser">gesichert</span>
+  <button id="bDemo" class="demo" title="Voll ausgestattetes UNITY Hospital laden und geführte Demo starten">▶ Demo-Modus</button>
+  <button id="bHelp" title="Kurzanleitung">Hilfe</button>
+</header>
+
+<nav id="rail"></nav>
+<aside id="panel"><div id="panelBody"></div></aside>
+<aside id="inspector" hidden></aside>
+
+<div id="viewbar">
+  <label class="ctl">Ebene <select id="vFloor"></select></label>
+  <div class="seg" id="vCut" title="Schnitt der gewählten Ebene (wie ein Puppenhaus)"><button data-v="voll">Wände voll</button><button data-v="halb" class="on">halb</button><button data-v="aus">Grundriss</button></div>
+  <label class="ctl">Hülle <select id="vShell"><option value="massiv">massiv</option><option value="transparent">transparent</option><option value="aus">ausgeblendet</option></select></label>
+  <label class="ctl" title="Geschosse auseinanderziehen">Explosion <input type="range" id="vExplode" min="0" max="12" step="0.5" value="0"></label>
+  <label class="ctl" title="Sonnenstand / Nacht">Uhrzeit <input type="range" id="vSun" min="4" max="23.5" step="0.25" value="14"><span id="vSunL">14:00</span></label>
+  <label class="ctl">Netz <select id="vNet"><option value="aus">aus</option><option value="netz">Wegenetz</option><option value="heat">Auslastung</option></select></label>
+  <button class="tgl on" id="vLabels" title="Beschriftungen">Beschriftung</button>
+  <span class="vsep"></span>
+  <button id="vWalk" title="Rundgang in der Ich-Perspektive (WASD + Maus)">🚶 Rundgang</button>
+  <button id="vShot" title="Hochaufgelöstes Bild speichern">📷 Beauty Shot</button>
+  <button id="vHome" title="Gesamtansicht">⌂</button>
+</div>
+
+<div id="hint" hidden></div>
+<footer id="timeline" hidden>
+  <div class="tl-head">
+    <button id="tPlay" class="primary">▶</button>
+    <b id="tClock">06:00</b>
+    <label class="ctl">Tempo <select id="tSpeed"><option value="20">20×</option><option value="60" selected>60×</option><option value="180">180×</option><option value="600">600×</option></select></label>
+    <span id="tInfo" class="note"></span>
+    <div class="sp"></div>
+    <label class="chk"><input type="checkbox" id="tHeat"> Heatmap folgt der Uhrzeit</label>
+    <button id="tClose" class="x" title="Zeitleiste schließen">×</button>
+  </div>
+  <canvas id="tCanvas"></canvas>
+</footer>
+<div id="zoomCtl"><button id="zIn" title="Hineinzoomen">+</button><button id="zOut" title="Herauszoomen">−</button></div>
+<div id="fpvHud" hidden></div>
+<div id="demoCard" hidden></div>
+<div id="tip" hidden></div>
+<div id="toast" hidden></div>
+<dialog id="dlg"></dialog>
+<div id="loading"><div><img src="assets/unity-logo.png" alt="UNITY" style="height:34px"><p>Healthcare Simulation Suite wird geladen …</p></div></div>
+
+<script src="vendor/three-bundle.js"></script>
+<script src="js/core.js"></script>
+<script src="js/library.js"></script>
+<script src="library/manifest.js"></script>
+<script src="js/build-gebaeude.js"></script>
+<script src="js/build-aussen.js"></script>
+<script src="js/network.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/fpv.js"></script>
+<script src="js/station.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/ui-panels.js"></script>
+<script src="js/ui-analyse.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

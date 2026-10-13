@@ -1,0 +1,63 @@
+/* HSS-Bibliothekspaket · Personen und Fahrzeuge
+   Personen haben Schwingachsen (sw) für Arme/Beine und werden in der Simulation als gehende Agenten animiert.
+   Fahrzeuge: Länge entlang z, Front zeigt nach +z. */
+(function (K) {
+const DG = '#5a6573';
+const car = (o = {}) => {
+  const w = o.w || 1.8, l = o.l || 4.6, h = o.h || 1.45, c = o.c || '#2d7694';
+  const P = [
+    K.box(0, 0.5, 0, w, 0.55, l, c, 'lack', { rr: 0.18 }),
+    K.box(0, 0.98, -l * 0.05, w * 0.86, h - 0.95 + 0.25, l * 0.52, c, 'lack', { rr: 0.2 }),
+    K.box(0, 1.0, -l * 0.05, w * 0.88, (h - 0.95) * 0.72, l * 0.48, '#26323d', 'glas', { o: 0.85, rr: 0.15 }),
+    K.box(0, 0.55, l / 2 - 0.02, w * 0.7, 0.12, 0.04, '#fff6d6', 'leucht'), K.box(0, 0.6, -l / 2 + 0.02, w * 0.75, 0.1, 0.04, '#c0392b', 'leucht')
+  ];
+  if (o.sign) P.push(K.box(0, h + 0.08, 0, 0.5, 0.14, 0.18, o.sign, 'leucht'));
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(...K.wheel(sx * (w / 2 - 0.12), 0.33, sz * l * 0.32, 0.33, 0.24));
+  return P;
+};
+const van = (o = {}) => {
+  const w = o.w || 2.0, l = o.l || 5.9, h = o.h || 2.6, c = o.c || '#ffffff';
+  const P = [
+    K.box(0, h / 2 + 0.25, -0.35, w, h - 0.5, l - 0.9, c, 'lack', { rr: 0.12 }),
+    K.box(0, 1.05, l / 2 - 0.55, w, 1.2, 1.1, c, 'lack', { rr: 0.2 }),
+    K.box(0, 1.55, l / 2 - 0.55, w * 0.92, 0.6, 1.0, '#26323d', 'glas', { o: 0.85, rx: -15 }),
+    K.box(0, 0.7, l / 2 + 0.01, w * 0.8, 0.12, 0.02, '#fff6d6', 'leucht')
+  ];
+  if (o.stripe) P.push(K.box(0, 1.15, -0.35, w + 0.01, 0.25, l - 0.95, o.stripe, 'lack'));
+  if (o.beacon) P.push(K.box(0, h + 0.05, l / 2 - 0.9, w * 0.8, 0.12, 0.25, o.beacon, 'leucht'));
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(...K.wheel(sx * (w / 2 - 0.15), 0.36, sz * l * 0.32, 0.36, 0.26));
+  return P;
+};
+
+HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Personen & Fahrzeuge', objects: [
+  /* ---------- Personen ---------- */
+  { id: 'person.arzt', name: 'Ärztin / Arzt', category: 'Personen/Personal', tags: ['Arzt', 'Personal', 'Ärztlicher Dienst'], size: { w: 0.6, d: 0.35, h: 1.78 }, parts: K.person({ h: 1.78, top: '#dfe8f0', legs: '#c9d6e3', coat: '#ffffff', sleeve: '#ffffff', steth: true }), logistik: { mittel: 'person' } },
+  { id: 'person.pflege', name: 'Pflegekraft', category: 'Personen/Personal', tags: ['Pflege', 'Personal'], size: { w: 0.6, d: 0.35, h: 1.72 }, parts: K.person({ h: 1.72, top: '#2D7694', legs: '#2D7694', hair: '#6b4a2b', skin: '#d9a77f' }), logistik: { mittel: 'person' } },
+  { id: 'person.op', name: 'OP-Personal (Bereichskleidung)', category: 'Personen/Personal', tags: ['OP', 'Personal'], size: { w: 0.6, d: 0.35, h: 1.76 }, parts: K.person({ h: 1.76, top: '#5aa37e', legs: '#5aa37e', cap: '#5aa37e', mask: '#bfe3d0', shoe: '#ffffff' }), logistik: { mittel: 'person' } },
+  { id: 'person.transportdienst', name: 'Transport-/Logistikdienst', category: 'Personen/Personal', tags: ['Logistik', 'Hol- und Bringedienst'], size: { w: 0.6, d: 0.35, h: 1.8 }, parts: K.person({ h: 1.8, top: '#5a6573', legs: '#2b3138', vest: '#f2994a', shoe: '#2b3138' }), logistik: { mittel: 'person' } },
+  { id: 'person.reinigung', name: 'Reinigungskraft', category: 'Personen/Personal', tags: ['Reinigung', 'Hygiene'], size: { w: 0.6, d: 0.35, h: 1.68 }, parts: K.person({ h: 1.68, top: '#7b5ea7', legs: '#3b3f45', hair: '#1f1a17' }), logistik: { mittel: 'person' } },
+  { id: 'person.rettungsdienst', name: 'Rettungsdienst', category: 'Personen/Personal', tags: ['Notfall', 'RTW'], size: { w: 0.6, d: 0.35, h: 1.8 }, parts: K.person({ h: 1.8, top: '#e74c3c', legs: '#e74c3c', vest: '#f4d03f', shoe: '#2b3138' }), logistik: { mittel: 'person' } },
+  { id: 'person.verwaltung', name: 'Verwaltung / Empfang', category: 'Personen/Personal', tags: ['Verwaltung', 'Empfang'], size: { w: 0.6, d: 0.35, h: 1.7 }, parts: K.person({ h: 1.7, top: '#144477', legs: '#2b3138', shoe: '#2b3138', hair: '#c49a6c' }) },
+  { id: 'person.patient', name: 'Patientin / Patient (gehend)', category: 'Personen/Patienten & Besucher', tags: ['Patient', 'mobil'], size: { w: 0.6, d: 0.35, h: 1.74 }, parts: K.person({ h: 1.74, top: '#a7c7e7', legs: '#a7c7e7', shoe: '#5a6573', hair: '#9b9b9b' }), logistik: { mittel: 'patient' } },
+  { id: 'person.patient.kind', name: 'Kind (Patient)', category: 'Personen/Patienten & Besucher', tags: ['Pädiatrie', 'Patient'], size: { w: 0.4, d: 0.25, h: 1.2 }, parts: K.person({ h: 1.2, top: '#f2c94c', legs: '#4f7da3', hair: '#8a5a2b' }), logistik: { mittel: 'patient' } },
+  { id: 'person.patient.rollstuhl', name: 'Patient im Rollstuhl', category: 'Personen/Patienten & Besucher', tags: ['Patient', 'Rollstuhl'], size: { w: 0.65, d: 1.05, h: 1.35 }, parts: [...K.figureSeated({ top: '#a7c7e7', legs: '#a7c7e7' }), K.box(0, 0.47, 0, 0.45, 0.05, 0.45, '#2b3138', 'stoff'), K.box(0, 0.75, -0.24, 0.45, 0.5, 0.04, '#2b3138', 'stoff'), ...[-1, 1].map(s => K.tor(s * 0.3, 0.3, -0.05, 0.3, 0.018, '#2b3138', 'gummi', { ry: 90, seg: 24 })), ...[-1, 1].map(s => K.cyl(s * 0.2, 0.08, 0.38, 0.07, 0.03, '#2b3138', 'gummi', { ax: 'x' }))], logistik: { mittel: 'patient' } },
+  { id: 'person.patient.bett', name: 'Patient im Bett (Liegendtransport)', category: 'Personen/Patienten & Besucher', tags: ['Patient', 'Bett', 'Bettentransport'], size: { w: 1.02, d: 2.18, h: 1.05 }, parts: [K.box(0, 0.19, 0, 0.84, 0.07, 1.87, '#aab2bb', 'metall'), K.box(0, 0.5, 0, 0.92, 0.05, 2.0, '#cfd5db', 'metall'), K.box(0, 0.58, 0.08, 0.88, 0.13, 1.35, '#7fa8c9', 'stoff', { rr: 0.04 }), K.box(0, 0.72, -0.68, 0.88, 0.13, 0.65, '#7fa8c9', 'stoff', { rr: 0.04, rx: -28 }), K.box(0, 0.72, 0.25, 0.7, 0.16, 1.3, '#e6edf3', 'stoff', { rr: 0.06 }), K.sph(0, 0.95, -0.72, 0.11, '#e0b896', 'matt'), K.sph(0, 0.97, -0.75, 0.115, '#7b5b3a', 'stoff', { sc: [1, 0.7, 1] }), K.box(0, 0.76, -1.06, 1.0, 0.6, 0.05, '#d9dde2', 'lack'), K.box(0, 0.68, 1.06, 1.0, 0.46, 0.05, '#d9dde2', 'lack'), ...K.casters(0.84, 1.87, 0.065)], logistik: { mittel: 'bett' } },
+  { id: 'person.besucher', name: 'Besucherin / Besucher', category: 'Personen/Patienten & Besucher', tags: ['Besucher', 'Angehörige'], size: { w: 0.6, d: 0.35, h: 1.76 }, parts: K.person({ h: 1.76, top: '#c0392b', legs: '#34495e', shoe: '#2b3138', hair: '#2b1d14' }) },
+  { id: 'person.besucher2', name: 'Besucher (Jacke)', category: 'Personen/Patienten & Besucher', tags: ['Besucher'], size: { w: 0.6, d: 0.35, h: 1.82 }, parts: K.person({ h: 1.82, top: '#16a085', legs: '#2c3e50', shoe: '#7f5539', hair: '#d4b483', skin: '#c68e63' }) },
+
+  /* ---------- Fahrzeuge ---------- */
+  { id: 'kfz.pkw', name: 'PKW (Limousine)', category: 'Fahrzeuge/PKW', tags: ['Auto', 'Verkehr', 'Parken'], size: { w: 1.82, d: 4.65, h: 1.45 }, parts: car(), logistik: { rolle: 'fahrzeug', mittel: 'pkw' } },
+  { id: 'kfz.pkw.suv', name: 'PKW (SUV)', category: 'Fahrzeuge/PKW', tags: ['Auto', 'Verkehr'], size: { w: 1.9, d: 4.7, h: 1.7 }, parts: car({ w: 1.9, l: 4.7, h: 1.7, c: '#4b5058' }), logistik: { rolle: 'fahrzeug', mittel: 'pkw' } },
+  { id: 'kfz.pkw.klein', name: 'PKW (Kleinwagen)', category: 'Fahrzeuge/PKW', tags: ['Auto', 'Verkehr'], size: { w: 1.7, d: 3.9, h: 1.48 }, parts: car({ w: 1.7, l: 3.9, h: 1.48, c: '#c0392b' }), logistik: { rolle: 'fahrzeug', mittel: 'pkw' } },
+  { id: 'kfz.taxi', name: 'Taxi', category: 'Fahrzeuge/PKW', tags: ['Taxi', 'Vorfahrt'], size: { w: 1.82, d: 4.8, h: 1.6 }, parts: car({ l: 4.8, h: 1.5, c: '#f2e6b0', sign: '#f2c94c' }), logistik: { rolle: 'fahrzeug', mittel: 'pkw' } },
+  { id: 'kfz.bus', name: 'Linienbus (12 m)', category: 'Fahrzeuge/ÖPNV', tags: ['Bus', 'ÖPNV', 'Haltestelle'], size: { w: 2.55, d: 12.0, h: 3.1 }, parts: [K.box(0, 1.65, 0, 2.55, 2.6, 12.0, '#f2f2f2', 'lack', { rr: 0.2 }), K.box(0, 1.95, 0, 2.57, 1.15, 11.4, '#26323d', 'glas', { o: 0.85 }), K.box(0, 0.75, 0, 2.56, 0.35, 11.9, '#2D7694', 'lack'), K.box(0, 2.85, 5.95, 1.6, 0.25, 0.04, '#f2994a', 'leucht'), K.box(0, 0.9, 6.01, 2.0, 0.12, 0.02, '#fff6d6', 'leucht'), ...K.wheel(-1.1, 0.5, 3.9, 0.5, 0.3), ...K.wheel(1.1, 0.5, 3.9, 0.5, 0.3), ...K.wheel(-1.1, 0.5, -2.4, 0.5, 0.3), ...K.wheel(1.1, 0.5, -2.4, 0.5, 0.3)], meta: { quelle: 'Standard-Solobus 12 m × 2,55 m × ca. 3,1 m' }, logistik: { rolle: 'fahrzeug', mittel: 'bus' } },
+  { id: 'kfz.rtw', name: 'Rettungswagen (RTW)', category: 'Fahrzeuge/Rettungsdienst', tags: ['RTW', 'Notfall', 'Liegendanfahrt'], size: { w: 2.2, d: 6.8, h: 2.9 }, parts: van({ w: 2.2, l: 6.8, h: 2.8, c: '#f4f4f4', stripe: '#e74c3c', beacon: '#3498db' }), meta: { quelle: 'Kofferaufbau nach DIN EN 1789 Typ C' }, logistik: { rolle: 'fahrzeug', mittel: 'rtw' } },
+  { id: 'kfz.ktw', name: 'Krankentransportwagen (KTW)', category: 'Fahrzeuge/Rettungsdienst', tags: ['KTW', 'Krankentransport'], size: { w: 2.0, d: 5.9, h: 2.6 }, parts: van({ c: '#f4f4f4', stripe: '#f2994a', beacon: '#3498db' }), logistik: { rolle: 'fahrzeug', mittel: 'ktw' } },
+  { id: 'kfz.transporter', name: 'Lieferwagen (3,5 t)', category: 'Fahrzeuge/Lieferverkehr', tags: ['Lieferung', 'Apotheke', 'Labor'], size: { w: 2.0, d: 6.0, h: 2.6 }, parts: van({ c: '#dfe4e9' }), logistik: { rolle: 'fahrzeug', mittel: 'transporter' } },
+  { id: 'kfz.lkw75', name: 'LKW 7,5 t (Koffer, Ladebordwand)', category: 'Fahrzeuge/Lieferverkehr', tags: ['LKW', 'Anlieferung', 'Wäsche', 'Speisen'], size: { w: 2.5, d: 8.0, h: 3.6 }, parts: [K.box(0, 2.1, -1.0, 2.5, 3.0, 5.6, '#eef1f4', 'lack', { rr: 0.05 }), K.box(0, 2.1, -1.0, 2.51, 0.5, 5.4, '#144477', 'lack'), K.box(0, 1.55, 3.0, 2.4, 2.1, 1.9, '#144477', 'lack', { rr: 0.15 }), K.box(0, 2.0, 3.92, 2.2, 0.9, 0.06, '#26323d', 'glas', { o: 0.85 }), K.box(0, 0.75, 3.98, 2.0, 0.12, 0.02, '#fff6d6', 'leucht'), K.box(0, 0.5, -3.85, 2.4, 0.4, 0.1, DG, 'metall'), ...K.wheel(-1.05, 0.48, 3.0, 0.48, 0.3), ...K.wheel(1.05, 0.48, 3.0, 0.48, 0.3), ...K.wheel(-1.05, 0.48, -2.3, 0.48, 0.3), ...K.wheel(1.05, 0.48, -2.3, 0.48, 0.3)], logistik: { rolle: 'fahrzeug', mittel: 'lkw' } },
+  { id: 'kfz.lkw.kuehl', name: 'Kühl-LKW (Speisen/Arzneimittel)', category: 'Fahrzeuge/Lieferverkehr', tags: ['LKW', 'Kühlkette'], size: { w: 2.5, d: 8.5, h: 3.7 }, parts: [K.box(0, 2.15, -1.2, 2.5, 3.1, 6.0, '#ffffff', 'lack', { rr: 0.05 }), K.box(0, 3.4, 1.85, 1.6, 0.55, 0.3, '#9aa1aa', 'metall'), K.box(0, 1.55, 3.2, 2.4, 2.1, 1.9, '#0A967A', 'lack', { rr: 0.15 }), K.box(0, 2.0, 4.12, 2.2, 0.9, 0.06, '#26323d', 'glas', { o: 0.85 }), ...K.wheel(-1.05, 0.48, 3.2, 0.48, 0.3), ...K.wheel(1.05, 0.48, 3.2, 0.48, 0.3), ...K.wheel(-1.05, 0.48, -2.6, 0.48, 0.3), ...K.wheel(1.05, 0.48, -2.6, 0.48, 0.3)], logistik: { rolle: 'fahrzeug', mittel: 'lkw' } },
+  { id: 'kfz.entsorgung', name: 'Entsorgungsfahrzeug (Abroll-/Pressmüll)', category: 'Fahrzeuge/Lieferverkehr', tags: ['Abfall', 'Entsorgung'], size: { w: 2.55, d: 9.5, h: 3.6 }, parts: [K.box(0, 2.0, -1.4, 2.5, 2.8, 6.0, '#f2994a', 'lack', { rr: 0.2 }), K.box(0, 1.55, 3.4, 2.4, 2.1, 1.9, '#f2f2f2', 'lack', { rr: 0.15 }), K.box(0, 2.0, 4.32, 2.2, 0.9, 0.06, '#26323d', 'glas', { o: 0.85 }), ...K.wheel(-1.05, 0.5, 3.4, 0.5, 0.3), ...K.wheel(1.05, 0.5, 3.4, 0.5, 0.3), ...K.wheel(-1.05, 0.5, -2.2, 0.5, 0.3), ...K.wheel(1.05, 0.5, -2.2, 0.5, 0.3), ...K.wheel(-1.05, 0.5, -3.4, 0.5, 0.3), ...K.wheel(1.05, 0.5, -3.4, 0.5, 0.3)], logistik: { rolle: 'fahrzeug', mittel: 'lkw' } },
+  { id: 'kfz.fahrrad', name: 'Fahrrad', category: 'Fahrzeuge/Zweirad', tags: ['Fahrrad', 'Mitarbeitende'], size: { w: 0.6, d: 1.8, h: 1.1 }, parts: [K.tor(0, 0.35, 0.55, 0.33, 0.025, '#2b3138', 'gummi', { ry: 90, seg: 24 }), K.tor(0, 0.35, -0.55, 0.33, 0.025, '#2b3138', 'gummi', { ry: 90, seg: 24 }), K.box(0, 0.6, 0, 0.04, 0.04, 1.0, '#2D7694', 'lack', { rx: -10 }), K.box(0, 0.6, -0.2, 0.04, 0.55, 0.04, '#2D7694', 'lack', { rx: 15 }), K.box(0, 0.92, -0.28, 0.1, 0.05, 0.25, '#2b3138', 'stoff'), K.box(0, 1.0, 0.45, 0.55, 0.03, 0.03, '#9aa1aa', 'chrom')] },
+  { id: 'kfz.hubschrauber', name: 'Rettungshubschrauber (Klasse EC135)', category: 'Fahrzeuge/Rettungsdienst', tags: ['Hubschrauber', 'Luftrettung', 'Landeplatz'], size: { w: 10.2, d: 12.2, h: 3.5 }, parts: [K.box(0, 1.4, 1.0, 1.6, 1.6, 4.2, '#f2c94c', 'lack', { rr: 0.6 }), K.box(0, 1.6, 2.6, 1.5, 0.9, 1.2, '#26323d', 'glas', { o: 0.85, rr: 0.4 }), K.box(0, 1.6, -3.4, 0.35, 0.4, 5.0, '#f2c94c', 'lack', { rr: 0.12 }), K.box(0, 2.1, -5.7, 0.1, 1.2, 0.8, '#f2c94c', 'lack'), K.cyl(0, 2.45, 0.8, 0.25, 0.4, DG, 'metall'), K.box(0, 2.68, 0.8, 10.2, 0.03, 0.3, '#3b3f45', 'metall'), K.box(0, 2.68, 0.8, 0.3, 0.03, 10.2, '#3b3f45', 'metall', { ry: 45 }), ...[-1, 1].map(s => K.box(s * 0.8, 0.1, 1.0, 0.08, 0.08, 3.4, '#9aa1aa', 'metall'))], meta: { quelle: 'EC135: Länge 12,2 m, Rotordurchmesser 10,2 m, Höhe 3,5 m' } }
+] });
+})(HSS.library.kit);
