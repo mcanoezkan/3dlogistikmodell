@@ -154,7 +154,8 @@ HSS.buildDemo = () => {
       if (s.gap) { x += s.gap; continue; }
       const cx = x + s.w / 2, r = room(pid, f, s.use, s.name, cx, zc, s.w, d, s.role, s.station);
       if (s.use !== 'flur') door(pid, f, cx + (s.use.startsWith('patient') ? (s.w / 2 - 1.0) * (dir < 0 ? 1 : -1) : 0), band.door, s.doorW || (s.use.startsWith('patient') || ['op', 'behandlung'].includes(s.use) ? 1.5 : 1.1), s.doorLib || (['op', 'behandlung', 'untersuchung', 'warten', 'logistik', 'awt'].includes(s.use) ? 'erschl.tuer.schiebe' : s.use.startsWith('patient') ? 'erschl.tuer.bett' : 'erschl.tuer.1'));
-      const furn = s.furn === 'auto' ? (HSS.FURN[s.use] ? HSS.FURN[s.use](s.w, d, dir, s.intensiv) : []) : (s.furn || []);
+      if (s.furn === 'auto') r._auto = { intensiv: !!s.intensiv, station: s.station };
+      const furn = s.furn === 'auto' ? [] : (s.furn || []);
       for (const [lib, fx, fz, frot = 0, ex] of furn) { if (!HSS.library.get(lib)) continue; inn(lib, pid, f, cx + fx * (dir < 0 ? 1 : -1), zc + fz * (dir < 0 ? 1 : -1), ((dir < 0 ? 0 : 180) + frot) % 360, Object.assign({}, typeof ex === 'object' ? ex : {}, s.station ? { station: s.station } : {})); }
       out.push(r); x += s.w;
     }
@@ -262,6 +263,12 @@ HSS.buildDemo = () => {
   inn('erschl.aufzug.bett', 'P3', 0, 0, -10, 0, { name: 'Bettenaufzug Altersmedizin' }); inn('erschl.treppe', 'P3', 0, 0, 6, 90);
   inn('erschl.aufzug.person', 'P3', 0, 0, 16, 0);
   for (let f = 0; f < 3; f++) room('P3', f, 'flur', 'Verbindungsflur', 0, -6, 4, 47);
+
+  /* ---------- Räume mit automatischer Einrichtung ---------- */
+  for (const b of prj.buildings) for (const pt of b.parts) for (const [f, I] of Object.entries(prj.interiors[pt.id] || {})) for (const r of I.rooms) {
+    if (!r._auto) continue; const a = r._auto; delete r._auto;
+    for (const o of HSS.furnishRoom(pt, +f, r, I, { intensiv: a.intensiv, typ: a.intensiv ? 'intensiv' : null })) prj.objects.push(Object.assign({ id: U.uid('obj'), host: { part: pt.id, floor: +f } }, o, a.station ? { station: a.station } : {}));
+  }
 
   /* ---------- Stationen über den Stationsplaner ---------- */
   const gen = (name, typ, faelle, partId, floor, opts = {}) => { const inp = Object.assign({ typ, name, art: 'stationaer', faelleStat: faelle, sel: [{ part: partId, floors: [floor], half: !!opts.half }] }, opts.inp || {}); const calc = HSS.stationCalc(inp); return HSS.generateStation(inp, calc, Object.assign({ furnish: true, replace: false, reserveStart: 9.5, reserveEnd: 9.5, core: 'force' }, opts.gen || {})); };

@@ -294,3 +294,4 @@ body.insp #m2Panel{right:calc(var(--inspW) + 24px)}
 .m2k{grid-template-columns:repeat(4,1fr)}
 .rlbl.m2{background:rgba(255,255,255,.92);border:1px solid #c9d1d9;padding:1px 5px;text-align:center;line-height:1.15;cursor:pointer}.rlbl.m2 span{display:block;font-size:10px;color:#3b4652;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rlbl.m2 b{font-size:11px;color:#0A223C}.rlbl.m2.sm{padding:0 3px}.rlbl.m2.sm b{font-size:9.5px}
 .rp .rpi{font-size:10.5px;color:#6b7682;line-height:1.25;margin-top:1px}
+.sobox{border:1px solid #d5dbe1;padding:10px 12px;margin:8px 0;border-left:4px solid var(--accent)}

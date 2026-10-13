@@ -71,7 +71,8 @@ UI.deleteSelection = () => {
     if (s.kind === 'path') { const p = U.byId(prj.paths, s.id); if (s.point !== undefined && p.points.length > 2) p.points.splice(s.point, 1); else prj.paths = prj.paths.filter(x => x.id !== s.id); }
     if (s.kind === 'area') prj.areas = prj.areas.filter(x => x.id !== s.id);
     if (s.kind === 'bridge') prj.bridges = prj.bridges.filter(x => x.id !== s.id);
-    if (s.kind === 'room') { const I = HSS.interior(s.part, s.floor, false, prj); I.rooms = I.rooms.filter(r => r.id !== s.id); const ws = new Set(I.walls.filter(w => w.room === s.id).map(w => w.id)); I.walls = I.walls.filter(w => !ws.has(w.id)); I.doors = I.doors.filter(d => !ws.has(d.wall)); }
+    if (s.kind === 'room' && HSS.interior(s.part, s.floor, false, prj)?.walls.some(w => w.auto)) { const I = HSS.interior(s.part, s.floor, false, prj); I.rooms = I.rooms.filter(r => r.id !== s.id); HSS.rebuildWalls(I); }
+    else if (s.kind === 'room') { const I = HSS.interior(s.part, s.floor, false, prj); I.rooms = I.rooms.filter(r => r.id !== s.id); const ws = new Set(I.walls.filter(w => w.room === s.id).map(w => w.id)); I.walls = I.walls.filter(w => !ws.has(w.id)); I.doors = I.doors.filter(d => !ws.has(d.wall)); }
     if (s.kind === 'wall') { const I = HSS.interior(s.part, s.floor, false, prj); I.walls = I.walls.filter(w => w.id !== s.id); I.doors = I.doors.filter(d => d.wall !== s.id); }
     if (s.kind === 'hill') prj.terrain.hills.splice(s.idx, 1);
   });
@@ -113,7 +114,7 @@ INSP.part = s => {
   const shapeExtra = pt.shape === 'L' || pt.shape === 'T' ? UI.fNum('Schenkelbreite', 'legW', pt.legW, { unit: 'm', min: 2 }) + UI.fNum('Schenkeltiefe', 'legD', pt.legD, { unit: 'm', min: 2 }) : (pt.shape === 'U' || pt.shape === 'O') ? UI.fNum(pt.shape === 'O' ? 'Hofbreite' : 'Hofbreite (offen)', 'courtW', pt.courtW, { unit: 'm', min: 2 }) + UI.fNum('Hoftiefe', 'courtD', pt.courtD, { unit: 'm', min: 2 }) : '';
   const fh = HSS.partFloors(pt).filter(f => f >= 0).map(f => `<label class="f"><span>${HSS.floorName(HSS.globalFloor(pt, f))}</span><input type="number" step="0.1" min="2.4" data-fh="${f}" value="${pt.floorHeights?.[f] ?? ''}" placeholder="${pt.floorHeight}"></label>`).join('');
   return head('Gebäudeteil · ' + U.esc(b.name), pt.name) + `
-  <div class="note">${U.fmt(area)} m² BGF je Ebene · ${U.fmt(area * (pt.floors + (pt.stackOn ? 0 : pt.basements || 0)))} m² gesamt · Höhe ${U.fmt(H, 1)} m · Umfang ${U.fmt(per)} m</div>
+  ${b.info ? `<div class="note" style="color:#0A223C">${U.esc(b.info)}</div>` : ''}<div class="note">${U.fmt(area)} m² BGF je Ebene · ${U.fmt(area * (pt.floors + (pt.stackOn ? 0 : pt.basements || 0)))} m² gesamt · Höhe ${U.fmt(H, 1)} m · Umfang ${U.fmt(per)} m</div>
   <h3>Gebäude</h3><div class="fg c3 bld">${UI.fTxt('Name', 'name', b.name, { full: false })}${UI.fTxt('Kürzel', 'kurz', b.kurz, { full: false })}${UI.fCol('Hausfarbe', 'color', b.color)}</div>
   <h3>Form &amp; Größe</h3>
   <div class="fg pf">${UI.fTxt('Bezeichnung Bauteil', 'name', pt.name)}
@@ -296,17 +297,20 @@ INSP_BIND.area = (el, s) => { UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläc
 
 INSP.room = s => {
   const I = HSS.interior(s.part, s.floor); const r = I?.rooms.find(x => x.id === s.id); if (!r) return '';
-  return head('Raum', r.name || HSS.ROOMTYPES[r.use]?.name) + `<div class="note">${U.fmt(r.w * r.d, 1)} m² NUF${r.station ? ' · Station: ' + U.esc(U.byId(HSS.project().stations, r.station)?.name || '') : ''}</div>
+  return head('Raum', r.name || HSS.ROOMTYPES[r.use]?.name) + `<div class="note">${U.fmt(r.w * r.d, 1)} m² · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${U.esc(HSS.DIN277[HSS.roomDin(r)]?.name || '')}${r.station ? ' · Station: ' + U.esc(U.byId(HSS.project().stations, r.station)?.name || '') : ''}</div>
   <div class="fg">${UI.fTxt('Bezeichnung', 'name', r.name)}${UI.fSel('Raumart', 'use', r.use, UI.opts(HSS.ROOMTYPES, r.use))}${UI.fSel('Logistik-Rolle', 'role', r.role || '', opt('', '– keine –', r.role || '') + UI.opts(Object.assign({}, HSS.ROLLEN, { rein: 'Station: Arbeitsraum rein', unrein: 'Station: Arbeitsraum unrein', medikamente: 'Station: Medikamente', kueche: 'Station: Teeküche', stuetzpunkt: 'Station: Stützpunkt', aufenthalt: 'Station: Aufenthalt' }), r.role || ''), { t: 'ns' })}
   ${UI.fCol('Bodenfarbe', 'color', r.color || HSS.ROOMTYPES[r.use]?.color)}${UI.fNum('Breite', 'w', r.w, { unit: 'm', step: 0.1 })}${UI.fNum('Tiefe', 'd', r.d, { unit: 'm', step: 0.1 })}</div>
   <div class="note">Größenänderung passt die Raumwände an. Die Rolle macht den Raum zur Quelle/Senke für Standardflüsse.</div>
-  <div class="actions"><button class="danger" id="iDel">Raum löschen</button></div>`;
+  ${HSS.NEBENRAUM_INFO?.[r.use] ? `<div class="note">${U.esc(HSS.NEBENRAUM_INFO[r.use])}</div>` : ''}${r.hinweis ? `<div class="note" style="color:#0A223C">${U.esc(r.hinweis)}</div>` : ''}
+  <div class="actions">${HSS.EINRICHTUNG?.[r.use] ? '<button id="iFurn" title="Vorhandene Möbel im Raum ersetzen und den Raum nach Raumart vollständig einrichten">Automatisch einrichten</button>' : ''}<button class="danger" id="iDel">Raum löschen</button></div>`;
 };
 INSP_BIND.room = (el, s) => {
   UI.bind(el, prj => HSS.interior(s.part, s.floor, false, prj)?.rooms.find(x => x.id === s.id), 'Raum', 'all', (r, path, v, prj) => {
+    if ((path === 'w' || path === 'd') && HSS.interior(s.part, s.floor, false, prj).walls.some(w => w.auto)) { HSS.rebuildWalls(HSS.interior(s.part, s.floor, false, prj)); return; }
     if (path === 'w' || path === 'd') { const I = HSS.interior(s.part, s.floor, false, prj); const old = I.walls.filter(w => w.room === r.id).map(w => w.id); I.walls = I.walls.filter(w => w.room !== r.id); I.doors = I.doors.filter(d => !old.includes(d.wall)); I.walls.push(...HSS.roomWalls(r)); }
   });
   $('#iDel', el).onclick = UI.deleteSelection;
+  const fb = $('#iFurn', el); if (fb) fb.onclick = () => { let n = 0; HSS.change('Raum einrichten', prj => { n = HSS.refurnishRoom(s.part, s.floor, s.id, {}, prj); }); UI.toast(`${n} Objekte platziert`); };
 };
 INSP.wall = s => {
   const I = HSS.interior(s.part, s.floor); const w = I?.walls.find(x => x.id === s.id); if (!w) return '';

@@ -10,7 +10,7 @@ const HSS = window.HSS, U = HSS.util, G = HSS.geo;
 HSS.MITTEL = {
   person:    { name: 'Person zu Fuß', v: 1.3, kanten: ['flur', 'weg', 'gehweg', 'strasse', 'zufahrt', 'tunnel', 'bruecke', 'aufzug', 'treppe', 'zugang', 'anbindung', 'eingang'], modell: 'person.pflege' },
   hand:      { name: 'Handgeführter Wagen', v: 1.0, kanten: ['flur', 'weg', 'gehweg', 'tunnel', 'bruecke', 'aufzug', 'zugang', 'anbindung', 'eingang', 'zufahrt'], modell: 'person.transportdienst', wagen: 'log.modulwagen' },
-  bett:      { name: 'Bettentransport', v: 0.8, kanten: ['flur', 'weg', 'tunnel', 'bruecke', 'aufzug', 'zugang', 'anbindung', 'eingang'], modell: 'person.patient.bett', liftTyp: ['bett', 'lasten'] },
+  bett:      { name: 'Bettentransport', v: 0.8, kanten: ['flur', 'weg', 'zufahrt', 'tunnel', 'bruecke', 'aufzug', 'zugang', 'anbindung', 'eingang'], modell: 'person.patient.bett', liftTyp: ['bett', 'lasten'] },
   schlepper: { name: 'Elektroschlepper / Routenzug', v: 1.8, kanten: ['flur', 'weg', 'zufahrt', 'strasse', 'tunnel', 'bruecke', 'aufzug', 'zugang', 'anbindung', 'eingang'], modell: 'log.schlepper', liftTyp: ['lasten', 'bett'] },
   awt:       { name: 'AWT (fahrerlos)', v: 1.0, kanten: ['awt', 'aufzug', 'zugang', 'anbindung'], modell: 'awt.fahrzeug', liftTyp: ['awt'] },
   lkw:       { name: 'LKW / Lieferfahrzeug', v: 6.0, kanten: ['strasse', 'zufahrt', 'anbindung'], modell: 'kfz.lkw75' },
@@ -97,6 +97,26 @@ function buildNet(prj) {
     if (best) { const B = nodes.get(best); const t = (A.kind === 'awt' || B.kind === 'awt') ? (A.kind === B.kind ? 'awt' : null) : (['tunnel'].includes(A.kind) || ['tunnel'].includes(B.kind)) ? 'tunnel' : (A.kind === 'strasse' || B.kind === 'strasse') ? (A.kind === B.kind ? 'strasse' : 'zufahrt') : A.kind; if (t) addEdge(A.id, best, t, {}); }
   }
 
+  // Wegeinseln (z. B. Fußwege, die kurz vor der Straße enden) an das größte Wegenetz anbinden (bis 40 m)
+  {
+    const comp = new Map(); let nc = 0; const sizes = [];
+    for (const id of pathNodes) {
+      if (comp.has(id)) continue; const q = [id]; comp.set(id, nc); let n = 0;
+      while (q.length) { const u = q.pop(); n++; for (const e of adj.get(u)) { const v = e.a === u ? e.b : e.a; if (!comp.has(v) && nodes.get(v).path !== undefined && e.type !== 'awt') { comp.set(v, nc); q.push(v); } } }
+      sizes.push(n); nc++;
+    }
+    if (nc > 1) {
+      const main = sizes.indexOf(Math.max(...sizes)), mainIds = pathNodes.filter(id => comp.get(id) === main && nodes.get(id).kind !== 'awt' && nodes.get(id).kind !== 'tunnel');
+      for (let c = 0; c < nc; c++) {
+        if (c === main) continue;
+        const ids = pathNodes.filter(id => comp.get(id) === c); if (!ids.length || ['awt', 'tunnel'].includes(nodes.get(ids[0]).kind)) continue;
+        let best = null, bd = 40;
+        for (const a of ids) { const A = nodes.get(a); for (const b of mainIds) { const B = nodes.get(b); const d = Math.hypot(A.x - B.x, A.z - B.z); if (d < bd && Math.abs(A.y - B.y) < 1.5) { bd = d; best = [a, b]; } } }
+        if (best) addEdge(best[0], best[1], nodes.get(best[0]).kind === 'strasse' ? 'zufahrt' : nodes.get(best[0]).kind, { path: null });
+      }
+    }
+  }
+
   /* 2. Geschossnetze je Bauteil */
   for (const b of prj.buildings) for (const pt of b.parts) {
     const fp = HSS.partFootprintLocal(pt), bb = G.bbox(fp.outer), area = HSS.partArea(pt);
@@ -153,9 +173,11 @@ function buildNet(prj) {
         const P = nodes.get(pid); if (Math.abs(P.y - y) > 1.8) continue;
         let bd = Infinity, bp = null;
         for (let i = 0; i < outer.length; i++) { const c = G.closestOnSeg([P.x, P.z], outer[i], outer[(i + 1) % outer.length]); const d = G.dist([P.x, P.z], c.pt); if (d < bd) { bd = d; bp = c.pt; } }
-        if (bd < 22) cand.push({ pid, d: bd, bp, kind: P.kind });
+        if (bd < 22 || (f === 0 && bd < 70)) cand.push({ pid, d: bd, bp, kind: P.kind });
       }
       cand.sort((a, c) => a.d - c.d);
+      // Gebäude abseits der Wege: im EG über den nächsten Weg erschließen (Zuweg bis 70 m)
+      if (cand.length && cand[0].d >= 22) cand.splice(1); else for (let i = cand.length - 1; i >= 0; i--) if (cand[i].d >= 22) cand.splice(i, 1);
       const used = new Set(); let n = 0;
       for (const c of cand) {
         const k = c.kind + Math.round(c.bp[0] / 15) + ',' + Math.round(c.bp[1] / 15); if (used.has(k)) continue; used.add(k);

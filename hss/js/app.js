@@ -63,11 +63,12 @@ async function saveDialog() {
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }
   UI.dialog(`<div class="dh"><h2>Projekt öffnen</h2><button class="x" data-close>×</button></div>
-   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen (.hss.json)</button><button id="oDemo">UNITY Hospital (Demo)</button></div>
+   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen (.hss.json)</button><button id="oDemo">UNITY Hospital (Demo)</button><button id="oSite">Standortmodelle: Koblenz, Hanau</button></div>
    <h3>Projektablage im Browser</h3>
    <table class="t"><tr><th>Projekt</th><th>zuletzt geändert</th><th class="n">Größe</th><th></th></tr>${list.map(p => `<tr><td><a href="#" data-open="${p.id}">${U.esc(p.name)}</a></td><td>${new Date(p.modified).toLocaleString('de-DE')}</td><td class="n">${U.fmt(p.size / 1024)} kB</td><td><button class="mini danger" data-del="${p.id}">×</button></td></tr>`).join('') || '<tr><td colspan="4" class="note">Noch keine Projekte gespeichert.</td></tr>'}</table>`, d => {
     $('#oFile', d).onclick = () => { d.close(); $('#fOpen').click(); };
     $('#oDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
+    $('#oSite', d).onclick = () => { d.close(); HSS.standorte.dialog(); };
     $$('[data-open]', d).forEach(a => a.onclick = async e => { e.preventDefault(); const p = await HSS.storage.loadProject(a.dataset.open); d.close(); HSS.load(p); UI.toast('Projekt geladen: ' + p.meta.name); });
     $$('[data-del]', d).forEach(b => b.onclick = async () => { if (!await UI.confirm('Projekt löschen', 'Projekt aus der Browser-Ablage löschen? Gespeicherte Dateien sind nicht betroffen.', 'Löschen')) return; await HSS.storage.deleteProject(b.dataset.del); openDialog(); });
   });
@@ -75,14 +76,16 @@ async function openDialog() {
 function welcome() {
   UI.dialog(`<div class="dh"><h2>Healthcare Simulation Suite</h2><button class="x" data-close>×</button></div>
    <p>Krankenhäuser in 3D aus Bausteinen modellieren und Material-, Waren- und Personenflüsse simulieren.</p>
-   <div class="tiles" style="grid-template-columns:1fr 1fr 1fr">
+   <div class="tiles" style="grid-template-columns:1fr 1fr 1fr 1fr">
     <button class="tile" id="wDemo"><b>▶ Demo-Modus</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
     <button class="tile" id="wNew"><b>Neues Projekt</b><small>Mit Gelände und Wegen beginnen, dann Gebäude setzen</small></button>
-    <button class="tile" id="wOpen"><b>Projekt öffnen</b><small>Datei (.hss.json) oder Projektablage im Browser</small></button></div>
+    <button class="tile" id="wOpen"><b>Projekt öffnen</b><small>Datei (.hss.json) oder Projektablage im Browser</small></button>
+    <button class="tile" id="wSite"><b>Standortmodelle</b><small>BwZK Koblenz und Klinikum Hanau (Bestand und Variante) als bearbeitbares Projekt</small></button></div>
    <h3>Arbeitsschritte</h3><ol class="why"><li><b>Gelände &amp; Wege</b> – Topographie, Straßen, Wege, Parkplätze, Außenausstattung</li><li><b>Gebäude</b> – Bausteine setzen, Form/Fassade/Geschosse anpassen, andocken, Brücken</li><li><b>Etagen</b> – Innenausbau mit Räumen, Wänden, Türen, Aufzügen und Ausstattung</li><li><b>Stationsplaner</b> – Betten- und Flächenbedarf rechnen, Station automatisch belegen</li><li><b>Flüsse</b> – Standardflüsse übernehmen, Material, Fuhrpark und Regeln festlegen</li><li><b>Simulation</b> – Tagesablauf abspielen, Transporte in der Ich-Perspektive begleiten</li><li><b>Analyse</b> – Hotspots je Uhrzeit, Fahrzeugbedarf, Zeitfensterplan</li></ol>`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };
     $('#wOpen', d).onclick = () => { d.close(); openDialog(); };
+    $('#wSite', d).onclick = () => { d.close(); HSS.standorte.dialog(); };
   });
 }
 function help() {

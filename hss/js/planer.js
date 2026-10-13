@@ -171,7 +171,7 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
     if (isPat) cands = oL.filter(l => l.depth >= 4.4);
     else if (iL.length && !TAGESLICHT.has(r.use)) cands = iL.concat(oL);
     else if (P.typ === 'anderthalb' && !TAGESLICHT.has(r.use)) cands = [oL[1], oL[0]].filter(Boolean);
-    else cands = oL;
+    else cands = oL.concat(iL); // Tageslichträume bevorzugt an der Fassade, sonst Innenzone
     if (!cands.length) cands = oL.length ? oL : iL;
     // bevorzugter Streifen: geringste Belegung innerhalb der ersten Gruppe, dann Rest
     const prim = P.typ === 'anderthalb' && !isPat ? [cands[0]] : cands.filter(l => l.k === cands[0].k), rest = cands.filter(l => !prim.includes(l));

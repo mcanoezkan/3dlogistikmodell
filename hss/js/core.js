@@ -297,8 +297,8 @@ HSS.findPart = (id, prj = S.project) => { for (const b of prj.buildings) for (co
 HSS.fh = (pt, f) => (f < 0 ? (pt.basementHeight || 4) : (pt.floorHeights?.[f] ?? pt.floorHeight));
 // Geschossindex-Versatz (aufgesetzte Bauteile setzen die Zählung fort)
 HSS.partFloorOffset = (pt, prj = S.project, depth = 0) => {
-  if (!pt.stackOn || depth > 8) return 0;
-  const p = HSS.findPart(pt.stackOn, prj); if (!p) return 0;
+  if (!pt.stackOn || depth > 8) return pt.floorOffset || 0; // floorOffset: Bauteil beginnt in einem Obergeschoss (z. B. Brückenbau)
+  const p = HSS.findPart(pt.stackOn, prj); if (!p) return pt.floorOffset || 0;
   return HSS.partFloorOffset(p.part, prj, depth + 1) + p.part.floors;
 };
 // Unterkante Erdgeschoss des Bauteils (absolute Höhe)

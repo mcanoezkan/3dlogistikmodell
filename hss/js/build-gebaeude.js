@@ -275,7 +275,7 @@ HSS.ROOMTYPES = {
   betten: { name: 'Bettenabstellraum', color: '#ebe6dc', din: 'NUF4' }, angehoerige: { name: 'Angehörigenraum', color: '#f3eedd', din: 'NUF1' }, schleuse: { name: 'Schleuse / Vorraum Isolierzimmer', color: '#e4eef0', din: 'NUF6' }, labor: { name: 'Stationslabor', color: '#e1ecf3', din: 'NUF3' },
   untersuchung: { name: 'Untersuchung/Behandlung', color: '#dfeaf6', din: 'NUF6' }, warten: { name: 'Warten', color: '#f1ede4', din: 'NUF1' }, flur: { name: 'Flur', color: '#eef0f2', din: 'VF', noPlace: true },
   kern: { name: 'Aufzüge / Treppenhaus', color: '#d9dde2', din: 'VF', noPlace: true }, schacht: { name: 'Installationsschacht', color: '#cfd4da', din: 'TF', noPlace: true }, lichthof: { name: 'Lichthof', color: '#d6e8d4', din: 'AUSSEN', noPlace: true },
-  reserve: { name: 'Reservefläche', color: '#f4f4f1', din: 'NUF7', noPlace: true },
+  reserve: { name: 'Reservefläche', color: '#f4f4f1', din: 'NUF7', noPlace: true }, pflege: { name: 'Pflegebereich', color: '#f2e6b8', din: 'NUF6' },
   behandlung: { name: 'Behandlungsplatz', color: '#dfeaf6', din: 'NUF6' }, op: { name: 'OP-Saal', color: '#d6efe8', din: 'NUF6' }, technik: { name: 'Technik', color: '#e2e4e7', din: 'TF' },
   awt: { name: 'AWT-Bahnhof', color: '#f4ecd0', din: 'NUF4' }, logistik: { name: 'Logistik/Ver- und Entsorgung', color: '#efe7d8', din: 'NUF4' }, buero: { name: 'Büro', color: '#e8ebef', din: 'NUF2' }, sonstiges: { name: 'Raum', color: '#eceff2', din: 'NUF7' }
 };
