@@ -73,7 +73,7 @@ const ribbon = (L, w, yoff = 0) => {
     const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)];
     const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1, nx = -dz / l * w / 2, nz = dx / l * w / 2;
     pos.push(L[i][0] + nx, L[i][1] + yoff, L[i][2] + nz, L[i][0] - nx, L[i][1] + yoff, L[i][2] - nz);
-    if (i) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
+    if (i) { const k = i * 2; idx.push(k - 2, k, k - 1, k - 1, k, k + 1); }
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
 };

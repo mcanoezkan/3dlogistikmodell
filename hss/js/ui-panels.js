@@ -338,15 +338,16 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
     <h3>2 · Patientenzahlen</h3>
     ${!isAmb ? `<div class="row"><label class="chk"><input type="radio" name="sPer" value="jahr" ${!inp.monatlich ? 'checked' : ''}> je Jahr</label><label class="chk"><input type="radio" name="sPer" value="monat" ${inp.monatlich ? 'checked' : ''}> je Monat</label></div>
     ${inp.monatlich ? `<div class="months">${['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'].map((m, i) => `<label>${m}<input type="number" data-m="${i}" value="${inp.monate[i]}"></label>`).join('')}</div>` : `<div class="fg"><label class="f"><span>stationäre Fälle/Jahr</span><input type="number" id="sF" value="${inp.faelleStat}" step="50"></label></div>`}
-    <div class="fg"><label class="f"><span>Verweildauer [d] ${T.vwdQuelle ? '<span class="ann" title="' + U.esc(T.vwdQuelle) + '">' + U.esc(T.vwdQuelle) + '</span>' : '<span class="ann" title="Richtwert">Richtwert</span>'}</span><input type="number" id="sV" value="${inp.vwd ?? T.vwd}" step="0.1"></label>
-    <label class="f"><span>Ziel-Auslastung</span><input type="number" id="sA" value="${inp.ausl ?? T.ausl}" step="0.01" min="0.5" max="1"></label>
+    <div class="fg"><label class="f"><span>Verweildauer [d] ${UI.srcChip(T.vwdQ || 'annahme')}</span><input type="number" id="sV" value="${inp.vwd ?? T.vwd}" step="0.1"></label>
+    <label class="f"><span>Ziel-Auslastung ${UI.srcChip(HSS.auslQuelle(T))}</span><input type="number" id="sA" value="${inp.ausl ?? T.ausl}" step="0.01" min="0.5" max="1"></label>
     <label class="f"><span>Anteil 1-Bett-Zimmer</span><input type="number" id="s1" value="${inp.anteil1 ?? T.anteil1}" step="0.05" min="0" max="1"></label></div>` : ''}
     ${isAmb || inp.art === 'beides' ? `<div class="fg"><label class="f"><span>ambulante Fälle/Jahr</span><input type="number" id="sFa" value="${inp.faelleAmb}" step="100"></label>${isAmb ? `<label class="f"><span>Kontakte je Fall</span><input type="number" id="sK" value="${inp.kontakte ?? T.kontakte}" step="0.1"></label><label class="f"><span>Dauer je Kontakt [min]</span><input type="number" id="sD" value="${inp.dauerMin ?? T.dauerMin}"></label><label class="f"><span>Öffnung [h/Tag]</span><input type="number" id="sO" value="${inp.oeffStd ?? T.oeffStd}"></label>` : ''}</div>${T.info ? `<div class="note">${U.esc(T.info)}</div>` : ''}` : ''}
     <h3>3 · Gebäude &amp; Etagen</h3>
     ${partRows || '<p class="note">Erst Gebäude anlegen (Arbeitsbereich „Gebäude“).</p>'}
     <h3>Ergebnis</h3>
     <div class="kpi">${calc.betten !== undefined ? `<div><b>${calc.betten}</b><span>Betten (${calc.stationen} Einheit${calc.stationen > 1 ? 'en' : ''})</span></div>` : ''}${calc.plaetze !== undefined ? `<div><b>${calc.plaetze}</b><span>Behandlungsplätze</span></div>` : ''}<div><b>${U.fmt(calc.bedarf)} m²</b><span>Flächenbedarf inkl. Flure</span></div>${calc.verfuegbar ? `<div><b>${U.fmt(calc.verfuegbar)} m²</b><span>verfügbar · ${amp}</span></div>` : ''}</div>
-    <details open><summary class="note"><b>Begründung (Rechenweg)</b></summary><ol class="why">${calc.why.map(w => `<li>${U.esc(w)}</li>`).join('')}</ol></details>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><b class="note" style="color:#0A223C">So wird gerechnet</b><button class="mini" id="sSrc">Quellen &amp; Planungsgrundlagen</button></div>
+    <div class="steps">${calc.steps.map((st, i) => UI.stepCard(st, i + 1)).join('')}</div>
     ${calc.warn.map(w => `<div class="warnbox">${U.esc(w)}</div>`).join('')}
     <details><summary class="note"><b>Raumprogramm</b> (${calc.rooms.reduce((a, r) => a + r.n, 0)} Räume, ${U.fmt(calc.nuf)} m² NUF)</summary><table class="t"><tr><th>Raum</th><th class="n">Anz.</th><th class="n">m²</th><th class="n">Σ</th></tr>${calc.rooms.map(r => `<tr><td>${U.esc(r.name)}</td><td class="n">${r.n}</td><td class="n">${U.fmt(r.m2, 1)}</td><td class="n">${U.fmt(r.n * r.m2, 1)}</td></tr>`).join('')}</table></details>
     <label class="chk"><input type="checkbox" id="sFurn" checked> mit Ausstattung aus der Bibliothek</label>
@@ -354,9 +355,12 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
     <label class="chk"><input type="checkbox" id="sRepl" checked> gewählte Etagen vorher leeren</label>
     <div class="actions"><button class="primary" id="sGo" ${inp.sel.length ? '' : 'disabled'}>Station anlegen</button></div>
     <p class="note">Alternativ alles manuell im Arbeitsbereich „Etagen“ planen.</p>
-    <h3>Stationen im Projekt (${prj.stations.length})</h3>
+    <h3>Stationen im Projekt (${prj.stations.length})</h3>${prj.stations.length ? '<button class="primary" id="sTour" style="margin-bottom:6px">▶ Stationsrundgang starten</button>' : ''}
     <div class="list">${prj.stations.map(s => `<div class="li" data-st="${s.id}"><span class="t">${U.esc(s.name)}</span><span class="s">${s.betten ? s.betten + ' Betten' : ''}${s.plaetze ? ' ' + s.plaetze + ' Plätze' : ''}${s.calc?.deckung ? ' · ' + U.pct(s.calc.deckung) : ''}</span><button class="mini" data-std="${s.id}">×</button></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
     const upd = (k, v) => { inp[k] = v; UI.renderPanel(); };
+    $('#sSrc', el).onclick = () => UI.sourcesDialog();
+    $('#sTour', el) && ($('#sTour', el).onclick = () => HSS.tour.dialog());
+    $$('[data-src]', el).forEach(b => b.onclick = e => { e.preventDefault(); UI.sourcesDialog(b.dataset.src); });
     $('#sT', el).onchange = e => { inp.typ = e.target.value; delete inp.vwd; delete inp.ausl; delete inp.anteil1; delete inp.kontakte; delete inp.dauerMin; delete inp.oeffStd; const t = HSS.STATIONSTYPEN.find(x => x.id === inp.typ); inp.art = t.art === 'ambulant' ? 'ambulant' : 'stationaer'; if (t.art === 'ambulant' && !inp.faelleAmb) inp.faelleAmb = 8000; UI.renderPanel(); };
     $('#sN', el).onchange = e => (inp.name = e.target.value);
     $('#sArt', el) && ($('#sArt', el).onchange = e => upd('art', e.target.value));
@@ -497,5 +501,17 @@ FT.orte = (el, prj) => {
   $$('.ex [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('.ex').dataset.i, k = i.dataset.k; const v = k === 'anfahrtM' ? +i.value * 1000 : i.value; HSS.change('Externer Ort', p => (p.places[idx][k] = v), { scope: 'none' }); });
   $$('[data-xd]', el).forEach(b => b.onclick = () => { HSS.change('Externer Ort entfernen', p => p.places.splice(+b.dataset.xd, 1), { scope: 'none' }); UI.renderPanel(); });
   $('#oExt', el).onclick = T.externalPlace;
+};
+
+/* Rechenschritte und Quellen */
+UI.srcChip = id => { const q = HSS.QUELLEN[id]; if (!q) return ''; const lbl = { destatis: 'Destatis 2023', gbe: 'GBE-Bund 2023', hillburton: 'Hill-Burton', nutzungsgrad: 'Landesvorgabe', ovg: 'OVG Sachsen', rlp: 'Ministerium RLP', din: 'DIN 13080/277', divi: 'DIVI 2022', annahme: 'Annahme' }[id] || id; return `<a href="#" class="src ${id === 'annahme' ? 'ann2' : ''}" data-src="${id}" title="${U.esc(q.titel)}">${U.esc(lbl)}</a>`; };
+UI.stepCard = (st, n) => `<div class="stp"><div class="stn">${n}</div><div class="stb"><b>${U.esc(st.frage)}</b><p>${U.esc(st.erkl)}</p><div class="calc">${U.esc(st.rechnung)}</div><div class="res">${st.ampel ? `<span class="amp ${st.ampel}"></span>` : '→ '}${U.esc(st.ergebnis)}</div>${(st.quellen || []).length ? `<div class="srcs">Grundlage: ${st.quellen.map(UI.srcChip).join(' ')}</div>` : ''}</div></div>`;
+UI.sourcesDialog = (focus) => {
+  UI.dialog(`<div class="dh"><h2>Quellen &amp; Planungsgrundlagen</h2><button class="x" data-close>×</button></div>
+   <p class="note">Woher die Vorschlagswerte des Stationsplaners kommen. Werte aus amtlicher Statistik und Landesvorgaben sind belegt; als „Annahme“ markierte Werte sind Erfahrungswerte und im Formular änderbar.</p>
+   ${Object.entries(HSS.QUELLEN).map(([id, q]) => `<div class="qbox ${focus === id ? 'on' : ''}" id="q_${id}"><div class="row"><span class="pill">${U.esc(q.art)}</span><b class="grow">${U.esc(q.titel)}</b></div><p>${U.esc(q.erklaerung)}</p>${q.url ? `<a href="${U.esc(q.url)}" target="_blank" rel="noopener">Quelle öffnen ↗</a>` : ''}</div>`).join('')}
+   <h3>Vorschlagswerte je Stationstyp</h3><table class="t"><tr><th>Typ</th><th class="n">Verweildauer</th><th>Quelle</th><th class="n">Auslastung</th><th>Quelle</th><th class="n">1-Bett / 2-Bett</th></tr>
+   ${HSS.STATIONSTYPEN.filter(t => t.art !== 'ambulant').map(t => `<tr><td>${U.esc(t.name)}</td><td class="n">${U.fmt(t.vwd, 1)} d</td><td>${UI.srcChip(t.vwdQ || 'annahme')}</td><td class="n">${U.pct(t.ausl)}</td><td>${UI.srcChip(HSS.auslQuelle(t))}</td><td class="n">${U.fmt(t.a1, 1)} / ${U.fmt(t.a2, 1)} m²</td></tr>`).join('')}</table>
+   <div class="actions"><button data-close>Schließen</button></div>`, d => { UI.$$('[data-src]', d).forEach(a => a.onclick = e => { e.preventDefault(); const t = d.querySelector('#q_' + a.dataset.src); t?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }); if (focus) setTimeout(() => d.querySelector('#q_' + focus)?.scrollIntoView({ block: 'center' }), 50); });
 };
 })();

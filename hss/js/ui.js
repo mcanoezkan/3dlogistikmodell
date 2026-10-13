@@ -356,7 +356,7 @@ UI.buildRail = () => {
     analyse: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
   };
   const r = $('#rail');
-  r.innerHTML = Object.entries(UI.ws).map(([id, w], i) => `${w.sep ? '<hr>' : ''}<button data-ws="${id}" title="${U.esc(w.lead || w.name)}"><svg viewBox="0 0 24 24">${ic[id] || ''}</svg>${w.short || w.name}<span class="step">${w.step || ''}</span></button>`).join('');
+  r.innerHTML = Object.entries(UI.ws).map(([id, w], i) => `${w.sep ? '<hr>' : ''}<button data-ws="${id}" title="${U.esc(w.lead || w.name)}"><svg viewBox="0 0 24 24">${ic[id] || ''}</svg>${w.short || w.name}</button>`).join('');
   $$('#rail button').forEach(b => b.onclick = () => { if (UI.current === b.dataset.ws && !document.body.classList.contains('nopanel')) document.body.classList.add('nopanel'); else { document.body.classList.remove('nopanel'); UI.setWS(b.dataset.ws); } setTimeout(() => HSS.s3.resize(), 0); });
 };
 
@@ -365,20 +365,22 @@ UI.refreshViewbar = () => {
   const [lo, hi] = HSS.s3.floorRange(), V = HSS.view;
   let o = opt('', 'Außenansicht (alle)', V.floor ?? '');
   for (let g = hi; g >= lo; g--) o += opt(g, HSS.floorName(g) + ' (Schnitt)', V.floor ?? '');
-  $('#vFloor').innerHTML = o;
+  if ($('#vFloor')) $('#vFloor').innerHTML = o;
   $$('#vCut button').forEach(b => b.classList.toggle('on', b.dataset.v === V.cut));
   $('#vShell').value = V.shell; $('#vLabels').classList.toggle('on', V.labels);
 };
 UI.bindViewbar = () => {
   const S3 = HSS.s3, V = HSS.view;
-  $('#vFloor').onchange = e => S3.setFloor(e.target.value === '' ? null : +e.target.value);
+
   $$('#vCut button').forEach(b => b.onclick = () => { V.cut = b.dataset.v; UI.refreshViewbar(); S3.rebuild('all'); });
   $('#vShell').onchange = e => { V.shell = e.target.value; S3.rebuild('all'); };
   $('#vExplode').oninput = U.debounce(e => { V.explode = +e.target.value; S3.rebuild('all'); }, 80);
   $('#vSun').oninput = e => { const h = +e.target.value; $('#vSunL').textContent = U.hhmm(h * 60); S3.setSun(h); };
   $('#vNet').onchange = e => { UI.netMode = e.target.value; HSS.drawNet(UI.netMode, UI.heatHour ?? null); };
   $('#vLabels').onclick = () => { V.labels = !V.labels; UI.refreshViewbar(); S3.rebuild('all'); };
+  $('#vGrid').onclick = () => { HSS.nav.setGrid(!HSS.nav.grid); $('#vGrid').classList.toggle('on', HSS.nav.grid); };
   $('#vWalk').onclick = () => HSS.fpv.walk();
+  $('#vTour').onclick = () => HSS.tour.dialog();
   $('#vShot').onclick = () => { S3.beautyShot(2); UI.toast('Bild gespeichert (doppelte Auflösung)'); };
   $('#vHome').onclick = () => S3.home();
   $('#zIn').onclick = () => S3.zoom(0.7); $('#zOut').onclick = () => S3.zoom(1.4);

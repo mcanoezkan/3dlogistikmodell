@@ -211,3 +211,72 @@ canvas.chart{width:100%;height:120px;display:block;background:#fff;border:1px so
 @media (max-width:1300px){:root{--panelW:300px;--inspW:300px}.t2{max-width:160px}#viewbar input[type=range]{width:60px}}
 
 body.timeline #fpvHud{bottom:156px}
+
+/* Navigation */
+#floorNav{position:fixed;left:calc(var(--railW) + var(--panelW) + 12px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:8;box-shadow:var(--shadow);max-height:70vh;overflow:auto}
+#floorNav button{width:40px;height:30px;border:0;border-bottom:1px solid #144477;background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:0}
+#floorNav button:hover{background:var(--accent)}
+#floorNav button.on{background:var(--ok)}
+#floorNav button[data-g=up],#floorNav button[data-g=dn]{background:#144477;font-size:10px;height:24px}
+body.nopanel #floorNav{left:calc(var(--railW) + 12px)}
+#compass{position:fixed;right:60px;bottom:12px;display:flex;z-index:8;box-shadow:var(--shadow)}
+#compass button{width:38px;height:38px;border:0;border-right:1px solid #144477;background:var(--navy);color:#fff;font-size:17px;padding:0;display:grid;place-items:center}
+#compass button:hover{background:var(--accent)}
+#compass svg{width:22px;height:22px}
+body.insp #compass{right:calc(var(--inspW) + 70px)}
+body.timeline #compass{bottom:154px}
+#zoomCtl{flex-direction:row}
+#zoomCtl button+button{border-top:0;border-left:1px solid var(--accent)}
+#zoomCtl{right:12px}
+#compass{right:90px}
+body.insp #compass{right:calc(var(--inspW) + 102px)}
+#navHelp{position:fixed;left:calc(var(--railW) + var(--panelW) + 64px);bottom:12px;background:rgba(255,255,255,.95);border-radius:var(--r);box-shadow:var(--shadow);padding:8px 12px 8px;z-index:8;font-size:11.5px;line-height:1.55;max-width:330px}
+#navHelp .x{position:absolute;right:4px;top:2px;font-size:16px}
+#navHelp .mk{display:inline-block;background:var(--soft);border:1px solid var(--line);padding:0 5px;font-size:10.5px;color:var(--navy);border-radius:3px}
+#navHelp.min{display:none}
+#coord{margin-top:3px;font-variant-numeric:tabular-nums}
+body.timeline #navHelp{bottom:154px}
+body.nopanel #navHelp{left:calc(var(--railW) + 64px)}
+#hint{left:50%!important;transform:translateX(-50%);top:calc(var(--topH) + 104px);bottom:auto!important}
+
+.steps{margin:6px 0}
+.stp{display:flex;gap:9px;border:1px solid var(--line);background:#fff;padding:8px 9px;margin:6px 0}
+.stn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+.stb{flex:1;min-width:0}
+.stb b{color:var(--navy);font-size:12.5px}
+.stb p{margin:3px 0 5px;font-size:11.5px;color:#334155}
+.stb .calc{font-size:11px;background:var(--soft);border-left:3px solid var(--petrol);padding:3px 7px;color:#1d2733;font-variant-numeric:tabular-nums}
+.stb .res{font-weight:700;color:var(--accent);margin-top:4px;font-size:12px}
+.stb .srcs{font-size:10.5px;color:var(--muted);margin-top:4px}
+a.src{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:3px;background:#e6f5f1;color:#06614f;border:1px solid #9fd5c6;text-decoration:none;margin-left:2px}
+a.src.ann2{background:var(--soft);color:var(--accent);border-color:var(--line)}
+.qbox{border:1px solid var(--line);padding:8px 10px;margin:8px 0}
+.qbox.on{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.qbox p{margin:5px 0;font-size:12px}
+
+#tourCard{position:fixed;right:12px;top:calc(var(--topH) + 60px);width:380px;max-height:calc(100% - var(--topH) - 80px);overflow:auto;background:rgba(10,34,60,.96);color:#fff;padding:14px 16px;z-index:26;border-radius:var(--r);box-shadow:var(--shadow)}
+#tourCard .k{font-size:11px;color:#9fd5c6;text-transform:uppercase;letter-spacing:.06em}
+#tourCard h3{color:#fff;font-size:18px;text-transform:none;letter-spacing:0;margin:4px 0 6px}
+#tourCard p{margin:0 0 8px;color:#dce3e8;font-size:12.5px}
+#tourCard .facts{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+#tourCard .facts span{background:#144477;padding:3px 8px;font-size:11.5px}
+#tourCard .sub{font-size:10.5px;color:#9fd5c6;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px}
+#tourCard .eq{display:flex;flex-wrap:wrap;gap:4px}
+#tourCard .eq span{border:1px solid #2D7694;padding:1px 6px;font-size:11px;color:#dce3e8}
+#tourCard .fl{margin:0;padding-left:0;list-style:none;font-size:11.5px;color:#dce3e8}
+#tourCard .fl li{margin:2px 0}#tourCard .fl i{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:2px}
+#tourCard .dots{display:flex;flex-wrap:wrap;gap:3px;margin:10px 0}
+#tourCard .dots button{width:14px;height:14px;padding:0;border:1px solid #2D7694;background:transparent;border-radius:50%}
+#tourCard .dots button.done{background:#2D7694}#tourCard .dots button.on{background:#0A967A;border-color:#0A967A}
+#tourCard button{background:#144477;border-color:#2D7694;color:#fff}
+#tourCard button.primary{background:#0A967A;border-color:#0A967A}
+#tourCard .hint{font-size:10.5px;color:#9aa8b6;margin-top:8px}
+.liftdisp2{position:fixed;left:50%;top:calc(var(--topH) + 120px);transform:translateX(-50%);background:#111;color:#ff9f43;font:700 38px/1 'Courier New',monospace;padding:12px 24px;border:3px solid #444;text-align:center;z-index:27;box-shadow:0 0 24px rgba(255,159,67,.35)}
+.liftdisp2 small{display:block;font:12px Arial;color:#ccc;margin-top:5px}
+#viewbar button.primary{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:700}
+
+#tourCard{right:auto;left:calc(var(--railW) + var(--panelW) + 64px);top:calc(var(--topH) + 108px)}
+body.nopanel #tourCard{left:calc(var(--railW) + 64px)}
+#demoCard{top:calc(var(--topH) + 108px)}
+#viewbar{font-size:11.5px;gap:6px}
+#viewbar button{padding:4px 8px}

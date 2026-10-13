@@ -118,8 +118,9 @@ function buildNet(prj) {
           }
           segIds.push(mine);
         }
+        const touch = (a, b) => Math.abs(a.x - b.x) <= (a.w + b.w) / 2 + 0.6 && Math.abs(a.z - b.z) <= (a.d + b.d) / 2 + 0.6;
         for (let i = 0; i < segIds.length; i++) for (let j = i + 1; j < segIds.length; j++) {
-          let best = null, bd = 3.5;
+          let best = null, bd = touch(flure[i], flure[j]) ? 40 : 3.5;
           for (const a of segIds[i]) for (const c of segIds[j]) { const A = nodes.get(a), C = nodes.get(c), d = Math.hypot(A.x - C.x, A.z - C.z); if (d < bd) { bd = d; best = [a, c]; } }
           if (best) addEdge(best[0], best[1], 'flur', { part: pt.id, floor: f, gf });
         }
@@ -234,7 +235,11 @@ function buildNet(prj) {
         for (const L of lifts) if (L.cfg.typ === 'awt' && Math.hypot(L.x - pl.x, L.z - pl.z) < 25) { const ln = `L:${L.id}@${pl.gf}`; if (nodes.has(ln)) addEdge(id, ln, 'awt', {}); }
       }
     } else {
-      const near = nearestIn(pathNodes, pl.x, pl.z, pl.y); if (near) addEdge(id, near.id, 'anbindung', { len: near.d + (pl.anfahrtM || 0) });
+      // Außenorte an die nächsten Knoten mehrerer Wege (bis 45 m) anbinden, damit jedes Transportmittel einen Zugang findet
+      const best = new Map();
+      for (const pid of pathNodes) { const P = nodes.get(pid); const d = Math.hypot(P.x - pl.x, P.z - pl.z); const b = best.get(P.path); if (!b || d < b.d) best.set(P.path, { id: pid, d }); }
+      const list = [...best.values()].sort((a, b) => a.d - b.d);
+      list.filter((b, i) => i === 0 || b.d < 45).slice(0, 4).forEach(b => addEdge(id, b.id, 'anbindung', { len: b.d + (pl.anfahrtM || 0) }));
     }
   }
   // AWT-Aufzüge mit AWT-Trasse verbinden (unterste Haltestelle)

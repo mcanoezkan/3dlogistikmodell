@@ -8,7 +8,8 @@ window.HSS_LIBRARY_FILES = [
   'station.js',
   'logistik.js',
   'personen-fahrzeuge.js',
-  'aussen.js'
+  'aussen.js',
+  'erweiterung.js'
 ];
 (function () {
   var base = (document.currentScript && document.currentScript.src || '').replace(/manifest\.js.*$/, '');

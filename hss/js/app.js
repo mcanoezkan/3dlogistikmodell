@@ -7,6 +7,7 @@ const HSS = window.HSS, U = HSS.util, UI = HSS.ui, $ = UI.$, $$ = UI.$$;
 
 function boot() {
   HSS.s3.init($('#viewport'));
+  HSS.nav.init();
   UI.buildRail(); UI.bindViewbar(); UI.timeline.bind();
   bindHeader();
   HSS.on('changed', e => {

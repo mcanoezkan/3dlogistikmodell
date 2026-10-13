@@ -452,12 +452,12 @@ S3.setTool = (tool) => {
 S3.beautyShot = (scale = 2) => {
   const R = S3.renderer, el = R.domElement, pr = R.getPixelRatio();
   const sel = S3.layers.sel.visible, tcv = S3.tc.visible;
-  S3.layers.sel.visible = false; S3.tc.visible = false; S3.layers.net.visible = false;
+  S3.layers.sel.visible = false; S3.tc.visible = false; S3.layers.net.visible = false; if (S3.layers.grid) S3.layers.grid.visible = false;
   R.setPixelRatio(pr * scale); R.setSize(el.clientWidth, el.clientHeight, false);
   R.render(S3.scene, S3.camera);
   const url = el.toDataURL('image/png');
   R.setPixelRatio(pr); R.setSize(el.clientWidth, el.clientHeight, false);
-  S3.layers.sel.visible = sel; S3.tc.visible = tcv; S3.layers.net.visible = true;
+  S3.layers.sel.visible = sel; S3.tc.visible = tcv; S3.layers.net.visible = true; if (S3.layers.grid) S3.layers.grid.visible = true;
   const a = document.createElement('a'); a.href = url; a.download = (HSS.project().meta.name || 'hss').replace(/\W+/g, '_') + '_' + new Date().toISOString().slice(0, 16).replace(/\D/g, '') + '.png'; a.click();
 };
 })();

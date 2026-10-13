@@ -28,8 +28,11 @@ F.walk = (start) => {
   const d = S3.camera.position.clone().sub(t); F.yaw = Math.atan2(-d.x, -d.z); F.pitch = -0.05;
   S3.renderer.domElement.requestPointerLock?.();
 };
+F.enterTour = () => { enter('tour'); F.hud && (F.hud.hidden = true); F.tYaw = 0; F.tPitch = -0.08; };
 F.exit = () => {
   if (!F.mode) return;
+  if (HSS.tour?.active) { HSS.tour.active = false; const tc = document.getElementById('tourCard'); if (tc) tc.hidden = true; HSS.view.cut = HSS.tour.prevCut || 'halb'; HSS.ui.refreshViewbar?.(); }
+  const ld = document.getElementById('liftDisp'); if (ld) ld.hidden = true;
   const S3 = HSS.s3;
   F.mode = null; F.trip = null; S3.fpvActive = false;
   if (F.cabin) { S3.scene.remove(F.cabin); F.cabin = null; }
@@ -120,6 +123,31 @@ F.update = (dt) => {
     }
     return;
   }
+  if (F.mode === 'tour') {
+    const p = HSS.tour.update(dt); if (!p) return;
+    const atStop = p.stop !== undefined;
+    // An Haltepunkten leicht erhöht in den Raum blicken (halbhohe Wände)
+    let target;
+    if (atStop) { let dx = p.x - p.look[0], dz = p.z - p.look[2]; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l; const back = l + 3.5; target = new THREE.Vector3(p.look[0] + dx * back - dz * 1.5, p.look[1] + 6.5, p.look[2] + dz * back + dx * 1.5); }
+    else target = new THREE.Vector3(p.x, p.y + EYE, p.z);
+    if (!F.smooth) F.smooth = { pos: target.clone(), yaw: 0 };
+    F.smooth.pos.lerp(target, 1 - Math.pow(0.002, dt));
+    cam.position.copy(F.smooth.pos);
+    let yaw;
+    if (p.stop !== undefined) { yaw = Math.atan2(p.look[2] - p.z, p.look[0] - p.x) + Math.sin(performance.now() / 2600) * 0.35; }
+    else if (p.lift) yaw = F.smooth.yaw;
+    else yaw = p.dir ?? F.smooth.yaw;
+    let dy = yaw - F.smooth.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI;
+    F.smooth.yaw += dy * (1 - Math.pow(0.03, dt));
+    const yy = F.smooth.yaw + F.tYaw;
+    if (atStop) { cam.lookAt(p.look[0], p.look[1] + 0.4, p.look[2]); cam.rotateY(F.tYaw * 0.6); cam.rotateX((F.tPitch + 0.08) * 0.5); }
+    else cam.lookAt(cam.position.x + Math.cos(yy) * 5, cam.position.y + Math.sin(F.tPitch) * 5 - 0.2, cam.position.z + Math.sin(yy) * 5);
+    cabin(!!p.lift, p.y, p.x, p.z, Math.PI / 2 - F.smooth.yaw);
+    const ld = document.getElementById('liftDisp');
+    if (p.lift) { const L = HSS.net().lifts.find(l => l.id === p.lift); const cur = Math.round(U.lerp(p.from, p.to, p.k)); ld.hidden = false; ld.innerHTML = `${p.to > p.from ? '▲' : '▼'} ${U.esc(HSS.floorName(cur))}<small>${U.esc(L?.name || 'Aufzug')}</small>`; }
+    else { ld.hidden = true; let gf = gfAt(p.x, p.y, p.z); if (gf !== null && gf !== HSS.view.floor) { HSS.view.floor = gf; S3.rebuild('all'); HSS.emit('view'); } }
+    return;
+  }
   if (F.mode === 'walk') {
     const k = F.keys, sp = (k.shift ? 6 : 2.2) * dt;
     const fw = new THREE.Vector3(-Math.sin(F.yaw), 0, -Math.cos(F.yaw)), rt = new THREE.Vector3(-fw.z, 0, fw.x);
@@ -146,6 +174,7 @@ window.addEventListener('keydown', e => {
 }, true);
 window.addEventListener('keyup', e => { F.keys[e.key.toLowerCase()] = false; F.keys.shift = e.shiftKey; });
 window.addEventListener('mousemove', e => {
+  if (F.mode === 'tour' && e.buttons === 1 && e.target.tagName === 'CANVAS') { F.tYaw += e.movementX * 0.004; F.tPitch = U.clamp(F.tPitch - e.movementY * 0.003, -0.9, 0.7); return; }
   if (F.mode !== 'walk') return;
   if (document.pointerLockElement || e.buttons === 1) { F.yaw -= e.movementX * 0.0025; F.pitch = U.clamp(F.pitch - e.movementY * 0.0025, -1.3, 1.3); }
 });

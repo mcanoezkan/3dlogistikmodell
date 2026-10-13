@@ -147,6 +147,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (f < 0 && view.floor !== null && view.floor !== undefined && view.floor >= 0 && !view.showBasement) { /* UG unter Gelände: nur Platte */ }
     const y0 = HSS.floorY(pt, f, prj) + gf * ex, h = HSS.fh(pt, f);
     const isCut = view.floor === gf;
+    if (view.shell === 'aus' && !isCut) continue;
     // Geschossdecke
     const slab = new THREE.Mesh(HSS.slabGeo(outer, holes, y0 - 0.25, 0.25), slabMat); slab.receiveShadow = true; slab.castShadow = true;
     slab.userData = Object.assign({ floor: f, gf, slab: true }, meta); grp.add(slab);
@@ -175,7 +176,7 @@ HSS.buildPart = (pt, building, view = {}) => {
   inst.meshes(meta).forEach(m => grp.add(m));
   // Dach, Attika, Technikaufbau
   const topGF = HSS.globalFloor(pt, pt.floors - 1, prj);
-  if (view.floor === null || view.floor === undefined || view.floor > topGF) {
+  if ((view.floor === null || view.floor === undefined || view.floor > topGF) && view.shell !== 'aus') {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
     const par = pt.roof?.parapet ?? 0.9;
@@ -194,7 +195,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
   }
   // Sockel bei Gelände unterhalb der EG-Unterkante
-  if (!pt.stackOn) {
+  if (!pt.stackOn && view.shell !== 'aus') {
     const base = HSS.partBaseY(pt, prj); let minT = Infinity;
     for (const p of outer) minT = Math.min(minT, HSS.terrainH(p[0], p[1], prj));
     if (minT < base - 0.15) { const s = new THREE.Mesh(ringWallGeo(outer, minT - 0.3, base - minT + 0.05), LM('#8f8a80')); s.userData = Object.assign({}, meta); s.castShadow = true; grp.add(s); }

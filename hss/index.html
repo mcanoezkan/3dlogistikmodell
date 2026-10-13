@@ -47,15 +47,16 @@
 <aside id="inspector" hidden></aside>
 
 <div id="viewbar">
-  <label class="ctl">Ebene <select id="vFloor"></select></label>
   <div class="seg" id="vCut" title="Schnitt der gewählten Ebene (wie ein Puppenhaus)"><button data-v="voll">Wände voll</button><button data-v="halb" class="on">halb</button><button data-v="aus">Grundriss</button></div>
   <label class="ctl">Hülle <select id="vShell"><option value="massiv">massiv</option><option value="transparent">transparent</option><option value="aus">ausgeblendet</option></select></label>
   <label class="ctl" title="Geschosse auseinanderziehen">Explosion <input type="range" id="vExplode" min="0" max="12" step="0.5" value="0"></label>
   <label class="ctl" title="Sonnenstand / Nacht">Uhrzeit <input type="range" id="vSun" min="4" max="23.5" step="0.25" value="14"><span id="vSunL">14:00</span></label>
   <label class="ctl">Netz <select id="vNet"><option value="aus">aus</option><option value="netz">Wegenetz</option><option value="heat">Auslastung</option></select></label>
   <button class="tgl on" id="vLabels" title="Beschriftungen">Beschriftung</button>
+  <button class="tgl on" id="vGrid" title="Planungsraster (außen 10 m, in Etagen 1 m)">Raster</button>
   <span class="vsep"></span>
-  <button id="vWalk" title="Rundgang in der Ich-Perspektive (WASD + Maus)">🚶 Rundgang</button>
+  <button id="vTour" class="primary" title="Eine oder mehrere Stationen auswählen und Raum für Raum besuchen">▶ Stationsrundgang</button>
+  <button id="vWalk" title="Frei begehen in der Ich-Perspektive (WASD + Maus)">🚶 Begehen</button>
   <button id="vShot" title="Hochaufgelöstes Bild speichern">📷 Beauty Shot</button>
   <button id="vHome" title="Gesamtansicht">⌂</button>
 </div>
@@ -75,6 +76,8 @@
 </footer>
 <div id="zoomCtl"><button id="zIn" title="Hineinzoomen">+</button><button id="zOut" title="Herauszoomen">−</button></div>
 <div id="fpvHud" hidden></div>
+<div id="tourCard" hidden></div>
+<div id="liftDisp" class="liftdisp2" hidden></div>
 <div id="demoCard" hidden></div>
 <div id="tip" hidden></div>
 <div id="toast" hidden></div>
@@ -89,8 +92,10 @@
 <script src="js/build-aussen.js"></script>
 <script src="js/network.js"></script>
 <script src="js/scene.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/sim.js"></script>
 <script src="js/fpv.js"></script>
+<script src="js/tour.js"></script>
 <script src="js/station.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ui-panels.js"></script>
