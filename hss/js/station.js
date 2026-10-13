@@ -18,15 +18,36 @@ HSS.QUELLEN = {
   hillburton: { titel: 'Hill-Burton-Formel in der Krankenhausplanung der Länder (DKG-Bestandsaufnahme 2025)', art: 'Planungsmethode der Landesministerien', erklaerung: 'Die Länder ermitteln den Bettenbedarf nach wie vor überwiegend mit der Hill-Burton-Formel: Betten = Einwohner × Krankenhaushäufigkeit × Verweildauer ÷ (1.000 × 365 × Bettennutzungsgrad). Einwohner × Krankenhaushäufigkeit entspricht der Fallzahl; das Tool rechnet deshalb direkt mit den Fällen.', url: 'https://www.dkgev.de/fileadmin/default/Mediapool/1_DKG/1.7_Presse/1.7.1_Pressemitteilungen/2026/DKG_Bestandsaufnahme_2025.pdf' },
   nutzungsgrad: { titel: 'Bettennutzungsgrade der Landeskrankenhauspläne', art: 'Vorgabe der Landesministerien', erklaerung: 'Der Bettennutzungsgrad wird meist vom zuständigen Landesministerium vorgegeben: in der Regel 85 % für somatische Fachrichtungen, 80 % für Kinderheilkunde und 90 % für Psychosomatik (DKG-Bestandsaufnahme, zitiert nach Wikipedia „Krankenhausplanung“, Stand 2010). Länder können abweichen; Sachsen hob z. B. die Psychosomatik 2012 auf 95 % an (OVG Sachsen, 5 A 820/11). Die 85 % lassen Puffer für Belegungsspitzen, Isolationen und Reinigung.', url: 'https://de.wikipedia.org/wiki/Krankenhausplanung' },
   ovg: { titel: 'Sächsisches Oberverwaltungsgericht, Urteil 5 A 820/11', art: 'Rechtsprechung', erklaerung: 'Bestätigt, dass Planungsbehörden die Ist-Auslastung mit der „85 %igen Belegung, die der Krankenhausplan allgemein zugrunde legt“ vergleichen, und dass die Bedarfsanalyse den tatsächlichen Bedarf abbilden muss.', url: 'https://www.justiz.sachsen.de/ovgentschweb/documents/11A820.U02.pdf' },
-  rlp: { titel: 'Ministerium für Wissenschaft und Gesundheit Rheinland-Pfalz: Arbeitshilfen 2.01 (Pflege allgemein), 2.10 (Geriatrie), 2.03 (Intensiv)', art: 'Vorgabe eines Landesministeriums (Förderrichtlinie)', erklaerung: 'Musterraumprogramme für geförderte Krankenhausbaumaßnahmen. Beispiele: Geriatrie 1-Bett-Zimmer 21,0 m², 2-Bett-Zimmer 28,5 m², jeweils inkl. Nasszelle 3,5 m²; Allgemeinpflege 30 Betten ≈ 389 m² Bettenzimmerfläche. Das Tool übernimmt diese Größenordnungen als Zimmerflächen.', url: 'https://mwg.rlp.de/fileadmin/15/Abteilung_2_Gesundheit/Krankenhauswesen/Finanzierung_Entgelte/AH_2.01_Pflege_Allgemein_2021_03_02.pdf' },
+  rlp: { titel: 'Ministerium für Wissenschaft und Gesundheit Rheinland-Pfalz: Arbeitshilfen 2.01 (Pflege allgemein), 2.10 (Geriatrie), 2.03 (Intensiv)', art: 'Vorgabe eines Landesministeriums (Förderrichtlinie)', erklaerung: 'Musterraumprogramme für geförderte Krankenhausbaumaßnahmen. Beispiele: Geriatrie 1-Bett-Zimmer 21,0 m², 2-Bett-Zimmer 28,5 m², jeweils inkl. Nasszelle 3,5 m²; Allgemeinpflege (AH 2.01, 2021): Pflegearbeiten rein mit Stützpunkt, Personalaufenthalt und Teeküche zusammen ca. 48–57 m², Pflegearbeiten unrein/Entsorgung 14–16 m² (bei Bedarf zwei Räume à 7 m²), Stationsleitung 12 m², Lager für Geräte, Material und Wäsche 30–35 m², dezentrale Bettenaufbereitung 28 m² je Ebene; Arbeits- und Nebenräume gesamt 178–213 m², Station gesamt 513–733,5 m² je nach Größe. Das Tool übernimmt diese Größenordnungen für Zimmer- und Nebenraumflächen.', url: 'https://mwg.rlp.de/fileadmin/15/Abteilung_2_Gesundheit/Krankenhauswesen/Finanzierung_Entgelte/AH_2.01_Pflege_Allgemein_2021_03_02.pdf' },
   din: { titel: 'DIN 13080 (Gliederung des Krankenhauses in Funktionsbereiche) und DIN 277-1 (Grundflächen)', art: 'Norm', erklaerung: 'DIN 13080 ordnet Räume den Funktionsbereichen zu (z. B. Pflege, Untersuchung/Behandlung, Ver- und Entsorgung). DIN 277-1 definiert die Flächenarten: Brutto-Grundfläche (BGF), Nutzungsfläche (NUF), Verkehrsfläche (VF, z. B. Flure) und Technikfläche. Das Tool rechnet in diesen Begriffen; die Anteile 82 % (nutzbar von der BGF) und 40 % Flurzuschlag sind Erfahrungswerte und je Projekt anpassbar.', url: 'https://www.din.de/en/wdc-beuth:din21:252635669' },
   divi: { titel: 'DIVI-Empfehlung zur Struktur und Ausstattung von Intensivstationen 2022 (Erwachsene)', art: 'Fachgesellschaft', erklaerung: 'Empfehlungen zu Stufen der Intensivversorgung, Personal, Ausstattung und Bauweise. Eine begleitende Erhebung (597 Stationen) fand im Bestand mediane Zimmergrößen von 19 m² (Einzelzimmer) und 31 m² (Mehrbettzimmer). Das Tool setzt für Neuplanungen 25 m² / 40 m² an (Annahme oberhalb des Bestands).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10243682' },
+  dguv: { titel: 'DGUV Information 207-027 „Neu- und Umbauplanung im Krankenhaus unter Gesichtspunkten des Arbeitsschutzes – Pflegebereiche“', art: 'Regel der Unfallversicherung', erklaerung: 'Anforderungen an Pflegebereiche aus Sicht des Arbeitsschutzes: Patientenzimmer mindestens 10 m² (1 Bett) bzw. 8 m² je Bett (Mehrbett) zuzüglich Nasszelle und Schränken; Betten von beiden Längsseiten zugänglich, hintere Betten ohne Umstellen herausfahrbar; Türen von Patientenzimmern mit mindestens 1,40 m lichter Breite für Bettentransporte; reiner Pflegearbeitsraum ca. 20 m² mit kurzem Weg zum Dienstplatz, bei großen Stationen zusätzlicher unreiner Arbeitsraum; Personal-WC und Aufenthaltsraum. Das Tool nutzt diese Werte für Zimmerbreiten, Türbreiten, Bewegungsflächen und die Einrichtung.', url: 'https://www.unfallkasse-nrw.de/fileadmin/server/download/Regeln_und_Schriften/Informationen/207-027.pdf' },
+  sh: { titel: 'Standardprogramm für Krankenhäuser in Schleswig-Holstein (Ministerium, Stand 2012)', art: 'Vorgabe eines Landesministeriums (Förderrichtlinie)', erklaerung: 'Modulares Raumprogramm nach DIN 13080 für geförderte Krankenhausbauten. Beispiele: Allgemeinpflege als interdisziplinäre Einheit mit 36–38 Betten, Bettenzimmer um 22 m²; Personalaufenthaltsraum mit Teeküche 16 m²; Arbeits- und Reinigungsraum 8 m². Das Tool übernimmt die Größenordnung des Personalaufenthalts und des Putzraums.', url: 'https://www.schleswig-holstein.de/DE/fachinhalte/K/krankenhaeuser/Downloads/krankenhaeuser_KrankenhausStandardProgr.pdf?__blob=publicationFile&v=1' },
+  argebau: { titel: 'Bauministerkonferenz (ARGEBAU): Planungshilfe „Neuordnung der Pflege“ und Planungshilfe Palliativstationen', art: 'Planungshilfe der Bauministerien', erklaerung: 'Begriffe und Kennwerte zur Funktionsstelle 2.01 Allgemeinpflege nach DIN 13080. Vergleichswerte: Einbettzimmer ca. 20 m², Zweibettzimmer ca. 21 m² je Bett; rund 30 m² Hauptnutzfläche je Bett, rund 50 m² je Bett einschließlich aller Nebenräume. Das Tool prüft die erzeugte Station gegen diese Größenordnung.', url: 'https://www.dgpalliativmedizin.de/images/stories/Planungshilfe_Palliativstationen.pdf' },
+  krinko: { titel: 'KRINKO-Empfehlungen (Robert Koch-Institut): Händehygiene 2016, Aufbereitung von Medizinprodukten 2012', art: 'Empfehlung einer Bundesbehörde', erklaerung: 'Händewaschplätze mit Spendern für Seife, Desinfektionsmittel und Einmalhandtücher in Arbeitsräumen; Steckbecken und Urinflaschen werden maschinell in Reinigungs-Desinfektionsgeräten (Steckbeckenspülgerät) im unreinen Arbeitsraum aufbereitet; reine und unreine Tätigkeiten räumlich getrennt. Das Tool stattet die Arbeitsräume entsprechend aus.', url: 'https://www.rki.de/DE/Themen/Infektionskrankheiten/Krankenhaushygiene/KRINKO/krinko_node.html' },
   annahme: { titel: 'Planungsannahme der Suite', art: 'Annahme', erklaerung: 'Erfahrungswert ohne verbindliche Vorgabe. Im Formular änderbar; vor einer Planung mit Bestandsdaten oder Landesvorgaben abgleichen.' }
 };
-// Nebenräume: [Raumtyp, Grundfläche m², Zuschlag m² je Bett, Anzahl]
-const NEBEN_PFLEGE = [['stuetzpunkt', 16, 0.15], ['rein', 12, 0.1], ['unrein', 10, 0.08], ['medikamente', 8, 0.05], ['lager', 12, 0.2], ['geraete', 12, 0.15], ['arzt', 14, 0.1], ['personal', 16, 0.12], ['besprechung', 14, 0], ['bad', 12, 0], ['entsorgung', 6, 0.05], ['putz', 5, 0], ['wc', 4, 0, 2], ['kueche', 8, 0.05], ['aufenthalt', 18, 0.15]];
-const NEBEN_INTENSIV = [['stuetzpunkt', 20, 0.4], ['rein', 14, 0.4], ['unrein', 12, 0.3], ['medikamente', 10, 0.2], ['lager', 16, 0.8], ['geraete', 20, 1.2], ['arzt', 16, 0.3], ['personal', 18, 0.3], ['besprechung', 16, 0], ['entsorgung', 8, 0.1], ['putz', 5, 0], ['wc', 4, 0, 2], ['untersuchung', 0, 0]];
-const NEBEN_AMB = [['warten', 0, 0], ['stuetzpunkt', 14, 0], ['arzt', 12, 0], ['rein', 8, 0], ['unrein', 8, 0], ['lager', 10, 0], ['personal', 12, 0], ['putz', 5, 0], ['wc', 4, 0, 2]];
+// Nebenräume: [Raumtyp, Grundfläche m², Zuschlag m² je Bett, Anzahl, Quelle]
+// Größenordnungen nach RLP AH 2.01/2.03 (Ministerium), Standardprogramm Schleswig-Holstein, DGUV 207-027
+const NEBEN_PFLEGE = [['stuetzpunkt', 14, 0.2, 1, 'rlp'], ['rein', 12, 0.18, 1, 'dguv'], ['unrein', 10, 0.15, 1, 'rlp'], ['medikamente', 8, 0.06, 1, 'annahme'], ['entsorgung', 6, 0.04, 1, 'rlp'], ['lager', 10, 0.3, 1, 'rlp'], ['geraete', 8, 0.25, 1, 'rlp'],
+  ['betten', 12, 0.05, 1, 'rlp'], ['leitung', 12, 0, 1, 'rlp'], ['arzt', 12, 0.1, 1, 'annahme'], ['untersuchung', 16, 0, 1, 'annahme'], ['personal', 14, 0.12, 1, 'sh'], ['besprechung', 14, 0.05, 1, 'annahme'],
+  ['bad', 14, 0, 1, 'dguv'], ['putz', 7, 0, 1, 'sh'], ['wc', 4.5, 0, 2, 'dguv'], ['kueche', 8, 0.06, 1, 'annahme'], ['aufenthalt', 16, 0.2, 1, 'annahme']];
+const NEBEN_INTENSIV = [['stuetzpunkt', 20, 0.5, 1, 'divi'], ['rein', 14, 0.5, 1, 'rlp'], ['unrein', 12, 0.35, 1, 'rlp'], ['medikamente', 10, 0.2, 1, 'annahme'], ['entsorgung', 8, 0.15, 1, 'rlp'], ['lager', 14, 0.9, 1, 'divi'], ['geraete', 16, 1.2, 1, 'divi'],
+  ['labor', 8, 0, 1, 'divi'], ['schleuse', 5, 0, 2, 'dguv'], ['leitung', 12, 0, 1, 'rlp'], ['arzt', 14, 0.3, 1, 'divi'], ['personal', 16, 0.3, 1, 'sh'], ['besprechung', 16, 0, 1, 'annahme'], ['angehoerige', 12, 0, 1, 'divi'], ['putz', 7, 0, 1, 'sh'], ['wc', 4.5, 0, 2, 'dguv']];
+const NEBEN_AMB = [['warten', 0, 0], ['stuetzpunkt', 14, 0, 1, 'annahme'], ['arzt', 12, 0, 1, 'annahme'], ['rein', 8, 0, 1, 'annahme'], ['unrein', 8, 0, 1, 'annahme'], ['lager', 10, 0, 1, 'annahme'], ['personal', 12, 0, 1, 'sh'], ['putz', 6, 0, 1, 'sh'], ['wc', 4.5, 0, 2, 'dguv']];
+HSS.NEBENRAUM_INFO = {
+  stuetzpunkt: 'Dienstplatz der Pflege: Tresen zum Flur, Dokumentationsplätze, Belegungstafel, Notfallwagen; zentral gelegen mit Sicht auf den Flur.',
+  rein: 'Pflegearbeitsraum rein: Arbeitszeile mit Spüle, Modulschränke für Verbrauchsmaterial, Kühlschrank, Verband- und Infusionswagen, Handwaschplatz.',
+  unrein: 'Pflegearbeitsraum unrein: Steckbeckenspülgerät, Ausgussbecken, Abtropfregal, Wäsche- und Abfallsammler – strikt getrennt vom reinen Arbeitsraum.',
+  medikamente: 'Medikamentenraum: Arzneischränke, BtM-Tresor (BtMVV), Medikamentenkühlschrank, Richtplatz, Medikamentenwagen.',
+  entsorgung: 'Abstellraum unrein: Bereitstellung von Abfall- und Schmutzwäschebehältern für die Abholung durch den Transportdienst.',
+  lager: 'Lager für Material und Wäsche: Fachbodenregale, Modul- und Wäschewagen (Modulversorgung).', geraete: 'Geräteraum: Rollstühle, Patientenlifter, Infusionspumpen, Toilettenstuhl, EKG.',
+  betten: 'Bettenabstellraum: aufbereitete Betten und Bettenzubehör.', leitung: 'Büro der Stationsleitung.', arzt: 'Arztdienstraum mit Arbeitsplätzen.',
+  untersuchung: 'Untersuchungs- und Behandlungsraum der Station.', personal: 'Personalaufenthalt mit Teeküche (Pausenraum nach Arbeitsstättenverordnung, mit Tageslicht).',
+  besprechung: 'Besprechung und Dienstübergabe.', bad: 'Pflegebad: höhenverstellbare Wanne, Duschliege, Lifter.', putz: 'Putzraum für den Reinigungsdienst mit Ausguss.',
+  wc: 'WC für Personal und Besucher.', kueche: 'Stationsküche (Verteilerküche): Speisenwagen, Kühlschrank, Spülmaschine.', aufenthalt: 'Tagesraum für Patientinnen und Patienten.',
+  labor: 'Stationslabor / Blutgasanalyse.', schleuse: 'Vorraum (Schleuse) vor Isolierzimmern.', angehoerige: 'Raum für Angehörige.'
+};
 
 HSS.STATIONSTYPEN = [
   { id: 'innere', name: 'Innere Medizin (Normalpflege)', art: 'stationaer', vwd: 5.3, vwdQ: 'destatis', ausl: 0.85, maxBetten: 34, anteil1: 0.2, a1: 19.5, a2: 26.0, neben: NEBEN_PFLEGE },
@@ -86,9 +107,9 @@ HSS.stationCalc = (inp) => {
     r.rooms.push({ use: 'patient2', n: n2, m2: a2, name: T.intensiv ? 'Intensivplatz 2-Bett' : 'Patientenzimmer 2-Bett' });
     S({ frage: 'Welche Patientenzimmer entstehen?', erkl: `${U.pct(s1)} der Betten stehen in Einzelzimmern, der Rest in Zweibettzimmern. Die Zimmerflächen enthalten die Nasszelle.`, rechnung: `${n1} × 1-Bett à ${U.fmt(a1, 1)} m² + ${n2} × 2-Bett à ${U.fmt(a2, 1)} m²`, ergebnis: `${n1 + n2} Zimmer mit ${U.fmt(n1 * a1 + n2 * a2)} m²`, quellen: [T.intensiv ? 'divi' : 'rlp'] });
     const per = r.stationen;
-    for (const [use, base, perBed, cnt] of T.neben) {
+    for (const [use, base, perBed, cnt, q] of T.neben) {
       const m2 = Math.max(4, base + perBed * betten / per); if (!base && !perBed) continue;
-      r.rooms.push({ use, n: (cnt || 1) * per, m2: Math.round(m2 * 2) / 2, name: (HSS.ROOMTYPES[use] || {}).name || use });
+      r.rooms.push({ use, n: (cnt || 1) * per, m2: Math.round(m2 * 2) / 2, name: (HSS.ROOMTYPES[use] || {}).name || use, q: q || 'annahme' });
     }
   }
   if (art !== 'stationaer') {
@@ -103,12 +124,17 @@ HSS.stationCalc = (inp) => {
     r.rooms.push({ use: TA.liege ? 'behandlung' : 'untersuchung', n: plaetze, m2: TA.platzM2, name: TA.liege ? 'Behandlungsplatz (liegend)' : 'Untersuchung/Behandlung' });
     r.rooms.push({ use: 'warten', n: 1, m2: Math.max(12, warte * 1.6), name: `Warten (${warte} Plätze)` });
     S({ frage: 'Wie groß muss der Wartebereich sein?', erkl: 'Pro Stunde kommen Kontakte/Tag ÷ Öffnungsstunden. Bei durchschnittlich 45 Minuten Wartezeit und einem Spitzenfaktor von 1,5 ergeben sich die Sitzplätze; je Platz 1,6 m².', rechnung: `${U.fmt(kpt / oeff, 1)} je Stunde × 0,75 h × 1,5`, ergebnis: `${warte} Warteplätze ≈ ${U.fmt(Math.max(12, warte * 1.6))} m²`, quellen: ['annahme'] });
-    if (art === 'ambulant') for (const [use, base, perBed, cnt] of TA.neben) if (base) r.rooms.push({ use, n: cnt || 1, m2: base + Math.ceil(plaetze / 4) * 2, name: (HSS.ROOMTYPES[use] || {}).name || use });
+    if (art === 'ambulant') for (const [use, base, perBed, cnt, q] of TA.neben) if (base) r.rooms.push({ use, n: cnt || 1, m2: base + Math.ceil(plaetze / 4) * 2, name: (HSS.ROOMTYPES[use] || {}).name || use, q: q || 'annahme' });
   }
   r.nuf = U.sum(r.rooms.map(x => x.n * x.m2));
   r.bedarf = r.nuf * (1 + VF);
   const neben = r.nuf - U.sum(r.rooms.filter(x => x.use.startsWith('patient')).map(x => x.n * x.m2));
-  S({ frage: 'Wie viel Fläche braucht die Station insgesamt?', erkl: `Zu den Zimmern kommen Funktionsräume (Stützpunkt, Arbeitsräume rein/unrein, Lager, Dienst- und Sanitärräume – siehe Raumprogramm). Für Flure und Wege wird ein Zuschlag von ${U.pct(VF)} angesetzt.`, rechnung: `Zimmer + Funktionsräume ${U.fmt(neben)} m² = ${U.fmt(r.nuf)} m² Nutzfläche; × ${U.fmt(1 + VF, 2)} für Flure`, ergebnis: `${U.fmt(r.bedarf)} m² Flächenbedarf`, quellen: ['din', 'annahme'] });
+  S({ frage: 'Wie viel Fläche braucht die Station insgesamt?', erkl: `Zu den Zimmern kommen Funktionsräume (Stützpunkt, Arbeitsräume rein/unrein, Lager, Dienst- und Sanitärräume – siehe Raumprogramm). Für Flure und Wege wird ein Zuschlag von ${U.pct(VF)} angesetzt.`, rechnung: `Zimmer + Funktionsräume ${U.fmt(neben)} m² = ${U.fmt(r.nuf)} m² Nutzfläche; × ${U.fmt(1 + VF, 2)} für Flure`, ergebnis: `${U.fmt(r.bedarf)} m² Flächenbedarf`, quellen: ['din', 'rlp', 'sh', 'dguv'] });
+  if (r.betten) {
+    const zimmerProBett = U.sum(r.rooms.filter(x => x.use.startsWith('patient')).map(x => x.n * x.m2)) / r.betten, gesamtProBett = r.bedarf / r.betten;
+    const ok = gesamtProBett >= 38 && gesamtProBett <= 65;
+    S({ frage: 'Ist die Station plausibel bemessen?', erkl: 'Vergleich mit den Kennwerten der Bauministerkonferenz für die Allgemeinpflege: rund 30 m² Hauptnutzfläche je Bett (Zimmer) und rund 50 m² je Bett einschließlich aller Neben- und Verkehrsflächen. Intensiv- und Palliativstationen liegen deutlich darüber.', rechnung: `Zimmer ${U.fmt(zimmerProBett, 1)} m²/Bett · Station gesamt ${U.fmt(r.bedarf)} m² ÷ ${r.betten} Betten = ${U.fmt(gesamtProBett, 1)} m²/Bett`, ergebnis: ok ? 'im üblichen Rahmen' : gesamtProBett > 65 ? 'großzügig (typisch für Intensiv/Palliativ oder viele Einzelzimmer)' : 'knapp bemessen', ampel: ok ? 'g' : T.intensiv || T.id === 'palliativ' ? 'g' : 'y', quellen: ['argebau'] });
+  }
   let bgf = 0, fass = 0; const used = [];
   for (const s of inp.sel || []) {
     const P = HSS.findPart(s.part, prj); if (!P) continue;
@@ -127,9 +153,10 @@ HSS.stationCalc = (inp) => {
     }
     for (const s of inp.sel || []) {
       const P = HSS.findPart(s.part, prj); if (!P) continue;
-      const bb = G.bbox(HSS.partFootprintLocal(P.part).outer), tiefe = Math.min(bb.w, bb.d), min = 2 * ZTIEFE + FLUR + 2 * WAND;
-      const ok = tiefe >= min;
-      S({ frage: `Ist ${P.part.name} tief genug für Zimmer auf beiden Flurseiten?`, erkl: `Eine typische Station liegt zweibündig: Zimmer (ca. ${ZTIEFE} m tief) links und rechts eines ${FLUR} m breiten Flurs. Ist das Gebäude schmaler, passen Zimmer nur auf eine Seite (einbündig) – das braucht mehr Gebäudelänge.`, rechnung: `Gebäudetiefe ${U.fmt(tiefe, 1)} m; benötigt 2 × ${ZTIEFE} m + ${FLUR} m + Wände = ${U.fmt(min, 1)} m`, ergebnis: ok ? 'zweibündig möglich' : tiefe >= ZTIEFE + FLUR ? 'nur einbündig möglich' : 'zu schmal für eine Station', ampel: ok ? 'g' : tiefe >= ZTIEFE + FLUR ? 'y' : 'r', quellen: ['annahme'] });
+      const bb = G.bbox(HSS.partFootprintLocal(P.part).outer), tiefe = Math.min(bb.w, bb.d), PT = HSS.planTyp ? HSS.planTyp(tiefe) : null;
+      const o = PT ? PT.bands.filter(b => b.k === 'O').map(b => U.fmt(b.d, 1)).join(' / ') : '';
+      const amp = !PT ? 'g' : PT.typ === 'einbund' ? 'y' : 'g';
+      S({ frage: `Wie wird ${P.part.name} aufgeteilt?`, erkl: `Die Gebäudetiefe bestimmt die Bauweise. Patientenzimmer brauchen Tageslicht und sind 5–7 m tief, der Stationsflur ${FLUR} m breit. Bis ca. 12 m Tiefe liegen die Zimmer an einer Flurseite (einbündig bzw. mit schmaler Nebenraumzone), bis ca. 19 m beidseits eines Flurs (zweibündig). Tiefere Baukörper erhalten zwei Flure und eine Innenzone für Räume ohne Tageslichtbedarf (dreibündig: Arbeitsräume, Lager, Kern); ist die Innenzone tiefer als zwei Raumtiefen, entsteht in der Mitte ein Lichthof. So entstehen keine schmalen, überlangen Räume.`, rechnung: `Gebäudetiefe ${U.fmt(tiefe, 1)} m → Zimmertiefe ${o} m${PT && PT.typ === 'dreibund' ? `, Innenzone ${U.fmt(PT.bands[2].d, 1)} m` : ''}`, ergebnis: PT ? PT.name : '–', ampel: amp, quellen: ['dguv', 'annahme'] });
     }
   } else r.warn.push('Bitte Gebäude und Etagen wählen, um den Flächenabgleich zu rechnen.');
   r.why = r.steps.map(x => `${x.frage} ${x.rechnung} → ${x.ergebnis}`);
@@ -178,101 +205,5 @@ HSS.generateStation = (inp, calc, opts = {}) => {
   prj.stations.push(st);
   return { st, report };
 };
-function layoutFloor(sl, st, T, report, opts) {
-  const prj = HSS.project(), pt = sl.P.part, f = sl.f;
-  const fp = HSS.partFootprintLocal(pt), bb = G.bbox(fp.outer);
-  // lokale Achse: lange Seite = x‘
-  const alongX = bb.w >= bb.d;
-  let L = alongX ? bb.w : bb.d, D = alongX ? bb.d : bb.w;
-  let s0 = alongX ? bb.x0 : bb.z0, c = alongX ? bb.cz : bb.cx;
-  if (sl.half) { L = L / 2; s0 = s0 + (opts.halfSecond ? L : 0); }
-  const toLoc = (s, t) => alongX ? [s, t] : [t, s];
-  const I = HSS.interior(pt.id, f, true, prj);
-  if (opts.replace) { I.walls = []; I.doors = []; I.rooms = []; prj.objects = prj.objects.filter(o => !(o.host?.part === pt.id && o.host.floor === f && o.station)); }
-  const double = D >= 2 * 4.2 + FLUR + 0.3;
-  const depth = double ? (D - FLUR - 0.3) / 2 : D - FLUR - 0.15;
-  const tA0 = c - D / 2 + 0.15, tFlur = double ? c : c + D / 2 - FLUR / 2 - 0.15;
-  const sides = double ? [{ t0: tA0, dir: -1 }, { t0: c + FLUR / 2, dir: 1 }] : [{ t0: tA0, dir: -1 }];
-  // Flur
-  const flur = { id: U.uid('r'), use: 'flur', name: 'Flur', station: st.id };
-  const fc = toLoc(s0 + L / 2, tFlur); Object.assign(flur, alongX ? { x: fc[0], z: fc[1], w: L - 0.3, d: FLUR } : { x: fc[0], z: fc[1], w: FLUR, d: L - 0.3 });
-  I.rooms.push(flur);
-  // Kern (Erschließung) in der Mitte, Nebenräume beidseits davon, Zimmer an den Enden
-  const rooms = sl.rooms.slice();
-  const coreExists = prj.objects.some(o => o.host?.part === pt.id && o.core);
-  const anyLift = prj.objects.some(o => o.host?.part === pt.id && HSS.library.get(o.lib)?.logistik?.rolle === 'aufzug');
-  const coreW = opts.core !== false && (coreExists || !anyLift || opts.core === 'force') ? 9.0 : 0;
-  const center = s0 + L / 2;
-  const sideRooms = sides.map(() => []);
-  const ancill = rooms.filter(r => !r.use.startsWith('patient')), pats = rooms.filter(r => r.use.startsWith('patient'));
-  ancill.forEach((r, i) => sideRooms[double ? (i % 2) : 0].push(r));
-  pats.forEach((r, i) => sideRooms[double ? (i % 2) : 0].push(r));
-  const walls = [], newObjs = [];
-  sides.forEach((sd, si) => {
-    // Positionen von der Mitte nach außen abwechselnd links/rechts
-    let left = center - (si === 0 ? coreW / 2 : 0), right = center + (si === 0 ? coreW / 2 : 0);
-    const lim0 = s0 + 0.15 + (opts.reserveStart || 0), lim1 = s0 + L - 0.15 - (opts.reserveEnd || 0);
-    let toggle = 0;
-    for (const r of sideRooms[si]) {
-      const isPat = r.use.startsWith('patient');
-      const w = Math.max(isPat ? (r.use === 'patient2' ? 3.9 : 3.4) : 2.2, Math.round(r.m2 / depth * 10) / 10);
-      let a0;
-      if (toggle % 2 === 0 && right + w <= lim1) { a0 = right; right += w; }
-      else if (left - w >= lim0) { a0 = left - w; left -= w; }
-      else if (right + w <= lim1) { a0 = right; right += w; }
-      else { report.dropped.push(r.name); continue; }
-      toggle++;
-      const tc = sd.dir < 0 ? sd.t0 + depth / 2 : sd.t0 + depth / 2;
-      const cc = toLoc(a0 + w / 2, tc);
-      const room = { id: U.uid('r'), use: r.use, name: r.name, station: st.id, x: cc[0], z: cc[1], w: alongX ? w : depth, d: alongX ? depth : w };
-      if (!G.pointIn([room.x, room.z], fp.outer) || fp.holes.some(h => G.pointIn([room.x, room.z], h))) { report.dropped.push(r.name); continue; }
-      I.rooms.push(room); report.placed++;
-      walls.push(...HSS.roomWalls(room));
-      // Tür zur Flurseite
-      const doorT = sd.dir < 0 ? sd.t0 + depth : sd.t0;
-      room._door = { s: a0 + w / 2 + (isPat ? w / 2 - 1.0 : 0), t: doorT, w: isPat ? 1.4 : 1.1, lib: isPat ? 'erschl.tuer.bett' : 'erschl.tuer.1' };
-      // Nasszelle
-      if (isPat && !T.intensiv) {
-        const nw = 2.1, nd = 2.0, ns = a0 + w - nw / 2 - 0.05 - (0), nt = sd.dir < 0 ? doorT - nd / 2 : doorT + nd / 2;
-        const nc = toLoc(a0 + nw / 2 + 0.05, nt);
-        const nass = { id: U.uid('r'), use: 'nass', name: 'Nasszelle', station: st.id, x: nc[0], z: nc[1], w: alongX ? nw : nd, d: alongX ? nd : nw };
-        I.rooms.push(nass); walls.push(...HSS.roomWalls(nass));
-        const wc = toLoc(a0 + 0.5, sd.dir < 0 ? doorT - nd + 0.4 : doorT + nd - 0.4);
-        newObjs.push({ lib: 'san.wc', x: wc[0], z: wc[1], rot: alongX ? (sd.dir < 0 ? 0 : 180) : (sd.dir < 0 ? -90 : 90) });
-      }
-      // Möbel (lokales Raumsystem: Fassade bei −d/2)
-      const fn = FURN[r.use];
-      if (fn && opts.furnish !== false) {
-        const rw = w, rd = depth;
-        for (const [lib, fx, fz, frot = 0, anch] of fn(rw, rd, sd.dir, T.intensiv)) {
-          if (!HSS.library.get(lib)) continue;
-          // Raumlokal → Bauteillokal: Fassade liegt bei dir<0 an der kleinen t-Seite
-          const s = a0 + rw / 2 + fx * (sd.dir < 0 ? 1 : -1), t = tc + fz * (sd.dir < 0 ? 1 : -1);
-          const loc = toLoc(s, t);
-          const baseRot = alongX ? (sd.dir < 0 ? 0 : 180) : (sd.dir < 0 ? -90 : 90);
-          newObjs.push({ lib, x: Math.round(loc[0] * 100) / 100, z: Math.round(loc[1] * 100) / 100, rot: (baseRot + frot) % 360 });
-        }
-      }
-      room.role = ({ stuetzpunkt: 'stuetzpunkt', rein: 'rein', unrein: 'unrein', medikamente: 'medikamente', kueche: 'kueche', aufenthalt: 'aufenthalt' })[r.use] || undefined;
-    }
-  });
-  // Erschließungskern
-  if (coreW && !coreExists) {
-    const cc = toLoc(center - 2.0, sides[0].t0 + depth / 2), tc = toLoc(center + 2.6, sides[0].t0 + depth / 2);
-    newObjs.push({ lib: 'erschl.aufzug.bett', x: cc[0], z: cc[1], rot: alongX ? 180 : 90, core: true });
-    newObjs.push({ lib: 'erschl.treppe', x: tc[0], z: tc[1], rot: alongX ? 90 : 0, core: true });
-  }
-  // Wände (Duplikate entfernen) + Türen
-  const ded = HSS.dedupeWalls(walls);
-  I.walls.push(...ded);
-  for (const r of I.rooms) {
-    if (!r._door) continue;
-    const dp = toLoc(r._door.s, r._door.t);
-    let best = null, bd = 0.4;
-    for (const w of I.walls) { const cp = G.closestOnSeg(dp, w.a, w.b); const d = G.dist(dp, cp.pt); if (d < bd) { bd = d; best = { w, t: cp.t }; } }
-    if (best) I.doors.push({ id: U.uid('d'), wall: best.w.id, t: best.t, w: r._door.w, lib: r._door.lib });
-    delete r._door;
-  }
-  for (const o of newObjs) prj.objects.push(Object.assign({ id: U.uid('obj'), lib: o.lib, host: { part: pt.id, floor: f }, x: o.x, z: o.z, rot: o.rot }, o.core ? { core: true } : { station: st.id }));
-}
+function layoutFloor(sl, st, T, report, opts) { return HSS.layoutStationFloor(sl, st, T, report, opts); }
 })();

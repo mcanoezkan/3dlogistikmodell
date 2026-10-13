@@ -379,6 +379,7 @@ UI.bindViewbar = () => {
   $('#vNet').onchange = e => { UI.netMode = e.target.value; HSS.drawNet(UI.netMode, UI.heatHour ?? null); };
   $('#vLabels').onclick = () => { V.labels = !V.labels; UI.refreshViewbar(); S3.rebuild('all'); };
   $('#vGrid').onclick = () => { HSS.nav.setGrid(!HSS.nav.grid); $('#vGrid').classList.toggle('on', HSS.nav.grid); };
+  $('#vM2').onclick = () => HSS.flaechen.toggle();
   $('#vWalk').onclick = () => HSS.fpv.walk();
   $('#vTour').onclick = () => HSS.tour.dialog();
   $('#vShot').onclick = () => { S3.beautyShot(2); UI.toast('Bild gespeichert (doppelte Auflösung)'); };

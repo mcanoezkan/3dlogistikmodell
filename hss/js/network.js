@@ -24,7 +24,7 @@ HSS.places = (prj = HSS.project()) => {
   for (const b of prj.buildings) for (const pt of b.parts) {
     const I = prj.interiors[pt.id] || {};
     for (const f of Object.keys(I)) for (const r of I[f].rooms || []) {
-      if (r.use === 'flur' || r.use === 'nass') continue;
+      if (r.use === 'nass' || r.use === 'vorraum' || HSS.ROOMTYPES[r.use]?.noPlace) continue;
       const w = HSS.toWorld(pt, [r.x, r.z]);
       out.push({ id: r.id, name: `${b.kurz || b.name} ${HSS.floorName(HSS.globalFloor(pt, +f, prj))} · ${r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum'}`, kind: 'room', use: r.use, role: r.role || r.use, station: r.station, part: pt.id, floor: +f, gf: HSS.globalFloor(pt, +f, prj), x: w[0], y: HSS.floorY(pt, +f, prj), z: w[1], building: b.id });
     }

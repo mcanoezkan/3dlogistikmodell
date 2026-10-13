@@ -124,7 +124,7 @@ S3.rebuild = (scope = 'all') => {
     const g = HSS.buildPart(pt, b, V); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
-      if (V.floor === gf || (V.floor === null && V.shell === 'transparent')) L.interior.add(HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode }));
+      if (V.floor === gf || (V.floor === null && V.shell === 'transparent')) L.interior.add(HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 }));
     }
   }
   for (const br of prj.bridges) { const g = HSS.buildBridge(br, V); L.build.add(g); S3.groups.set(br.id, g); }
@@ -203,7 +203,7 @@ function buildLabels() {
     if (!b.parts.length) continue;
     const top = b.parts.reduce((a, pt) => HSS.partTopY(pt) > HSS.partTopY(a) ? pt : a, b.parts[0]);
     const el = document.createElement('div'); el.className = 'blbl';
-    el.innerHTML = `<b class="hk" style="background:${U.esc(b.color)}">${U.esc(b.kurz || '')}</b><span class="kz">${U.esc(b.name)}</span>`;
+    el.innerHTML = `<b class="hk" style="background:${U.esc(b.color)}">${U.esc(b.kurz || '')}</b><span class="kz">${U.esc(b.name)}${V.m2 && V.floor === null ? ` · <b>${U.fmt(HSS.flaechen?.bgfBuilding(b) || 0)} m² BGF</b>` : ''}</span>`;
     el.onclick = () => S3.select({ kind: 'part', id: top.id });
     const o = new CSS2DObject(el); const yTop = V.floor !== null ? HSS.floorY(top, Math.min(top.floors - 1, Math.max(0, V.floor))) + 6 : HSS.partTopY(top) + 4;
     o.position.set(top.x, yTop + (top.floors) * V.explode, top.z); L.add(o);
@@ -213,9 +213,14 @@ function buildLabels() {
       const f = HSS.localFloor(pt, V.floor); if (f === null) continue;
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
-        if (['flur', 'nass', 'patient1', 'patient2', 'wc', 'putz'].includes(r.use) || (r.w * r.d) < 8) continue;
+        const a = HSS.roomArea(r);
+        if (V.m2) { if (a < 1.5) continue; }
+        else if (['flur', 'nass', 'patient1', 'patient2', 'wc', 'putz', 'vorraum', 'schacht', 'kern', 'reserve'].includes(r.use) || a < 8) continue;
         const w = HSS.toWorld(pt, [r.x, r.z]);
-        const el = document.createElement('div'); el.className = 'rlbl'; el.textContent = r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum';
+        const el = document.createElement('div'); el.className = 'rlbl';
+        const nm = r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum';
+        if (V.m2) { el.classList.add('m2'); if (a < 12) el.classList.add('sm'); el.innerHTML = `${a >= 12 ? `<span>${U.esc(nm)}</span>` : ''}<b>${U.fmt(a, 1)} m²</b>`; el.title = `${nm} · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${HSS.DIN277[HSS.roomDin(r)]?.name || ''}`; el.style.pointerEvents = 'auto'; el.onclick = () => S3.select({ kind: 'room', id: r.id, part: pt.id, floor: f }); }
+        else el.textContent = nm;
         const o = new CSS2DObject(el); o.position.set(w[0], HSS.floorY(pt, f) + V.floor * V.explode + 0.3, w[1]); L.add(o);
       }
     }

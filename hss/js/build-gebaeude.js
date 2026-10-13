@@ -266,16 +266,29 @@ HSS.buildBridge = (br, view = {}) => {
 
 /* ---------- Innenausbau (Wände, Türen, Räume) ---------- */
 HSS.ROOMTYPES = {
-  patient1: { name: 'Patientenzimmer 1-Bett', color: '#dbe9f5' }, patient2: { name: 'Patientenzimmer 2-Bett', color: '#d2e4f3' }, nass: { name: 'Nasszelle', color: '#e6f2f5' },
-  stuetzpunkt: { name: 'Stützpunkt', color: '#cfe6dd' }, rein: { name: 'Arbeitsraum rein', color: '#d8efe3' }, unrein: { name: 'Arbeitsraum unrein', color: '#f2dcd9' },
-  medikamente: { name: 'Medikamente', color: '#f6ecc9' }, lager: { name: 'Lager', color: '#ece6da' }, geraete: { name: 'Geräteraum', color: '#e3e0ea' },
-  arzt: { name: 'Arztdienstraum', color: '#e0e6ef' }, personal: { name: 'Personalaufenthalt', color: '#efe5d6' }, besprechung: { name: 'Besprechung', color: '#e6e1f0' },
-  bad: { name: 'Pflegebad', color: '#e6f2f5' }, entsorgung: { name: 'Entsorgung', color: '#eadad6' }, putz: { name: 'Putzraum', color: '#e9e4de' },
-  wc: { name: 'WC Personal/Besucher', color: '#e6f2f5' }, kueche: { name: 'Teeküche', color: '#f3ead8' }, aufenthalt: { name: 'Aufenthalt Patienten', color: '#f3eedd' },
-  untersuchung: { name: 'Untersuchung/Behandlung', color: '#dfeaf6' }, warten: { name: 'Warten', color: '#f1ede4' }, flur: { name: 'Flur', color: '#eef0f2' },
-  behandlung: { name: 'Behandlungsplatz', color: '#dfeaf6' }, op: { name: 'OP-Saal', color: '#d6efe8' }, technik: { name: 'Technik', color: '#e2e4e7' },
-  awt: { name: 'AWT-Bahnhof', color: '#f4ecd0' }, logistik: { name: 'Logistik/Ver- und Entsorgung', color: '#efe7d8' }, buero: { name: 'Büro', color: '#e8ebef' }, sonstiges: { name: 'Raum', color: '#eceff2' }
+  patient1: { name: 'Patientenzimmer 1-Bett', color: '#dbe9f5', din: 'NUF6' }, patient2: { name: 'Patientenzimmer 2-Bett', color: '#d2e4f3', din: 'NUF6' }, nass: { name: 'Nasszelle', color: '#e6f2f5', din: 'NUF7' },
+  stuetzpunkt: { name: 'Stützpunkt / Dienstplatz', color: '#cfe6dd', din: 'NUF2' }, rein: { name: 'Pflegearbeitsraum rein', color: '#d8efe3', din: 'NUF6' }, unrein: { name: 'Pflegearbeitsraum unrein', color: '#f2dcd9', din: 'NUF6' },
+  medikamente: { name: 'Medikamentenraum', color: '#f6ecc9', din: 'NUF6' }, lager: { name: 'Lager Material/Wäsche', color: '#ece6da', din: 'NUF4' }, geraete: { name: 'Geräteraum', color: '#e3e0ea', din: 'NUF4' },
+  arzt: { name: 'Arztdienstraum', color: '#e0e6ef', din: 'NUF2' }, leitung: { name: 'Stationsleitung', color: '#e0e6ef', din: 'NUF2' }, personal: { name: 'Personalaufenthalt', color: '#efe5d6', din: 'NUF1' }, besprechung: { name: 'Besprechung / Übergabe', color: '#e6e1f0', din: 'NUF2' },
+  bad: { name: 'Pflegebad', color: '#e6f2f5', din: 'NUF6' }, entsorgung: { name: 'Entsorgung / Abstellraum unrein', color: '#eadad6', din: 'NUF4' }, putz: { name: 'Putzraum', color: '#e9e4de', din: 'NUF7' },
+  wc: { name: 'WC Personal/Besucher', color: '#e6f2f5', din: 'NUF7' }, vorraum: { name: 'Vorraum', color: '#edf3f5', din: 'NUF7' }, kueche: { name: 'Stationsküche', color: '#f3ead8', din: 'NUF3' }, aufenthalt: { name: 'Tagesraum Patienten', color: '#f3eedd', din: 'NUF1' },
+  betten: { name: 'Bettenabstellraum', color: '#ebe6dc', din: 'NUF4' }, angehoerige: { name: 'Angehörigenraum', color: '#f3eedd', din: 'NUF1' }, schleuse: { name: 'Schleuse / Vorraum Isolierzimmer', color: '#e4eef0', din: 'NUF6' }, labor: { name: 'Stationslabor', color: '#e1ecf3', din: 'NUF3' },
+  untersuchung: { name: 'Untersuchung/Behandlung', color: '#dfeaf6', din: 'NUF6' }, warten: { name: 'Warten', color: '#f1ede4', din: 'NUF1' }, flur: { name: 'Flur', color: '#eef0f2', din: 'VF', noPlace: true },
+  kern: { name: 'Aufzüge / Treppenhaus', color: '#d9dde2', din: 'VF', noPlace: true }, schacht: { name: 'Installationsschacht', color: '#cfd4da', din: 'TF', noPlace: true }, lichthof: { name: 'Lichthof', color: '#d6e8d4', din: 'AUSSEN', noPlace: true },
+  reserve: { name: 'Reservefläche', color: '#f4f4f1', din: 'NUF7', noPlace: true },
+  behandlung: { name: 'Behandlungsplatz', color: '#dfeaf6', din: 'NUF6' }, op: { name: 'OP-Saal', color: '#d6efe8', din: 'NUF6' }, technik: { name: 'Technik', color: '#e2e4e7', din: 'TF' },
+  awt: { name: 'AWT-Bahnhof', color: '#f4ecd0', din: 'NUF4' }, logistik: { name: 'Logistik/Ver- und Entsorgung', color: '#efe7d8', din: 'NUF4' }, buero: { name: 'Büro', color: '#e8ebef', din: 'NUF2' }, sonstiges: { name: 'Raum', color: '#eceff2', din: 'NUF7' }
 };
+/* Flächenarten nach DIN 277 (Nutzungsgruppen der Nutzungsfläche, Verkehrs- und Technikfläche) */
+HSS.DIN277 = {
+  NUF1: { name: 'NUF 1 Wohnen und Aufenthalt', kurz: 'NUF 1', color: '#f2d39b' }, NUF2: { name: 'NUF 2 Büroarbeit', kurz: 'NUF 2', color: '#a9c6e8' },
+  NUF3: { name: 'NUF 3 Produktion, Labor, Küche', kurz: 'NUF 3', color: '#c9b3e6' }, NUF4: { name: 'NUF 4 Lagern, Verteilen', kurz: 'NUF 4', color: '#d9c2a3' },
+  NUF5: { name: 'NUF 5 Bildung, Unterricht, Kultur', kurz: 'NUF 5', color: '#b9dfc4' }, NUF6: { name: 'NUF 6 Heilen und Pflegen', kurz: 'NUF 6', color: '#9fd3c7' },
+  NUF7: { name: 'NUF 7 Sonstige Nutzungen (Sanitär, Abstellen, Reserve)', kurz: 'NUF 7', color: '#d5d9de' }, VF: { name: 'VF Verkehrsfläche (Flure, Treppen, Aufzüge)', kurz: 'VF', color: '#f0e6a8' },
+  TF: { name: 'TF Technikfläche (Schächte, Technik)', kurz: 'TF', color: '#bcc3cb' }, AUSSEN: { name: 'Lichthof (nicht in der BGF)', kurz: 'Hof', color: '#cfe5cb' }
+};
+HSS.roomArea = r => r.poly ? Math.abs(G.area(r.poly)) : r.w * r.d;
+HSS.roomDin = r => r.din || (HSS.ROOMTYPES[r.use] || HSS.ROOMTYPES.sonstiges).din || 'NUF7';
 HSS.buildInterior = (pt, f, view = {}) => {
   const I = HSS.interior(pt.id, f); const grp = new THREE.Group(); grp.userData = { kind: 'interior', part: pt.id, floor: f };
   if (!I) return grp;
@@ -287,7 +300,7 @@ HSS.buildInterior = (pt, f, view = {}) => {
   for (const r of I.rooms) {
     const rt = HSS.ROOMTYPES[r.use] || HSS.ROOMTYPES.sonstiges;
     const poly = r.poly || [[r.x - r.w / 2, r.z - r.d / 2], [r.x + r.w / 2, r.z - r.d / 2], [r.x + r.w / 2, r.z + r.d / 2], [r.x - r.w / 2, r.z + r.d / 2]];
-    const m = new THREE.Mesh(HSS.slabGeo(poly, [], 0.005, 0.02), LM(r.color || rt.color)); m.receiveShadow = true;
+    const m = new THREE.Mesh(HSS.slabGeo(poly, [], 0.005, 0.02), LM(view.m2 ? (HSS.DIN277[HSS.roomDin(r)] || {}).color || '#ddd' : (r.color || rt.color))); m.receiveShadow = true;
     m.userData = { kind: 'room', id: r.id, part: pt.id, floor: f }; local.add(m);
   }
   // Wände mit Türöffnungen
@@ -309,6 +322,7 @@ HSS.buildInterior = (pt, f, view = {}) => {
     // Türblätter
     for (const [d0, d1, d] of doors) {
       const c = (d0 + d1) / 2, lib = d.lib || 'erschl.tuer.1';
+      if (lib === 'offen') continue;
       if (view.cut !== 'voll') { const g = new THREE.BoxGeometry(d1 - d0, 0.02, t + 0.02); g.rotateY(-a); g.translate(w.a[0] + ux * c, 0.02, w.a[1] + uz * c); caps.push(g); continue; }
       const o = HSS.library.build(lib, { w: d1 - d0 + 0.1, d: t + 0.05, h: 2.2 }); o.position.set(w.a[0] + ux * c, 0, w.a[1] + uz * c); o.rotation.y = -a; local.add(o);
     }

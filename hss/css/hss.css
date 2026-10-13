@@ -280,3 +280,17 @@ body.nopanel #tourCard{left:calc(var(--railW) + 64px)}
 #demoCard{top:calc(var(--topH) + 108px)}
 #viewbar{font-size:11.5px;gap:6px}
 #viewbar button{padding:4px 8px}
+
+/* Flächenansicht */
+#m2Panel{position:fixed;top:calc(var(--topH) + 108px);right:12px;width:360px;max-height:calc(100% - var(--topH) - 170px);overflow:auto;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px 14px;z-index:11;font-size:12.5px}
+body.insp #m2Panel{right:calc(var(--inspW) + 24px)}
+#m2Panel .ih{display:flex;justify-content:space-between;gap:8px}#m2Panel h2{font-size:16px;margin:0 0 2px;color:var(--accent)}
+#m2Panel h3{margin:12px 0 6px}
+#m2Panel .x{border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:var(--navy)}
+.m2leg{display:flex;flex-wrap:wrap;gap:4px 10px;margin:8px 0 2px;font-size:11px;color:#3b4652}.m2leg i,.m2t i,.m2r i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px;border-radius:2px}
+.m2bar{display:flex;height:10px;background:repeating-linear-gradient(45deg,#fff,#fff 3px,#e3e6ea 3px,#e3e6ea 6px);border:1px solid #d5dbe1;margin:6px 0}.m2bar i{display:block;height:100%}
+.m2part{border-top:1px solid #e3e6ea;padding:8px 0 4px}.m2h{display:flex;justify-content:space-between;cursor:pointer;color:var(--navy)}.m2h span{font-weight:600}
+.m2t td,.m2r td,.m2r th{padding:2px 4px}.m2t tr.sub td{color:#5a6573;font-size:11.5px;padding-left:12px}.m2r tr[data-room],.m2r tr[data-gf]{cursor:pointer}.m2r tr[data-room]:hover,.m2r tr[data-gf]:hover{background:#eef5f8}
+.m2k{grid-template-columns:repeat(4,1fr)}
+.rlbl.m2{background:rgba(255,255,255,.92);border:1px solid #c9d1d9;padding:1px 5px;text-align:center;line-height:1.15;cursor:pointer}.rlbl.m2 span{display:block;font-size:10px;color:#3b4652;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rlbl.m2 b{font-size:11px;color:#0A223C}.rlbl.m2.sm{padding:0 3px}.rlbl.m2.sm b{font-size:9.5px}
+.rp .rpi{font-size:10.5px;color:#6b7682;line-height:1.25;margin-top:1px}
