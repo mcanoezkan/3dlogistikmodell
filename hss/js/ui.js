@@ -378,6 +378,8 @@ UI.bindViewbar = () => {
 
   $$('#vCut button').forEach(b => b.onclick = () => { V.cut = b.dataset.v; UI.refreshViewbar(); S3.rebuild('all'); });
   $('#vShell').onchange = e => { V.shell = e.target.value; S3.rebuild('all'); };
+  $('#vWege').value = V.wege || 'alle';
+  $('#vWege').onchange = e => { V.wege = e.target.value; try { localStorage.setItem('hss-wege', V.wege); } catch (er) { /* */ } S3.rebuild('outdoor'); };
   $('#vExplode').oninput = U.debounce(e => { V.explode = +e.target.value; S3.rebuild('all'); }, 80);
   $('#vSun').oninput = e => { const h = +e.target.value; $('#vSunL').textContent = U.hhmm(h * 60); S3.setSun(h); };
   $('#vNet').onchange = e => { UI.netMode = e.target.value; HSS.drawNet(UI.netMode, UI.heatHour ?? null); };

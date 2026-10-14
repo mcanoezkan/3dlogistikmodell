@@ -51,7 +51,10 @@ N.init = () => {
 
 // Bewegung mit Tasten: Geschwindigkeit wächst mit dem Abstand der Kamera
 N.update = (dt) => {
-  const S3 = HSS.s3, K = N.keys; if (S3.fpvActive) return;
+  const S3 = HSS.s3, K = N.keys;
+  // Beschriftung entzerren: aus großer Entfernung nur die Kürzel zeigen
+  if (S3.camera && S3.controls) { const far = S3.camera.position.distanceTo(S3.controls.target) > 330; if (far !== N._lblFar) { N._lblFar = far; document.body.classList.toggle('lblfar', far); } }
+  if (S3.fpvActive) return;
   const any = Object.values(K).some(Boolean); if (!any) return;
   const C = S3.controls, cam = S3.camera;
   const dist = cam.position.distanceTo(C.target), sp = Math.max(6, dist * 0.9) * dt;

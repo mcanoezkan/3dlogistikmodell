@@ -6,7 +6,7 @@
 const HSS = window.HSS, U = HSS.util, G = HSS.geo;
 const { THREE, OrbitControls, TransformControls, CSS2DRenderer, CSS2DObject, RoomEnvironment, Sky } = window.THREEX;
 
-const V = HSS.view = { floor: null, cut: 'halb', shell: 'massiv', explode: 0, labels: true, sunHour: 14, showNet: false, showBasement: false };
+const V = HSS.view = { floor: null, cut: 'halb', shell: 'massiv', explode: 0, labels: true, wege: (() => { try { return localStorage.getItem('hss-wege') || 'alle'; } catch (e) { return 'alle'; } })(), sunHour: 14, showNet: false, showBasement: false };
 const S3 = HSS.s3 = { groups: new Map(), pickables: [], tool: null, lamps: [] };
 
 /* ---------- Initialisierung ---------- */
@@ -138,7 +138,9 @@ S3.rebuild = (scope = 'all') => {
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') HSS.traffic.build(L.traffic);
   const ug = V.floor !== null && V.floor < 0; L.traffic.visible = !ug; L.areas.visible = !ug; L.terrain.visible = !ug;
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
-  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = !ug || (p && (p.kind === 'tunnel' || p.kind === 'awt')); }
+  // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
+  const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };
+  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); }
   collectPickables();
   S3.showSelection();
   HSS.emit('rebuilt');
@@ -206,12 +208,14 @@ function buildLabels() {
   if (!V.labels) return;
   for (const b of prj.buildings) {
     if (!b.parts.length || (b.noLabel && !V.m2)) continue;
+    // Anker: Mitte des größten Bauteils, Höhe = Dach des höchsten Bauteils; das Kürzel sitzt genau über dem Anker
     const top = b.parts.reduce((a, pt) => HSS.partTopY(pt) > HSS.partTopY(a) ? pt : a, b.parts[0]);
+    const main = b.parts.filter(pt => !pt.stackOn).reduce((a, pt) => HSS.partArea(pt) > HSS.partArea(a) ? pt : a, b.parts.find(pt => !pt.stackOn) || b.parts[0]);
     const el = document.createElement('div'); el.className = 'blbl';
-    el.innerHTML = `<b class="hk" style="background:${U.esc(b.color)}">${U.esc(b.kurz || '')}</b><span class="kz">${U.esc(b.name)}${V.m2 && V.floor === null ? ` · <b>${U.fmt(HSS.flaechen?.bgfBuilding(b) || 0)} m² BGF</b>` : ''}</span>`;
-    el.onclick = () => S3.select({ kind: 'part', id: top.id });
-    const o = new CSS2DObject(el); const yTop = V.floor !== null ? HSS.floorY(top, Math.min(top.floors - 1, Math.max(0, V.floor))) + 6 : HSS.partTopY(top) + 4;
-    o.position.set(top.x, yTop + (top.floors) * V.explode, top.z); L.add(o);
+    el.innerHTML = `<div class="blin"><b class="hk" style="background:${U.esc(b.color)}">${U.esc(b.kurz || '•')}</b><span class="kz">${U.esc(b.name)}${V.m2 && V.floor === null ? ` · <b>${U.fmt(HSS.flaechen?.bgfBuilding(b) || 0)} m² BGF</b>` : ''}</span></div><i class="pin"></i>`;
+    el.querySelector('.blin').onclick = () => S3.select({ kind: 'part', id: main.id });
+    const o = new CSS2DObject(el); const yTop = V.floor !== null ? HSS.floorY(top, Math.min(top.floors - 1, Math.max(0, V.floor))) + 3.5 : HSS.partTopY(top) + 1;
+    o.position.set(main.x, yTop + (top.floors) * V.explode, main.z); L.add(o);
   }
   if (V.floor !== null) {
     for (const b of prj.buildings) for (const pt of b.parts) {
@@ -233,7 +237,7 @@ function buildLabels() {
 }
 function collectPickables() {
   const arr = S3.pickables = [];
-  for (const k of ['build', 'interior', 'objects', 'paths', 'areas']) S3.layers[k].traverse(o => { if (o.isMesh) arr.push(o); });
+  for (const k of ['build', 'interior', 'objects', 'paths', 'areas']) S3.layers[k].traverseVisible(o => { if (o.isMesh) arr.push(o); });
 }
 
 /* ---------- Auswahl ---------- */

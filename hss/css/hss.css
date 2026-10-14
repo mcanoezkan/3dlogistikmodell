@@ -158,7 +158,9 @@ body.nopanel #viewbar,body.nopanel #timeline,body.nopanel #hint{left:calc(var(--
 #viewport{position:fixed;top:var(--topH);left:0;right:0;bottom:0}
 #viewport canvas{display:block}
 .labels{position:absolute;inset:0;pointer-events:none}
-.blbl{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#1d2733;white-space:nowrap;pointer-events:auto;cursor:pointer}
+.blbl{width:0;height:0;position:relative;pointer-events:none}
+.blbl .blin{position:absolute;left:-14px;bottom:10px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#1d2733;white-space:nowrap;pointer-events:auto;cursor:pointer}
+.blbl .pin{position:absolute;left:-1px;bottom:0;width:2px;height:10px;background:rgba(29,39,51,.55);border-radius:1px}
 .blbl b.hk{display:inline-block;min-width:24px;text-align:center;padding:2px 7px;border-radius:3px;font-size:13px;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .blbl .kz{text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 2px #fff}
 .rlbl{font-size:10.5px;color:#1d2733;background:rgba(255,255,255,.85);padding:1px 5px;border-radius:3px;white-space:nowrap}
@@ -295,3 +297,5 @@ body.insp #m2Panel{right:calc(var(--inspW) + 24px)}
 .rlbl.m2{background:rgba(255,255,255,.92);border:1px solid #c9d1d9;padding:1px 5px;text-align:center;line-height:1.15;cursor:pointer}.rlbl.m2 span{display:block;font-size:10px;color:#3b4652;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rlbl.m2 b{font-size:11px;color:#0A223C}.rlbl.m2.sm{padding:0 3px}.rlbl.m2.sm b{font-size:9.5px}
 .rp .rpi{font-size:10.5px;color:#6b7682;line-height:1.25;margin-top:1px}
 .sobox{border:1px solid #d5dbe1;padding:10px 12px;margin:8px 0;border-left:4px solid var(--accent)}
+body.lblfar .blbl .kz{display:none}
+body.lblfar .blbl .blin:hover .kz{display:inline}
