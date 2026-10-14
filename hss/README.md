@@ -28,6 +28,7 @@ Werden nach einem Update nicht alle Arbeitsbereiche angezeigt, meldet die Suite 
 | Draufsicht / Norden | T · Kompass-Tasten |
 | Etage wechseln | Etagentasten links (wie im Aufzug) · Bild ↑ / Bild ↓ – die Kamera folgt der Höhe |
 | Raster | „Raster“ in der Ansichtsleiste: außen 10-m-Raster auf dem Gelände, in Etagen 1-m-Raster; Koordinaten in der Bedienhilfe |
+| Stil | Ansichtsleiste „Stil“: **Cartoon** (Standard: heller Hintergrund, flächige Toon-Schattierung, Konturen an Dächern, Hüllen, Innenwänden und Wegen, farbige Funktionszonen, Etiketten als weiße Karten mit Name und m², überlappende Etiketten werden automatisch ausgeblendet) oder **Realistisch** (Himmel, Sonne, Materialien); wird gemerkt |
 | Wege | Ansichtsleiste „Wege“: alle, ohne Gehwege, nur Straßen oder ausgeblendet (nur Darstellung, Routen und Simulation nutzen weiter alle Wege; Einstellung wird gemerkt) |
 | Beschriftung | Gebäudekürzel mit Stift genau über dem Gebäude; aus großer Entfernung nur Kürzel, Name beim Überfahren |
 | m² Flächen | Ansichtsleiste „m² Flächen“: Räume nach DIN 277 eingefärbt und mit Fläche beschriftet; Flächenblatt je Etage (BGF, NUF 1–7, VF, TF, nicht belegt, Raumliste) und je Gebäude; Raumliste als CSV |

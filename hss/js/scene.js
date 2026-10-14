@@ -223,12 +223,14 @@ function buildLabels() {
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
         let a = HSS.roomArea(r);
-        if (V.m2) { a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea)); if (a < 1.5) continue; }
+        if (V.m2 || V.stil === 'cartoon') a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea));
+        if (V.m2) { if (a < 1.5) continue; }
         else if (['flur', 'nass', 'patient1', 'patient2', 'wc', 'putz', 'vorraum', 'schacht', 'kern', 'reserve'].includes(r.use) || a < 8) continue;
         const w = HSS.toWorld(pt, [r.x, r.z]);
-        const el = document.createElement('div'); el.className = 'rlbl';
+        const el = document.createElement('div'); el.className = 'rlbl'; el.dataset.a = Math.round(a);
         const nm = r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum';
         if (V.m2) { el.classList.add('m2'); if (a < 12) el.classList.add('sm'); el.innerHTML = `${a >= 16 ? `<span>${U.esc(nm)}</span>` : ''}<b>${U.fmt(a, 1)} m²</b>`; el.title = `${nm} · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${HSS.DIN277[HSS.roomDin(r)]?.name || ''}`; el.style.pointerEvents = 'auto'; el.onclick = () => S3.select({ kind: 'room', id: r.id, part: pt.id, floor: f }); }
+        else if (V.stil === 'cartoon') { el.classList.add('card'); el.innerHTML = `<span>${U.esc(nm)}</span><small>${U.fmt(a, 0)} m²</small>`; }
         else el.textContent = nm;
         const o = new CSS2DObject(el); o.position.set(w[0], HSS.floorY(pt, f) + V.floor * V.explode + 0.3, w[1]); L.add(o);
       }

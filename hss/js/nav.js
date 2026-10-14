@@ -138,7 +138,8 @@ N.buildGrid = () => {
       }
     }
     const mk = (pos, col, op) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); l.renderOrder = 1; L.add(l); };
-    mk(minor, '#5d6d5a', 0.16); mk(major, '#3e4c3c', 0.32);
+    const toon = HSS.view.stil === 'cartoon';
+    mk(minor, toon ? '#9aa4ae' : '#5d6d5a', toon ? 0.07 : 0.16); mk(major, toon ? '#7d8893' : '#3e4c3c', toon ? 0.16 : 0.32);
   } else {
     const box = new THREE.Box3();
     for (const pt of HSS.allParts(prj)) { if (HSS.localFloor(pt, V.floor, prj) === null) continue; for (const [x, z] of HSS.partFootprint(pt).outer) box.expandByPoint(new THREE.Vector3(x, 0, z)); }
