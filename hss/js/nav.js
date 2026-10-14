@@ -138,7 +138,7 @@ N.buildGrid = () => {
       }
     }
     const mk = (pos, col, op) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); l.renderOrder = 1; L.add(l); };
-    const toon = HSS.view.stil === 'cartoon';
+    const toon = HSS.view.stil !== 'real';
     mk(minor, toon ? '#9aa4ae' : '#5d6d5a', toon ? 0.07 : 0.16); mk(major, toon ? '#7d8893' : '#3e4c3c', toon ? 0.16 : 0.32);
   } else {
     const box = new THREE.Box3();

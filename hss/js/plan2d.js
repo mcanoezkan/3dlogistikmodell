@@ -48,7 +48,7 @@ P2.set = (on) => {
     cam.fov = p.fov || 45; cam.far = p.far || 6000; cam.updateProjectionMatrix();
     C.maxDistance = p.maxD || 1800; C.minDistance = p.minD || 2; C.enableRotate = true; C.maxPolarAngle = p.maxP || Math.PI * 0.495; C.minPolarAngle = 0; C.screenSpacePanning = p.ssp ?? false; C.mouseButtons.LEFT = p.left ?? THREE.MOUSE.ROTATE;
     const t = C.target.clone(); cam.position.set(t.x - d * 0.5, t.y + d * 0.62, t.z + d * 0.6); C.update();
-    S3.renderer.shadowMap.enabled = true; HSS.perf?.shadows();
+    S3.renderer.shadowMap.enabled = HSS.view.stil !== 'plan'; HSS.perf?.shadows();
     if (S3.tool?.plan2d) S3.setTool(null);
   }
   HSS.perf?.invalidate(4); P2.palette(); HSS.emit('view');

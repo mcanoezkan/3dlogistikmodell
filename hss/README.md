@@ -2,6 +2,17 @@
 
 3D-Baukasten für Krankenhaus-Campus mit Simulation der Material-, Waren- und Personenflüsse. Entwickelt aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4) und im UNITY-Design gehalten.
 
+## Planungsmodell (Animationsstil) – Zweig `claude/planungsmodell`
+
+Neuer Standard-Darstellungsstil im Look der Recycling-Halle: klar, hell und schematisch statt realistisch.
+
+| Thema | Inhalt |
+|---|---|
+| Stil „Planungsmodell“ | Ansichtsleiste „Stil“: Planungsmodell (Standard), Cartoon, Realistisch. Matte, klare Farben ohne Schatten (spart Rechenleistung), heller Hintergrund mit Dunst, schlichte Gebäudehüllen mit Fensterband und Geschosslinien, Dachkante in der Gebäudefarbe, weiße Beschriftungskarten |
+| Flussbild | Taste „Flussbild“: alle aktiven Material- und Logistikflüsse als farbige Bänder mit Pfeilen über das Wegenetz – je Material eine eigene Spur, die Dicke entspricht den Fahrten pro Tag, Aufzugsfahrten als senkrechte Bänder. Die Gebäude werden dabei gläsern. Wagen, Betten, AWT-Behälter und LKW fahren als einfache Figuren auf ihren Routen; Legende mit Mengen und Fahrten je Material, Materialien ein-/ausblendbar, Personen- und Besucherströme zuschaltbar |
+| Simulation | Im Planungsmodell erscheinen LKW, Wagen mit Personal, Betten und AWT-Behälter als einfache, farbige Figuren (Farbe = Material) |
+| Hülle „gläsern“ | Neue Option der Hülle: Gebäude durchsichtig, Decken und Dächer angedeutet – Flüsse und Flächen im Haus bleiben sichtbar |
+
 ## Neu in dieser Version
 
 | Thema | Inhalt |

@@ -418,8 +418,10 @@ HSS.player = {
       if (!a) {
         const M = HSS.MITTEL[tr.mittel] || HSS.MITTEL.hand, mat = U.byId(prj.materials, tr.material);
         const obj = new THREE.Group();
-        if (M.modell) obj.add(HSS.library.build(M.modell));
-        if (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper') {
+        const einfach = HSS.view.stil === 'plan' && HSS.flussbild?.agentMesh;
+        if (einfach) obj.add(HSS.flussbild.agentMesh(tr.mittel, mat));
+        else if (M.modell) obj.add(HSS.library.build(M.modell));
+        if (!einfach && (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper')) {
           const lib = tr.mittel === 'awt' ? 'awt.container' : (/speisen|geschirr/i.test(mat?.name) ? 'log.speisenwagen' : /wäsche/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.waeschewagen.unrein' : 'log.waeschewagen.rein') : /steril|instrument/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.instrumentenwagen.unrein' : 'log.sterilgutwagen') : /abfall/i.test(mat?.name) ? 'log.abfall240' : 'log.modulwagen');
           const w = HSS.library.build(lib); w.position.z = tr.mittel === 'awt' ? 0 : tr.mittel === 'schlepper' ? -1.9 : 0.85; if (tr.mittel === 'awt') w.position.y = 0.3; obj.add(w);
           if (tr.mittel === 'schlepper') { const w2 = HSS.library.build(lib); w2.position.z = -3.4; obj.add(w2); }

@@ -380,7 +380,7 @@ UI.bindViewbar = () => {
 
   $$('#vCut button').forEach(b => b.onclick = () => { V.cut = b.dataset.v; UI.refreshViewbar(); S3.rebuild('all'); });
   $('#vShell').onchange = e => { V.shell = e.target.value; S3.rebuild('all'); };
-  $('#vStil').value = HSS.stil?.mode || 'cartoon';
+  $('#vStil').value = HSS.stil?.mode || 'plan';
   $('#vStil').onchange = e => HSS.stil.set(e.target.value);
   $('#vWege').value = V.wege || 'alle';
   $('#vWege').onchange = e => { V.wege = e.target.value; try { localStorage.setItem('hss-wege', V.wege); } catch (er) { /* */ } S3.rebuild('outdoor'); };
