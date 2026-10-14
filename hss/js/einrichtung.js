@@ -119,6 +119,11 @@ function packer(F, ctx) {
       for (const s of cands) {
         const [u, v] = center(s);
         const r = fpOf(d, size, u, v, dir);
+        if (o.overlay) { // Wandobjekte über anderen (Bilder über Handlauf): nur Türen und Einbauten frei halten
+          if (!inRoom(r) || hit(r, F.obst.filter(x => x.door || x.sub)) || hit(r, placed.filter(x => x.overlay))) continue;
+          placed.push(Object.assign(r, { h: 0, id, overlay: true, mount: true }));
+          emit(id, u, v, dir, o.size ? { size } : {}); return r;
+        }
         if (o.mount) {
           if (hit(r, F.obst.filter(x => x.door || x.sub)) || hit(r, placed.filter(x => x.mount ? true : x.h > 1.25))) continue;
           placed.push(Object.assign(r, { h: size.h, id, mount: true }));
@@ -139,6 +144,7 @@ function packer(F, ctx) {
     solid(exclude = []) { return ['back', 'left', 'right', 'front'].filter(s => !F.fac[s] && !exclude.includes(s)).sort((a, b) => P.len(b) - P.len(a)); },
     len: s => s === 'front' || s === 'back' ? F.W : F.D,
     window: () => ['back', 'left', 'right'].find(s => F.fac[s]) || null,
+    doors: F.doors, area: F.W * F.D,
     ctx
   };
   return P;
@@ -148,6 +154,7 @@ const deskSet = (P, side, o = {}) => { const r = P.wall('buero.schreibtisch', si
 const sideOpp = { left: 'right', right: 'left', front: 'back', back: 'front' };
 
 /* Raumrezepte (P = Packer) */
+HSS.einrichtungHelfer = { deskSet: (P, side, o) => deskSet(P, side, o), sideOpp };
 const RZ = HSS.EINRICHTUNG = {
   patient1(P, c) { return c.intensiv ? RZ.intensiv(P, c, 1) : RZ.patient(P, c, 1); },
   patient2(P, c) { return c.intensiv ? RZ.intensiv(P, c, 2) : RZ.patient(P, c, 2); },

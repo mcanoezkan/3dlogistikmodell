@@ -14,10 +14,14 @@
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo;
 const FLUR = 2.4, E = 0.15;
-const MINW = { patient1: 3.6, patient2: 4.4, wc: 1.75, putz: 2.0, entsorgung: 2.3, medikamente: 2.6, kueche: 2.6, schleuse: 2.0, untersuchung: 3.2, behandlung: 3.0, warten: 3.4 };
-const MAXW = { patient1: 5.4, patient2: 6.8, wc: 2.6, putz: 3.4 };
+const MINW = { patient1: 3.6, patient2: 4.4, wc: 1.75, putz: 2.0, entsorgung: 2.3, medikamente: 2.6, kueche: 2.6, schleuse: 2.0, untersuchung: 3.2, behandlung: 3.0, warten: 3.4,
+  op: 6.4, ct: 5.6, mrt: 6.0, roentgen: 4.6, schockraum: 5.6, herzkatheter: 6.4, kreisssaal: 4.6, aufwach: 5.0, umkleide_pat: 1.6, zna_box: 3.4, triage: 3.0, aufnahme: 4.0, empfang: 4.0, kiosk: 3.6, kapelle: 5.0 };
+const MAXW = { patient1: 5.4, patient2: 6.8, wc: 2.6, putz: 3.4, umkleide_pat: 2.4, zna_box: 4.6, triage: 4.6, aufnahme: 20, warten: 18, aufwach: 18, verwaltung: 7.2, buero: 6.0, op: 8.4, mrt: 9.0, ct: 8.0 };
 const minW = u => MINW[u] || 3.0, maxW = u => MAXW[u] || 14;
-const TAGESLICHT = new Set(['patient1', 'patient2', 'aufenthalt', 'personal', 'arzt', 'leitung', 'besprechung', 'untersuchung', 'behandlung', 'warten', 'angehoerige']);
+const TAGESLICHT = new Set(['patient1', 'patient2', 'aufenthalt', 'personal', 'arzt', 'leitung', 'besprechung', 'untersuchung', 'behandlung', 'warten', 'angehoerige', 'empfang', 'aufnahme', 'verwaltung', 'buero', 'sozialdienst', 'kreisssaal', 'bibliothek', 'spielzimmer', 'dialyseplatz', 'kapelle']);
+// Hallen: über die ganze Gebäudetiefe (kein Flur hindurch)
+const HALL = new Set(['foyer', 'cafeteria', 'speisesaal', 'kueche_zentral', 'zentrallager', 'schulung', 'physio', 'labor_gross', 'zsva', 'waesche', 'technikzentrale']);
+HSS.PLAN_HALL = HALL;
 const ORDER = ['stuetzpunkt', 'medikamente', 'rein', 'unrein', 'entsorgung', 'labor', 'geraete', 'lager', 'betten', 'bad', 'schleuse', 'putz', 'wc', 'kueche', 'personal', 'leitung', 'arzt', 'besprechung', 'untersuchung', 'behandlung', 'warten', 'angehoerige', 'aufenthalt'];
 const rank = u => { const i = ORDER.indexOf(u); return i < 0 ? 40 : i; };
 const DOOR = { patient1: [1.35, 'erschl.tuer.bett'], patient2: [1.4, 'erschl.tuer.bett'], bad: [1.4, 'erschl.tuer.bett'], untersuchung: [1.4, 'erschl.tuer.bett'], behandlung: [1.4, 'erschl.tuer.bett'], betten: [1.6, 'erschl.tuer.bett'],
@@ -36,6 +40,18 @@ HSS.planTyp = D => {
   return { typ, name, bands, Du };
 };
 HSS.PLAN = { FLUR, MINW, MAXW, TAGESLICHT };
+/* Benötigte Länge eines Abschnitts (Meter entlang des Gebäudes) für ein Raumprogramm bei Gebäudetiefe D:
+   Hallen über die ganze Tiefe + Räume nach Fläche bzw. nach Fassadenbedarf + Kern + Querflure */
+const hallW = (m2, D) => Math.max(6, m2 / Math.max(4, D - 2 * E));
+HSS.planLaenge = (D, rooms, o = {}) => {
+  const Du = Math.max(4, D - 2 * E), halls = rooms.filter(r => HALL.has(r.use)), rest = rooms.filter(r => !HALL.has(r.use));
+  const hallLen = U.sum(halls.map(h => hallW(h.m2, D)));
+  const need = U.sum(rest.map(r => r.m2)) * 1.4;
+  const PT0 = HSS.planTyp(D), oL0 = PT0.bands.filter(b => b.k === 'O'), nO = Math.max(1, oL0.filter(b => b.d >= 4.4).length), oD = oL0.length ? Math.max(...oL0.map(b => b.d)) : 6;
+  const hasI = PT0.bands.some(b => b.k === 'I'), wOf = r => U.clamp(r.m2 / oD, minW(r.use), maxW(r.use));
+  const facNeed = (U.sum(rest.filter(r => r.use.startsWith('patient')).map(wOf)) + U.sum(rest.filter(r => !r.use.startsWith('patient') && TAGESLICHT.has(r.use)).map(wOf)) * (hasI ? 0.6 : 1)) / nO;
+  return hallLen + (rest.length ? Math.max(need / (Du * 0.8), facNeed * 1.12) + (PT0.typ === 'dreibund' ? 2 * FLUR : 0) : 0) + (o.core ? 8 : 0);
+};
 
 /* Wände aus Raumkanten: kollineare Kanten werden zu durchgehenden Wänden vereinigt */
 HSS.wallsFromRooms = (rooms, t = 0.15) => {
@@ -74,24 +90,87 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
   const rectLoc = (a0, a1, b0, b1) => { const c = toLoc((a0 + a1) / 2, (b0 + b1) / 2); return alongX ? { x: c[0], z: c[1], w: a1 - a0, d: b1 - b0 } : { x: c[0], z: c[1], w: b1 - b0, d: a1 - a0 }; };
   const inside = (s, t) => { const p = toLoc(s, t); return G.pointIn(p, fp.outer) && !fp.holes.some(h => G.pointIn(p, h)); };
   const I = HSS.interior(pt.id, f, true, prj);
-  const sLo = s0 + E + (opts.reserveStart || 0), sHi = s0 + L - E - (opts.reserveEnd || 0);
-  const inRange = r => { const c = alongX ? r.x : r.z; return c >= s0 - 0.01 && c <= s0 + L + 0.01; };
-  if (opts.replace !== false) {
-    I.rooms = I.rooms.filter(r => !inRange(r));
+  let sLo = s0 + E + (opts.reserveStart || 0), sHi = s0 + L - E - (opts.reserveEnd || 0);
+  const sOf = r => alongX ? r.x : r.z, ext = r => (alongX ? r.w : r.d) / 2;
+  if (opts.replace === true) {
+    const inR = r => sOf(r) >= s0 - 0.01 && sOf(r) <= s0 + L + 0.01;
+    I.rooms = I.rooms.filter(r => !inR(r)); I.walls = I.walls.filter(w => w.auto || w.room ? true : !inR({ x: (w.a[0] + w.b[0]) / 2, z: (w.a[1] + w.b[1]) / 2, w: 0, d: 0 }));
     prj.objects = prj.objects.filter(o => !(o.host?.part === pt.id && o.host.floor === f && !o.core && (o.station || o.auto) && (alongX ? o.x : o.z) >= s0 - 0.01 && (alongX ? o.x : o.z) <= s0 + L + 0.01));
+  }
+  /* Nur den benötigten Abschnitt der Etage belegen: freie Abschnitte aus den vorhandenen Räumen
+     bestimmen, die Station dort an das Ende oder an den Erschließungskern legen; der Rest der
+     Etage bleibt frei für weitere Stationen oder Funktionsbereiche (kein künstlicher Leerraum). */
+  if (!sl.half && opts.auto !== false) {
+    const occ = I.rooms.filter(r => r.use !== 'lichthof').map(r => [sOf(r) - ext(r), sOf(r) + ext(r)]).sort((a, b) => a[0] - b[0]);
+    const free = []; let cur = sLo;
+    for (const [a, b] of occ) { if (a > cur + 0.3) free.push([cur, a]); cur = Math.max(cur, b); }
+    if (sHi > cur + 0.3) free.push([cur, sHi]);
+    const fr = free.filter(x => x[1] - x[0] >= 8);
+    let len = HSS.planLaenge(D, sl.rooms || [], { core: opts.core !== false });
+    report.warn = report.warn || [];
+    if (!fr.length) { report.warn.push(`${pt.name} ${HSS.floorName(HSS.globalFloor(pt, f, prj))}: kein freier Abschnitt mehr – Etage ist bereits belegt.`); report.dropped.push(...(sl.rooms || []).map(r => r.name)); return []; }
+    // Abschnitt wählen: zuerst einer, der reicht; bevorzugt mit vorhandenem Aufzug
+    const lifts = prj.objects.filter(o => o.host?.part === pt.id && ['aufzug', 'treppe'].includes(HSS.library.get(o.lib)?.logistik?.rolle)).map(o => alongX ? o.x : o.z);
+    const score = x => (x[1] - x[0] >= len ? 0 : 1000) + (lifts.some(c => c >= x[0] && c <= x[1]) ? 0 : 50) + Math.abs(x[1] - x[0] - len) * 0.01;
+    const seg = fr.slice().sort((a, b) => score(a) - score(b))[0];
+    len *= opts.lenFactor || 1;
+    if (opts.maxLen) len = Math.min(len, opts.maxLen);
+    report.len = len;
+    if (seg[1] - seg[0] - len < 12) { sLo = seg[0]; sHi = seg[1]; }
+    else {
+      const lc = lifts.filter(c => c >= seg[0] && c <= seg[1]);
+      let a = seg[0];
+      if (lc.length) a = U.clamp(lc[0] - len / 2, seg[0], seg[1] - len);
+      // an das nähere Abschnittsende schieben, damit der Rest zusammenhängend bleibt
+      if (a - seg[0] < 10) a = seg[0]; else if (seg[1] - (a + len) < 10) a = seg[1] - len;
+      sLo = a; sHi = a + len;
+      report.seg = report.seg || []; report.seg.push({ part: pt.name, floor: f, von: sLo - (s0 + E), bis: sHi - (s0 + E), frei: (seg[1] - seg[0]) - len });
+    }
+    if (len > seg[1] - seg[0] + 0.5) report.warn.push(`${pt.name}: Abschnitt (${U.fmt(seg[1] - seg[0])} m) kürzer als benötigt (${U.fmt(len)} m) – Raumprogramm wird gekürzt.`);
+    sl.segEnds = [sLo > s0 + E + 0.5 ? sLo : null, sHi < s0 + L - E - 0.5 ? sHi : null];
   }
   const P = HSS.planTyp(D);
   report.typ = P; report.warn = report.warn || [];
   if (P.typ === 'einbund' && P.bands[0].d < 4.4) report.warn.push(`${pt.name}: nur ${U.fmt(D, 1)} m tief – Zimmer werden sehr flach.`);
   // Bänder quer zur Längsachse
   let tc = tMin + E; P.bands.forEach(b => { b.t0 = tc; b.t1 = tc + b.d; tc = b.t1; });
+  // Hallen (Eingangshalle, Cafeteria, Zentralküche, Lager, ZSVA …) über die ganze Gebäudetiefe am Abschnittsanfang
+  const hallRooms = [], hallDoors = []; let hallEdge = null;
+  const halls = (sl.rooms || []).filter(r => HALL.has(r.use));
+  if (halls.length && sHi - sLo > 16) {
+    sl.rooms = sl.rooms.filter(r => !HALL.has(r.use));
+    const tA = tMin + E, tB = tMin + D - E, Du2 = tB - tA;
+    let a = sLo; while (!(inside(a + 0.3, tA + 0.3) && inside(a + 0.3, tB - 0.3)) && a < sLo + 10) a += 0.25;
+    for (const h of halls) {
+      const w = U.clamp(hallW(h.m2, Du2 + 2 * E), 6, Math.max(6, (sHi - a) * 0.55));
+      hallRooms.push(Object.assign({ id: U.uid('r'), use: h.use, name: h.name, station: st.id, hall: true }, rectLoc(a, a + w, tA, tB)));
+      if (hallRooms.length > 1) hallDoors.push({ p: toLoc(a, (tA + tB) / 2), w: 2.4, lib: 'offen' });
+      a += w;
+    }
+    sLo = hallEdge = a;
+  }
   const lanes = [], corridors = [];
   P.bands.forEach((b, i) => {
     if (b.k === 'C') corridors.push(b);
     if (b.k === 'O') { const cb = P.bands[i + 1]?.k === 'C' ? P.bands[i + 1] : P.bands[i - 1]; lanes.push({ k: 'O', t0: b.t0, t1: b.t1, door: cb.t0 >= b.t1 - 1e-6 ? b.t1 : b.t0, items: [], occ: [] }); }
     if (b.k === 'I') {
       if (b.d < 8) lanes.push({ k: 'I', t0: b.t0, t1: b.t1, door: b.t0, door2: b.t1, items: [], occ: [], band: b });
-      else { const di = Math.min(6.2, b.d / 2); lanes.push({ k: 'I', t0: b.t0, t1: b.t0 + di, door: b.t0, items: [], occ: [], band: b }); if (b.d - 2 * di > 0.05) lanes.push({ k: 'M', t0: b.t0 + di, t1: b.t1 - di, items: [], occ: [], band: b }); lanes.push({ k: 'I', t0: b.t1 - di, t1: b.t1, door: b.t1, items: [], occ: [], band: b }); }
+      else {
+        // tiefe Innenzone: kein Lichthof, sondern Mittelflur mit Räumen zu beiden Seiten (vierbündig)
+        const di = Math.min(6.2, b.d / 2), m = b.d - 2 * di;
+        if (m >= FLUR + 6) {
+          const ri = (m - FLUR) / 2, c0 = b.t0 + di + ri;
+          lanes.push({ k: 'I', t0: b.t0, t1: b.t0 + di, door: b.t0, items: [], occ: [], band: b });
+          lanes.push({ k: 'I', t0: b.t0 + di, t1: c0, door: c0, items: [], occ: [], band: b, inner: true });
+          corridors.push({ k: 'C', t0: c0, t1: c0 + FLUR, d: FLUR, mid: true });
+          lanes.push({ k: 'I', t0: c0 + FLUR, t1: b.t1 - di, door: c0 + FLUR, items: [], occ: [], band: b, inner: true });
+          lanes.push({ k: 'I', t0: b.t1 - di, t1: b.t1, door: b.t1, items: [], occ: [], band: b });
+        } else {
+          const h = b.d / 2;
+          lanes.push({ k: 'I', t0: b.t0, t1: b.t0 + h, door: b.t0, items: [], occ: [], band: b });
+          lanes.push({ k: 'I', t0: b.t0 + h, t1: b.t1, door: b.t1, items: [], occ: [], band: b });
+        }
+      }
     }
   });
   lanes.forEach(l => { l.depth = l.t1 - l.t0; });
@@ -120,7 +199,8 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
   const block = (l, a, b, kind, name, extra = {}) => { l.occ.push(Object.assign({ a, b, kind, name }, extra)); };
   for (const v of verts) for (const l of lanes) if (!l.off && Math.min(v.t1, l.t1) - Math.max(v.t0, l.t0) > 0.25) block(l, v.s0 - 0.15, v.s1 + 0.15, 'kern', v.role === 'treppe' ? 'Treppenhaus' : v.role === 'aufzug' ? 'Aufzug' : 'Kern');
   // Neuer Erschließungskern
-  const newObjs = [], newDoors = [], rooms = [];
+  const newObjs = [], newDoors = hallDoors, rooms = hallRooms;
+  if (hallEdge !== null) for (const c of corridors) newDoors.push({ p: toLoc(hallEdge, (c.t0 + c.t1) / 2), w: Math.min(2.2, c.t1 - c.t0 - 0.2), lib: 'offen' });
   const coreLanes = P.typ === 'dreibund' ? (lanes.filter(l => l.k === 'I').length > 1 ? [lanes.find(l => l.k === 'I')] : lanes.filter(l => l.k !== 'O')) : P.typ === 'zweibund' ? [lanes[1]] : P.typ === 'anderthalb' && lanes[1].depth >= 3.4 ? [lanes[1]] : [lanes[0]];
   const coreT0 = Math.min(...coreLanes.map(l => l.t0)), coreT1 = Math.max(...coreLanes.map(l => l.t1)), cd = coreT1 - coreT0;
   const doorT = coreLanes[0].door ?? coreT0;
@@ -200,7 +280,8 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
     }
     l.placed = placed;
   }
-  // Lücken füllen: kleine Reste den Nachbarn zuschlagen, große als Reserve
+  // Lücken füllen: kleine Reste den Nachbarn zuschlagen, große mit Ergänzungsräumen
+  const FILL_O = (T.fillO || ['besprechung', 'arzt', 'buero', 'aufenthalt', 'untersuchung', 'personal']), FILL_I = (T.fillI || ['lager', 'geraete', 'archiv', 'betten', 'lager', 'putz']), fillIdx = { n: 0 };
   for (const l of lanes) {
     if (l.off) continue;
     const segs = l.placed.map(p => ({ a: p.a, b: p.b, room: p })).concat(l.occ.map(o => ({ a: Math.max(o.a, l.lo), b: Math.min(o.b, l.hi), occ: o }))).filter(s => s.b > s.a + 1e-6).sort((a, b) => a.a - b.a);
@@ -211,7 +292,6 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
     if (l.hi > cur + 0.02) gaps.push([cur, l.hi]);
     for (const [a, b] of gaps) {
       const len = b - a;
-      if (l.k === 'M') { l.placed.push({ a, b, use: len >= 0 && l.depth >= 3 ? 'lichthof' : 'schacht', name: l.depth >= 3 ? 'Lichthof (Belichtung Innenzone)' : 'Installationszone / Schächte', filler: true }); continue; }
       const left = l.placed.find(p => Math.abs(p.b - a) < 0.03 && !p.filler), right = l.placed.find(p => Math.abs(p.a - b) < 0.03 && !p.filler);
       if (len < 2.2) {
         const grow = left && (!right || left.w <= right.w) ? left : right;
@@ -220,8 +300,10 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
         if (len >= 0.6) l.placed.push({ a, b, use: 'schacht', name: 'Installationsschacht', filler: true });
         continue;
       }
-      const mod = l.k === 'O' ? 4.8 : 6.0, n = Math.max(1, Math.round(len / mod));
-      for (let i = 0; i < n; i++) l.placed.push({ a: a + len * i / n, b: a + len * (i + 1) / n, use: 'reserve', name: 'Reservefläche (frei planbar)', filler: true });
+      // keine leeren Reserveräume: Rest mit sinnvollen Räumen der Station belegen (werden eingerichtet)
+      const mod = l.k === 'O' ? 4.6 : 5.2, n = Math.max(1, Math.round(len / mod));
+      const list = l.k === 'O' ? FILL_O : FILL_I;
+      for (let i = 0; i < n; i++) { const u = list[(fillIdx.n++) % list.length]; l.placed.push({ a: a + len * i / n, b: a + len * (i + 1) / n, use: u, name: (HSS.ROOMTYPES[u] || {}).name, extra: true }); }
     }
     // Kernflächen als Räume
     for (const s of merged.filter(x => x.occ)) {
@@ -238,6 +320,14 @@ HSS.layoutStationFloor = (sl, st, T, report, opts = {}) => {
     flurRooms.push(r);
   }
   rooms.push(...flurRooms);
+  // Stationsgrenze im Gebäude: Wand mit Stationstür (Rauchschutz) quer über jeden Flur
+  for (const e of sl.segEnds || []) {
+    if (e === null || e === undefined) continue;
+    for (const c of corridors) {
+      I.walls.push({ id: U.uid('w'), a: toLoc(e, c.t0), b: toLoc(e, c.t1), t: 0.15, stationEnd: st.id });
+      newDoors.push({ p: toLoc(e, (c.t0 + c.t1) / 2), w: Math.min(1.8, c.t1 - c.t0 - 0.4), lib: 'erschl.tuer.brandschutz' });
+    }
+  }
   // Räume erzeugen
   const sideIdx = new Map();
   for (const l of lanes) {

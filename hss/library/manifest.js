@@ -10,7 +10,8 @@ window.HSS_LIBRARY_FILES = [
   'personen-fahrzeuge.js',
   'aussen.js',
   'erweiterung.js',
-  'einrichtung.js'
+  'einrichtung.js',
+  'klinik-plus.js'
 ];
 (function () {
   var src = document.currentScript && document.currentScript.src || '', base = src.replace(/manifest\.js.*$/, ''), v = (src.match(/\?v=[^&]+/) || [''])[0];

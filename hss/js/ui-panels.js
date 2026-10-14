@@ -380,7 +380,8 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
     <details open><summary class="note"><b>Raumprogramm</b> (${calc.rooms.reduce((a, r) => a + r.n, 0)} Räume, ${U.fmt(calc.nuf)} m² NUF)</summary><table class="t rp"><tr><th>Raum</th><th class="n">Anz.</th><th class="n">m²</th><th class="n">Σ</th><th>Grundlage</th></tr>${calc.rooms.map(r => `<tr title="${U.esc(HSS.NEBENRAUM_INFO[r.use] || HSS.ROOMINFO?.[r.use]?.text || '')}"><td>${U.esc(r.name)}${HSS.NEBENRAUM_INFO[r.use] ? `<div class="rpi">${U.esc(HSS.NEBENRAUM_INFO[r.use])}</div>` : ''}</td><td class="n">${r.n}</td><td class="n">${U.fmt(r.m2, 1)}</td><td class="n">${U.fmt(r.n * r.m2, 1)}</td><td>${UI.srcChip(r.q || (r.use.startsWith('patient') ? (T.intensiv ? 'divi' : 'rlp') : 'annahme'))}</td></tr>`).join('')}</table></details>
     <label class="chk"><input type="checkbox" id="sFurn" checked> mit Ausstattung aus der Bibliothek</label>
     <label class="chk"><input type="checkbox" id="sCore" checked> Aufzug und Treppenhaus ergänzen, falls keiner vorhanden</label>
-    <label class="chk"><input type="checkbox" id="sRepl" checked> gewählte Etagen vorher leeren</label>
+    <label class="chk"><input type="checkbox" id="sRepl"> gewählte Etagen vorher komplett leeren</label>
+    <div class="note">Die Station belegt nur den Abschnitt der Etage, den sie braucht – der Rest bleibt frei für weitere Stationen oder Bereiche.</div>
     <div class="actions"><button class="primary" id="sGo" ${inp.sel.length ? '' : 'disabled'}>Station anlegen</button></div>
     <p class="note">Alternativ alles manuell im Arbeitsbereich „Etagen“ planen.</p>
     <h3>Stationen im Projekt (${prj.stations.length})</h3>${prj.stations.length ? '<button class="primary" id="sTour" style="margin-bottom:6px">▶ Stationsrundgang starten</button>' : ''}
@@ -401,7 +402,7 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
     $('#sGo', el).onclick = () => {
       if (readonly()) return;
       let rep;
-      HSS.change('Station anlegen', () => { rep = HSS.generateStation(Object.assign({}, inp, { art: isAmb ? 'ambulant' : inp.art }), calc, { furnish: $('#sFurn', el).checked, core: $('#sCore', el).checked, replace: $('#sRepl', el).checked }).report; });
+      HSS.change('Station anlegen', () => { rep = HSS.generateStation(Object.assign({}, inp, { art: isAmb ? 'ambulant' : inp.art }), calc, { furnish: $('#sFurn', el).checked, core: $('#sCore', el).checked, replace: $('#sRepl', el).checked, lenFactor: 1.08 }).report; });
       const s0 = inp.sel[0], P = HSS.findPart(s0.part); HSS.s3.setFloor(HSS.globalFloor(P.part, s0.floors[0])); HSS.s3.focusSel({ kind: 'part', id: s0.part });
       const fl = (rep.floors || []).map(x => `<li><b>${U.esc(x.part)} ${U.esc(HSS.floorName(x.floor))}</b>: ${U.esc(x.typName)} – ${U.fmt(x.tiefe, 1)} m tief, ${U.fmt(x.laenge, 1)} m nutzbare Länge${x.reserve > 1 ? `; ${U.fmt(x.reserve)} m² Reservefläche` : ''}</li>`).join('');
       UI.dialog(`<h2>Station angelegt</h2><p>${rep.placed} Räume platziert und vollständig eingerichtet.</p>${fl ? `<ul class="note">${fl}</ul>` : ''}${rep.dropped.length ? `<div class="warnbox">Nicht untergebracht (Fläche/Fassade reicht nicht): ${rep.dropped.map(U.esc).join(', ')}</div>` : '<div class="okbox">Alle Räume des Raumprogramms untergebracht.</div>'}<p class="note">Räume lassen sich anklicken und im Inspektor ändern. Für Standardflüsse erhalten Arbeitsraum rein/unrein, Medikamente, Teeküche und Stützpunkt automatisch ihre Rolle.</p><div class="actions"><button id="dlgM2">Flächen ansehen (m²)</button><button class="primary" data-close>OK</button></div>`);
