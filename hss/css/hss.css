@@ -361,3 +361,12 @@ dialog.wide{width:min(96vw,1500px);max-width:96vw}
 .khc{background:#fff;border:1px solid #d5dce3;border-left:5px solid var(--c);padding:4px 7px;margin-bottom:4px;cursor:grab;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(10,34,60,.08)}
 .khc b{font-size:12px;color:var(--navy);line-height:1.25}.khc small{font-size:11px;color:var(--muted)}
 .khc.drag{opacity:.4}
+
+/* ---------- 2D-Plan ---------- */
+#plan2dBar{position:fixed;left:calc(var(--railW) + var(--panelW) + 24px);top:calc(var(--topH) + 92px);z-index:9;background:#fff;box-shadow:var(--shadow);padding:6px 8px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - var(--railW) - var(--panelW) - 60px);border-left:4px solid var(--ok)}
+#plan2dBar b{color:var(--navy);margin-right:4px}
+#plan2dBar input{width:52px}
+#plan2dBar label{font-size:12px;color:var(--muted);display:flex;gap:4px;align-items:center}
+body.nopanel #plan2dBar{left:calc(var(--railW) + 24px)}
+#v2d.on{background:#0A967A;color:#fff;border-color:#0A967A}
+body.plan2d #vExplode,body.plan2d #vSun{opacity:.4}

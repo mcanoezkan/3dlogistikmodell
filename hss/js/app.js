@@ -8,7 +8,7 @@ const HSS = window.HSS, U = HSS.util, UI = HSS.ui, $ = UI.$, $$ = UI.$$;
 function boot() {
   HSS.s3.init($('#viewport')); HSS.perf.init(); HSS.manip.init();
   HSS.nav.init();
-  UI.buildRail(); UI.bindViewbar(); UI.timeline.bind();
+  UI.buildRail(); UI.bindViewbar(); UI.timeline.bind(); HSS.plan2d?.init();
   bindHeader(); bindDrop();
   HSS.on('changed', e => {
     if (e.scope !== 'none') HSS.s3.rebuild(e.scope === 'objects' ? 'objects' : e.scope === 'outdoor' ? 'outdoor' : 'all');
