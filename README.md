@@ -4,7 +4,7 @@
 
 Im Ordner [`hss/`](hss/README.md): Baukasten für Krankenhaus-Campus in 3D (Gebäude mit anpassbaren Fassaden und Rundungen, Brücken, Gelände, Wege, Verkehr, Etagen-Innenausbau, AWT) mit Objektbibliothek, Stationsplaner (Grundriss nach Gebäudetiefe, vollständig eingerichtete Räume), Flächenansicht nach DIN 277 und Simulation der Material-, Waren- und Personenflüsse inklusive Hotspot-Analyse, Fahrzeugbedarf und Ich-Perspektive. Demo-Modus „UNITY Hospital“; Standortmodelle BwZK Koblenz und Klinikum Hanau (Bestand und Variante) als bearbeitbare Projekte.
 
-Am einfachsten: `Healthcare_Simulation_Suite.html` per Doppelklick öffnen (eine Datei, läuft offline). Projektdateien aus [`projekte/`](projekte) (BwZK Koblenz, Klinikum Hanau, Klinikum Bielefeld-Mitte – je Bestand und Variante) ins Fenster ziehen.
+Am einfachsten: `Healthcare_Simulation_Suite.html` per Doppelklick öffnen (eine Datei, läuft offline). Projektdateien aus [`projekte/`](projekte) (BwZK Koblenz, Klinikum Hanau, Klinikum Bielefeld-Mitte – je Bestand und Variante) ins Fenster ziehen. Varianten für den Koblenzer Neubau K2 (neben K1, anstelle von C, D, C+D oder A/B/HT/C/D) liegen in [`projekte/Koblenz_K2`](projekte/Koblenz_K2).
 
 ```bash
 python3 start.py          # öffnet die Healthcare Simulation Suite
