@@ -131,13 +131,53 @@ function buildHandles() {
     addHandle('bridge', new V3(e.pb[0], e.yb + 1.5, e.pb[1]), { op: 'bend', end: 'b' });
   } else if (sel.kind === 'room') {
     const P = HSS.findPart(sel.part); const r = HSS.interior(sel.part, sel.floor)?.rooms.find(x => x.id === sel.id); if (!P || !r) return;
-    const y = HSS.floorY(P.part, sel.floor) + HSS.view.floor * HSS.view.explode + 1.4, W = (lx, lz) => { const w = HSS.toWorld(P.part, [lx, lz]); return new V3(w[0], y, w[1]); };
+    if (r.zone && r.zf && HSS.zoneUV) { zoneHandles(P.part, sel.floor, r); HSS.perf?.invalidate(2); return; }
+    const y = roomY(P.part, sel.floor) + 1.4, W = (lx, lz) => { const w = HSS.toWorld(P.part, [lx, lz]); return new V3(w[0], y, w[1]); };
     addHandle('resize', W(r.x + r.w / 2 + 0.5, r.z), { op: 'edge', ax: 'x', sg: 1 }); addHandle('resize', W(r.x - r.w / 2 - 0.5, r.z), { op: 'edge', ax: 'x', sg: -1 });
     addHandle('resizeV', W(r.x, r.z + r.d / 2 + 0.5), { op: 'edge', ax: 'z', sg: 1 }); addHandle('resizeV', W(r.x, r.z - r.d / 2 - 0.5), { op: 'edge', ax: 'z', sg: -1 });
   }
   HSS.perf?.invalidate(2);
 }
 const centroid = pts => [U.sum(pts.map(q => q[0])) / pts.length, U.sum(pts.map(q => q[1])) / pts.length];
+// Fußbodenhöhe eines Geschosses in der aktuellen Ansicht (Explosion berücksichtigt); in der Flächenplan-Ansicht Oberkante der Geschossscheibe
+const roomY = (pt, f) => HSS.floorY(pt, f) + HSS.globalFloor(pt, f) * (HSS.view.explode || 0);
+const zoneTop = (pt, f) => roomY(pt, f) + (HSS.view.zonen && HSS.view.floor === null ? HSS.fh(pt, f) - 0.1 : 1.4);
+// Flächen (Flächenplanung): Anfang/Ende entlang der Längsachse, Seiten, Verschieben
+function zoneBox(pt, r) { const zf = r.zf, E = HSS.zoneExtent(pt, zf.a); return { E, u0: zf.u0 ?? E.u0, u1: zf.u1 ?? E.u1, v0: zf.v0 ?? E.v0, v1: zf.v1 ?? E.v1 }; }
+function zoneHandles(pt, f, r) {
+  const { fromUV } = HSS.zoneUV, a = r.zf.a, b = zoneBox(pt, r), y = zoneTop(pt, f);
+  const W = (u, v, yy = y) => { const l = fromUV([u, v], a), w = HSS.toWorld(pt, l); return new V3(w[0], yy, w[1]); };
+  const um = (b.u0 + b.u1) / 2, vm = (b.v0 + b.v1) / 2;
+  addHandle('resize', W(b.u1 + 1.5, vm), { op: 'zedge', e: 'u1' }); addHandle('resize', W(b.u0 - 1.5, vm), { op: 'zedge', e: 'u0' });
+  addHandle('resizeV', W(um, b.v1 + 1.5), { op: 'zedge', e: 'v1' }); addHandle('resizeV', W(um, b.v0 - 1.5), { op: 'zedge', e: 'v0' });
+  addHandle('move', W(um, vm, y + 1.2), { op: 'move' });
+  const poly = (r.poly || []).map(q => { const w = HSS.toWorld(pt, q); return new V3(w[0], y + 0.05, w[1]); }); if (poly.length > 2) addLine(poly.concat([poly[0]]));
+}
+function dragZone(hit, fine) {
+  const { toUV, fromUV } = HSS.zoneUV, r0 = D.r0, pt = D.part, sel = D.sel, a = r0.zf.a, b0 = zoneBox(pt, r0), E = b0.E;
+  const q = toUV(HSS.toLocal(pt, [hit.x, hit.z]), a), st = fine ? 0.1 : 0.5, sn = v => Math.round(v / st) * st;
+  const full = r0.zf.v0 === null || r0.zf.v0 === undefined;
+  // nicht in benachbarte Flächen hinein: freier Abschnitt, in dem die Fläche liegt
+  if (!D.lim) { const fr = HSS.zoneFree(pt, sel.floor, prj(), new Set([r0.id])).free; D.lim = (full && fr.find(x => x.u0 <= b0.u0 + 0.6 && x.u1 >= b0.u1 - 0.6)) || { u0: E.u0, u1: E.u1 }; }
+  const lim = D.lim, c = { u0: b0.u0, u1: b0.u1, v0: b0.v0, v1: b0.v1 };
+  if (D.op === 'zedge') {
+    const e = D.e, sg = e.endsWith('1') ? 1 : -1, k = e[0] === 'u' ? 0 : 1; let v = sn(q[k] - sg * 1.5);
+    if (e === 'u1') v = U.clamp(v, c.u0 + 2, lim.u1); if (e === 'u0') v = U.clamp(v, lim.u0, c.u1 - 2);
+    if (e === 'v1') v = U.clamp(v, c.v0 + 2, E.v1); if (e === 'v0') v = U.clamp(v, E.v0, c.v1 - 2);
+    c[e] = v;
+  } else if (D.op === 'move') {
+    const q0 = toUV(HSS.toLocal(pt, [D.p0.x, D.p0.z]), a); let du = sn(q[0] - q0[0]); du = U.clamp(du, lim.u0 - c.u0, lim.u1 - c.u1); c.u0 += du; c.u1 += du;
+    if (!full) { let dv = sn(q[1] - q0[1]); dv = U.clamp(dv, E.v0 - c.v0, E.v1 - c.v1); c.v0 += dv; c.v1 += dv; }
+  }
+  const tiefe = (D.op === 'zedge' && D.e[0] === 'v') || !full;
+  const nzf = { a, u0: Math.round(c.u0 * 100) / 100, u1: Math.round(c.u1 * 100) / 100, v0: tiefe && (c.v0 > E.v0 + 0.3 || c.v1 < E.v1 - 0.3) ? Math.round(c.v0 * 100) / 100 : null, v1: tiefe && (c.v0 > E.v0 + 0.3 || c.v1 < E.v1 - 0.3) ? Math.round(c.v1 * 100) / 100 : null };
+  const g = HSS.zoneGeom(pt, nzf); clearGhost();
+  const y = zoneTop(pt, sel.floor) + 0.1, pts = g.poly.map(p => { const w = HSS.toWorld(pt, p); return new V3(w[0], y, w[1]); });
+  if (pts.length > 2) { const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts.concat([pts[0]])), new THREE.LineBasicMaterial({ color: '#d9531e', depthTest: false })); l.renderOrder = 41; ghost().add(l); }
+  void fromUV;
+  hint(`<b>${U.esc(r0.name || 'Fläche')}</b> · <b>${fmt(g.area, 0)} m²</b>${r0.soll ? ` von ${fmt(r0.soll, 0)} m² Soll (${U.pct(g.area / r0.soll)})` : ''} · ${fmt(c.u1 - c.u0)} m lang`);
+  D.commit = () => HSS.change('Fläche ändern', p => { const r = HSS.interior(sel.part, sel.floor, false, p)?.rooms.find(x => x.id === sel.id); const P = HSS.findPart(sel.part, p); if (!r || !P) return; r.zf = nzf; HSS.zoneRefresh(P.part, r); });
+}
 
 /* ---------- Ziehen ---------- */
 let D = null; // aktiver Ziehvorgang
@@ -183,7 +223,7 @@ function begin(ev) {
     if (D.op === 'rot') { D.c = centroid(pa.points); const h = planeHit(ev, D.y); D.ang0 = Math.atan2(h.z - D.c[1], h.x - D.c[0]); }
   } else if (sel.kind === 'room') {
     const P = HSS.findPart(sel.part), r = HSS.interior(sel.part, sel.floor).rooms.find(x => x.id === sel.id);
-    D.part = P.part; D.r0 = U.clone(r); D.y = HSS.floorY(P.part, sel.floor) + HSS.view.floor * HSS.view.explode;
+    D.part = P.part; D.r0 = U.clone(r); D.y = r.zone && r.zf ? zoneTop(P.part, sel.floor) : roomY(P.part, sel.floor); D.lim = null;
     if (D.op === 'move') D.p0 = planeHit(D.ev0 || ev, D.y) || D.p0;
   } else if (sel.kind === 'bridge') {
     const br = U.byId(p.bridges, sel.id); D.br0 = U.clone(br); const e = HSS.bridgeEnds(br); D.y = D.end === 'a' ? e.ya : e.yb;
@@ -351,6 +391,7 @@ const D_label = op => ({ move: 'Weg verschieben', point: 'Wegpunkt verschieben',
 
 /* Raum */
 function dragRoom(hit, fine) {
+  if (D.r0.zone && D.r0.zf && HSS.zoneUV) return dragZone(hit, fine);
   const r0 = D.r0, pt = D.part, sel = D.sel, n = U.clone(r0);
   const loc = HSS.toLocal(pt, [hit.x, hit.z]), st = fine ? 0.05 : 0.25, sn = v => Math.round(v / st) * st;
   if (D.op === 'move') { const l0 = HSS.toLocal(pt, [D.p0.x, D.p0.z]); n.x = r0.x + sn(loc[0] - l0[0]); n.z = r0.z + sn(loc[1] - l0[1]); }

@@ -238,7 +238,7 @@ UI.ws.klinik = { name: 'Klinik-Planer', short: 'Klinik-Planer', step: '4', lead:
       ${UI.khWhere ? `<div class="okbox">${Object.keys(UI.khWhere).length} von ${prog.cards.length} Bereichen verteilt.</div>` : ''}
       <h3>3 · Planen</h3>
       <label class="chk"><input type="checkbox" id="kClr" checked> belegte Geschosse vorher leeren</label>
-      <div class="actions"><button class="primary big" id="kGo" ${zellen.length ? '' : 'disabled'}>▶ Krankenhaus planen</button></div>
+      <div class="actions"><button class="primary big" id="kGo" ${zellen.length ? '' : 'disabled'}>▶ Krankenhaus planen</button><button id="kZone" ${zellen.length ? '' : 'disabled'} title="Ohne Räume: jeder Bereich wird nur als farbige Fläche (m²) auf sein Geschoss gelegt – Masterplan-Ansicht">Nur Flächen planen</button></div>
       <p class="note">Einzelne Stationen weiterhin im <a href="#" id="kSt">Stationsplaner</a>. Räume und Möbel danach direkt im 3D-Bild anpassen.</p>
       <details><summary class="note"><b>Raumprogramm</b> (${prog.cards.length} Bereiche)</summary><table class="t rp"><tr><th>Bereich</th><th class="n">m²</th><th>Ebene</th></tr>${prog.cards.map(c => `<tr><td><span class="sw" style="background:${GRUPPE[c.gruppe].color}"></span> ${U.esc(c.name)}${c.betten ? ` <span class="note">(${c.betten} Betten)</span>` : ''}</td><td class="n">${U.fmt(c.m2)}</td><td>${{ UG: 'UG', EG: 'EG', OG1: '1. OG', OG: 'OG', TOP: 'oben' }[c.ebene]}</td></tr>`).join('')}</table><div class="note">Kennwerte: Raumprogramme in Anlehnung an DIN 13080 und die Musterraumprogramme der Länder (RLP, Schleswig-Holstein); Flurzuschlag 35–40 %. Größen sind Planungsannahmen.</div></details>`;
     const set = (k, v) => { inp[k] = v; UI.khWhere = null; UI.renderPanel(); };
@@ -252,6 +252,7 @@ UI.ws.klinik = { name: 'Klinik-Planer', short: 'Klinik-Planer', step: '4', lead:
     $('#kSug', el).onclick = () => UI.khGebaeude();
     $('#kSt', el).onclick = e => { e.preventDefault(); UI.setWS('station'); };
     $('#kGo', el).onclick = () => UI.khGo($('#kClr', el).checked);
+    $('#kZone', el).onclick = () => UI.khFlaechen($('#kClr', el).checked);
   } };
 
 /* Planungstafel: Zeilen = Geschosse, Spalten = Bauteile; Karten per Ziehen verteilen */
@@ -270,7 +271,7 @@ UI.khBoard = () => {
     <div class="khscroll"><table class="khb"><tr><th></th>${parts.map(p => `<th>${U.esc(p.bau)} · ${U.esc(p.name)}</th>`).join('')}</tr>
     ${gfs.map(g => `<tr><th>${HSS.floorName(g)}</th>${parts.map(p => cell(zellen.find(z => z.part === p.part && z.gf === g))).join('')}</tr>`).join('')}</table></div></div>
     <div class="row" style="margin-top:6px">${Object.entries(GRUPPE).map(([k, g]) => `<span class="note"><span class="sw" style="background:${g.color}"></span> ${g.name}</span>`).join(' ')}</div>
-    <div class="actions"><button id="kbAuto">Automatisch verteilen</button><button id="kbClr">Alle zurück</button><div class="sp"></div><button class="primary" id="kbGo">▶ So planen</button><button data-close>Schließen</button></div>`, d => {
+    <div class="actions"><button id="kbAuto">Automatisch verteilen</button><button id="kbClr">Alle zurück</button><div class="sp"></div><button id="kbZone" title="Nur Flächen je Bereich, ohne Räume">Nur Flächen</button><button class="primary" id="kbGo">▶ So planen</button><button data-close>Schließen</button></div>`, d => {
     d.classList.add('wide');
     let drag = null;
     $$('.khc', d).forEach(c => { c.ondragstart = e => { drag = c.dataset.c; e.dataTransfer.setData('text/plain', drag); e.dataTransfer.effectAllowed = 'move'; c.classList.add('drag'); }; c.ondragend = () => c.classList.remove('drag'); });
@@ -281,6 +282,7 @@ UI.khBoard = () => {
     $('#kbAuto', d).onclick = () => { UI.khWhere = HSS.khVerteilen(progNow(), HSS.khZellen()); UI.khBoard(); UI.renderPanel(); };
     $('#kbClr', d).onclick = () => { UI.khWhere = {}; UI.khBoard(); UI.renderPanel(); };
     $('#kbGo', d).onclick = () => { d.close(); UI.khGo(true); };
+    $('#kbZone', d).onclick = () => { d.close(); UI.khFlaechen(true); };
     d.addEventListener('close', () => d.classList.remove('wide'), { once: true });
   });
 };
@@ -299,6 +301,23 @@ UI.khGo = (leeren) => {
       ${rep.warn.length ? `<details><summary class="note">${rep.warn.length} Hinweise</summary><ul class="note">${rep.warn.slice(0, 30).map(w => `<li>${U.esc(w)}</li>`).join('')}</ul></details>` : ''}
       <div class="actions"><button id="kgTour" class="primary">▶ Rundgang durch die Bereiche</button><button data-close>OK</button></div>`, d => { $('#kgTour', d).onclick = () => { d.close(); HSS.tour.dialog(); }; });
   }, 40);
+};
+/* Nur Flächen: jeder Bereich als Fläche (m²) auf seinem Geschoss, ohne Räume */
+UI.khFlaechen = (leeren) => {
+  if (HSS.state.demoReadonly) return UI.toast('Demo ist schreibgeschützt');
+  if (!HSS.zoneFromCards) return;
+  const prog = progNow(); if (!UI.khWhere) UI.khWhere = HSS.khVerteilen(prog, HSS.khZellen());
+  let rep; HSS.manip?.mark();
+  HSS.change('Flächen planen', prj => {
+    if (leeren) for (const key of new Set(Object.values(UI.khWhere))) { const [part, fs] = key.split('|'), f = +fs, I = HSS.interior(part, f, false, prj); if (I) { I.rooms = []; I.walls = []; I.doors = []; } prj.objects = prj.objects.filter(o => !(o.host?.part === part && o.host.floor === f && !o.core)); }
+    rep = HSS.zoneFromCards(prj, prog, UI.khWhere);
+  });
+  HSS.zonen.setView(true); UI.renderPanel(); HSS.s3.home();
+  UI.dialog(`<div class="dh"><h2>Flächenplan angelegt</h2><button class="x" data-close>×</button></div>
+    <p>${Object.keys(UI.khWhere).length} Bereiche als ${rep.zones} Flächen mit zusammen ${U.fmt(rep.m2)} m² auf die Geschosse gelegt – ohne Räume.</p>
+    ${rep.rest.length ? `<div class="warnbox">Nicht ganz untergebracht: ${rep.rest.map(U.esc).join(', ')}. Gebäude vergrößern oder Bereiche auf der Planungstafel umverteilen.</div>` : '<div class="okbox">Alle Bereiche untergebracht.</div>'}
+    <p class="note">Flächen im 3D-Bild anklicken und an den Griffen anpassen. Bilanz und Legende im Arbeitsbereich „Flächenplanung“. Später lassen sich einzelne Bereiche mit „▶ Krankenhaus planen“ detailliert mit Räumen planen.</p>
+    <div class="actions"><button class="primary" id="kzWs">Zur Flächenplanung</button><button data-close>OK</button></div>`, d => { $('#kzWs', d).onclick = () => { d.close(); UI.setWS('zonen'); }; });
 };
 /* Gebäude passend zum Flächenbedarf vorschlagen (Sockel + Bettenhäuser + Logistik) */
 UI.khGebaeude = async () => {

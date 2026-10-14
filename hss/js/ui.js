@@ -297,6 +297,7 @@ INSP_BIND.area = (el, s) => { UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläc
 
 INSP.room = s => {
   const I = HSS.interior(s.part, s.floor); const r = I?.rooms.find(x => x.id === s.id); if (!r) return '';
+  if (r.zone && HSS.zoneInspector) return HSS.zoneInspector(s);
   return head('Raum', r.name || HSS.ROOMTYPES[r.use]?.name) + `<div class="note">${U.fmt(r.w * r.d, 1)} m² · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${U.esc(HSS.DIN277[HSS.roomDin(r)]?.name || '')}${r.station ? ' · Station: ' + U.esc(U.byId(HSS.project().stations, r.station)?.name || '') : ''}</div>
   <div class="fg">${UI.fTxt('Bezeichnung', 'name', r.name)}${UI.fSel('Raumart', 'use', r.use, UI.opts(HSS.ROOMTYPES, r.use))}${UI.fSel('Logistik-Rolle', 'role', r.role || '', opt('', '– keine –', r.role || '') + UI.opts(Object.assign({}, HSS.ROLLEN, { rein: 'Station: Arbeitsraum rein', unrein: 'Station: Arbeitsraum unrein', medikamente: 'Station: Medikamente', kueche: 'Station: Teeküche', stuetzpunkt: 'Station: Stützpunkt', aufenthalt: 'Station: Aufenthalt' }), r.role || ''), { t: 'ns' })}
   ${UI.fCol('Bodenfarbe', 'color', r.color || HSS.ROOMTYPES[r.use]?.color)}${UI.fNum('Breite', 'w', r.w, { unit: 'm', step: 0.1 })}${UI.fNum('Tiefe', 'd', r.d, { unit: 'm', step: 0.1 })}</div>
@@ -305,6 +306,7 @@ INSP.room = s => {
   <div class="actions">${HSS.EINRICHTUNG?.[r.use] ? '<button id="iFurn" title="Vorhandene Möbel im Raum ersetzen und den Raum nach Raumart vollständig einrichten">Automatisch einrichten</button>' : ''}<button class="danger" id="iDel">Raum löschen</button></div>`;
 };
 INSP_BIND.room = (el, s) => {
+  if (HSS.interior(s.part, s.floor)?.rooms.find(x => x.id === s.id)?.zone && HSS.zoneInspectorBind) return HSS.zoneInspectorBind(el, s);
   UI.bind(el, prj => HSS.interior(s.part, s.floor, false, prj)?.rooms.find(x => x.id === s.id), 'Raum', 'all', (r, path, v, prj) => {
     if ((path === 'w' || path === 'd') && HSS.interior(s.part, s.floor, false, prj).walls.some(w => w.auto)) { HSS.rebuildWalls(HSS.interior(s.part, s.floor, false, prj)); return; }
     if (path === 'w' || path === 'd') { const I = HSS.interior(s.part, s.floor, false, prj); const old = I.walls.filter(w => w.room === r.id).map(w => w.id); I.walls = I.walls.filter(w => w.room !== r.id); I.doors = I.doors.filter(d => !old.includes(d.wall)); I.walls.push(...HSS.roomWalls(r)); }

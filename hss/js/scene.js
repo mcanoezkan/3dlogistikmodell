@@ -128,7 +128,7 @@ S3.rebuild = (scope = 'all') => {
   clear(L.build); clear(L.interior); clear(L.labels);
   // Gebäude und Innenausbau zwischenspeichern: nur geänderte Bauteile werden neu aufgebaut
   const bcache = S3._buildCache || (S3._buildCache = new Map()), live = new Set();
-  const vkey = [V.cut, V.shell, V.explode, V.m2, V.stil, V.showBasement, JSON.stringify(prj.terrain)].join('|');
+  const vkey = [V.cut, V.shell, V.explode, V.m2, V.stil, V.showBasement, V.zonen && V.floor === null ? 'Z' + (V.zonenFokus || '') : '', JSON.stringify(prj.terrain)].join('|');
   // Wirksame Schnittebene je Bauteil: liegt die gewählte Etage über dem Dach, sieht das Bauteil aus wie in der Gesamtansicht
   const efloor = pt => { if (V.floor === null) return 'n'; const top = HSS.globalFloor(pt, pt.floors - 1, prj); return V.floor > top && V.floor >= 0 ? 'n' : V.floor; };
   const chain = pt => { const out = []; let p = pt, d = 0; while (p && p.stackOn && d++ < 8) { p = HSS.findPart(p.stackOn, prj)?.part; if (p) out.push(p); } return out; };
@@ -137,10 +137,10 @@ S3.rebuild = (scope = 'all') => {
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of b.parts) {
     const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
-    const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
+    const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
-      if (V.floor === gf || (V.floor === null && V.shell === 'transparent')) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
+      if (V.floor === gf || (V.floor === null && V.shell === 'transparent' && !V.zonen)) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
     }
   }
   for (const br of prj.bridges) {
@@ -303,8 +303,8 @@ const selBounds = sel => {
     const P = HSS.findPart(sel.part); if (!P) return null; const I = HSS.interior(sel.part, sel.floor); if (!I) return null;
     const r = (sel.kind === 'room' ? I.rooms : I.walls).find(x => x.id === sel.id); if (!r) return null;
     const pts = sel.kind === 'room' ? [[r.x - r.w / 2, r.z - r.d / 2], [r.x + r.w / 2, r.z + r.d / 2], [r.x - r.w / 2, r.z + r.d / 2], [r.x + r.w / 2, r.z - r.d / 2]] : [r.a, r.b];
-    const y = HSS.floorY(P.part, sel.floor);
-    for (const q of pts) { const w = HSS.toWorld(P.part, q); box.expandByPoint(new THREE.Vector3(w[0], y, w[1])); box.expandByPoint(new THREE.Vector3(w[0], y + 2.5, w[1])); }
+    const y = HSS.floorY(P.part, sel.floor) + HSS.globalFloor(P.part, sel.floor) * (V.explode || 0), hh = r.zone ? HSS.fh(P.part, sel.floor) - 0.3 : 2.5;
+    for (const q of (r.poly || pts)) { const w = HSS.toWorld(P.part, q); box.expandByPoint(new THREE.Vector3(w[0], y, w[1])); box.expandByPoint(new THREE.Vector3(w[0], y + hh, w[1])); }
     return box;
   }
   return null;

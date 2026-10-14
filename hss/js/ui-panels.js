@@ -382,7 +382,7 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
     <label class="chk"><input type="checkbox" id="sCore" checked> Aufzug und Treppenhaus ergänzen, falls keiner vorhanden</label>
     <label class="chk"><input type="checkbox" id="sRepl"> gewählte Etagen vorher komplett leeren</label>
     <div class="note">Die Station belegt nur den Abschnitt der Etage, den sie braucht – der Rest bleibt frei für weitere Stationen oder Bereiche.</div>
-    <div class="actions"><button class="primary" id="sGo" ${inp.sel.length ? '' : 'disabled'}>Station anlegen</button></div>
+    <div class="actions"><button class="primary" id="sGo" ${inp.sel.length ? '' : 'disabled'}>Station anlegen</button><button id="sZone" ${inp.sel.length ? '' : 'disabled'} title="Ohne Räume: nur die benötigte Fläche (${U.fmt(calc.bedarf)} m²) als farbige Fläche auf den gewählten Etagen reservieren – für Masterplan und Varianten">Nur Fläche reservieren</button></div>
     <p class="note">Alternativ alles manuell im Arbeitsbereich „Etagen“ planen.</p>
     <h3>Stationen im Projekt (${prj.stations.length})</h3>${prj.stations.length ? '<button class="primary" id="sTour" style="margin-bottom:6px">▶ Stationsrundgang starten</button>' : ''}
     <div class="list">${prj.stations.map(s => `<div class="li" data-st="${s.id}"><span class="t">${U.esc(s.name)}</span><span class="s">${s.betten ? s.betten + ' Betten' : ''}${s.plaetze ? ' ' + s.plaetze + ' Plätze' : ''}${s.calc?.deckung ? ' · ' + U.pct(s.calc.deckung) : ''}</span><button class="mini" data-std="${s.id}">×</button></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
@@ -407,6 +407,23 @@ W.station = { name: 'Stationsplaner', short: 'Stations-planer', step: '4', lead:
       const fl = (rep.floors || []).map(x => `<li><b>${U.esc(x.part)} ${U.esc(HSS.floorName(x.floor))}</b>: ${U.esc(x.typName)} – ${U.fmt(x.tiefe, 1)} m tief, ${U.fmt(x.laenge, 1)} m nutzbare Länge${x.reserve > 1 ? `; ${U.fmt(x.reserve)} m² Reservefläche` : ''}</li>`).join('');
       UI.dialog(`<h2>Station angelegt</h2><p>${rep.placed} Räume platziert und vollständig eingerichtet.</p>${fl ? `<ul class="note">${fl}</ul>` : ''}${rep.dropped.length ? `<div class="warnbox">Nicht untergebracht (Fläche/Fassade reicht nicht): ${rep.dropped.map(U.esc).join(', ')}</div>` : '<div class="okbox">Alle Räume des Raumprogramms untergebracht.</div>'}<p class="note">Räume lassen sich anklicken und im Inspektor ändern. Für Standardflüsse erhalten Arbeitsraum rein/unrein, Medikamente, Teeküche und Stützpunkt automatisch ihre Rolle.</p><div class="actions"><button id="dlgM2">Flächen ansehen (m²)</button><button class="primary" data-close>OK</button></div>`);
       const bm = document.getElementById('dlgM2'); if (bm) bm.onclick = () => { $('#dlg').close(); HSS.flaechen?.toggle(true); };
+      UI.renderPanel();
+    };
+    $('#sZone', el).onclick = () => {
+      if (readonly()) return;
+      const n = U.sum(inp.sel.map(x => x.floors.length)) || 1, name = inp.name || T.name, fach = HSS.fachFromStation({ typ: inp.typ, art: isAmb ? 'ambulant' : 'stationaer' }) || 'pflege';
+      let made = 0, rest = 0; const stId = U.uid('st'), auf = U.uid('auf');
+      HSS.manip?.mark();
+      HSS.change('Fläche reservieren', p => {
+        p.stations.push({ id: stId, name, typ: inp.typ, art: isAmb ? 'ambulant' : inp.art, betten: calc.betten || 0, plaetze: calc.plaetze || 0, sel: U.clone(inp.sel), calc: { bedarf: calc.bedarf }, nurFlaeche: true, quelle: 'Stationsplaner (nur Fläche)' });
+        for (const x of inp.sel) for (const f of x.floors) {
+          const r = HSS.zoneAuto(p, x.part, f, { fach, name, soll: Math.round(calc.bedarf / n * (x.half ? 1 : 1)), station: stId, hinweis: `${calc.betten ? calc.betten + ' Betten' : (calc.plaetze || 0) + ' Plätze'} · Stationsplaner` }, { spread: false });
+          for (const z of r.zones) { const rr = HSS.interior(z.part, z.floor, false, p).rooms.find(q => q.id === z.id); rr.auftrag = auf; rr.auftragSoll = Math.round(calc.bedarf); }
+          made += r.zones.length; rest += r.rest;
+        }
+      });
+      UI.toast(made ? `${name}: ${U.fmt(calc.bedarf - rest)} m² als Fläche reserviert${rest > 25 ? ` – ${U.fmt(rest)} m² passten nicht (weitere Etage wählen)` : ''}` : 'Kein freier Abschnitt auf den gewählten Etagen', 4500);
+      if (made) HSS.zonen?.setView(true);
       UI.renderPanel();
     };
     $$('[data-st]', el).forEach(li => li.onclick = e => { if (e.target.dataset.std) return; const s = U.byId(prj.stations, li.dataset.st); const p0 = s.sel?.[0]; if (p0) { const P = HSS.findPart(p0.part); if (P) { HSS.s3.setFloor(HSS.globalFloor(P.part, p0.floors[0])); HSS.s3.focusSel({ kind: 'part', id: p0.part }); } } });

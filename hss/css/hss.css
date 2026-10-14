@@ -370,3 +370,25 @@ dialog.wide{width:min(96vw,1500px);max-width:96vw}
 body.nopanel #plan2dBar{left:calc(var(--railW) + 24px)}
 #v2d.on{background:#0A967A;color:#fff;border-color:#0A967A}
 body.plan2d #vExplode,body.plan2d #vSun{opacity:.4}
+
+/* ---------- Flächenplanung ---------- */
+.zg{margin:8px 0 0;font-weight:700;color:var(--navy);font-size:11px}
+.zchips{gap:3px}
+.chip.zc{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 5px;font-size:11.5px;cursor:grab}
+.chip.zc i{width:11px;height:11px;border-radius:3px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);flex:none}
+.chip.zc.on{background:#fff;box-shadow:0 0 0 2px var(--c);border-color:var(--c)}
+.floorpick button small{display:block;font-size:9px;opacity:.75;font-weight:400}
+.zt tr[data-zb]{cursor:pointer}.zt tr[data-zb]:hover td{background:var(--soft)}
+.li .sw,.zt .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.zlbl{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid #d9dee4;border-left:4px solid var(--c);border-radius:4px;padding:2px 7px 2px 5px;font-size:11px;color:#1d2733;white-space:nowrap;box-shadow:0 2px 6px rgba(20,30,45,.18);pointer-events:auto;cursor:pointer}
+.zlbl i{display:none}.zlbl span{max-width:170px;overflow:hidden;text-overflow:ellipsis}.zlbl b{color:var(--navy);font-size:10.5px}
+#zLegend{position:fixed;left:calc(var(--railW) + var(--panelW) + 12px);bottom:14px;z-index:8;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);width:290px;max-height:46vh;display:flex;flex-direction:column;font-size:12px}
+body.nopanel #zLegend{left:calc(var(--railW) + 12px)}
+#zLegend .zh{display:flex;align-items:center;gap:8px;padding:7px 8px 6px 10px;border-bottom:1px solid var(--soft)}#zLegend .zh b{color:var(--navy)}#zLegend .zh span{flex:1;color:var(--muted);font-size:11px}
+#zLegend .zl{overflow:auto;padding:4px}
+#zLegend .zi{display:flex;align-items:center;gap:7px;width:100%;border:0;background:transparent;padding:3px 6px;text-align:left;border-radius:4px}
+#zLegend .zi:hover{background:var(--soft)}#zLegend .zi.on{background:#e3f1ee}#zLegend .zi.dim{opacity:.45}
+#zLegend .zi i{width:14px;height:14px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+#zLegend .zi span{flex:1;overflow:hidden;text-overflow:ellipsis}#zLegend .zi b{font-size:11.5px;color:var(--navy)}
+#zLegend .zi small{font-size:10px;padding:0 4px;border-radius:3px;background:#eef2f5;color:var(--muted)}#zLegend .zi small.low{background:#fde8ec;color:#a3123a}#zLegend .zi small.ok{background:#e3f1ee;color:#0a6e5a}
+#zLegend .zfoot{padding:4px 10px 7px;color:var(--muted);font-size:11px;border-top:1px solid var(--soft)}#zLegend .zfoot i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
