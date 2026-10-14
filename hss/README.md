@@ -2,6 +2,21 @@
 
 3D-Baukasten für Krankenhaus-Campus mit Simulation der Material-, Waren- und Personenflüsse. Entwickelt aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4) und im UNITY-Design gehalten.
 
+## Neu in dieser Version
+
+| Thema | Inhalt |
+|---|---|
+| Flüssig auf jedem Rechner | Gezeichnet wird nur, wenn sich etwas bewegt; Gebäude, Räume, Wege und Möbel werden je Material zu wenigen großen Netzen gebündelt (aus über 1.000 Zeichenaufrufen werden rund 100); Schatten werden nur bei Änderungen neu berechnet; nur geänderte Gebäude werden neu aufgebaut; Qualität passt sich automatisch an (Ansichtsleiste „Leistung“), Verkehr abschaltbar |
+| Bauen wie im Spiel | Gebäude, Objekte und Flächen aus dem Panel ins 3D-Bild **ziehen**. Gewähltes Element direkt **ziehen** (rastet bündig an Nachbarn ein), Griffe **⇔ ⇕** für Länge/Tiefe, **⟳** drehen, blauer **⇕** Geschosse. Wege: Punkte ziehen, **+** fügt einen Knick ein, Breitengriff, ganzen Weg drehen, ±10 m. Werkzeugleiste unter dem Element: drehen, ＋G/－G, Brücke ziehen, kopieren, löschen, **✓** übernehmen, **✗** alles seit der Auswahl verwerfen |
+| Brücken von Hand | „⌒ Brücke ziehen“: Fassade des ersten, dann des zweiten Gebäudes anklicken (Höhe des Klicks = Geschoss); Anschlusspunkte an den ◆-Griffen entlang der Fassade verschieben, Ebene ▲/▼, Breite |
+| 2D-Plan | Lageplan von oben (Taste 2 / 3): Gebäude als Rechteck, gedrehtes Rechteck oder Vieleck zeichnen, Straßen und Flächen ergänzen – in 3D in die Höhe ziehen |
+| Klinik-Planer | Ganzes Krankenhaus: Bettenzahl, Versorgungsstufe, Fachabteilungen → Raumprogramm aller Funktionsbereiche nach DIN 13080 (Eingangshalle, Information, Aufnahme, Cafeteria, Notaufnahme, Radiologie, OP, Kreißsaal, Endoskopie, Herzkatheter, Intensiv/IMC, Stationen, Labor, Apotheke, ZSVA, Zentralküche, Mitarbeiterrestaurant, Logistik, Technik, Pathologie, Verwaltung/Schulung). Planungstafel: Karten per Ziehen auf Geschosse verteilen oder automatisch (Eingang/ZNA ins EG, OP/Intensiv ins 1. OG, Versorgung ins UG, Stationen in die Obergeschosse). „Gebäude vorschlagen“ dimensioniert Sockel und Bettenhäuser |
+| Stationsplaner | Belegt nur den benötigten Abschnitt der Etage (Rest bleibt frei für weitere Stationen), Stationstür am Abschnittsende; tiefe Baukörper mit Mittelflur statt Lichthof; keine leeren Reserveräume – Restflächen werden zu eingerichteten Büro-, Lager-, Geräte- oder Besprechungsräumen |
+| Einrichtung | Rund 100 neue Objekte (358 insgesamt): Eingangshalle, Aufnahme, Cafeteria, Zentralküche, Flurausstattung, Radiologie-Schaltraum, Schockraum, OP-Schleuse, Pathologie, Technikzentralen, Schulung, Umkleiden, Wäsche, Archiv …; jeder Raum und jeder Flur wird eingerichtet |
+| Umgebung aus OpenStreetMap | „Gelände & Wege → Umgebung aus OpenStreetMap“: Straßen mit Namen und Breiten, Feldwege, Bahn, Bäche, Acker, Wiese, Wald, Wohn-/Gewerbegebiete, Parks, Wasser, Parkplätze, Nachbargebäude und die Grenze des Klinikgeländes rund um den Standort (Adresse suchen oder Koordinaten; Internet nötig) |
+| Projektdateien | Startbildschirm: Demo, Neues Projekt, Projekt öffnen. Projektdateien (`*.hss.json`) einfach vom Desktop ins Fenster ziehen. Standortmodelle liegen als Dateien in [`projekte/`](../projekte) |
+| Eine Datei | `python3 tools/build_einzeldatei.py` erzeugt `Healthcare_Simulation_Suite.html` – per Doppelklick offline nutzbar |
+
 ## Start
 
 ```bash
@@ -13,7 +28,7 @@ Die Suite läuft offline (three.js r160 liegt in `vendor/`) und lässt sich auch
 
 **Demo-Modus** (Kopfzeile): lädt das *UNITY Hospital* – einen Schwerpunktversorger mit rund 650 Betten (Behandlungssockel mit zwei aufgesetzten Bettenhäusern, Eingangshalle, Kinderklinik, Altersmedizin/Psychiatrie, Logistikzentrum mit Tunnel und AWT, Verwaltung, Parkhaus, 23 Stationen) – und führt in 14 Schritten durch alle Funktionen.
 
-**Standortmodelle** (Startdialog oder „Öffnen“): das *Bundeswehrzentralkrankenhaus Koblenz* (Gebäude und Straßen aus OpenStreetMap, Bestand und Soll-Variante), das *Klinikum Hanau* (Bestand und Variante 2 mit Neubau und Versorgungszentrum) und das *Klinikum Bielefeld-Mitte* (Bestand und Soll-Variante, aus dem bisherigen Modell `index.html`) als vollständige, bearbeitbare Projekte – mit Geschossen und Untergeschossen, Verbindungsgängen, Aufzügen, Funktionsbereichen, Pflegebereichen als Stationen und den Transportflüssen der jeweiligen 3D-Logistikmodelle. „Standort verorten“ (Gelände & Wege) setzt Geokoordinaten und Nordwinkel und verschiebt oder dreht das ganze Modell. Gespeicherte Standortmodelle älterer Stände lassen sich mit „Standortmodell aktualisieren“ auf die aktuelle Übernahme bringen; gelöschte Gebäude und Wege bleiben gelöscht, eigene Ergänzungen bleiben erhalten.
+**Standortmodelle** (als Projektdateien in `projekte/`, ins Fenster ziehen): das *Bundeswehrzentralkrankenhaus Koblenz* (Gebäude und Straßen aus OpenStreetMap, Bestand und Soll-Variante), das *Klinikum Hanau* (Bestand und Variante 2 mit Neubau und Versorgungszentrum) und das *Klinikum Bielefeld-Mitte* (Bestand und Soll-Variante, aus dem bisherigen Modell `index.html`) als vollständige, bearbeitbare Projekte – mit Geschossen und Untergeschossen, Verbindungsgängen, Aufzügen, Funktionsbereichen, Pflegebereichen als Stationen und den Transportflüssen der jeweiligen 3D-Logistikmodelle. „Standort verorten“ (Gelände & Wege) setzt Geokoordinaten und Nordwinkel und verschiebt oder dreht das ganze Modell. Gespeicherte Standortmodelle älterer Stände lassen sich mit „Standortmodell aktualisieren“ auf die aktuelle Übernahme bringen; gelöschte Gebäude und Wege bleiben gelöscht, eigene Ergänzungen bleiben erhalten.
 
 Werden nach einem Update nicht alle Arbeitsbereiche angezeigt, meldet die Suite beim Start, welche Datei nicht geladen wurde (meist veralteter Browser-Cache: Strg + F5). `start.py` liefert alle Dateien ohne Cache aus.
 
