@@ -114,10 +114,15 @@ S3.rebuild = (scope = 'all') => {
   const prj = HSS.project(), L = S3.layers;
   if (scope === 'objects') { buildObjects(); collectPickables(); S3.showSelection(); HSS.emit('rebuilt'); return; }
   S3.groups.clear();
-  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(HSS.buildTerrain(V)); }
+  // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
+  const tkey = JSON.stringify(prj.terrain) + '|' + V.explode + '|' + (V.floor ?? 'x') + '|' + V.shell;
+  const cache = S3._outCache || (S3._outCache = new Map());
+  const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
+  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
-    clear(L.paths); for (const p of prj.paths) { const g = HSS.buildPath(p, V); L.paths.add(g); S3.groups.set(p.id, g); }
-    clear(L.areas); for (const a of prj.areas) { const g = HSS.buildArea(a, V); L.areas.add(g); S3.groups.set(a.id, g); }
+    clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
+    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a) + tkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
   for (const b of prj.buildings) for (const pt of b.parts) {

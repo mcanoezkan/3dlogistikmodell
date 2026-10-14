@@ -22,7 +22,14 @@ args = sys.argv[1:]
 kbm = "kbm" in args
 nums = [a for a in args if a.isdigit()]
 port = int(nums[0]) if nums else free_port()
-handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT))
+class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
+    """Liefert alle Dateien ohne Browser-Cache aus, damit nach einem Update keine alten Skripte geladen werden."""
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        super().end_headers()
+
+
+handler = functools.partial(NoCacheHandler, directory=str(ROOT))
 socketserver.TCPServer.allow_reuse_address = True
 with socketserver.TCPServer(("127.0.0.1", port), handler) as httpd:
     url = f"http://localhost:{port}/index.html" if kbm else f"http://localhost:{port}/hss/index.html"

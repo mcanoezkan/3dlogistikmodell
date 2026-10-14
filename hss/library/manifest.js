@@ -13,6 +13,6 @@ window.HSS_LIBRARY_FILES = [
   'einrichtung.js'
 ];
 (function () {
-  var base = (document.currentScript && document.currentScript.src || '').replace(/manifest\.js.*$/, '');
-  for (var i = 0; i < window.HSS_LIBRARY_FILES.length; i++) document.write('<script src="' + base + window.HSS_LIBRARY_FILES[i] + '"><\/script>');
+  var src = document.currentScript && document.currentScript.src || '', base = src.replace(/manifest\.js.*$/, ''), v = (src.match(/\?v=[^&]+/) || [''])[0];
+  for (var i = 0; i < window.HSS_LIBRARY_FILES.length; i++) document.write('<script src="' + base + window.HSS_LIBRARY_FILES[i] + v + '"><\/script>');
 })();

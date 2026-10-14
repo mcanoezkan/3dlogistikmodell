@@ -20,6 +20,12 @@ function boot() {
   HSS.on('view', () => { UI.refreshViewbar(); if (UI.current === 'innen') UI.renderPanel(); });
   HSS.on('loaded', e => { HSS.state.sim = null; HSS.player.clear(); UI.timeline.show(false); if (!e.demo) { $('#demoCard').hidden = true; document.body.classList.remove('demoon'); } setTimeout(() => HSS.s3.home(), 50); });
   HSS.on('tool', t => { if (!t) UI.hint(null); });
+  HSS.on('loaded', () => {
+    const so = HSS.project().meta.standort;
+    if (so && (so.rev || 1) < 2) setTimeout(async () => {
+      if (await UI.confirm('Standortmodell aktualisieren?', 'Für dieses Standortmodell gibt es eine verbesserte Übernahme: Gebäude als Sockel mit aufgesetzten Türmen und schlanken Technikaufbauten, keine Gehwege mehr auf den Fahrbahnen, Bielefeld/Koblenz/Hanau mit festen Bezeichnern. Ihre Änderungen (gelöschte Gebäude und Wege, eigene Gebäude, Räume, Stationen, Flüsse) bleiben erhalten. Rückgängig machen ist möglich.', 'Aktualisieren')) HSS.standorte.aktualisierenAktuell();
+    }, 600);
+  });
   HSS.on('library', U.debounce(() => { if (UI.current === 'bibliothek') UI.renderPanel(); }, 100));
   HSS.on('library-model', U.debounce(() => HSS.s3.rebuild('objects'), 200));
   UI.setWS('gebaeude');
@@ -30,6 +36,15 @@ function boot() {
   if (!restored) { HSS.s3.rebuild('all'); HSS.s3.home(); }
   refreshHeader(); UI.refreshViewbar();
   $('#loading').hidden = true;
+  HSS.booted = true;
+  const fehlt = ['gelaende', 'gebaeude', 'innen', 'bibliothek', 'station', 'fluesse', 'simulation', 'analyse'].filter(k => !UI.ws[k]);
+  if (fehlt.length || HSS.loadErrors.length) {
+    UI.dialog(`<div class="dh"><h2>Teile der Oberfläche wurden nicht geladen</h2><button class="x" data-close>×</button></div>
+      <p>${fehlt.length ? `Es fehlen die Arbeitsbereiche: <b>${fehlt.map(k => U.esc(k)).join(', ')}</b>. ` : ''}Meist liegt das an einer veralteten Datei im Browser-Cache nach einem Update.</p>
+      <ol class="why"><li>Seite mit <b>Strg + F5</b> (Mac: Cmd + Umschalt + R) neu laden.</li><li>Falls das nicht hilft: Server beenden und mit <code>python3 start.py</code> neu starten.</li><li>Bleibt der Fehler, bitte die Meldung unten mitschicken.</li></ol>
+      ${HSS.loadErrors.length ? `<div class="errbox">${HSS.loadErrors.map(e => `${U.esc(e.datei || '?')}${e.zeile ? ':' + e.zeile : ''} – ${U.esc(e.meldung)}`).join('<br>')}</div>` : ''}
+      <div class="actions"><button class="primary" onclick="location.reload()">Neu laden</button><button data-close>Schließen</button></div>`);
+  }
   if (restored && HSS.project().buildings.length) UI.toast(`Zuletzt bearbeitet: „${HSS.project().meta.name}“ wiederhergestellt`, 3500);
   else welcome();
 }
@@ -63,7 +78,7 @@ async function saveDialog() {
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }
   UI.dialog(`<div class="dh"><h2>Projekt öffnen</h2><button class="x" data-close>×</button></div>
-   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen (.hss.json)</button><button id="oDemo">UNITY Hospital (Demo)</button><button id="oSite">Standortmodelle: Koblenz, Hanau</button></div>
+   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen (.hss.json)</button><button id="oDemo">UNITY Hospital (Demo)</button><button id="oSite">Standortmodelle: Koblenz, Hanau, Bielefeld</button></div>
    <h3>Projektablage im Browser</h3>
    <table class="t"><tr><th>Projekt</th><th>zuletzt geändert</th><th class="n">Größe</th><th></th></tr>${list.map(p => `<tr><td><a href="#" data-open="${p.id}">${U.esc(p.name)}</a></td><td>${new Date(p.modified).toLocaleString('de-DE')}</td><td class="n">${U.fmt(p.size / 1024)} kB</td><td><button class="mini danger" data-del="${p.id}">×</button></td></tr>`).join('') || '<tr><td colspan="4" class="note">Noch keine Projekte gespeichert.</td></tr>'}</table>`, d => {
     $('#oFile', d).onclick = () => { d.close(); $('#fOpen').click(); };
@@ -80,7 +95,7 @@ function welcome() {
     <button class="tile" id="wDemo"><b>▶ Demo-Modus</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
     <button class="tile" id="wNew"><b>Neues Projekt</b><small>Mit Gelände und Wegen beginnen, dann Gebäude setzen</small></button>
     <button class="tile" id="wOpen"><b>Projekt öffnen</b><small>Datei (.hss.json) oder Projektablage im Browser</small></button>
-    <button class="tile" id="wSite"><b>Standortmodelle</b><small>BwZK Koblenz und Klinikum Hanau (Bestand und Variante) als bearbeitbares Projekt</small></button></div>
+    <button class="tile" id="wSite"><b>Standortmodelle</b><small>BwZK Koblenz, Klinikum Hanau und Klinikum Bielefeld-Mitte (Bestand und Variante) als bearbeitbares Projekt</small></button></div>
    <h3>Arbeitsschritte</h3><ol class="why"><li><b>Gelände &amp; Wege</b> – Topographie, Straßen, Wege, Parkplätze, Außenausstattung</li><li><b>Gebäude</b> – Bausteine setzen, Form/Fassade/Geschosse anpassen, andocken, Brücken</li><li><b>Etagen</b> – Innenausbau mit Räumen, Wänden, Türen, Aufzügen und Ausstattung</li><li><b>Stationsplaner</b> – Betten- und Flächenbedarf rechnen, Station automatisch belegen</li><li><b>Flüsse</b> – Standardflüsse übernehmen, Material, Fuhrpark und Regeln festlegen</li><li><b>Simulation</b> – Tagesablauf abspielen, Transporte in der Ich-Perspektive begleiten</li><li><b>Analyse</b> – Hotspots je Uhrzeit, Fahrzeugbedarf, Zeitfensterplan</li></ol>`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };

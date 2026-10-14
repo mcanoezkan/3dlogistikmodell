@@ -7,6 +7,9 @@
 (function () {
 'use strict';
 const HSS = window.HSS = window.HSS || {};
+// Ladefehler einzelner Skripte sammeln (z. B. veraltete Datei im Browser-Cache) und beim Start anzeigen
+HSS.loadErrors = HSS.loadErrors || [];
+window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
 HSS.VERSION = '1.0.0';
 HSS.APP = 'Healthcare Simulation Suite';
 

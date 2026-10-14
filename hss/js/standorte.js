@@ -18,8 +18,12 @@ HSS.STANDORTE = [
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Logistik optimiert)' }] },
   { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js',
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
-    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] }
+    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
+  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
+    text: 'Baukörper aus dem Lageplan „Klinikum Bielefeld – Mitte“ (Unternehmenskommunikation, Stand Okt. 2025) digitalisiert (±15 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen); Soll-Variante mit Neubau zur Veranschaulichung.',
+    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Optimierung mit Neubau)' }] }
 ];
+const PRE = { koblenz: 'kob_', hanau: 'han_', bielefeld: 'bie_' };
 
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Datei nicht gefunden: ' + src)); document.head.appendChild(s); });
 const centroid = pts => { let a = 0, cx = 0, cz = 0; for (let i = 0; i < pts.length; i++) { const [x0, z0] = pts[i], [x1, z1] = pts[(i + 1) % pts.length]; const f = x0 * z1 - x1 * z0; a += f; cx += (x0 + x1) * f; cz += (z0 + z1) * f; } if (Math.abs(a) < 1e-6) { const b = G.bbox(pts); return [b.cx, b.cz]; } return [cx / (3 * a), cz / (3 * a)]; };
@@ -54,12 +58,15 @@ function builder(prj, fh) {
       const pt = Object.assign(HSS.defaults.part(), { id: o.id, name: o.name || b.name, floorHeight: o.hoehe && bis === Math.max(0, von) ? o.hoehe : fh, basementHeight: fh });
       if (o.rect) { const [cx, cz, len, wid, ang] = o.rect; Object.assign(pt, { shape: 'rect', x: r1(cx), z: r1(cz), w: r1(len), d: r1(wid), rot: ang || 0, cornerRadius: o.radius || 0 }); }
       else { const poly = o.poly; const c = centroid(poly); const loc = poly.map(p => [r1(p[0] - c[0]), r1(p[1] - c[1])]); const bb = G.bbox(loc); Object.assign(pt, { shape: 'poly', poly: loc, x: r1(c[0]), z: r1(c[1]), w: r1(bb.w), d: r1(bb.d), rot: 0 }); }
-      if (von > 0) { pt.floorOffset = von; pt.baseOffset = U.sum(Array.from({ length: von }, () => fh)); pt.floors = bis - von + 1; pt.basements = 0; }
+      let off = 0;
+      if (o.stackOn) { pt.stackOn = o.stackOn; pt.floors = bis - von + 1; pt.basements = 0; off = von; }
+      else if (von > 0) { pt.floorOffset = von; pt.baseOffset = U.sum(Array.from({ length: von }, () => fh)); pt.floors = bis - von + 1; pt.basements = 0; off = von; }
       else { pt.floors = bis + 1; pt.basements = von < 0 ? -von : 0; }
       pt.facade = Object.assign(pt.facade, { type: ft, color: fc, accent: o.accent || '#144477', windowRatio: ft === 'loch' ? 0.38 : 0.5 });
-      pt.roof = Object.assign(pt.roof, { plant: pt.floors > 2 && o.typ === 'hospital', type: 'flach', helipad: !!o.helipad });
+      pt.roof = Object.assign(pt.roof, { plant: false, parapet: 0.6, type: 'flach', helipad: !!o.helipad }); // Dachaufbauten nur, wo die Quelle sie enthält
+      if (o.typ === 'technik') { pt.floorHeight = o.hoehe || 3.0; pt.roof.parapet = 0.15; pt.roof.plant = false; pt.facade.windowRatio = 0.1; pt.facade.color = '#c9ced4'; if (!o.stackOn && von <= 0) pt.basements = 0; }
       if (o.typ === 'parking') pt.use = 'parkhaus';
-      b.parts.push(pt); parts.push({ b, pt, von, bis, src: o }); return pt;
+      b.parts.push(pt); parts.push({ b, pt, von: o.stackOn || von > 0 ? von : (pt.basements ? -pt.basements : 0), bis, off, src: o }); return pt;
     },
     // Bauteil eines Gebäudes, das den Punkt enthält und das Geschoss l hat
     find(bid, p, l) {
@@ -69,7 +76,7 @@ function builder(prj, fh) {
       if (!bid) return null;
       return cands.sort((a, c) => G.dist([a.pt.x, a.pt.z], p) - G.dist([c.pt.x, c.pt.z], p))[0] || null;
     },
-    localFloor: (x, l) => x.pt.floorOffset ? l - x.pt.floorOffset : l
+    localFloor: (x, l) => l - (x.off || 0)
   };
 }
 
@@ -88,14 +95,14 @@ const windows = prof => {
 };
 
 /* ---------- Konvertierung ---------- */
-function convert(S, def, v) {
+function convert(S, def, v, opts = {}) {
   const D = S.D, O = S.O;
   const sc = scenario(D, v);
   const prj = HSS.newProject(`${def.name}${v === 'soll' ? ' – ' + (def.varianten.find(x => x.id === 'soll')?.name || 'Soll') : ' – Bestand'}`);
   const fh = D.meta?.geschosshoehe || 3.7;
   const B = builder(prj, fh);
   prj.meta.notes = [`Standortmodell: ${def.name} (${def.ort}).`, def.text, ...(D.assumptions || []).map(a => '• ' + a), ...(sc.massnahmen.length ? ['Maßnahmen der Variante:', ...sc.massnahmen.map(m => '• ' + m)] : [])].join('\n');
-  prj.meta.standort = { id: def.id, variante: v, quelle: D.meta?.quelle || O?.quelle || '', stand: D.meta?.stand || '' };
+  prj.meta.standort = { id: def.id, variante: v, rev: 2, quelle: D.meta?.quelle || O?.quelle || '', stand: D.meta?.stand || '' };
   if (O?.origin) prj.meta.geo = { lat: O.origin.lat, lon: O.origin.lon, nord: 0, quelle: O.quelle };
   const bmap = {};
   /* Gebäude */
@@ -109,27 +116,48 @@ function convert(S, def, v) {
       bmap[id] = b;
       const basement = ug.has(id) ? -1 : 0;
       const maxL = k.maxL ?? ob.maxL ?? 0;
-      const usable = (ob.parts || []).filter(p => Math.abs(G.area(p.poly)) > 6);
+      const usable = (ob.parts || []).filter(p => Math.abs(G.area(p.poly)) > 6).map(p => ({ poly: p.poly, maxL: Math.min(k.maxL ?? 99, p.maxL ?? maxL), area: Math.abs(G.area(p.poly)) }));
+      const small = typ === 'technik' || Math.abs(G.area(ob.poly || [[0, 0]])) < 40;
       if (k.rect) B.part(b, { id: `kob_${id}_0`, name, rect: k.rect, radius: k.radius, von: basement, bis: maxL, typ, accent: farbe[anz] });
-      else if (usable.length && !k.vollKubatur && !k.poly) usable.forEach((p, i) => B.part(b, { id: `kob_${id}_${i}`, name: usable.length > 1 ? `${name} · Teil ${i + 1}` : name, poly: p.poly, von: basement, /* aufgeständerte Gebäudeteile (min_level) bis zum Boden geführt, damit Geschosse erschlossen sind */ bis: k.maxL !== undefined ? Math.min(k.maxL, p.maxL ?? maxL) : (p.maxL ?? maxL), typ, accent: farbe[anz], helipad: id === 'S' }));
-      else B.part(b, { id: `kob_${id}_0`, name, poly: k.poly || ob.poly, von: ob.minL > 0 ? ob.minL : basement, bis: maxL, typ, accent: farbe[anz], helipad: id === 'S' });
+      else if (usable.length > 1 && !k.vollKubatur && !k.poly) {
+        // Gebäudeumriss als Sockel in der vorherrschenden Höhe, höhere Gebäudeteile (Türme, Technikaufbauten) aufgesetzt
+        const tot = U.sum(usable.map(p => p.area)), big = usable.filter(p => p.area >= 0.15 * tot);
+        const H0 = Math.min(maxL, big.length ? Math.min(...big.map(p => p.maxL)) : maxL);
+        const base = B.part(b, { id: `kob_${id}_0`, name, poly: ob.poly, von: small ? 0 : basement, bis: H0, typ, accent: farbe[anz], helipad: id === 'S' });
+        usable.filter(p => p.maxL > H0).forEach((p, i) => {
+          const tech = p.area < 80 && p.maxL - H0 <= 1;
+          B.part(b, { id: `kob_${id}_${i + 1}`, name: tech ? `${name} · Technikaufbau` : `${name} · Aufstockung ${i + 1}`, poly: p.poly, stackOn: base.id, von: H0 + 1, bis: p.maxL, typ: tech ? 'technik' : typ, hoehe: tech ? 3.0 : undefined, accent: farbe[anz] });
+        });
+      } else B.part(b, { id: `kob_${id}_0`, name, poly: k.poly || ob.poly, von: ob.minL > 0 ? ob.minL : small ? 0 : basement, bis: maxL, typ, accent: farbe[anz], helipad: id === 'S' });
     }
-    for (const r of O.roads || []) { if (r.length < 2) continue; const len = G.polylineLength(r); const p = Object.assign(HSS.defaults.path('zufahrt'), { name: 'Erschließungsstraße', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 6, smooth: false, traffic: len > 120 ? 2 : 0 }); prj.paths.push(p); }
-    for (const r of O.paths || []) { if (r.length < 2) continue; prj.paths.push(Object.assign(HSS.defaults.path('gehweg'), { name: 'Fußweg', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 2, smooth: false })); }
+    for (const [i, r] of (O.roads || []).entries()) { if (r.length < 2) continue; const len = G.polylineLength(r); prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_kob_r${i}`, standort: true, name: 'Erschließungsstraße', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 6, smooth: false, traffic: len > 120 ? 2 : 0 })); }
+    for (const [i, r] of (O.paths || []).entries()) { if (r.length < 2) continue; prj.paths.push(Object.assign(HSS.defaults.path('gehweg'), { id: `path_kob_g${i}`, standort: true, name: 'Fußweg', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 2, smooth: false })); }
   } else {
-    const ug = D.gebaeude;
-    for (const g of ug) {
-      if (sc.gone.has(g.id)) continue;
-      if (g.szenario && g.szenario !== v) continue;
+    const ug = D.gebaeude, pre = PRE[def.id];
+    for (const g0 of ug) {
+      if (sc.gone.has(g0.id)) continue;
+      if (g0.szenario && g0.szenario !== v) continue;
+      const g = Object.assign({}, g0, (sc.ch.gebaeudeOverrides || {})[g0.id] || {});
       const typ = g.neubau ? 'neubau' : g.typ;
       const info = [g.baujahr ? 'Baujahr ' + g.baujahr : '', g.sanierung, g.bgf ? 'BGF ' + (typeof g.bgf === 'number' ? U.fmt(g.bgf) + ' m²' : g.bgf) : '', g.ngf ? 'NGF ' + U.fmt(g.ngf) + ' m²' : '', g.din ? 'DIN 13080: ' + g.din : '', g.hinweis].filter(Boolean).join(' · ');
-      const b = B.building({ id: 'han_' + g.id, name: g.name, kurz: g.nr || g.id, color: g.neubau ? '#0A967A' : typ === 'hospital' ? '#144477' : '#4b5058', info });
+      const b = B.building({ id: pre + g.id, name: g.name, kurz: g.nr || g.id, color: g.neubau ? '#0A967A' : typ === 'hospital' ? '#144477' : '#4b5058', info });
       bmap[g.id] = b;
-      g.teile.forEach((t, i) => B.part(b, { id: `han_${g.id}_${t.id || i}`, name: t.name ? `${g.kurz || g.id} · ${t.name}` : g.name, ref: `${g.id}/${t.id || g.id + '-' + i}`, poly: t.poly, rect: t.box ? [(t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2, Math.abs(t.box[2] - t.box[0]), Math.abs(t.box[3] - t.box[1]), 0] : null, von: t.von ?? 0, bis: t.bis ?? 0, hoehe: t.hoehe, typ }));
+      g.teile.forEach((t, i) => B.part(b, { id: `${pre}${g.id}_${t.id || i}`, name: t.name ? `${g.kurz || g.id} · ${t.name}` : g.name, ref: `${g.id}/${t.id || g.id + '-' + i}`, poly: t.poly, rect: t.box ? [(t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2, Math.abs(t.box[2] - t.box[0]), Math.abs(t.box[3] - t.box[1]), 0] : null, von: t.von ?? 0, bis: t.bis ?? 0, hoehe: t.hoehe, typ }));
     }
-    for (const s of D.aussen?.strassen || []) prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { name: s.name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: G.polylineLength(s.pts) > 100 ? 2 : 0 }));
-    for (const w of D.aussen?.wege || []) prj.paths.push(Object.assign(HSS.defaults.path('weg'), { name: 'Campusweg', points: w.map(q => q.slice()), width: 3.5, smooth: false }));
+    for (const [i, s] of (D.aussen?.strassen || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_${pre}r${i}`, standort: true, name: s.name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: G.polylineLength(s.pts) > 100 ? 2 : 0 }));
+    for (const [i, w] of (D.aussen?.wege || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('weg'), { id: `path_${pre}w${i}`, standort: true, name: 'Campusweg', points: w.map(q => q.slice()), width: 3.5, smooth: false }));
   }
+  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 })); }
+  if (def.geo && !prj.meta.geo) prj.meta.geo = Object.assign({}, def.geo);
+  /* Gehwege, die auf einer Fahrbahn liegen (OSM-Bürgersteige entlang der Straße), weglassen */
+  const roadsL = prj.paths.filter(p => p.kind === 'zufahrt' || p.kind === 'strasse');
+  const onRoad = q => roadsL.some(r => { for (let i = 0; i < r.points.length - 1; i++) { const c = G.closestOnSeg(q, r.points[i], r.points[i + 1]); if (G.dist(q, c.pt) < r.width / 2 + 1.6) return true; } return false; });
+  if (!opts.allePfade) prj.paths = prj.paths.filter(p => {
+    if (p.kind !== 'gehweg' && p.kind !== 'weg') return true;
+    const L = G.polylineLength(p.points), n = Math.max(2, Math.round(L / 2)); let hit = 0;
+    for (let i = 0; i <= n; i++) if (onRoad(G.pointAt(p.points, L * i / n).p)) hit++;
+    return hit / (n + 1) < 0.5;
+  });
   /* Gelände */
   const all = []; for (const x of B.parts) { const fp = HSS.partFootprint(x.pt).outer; all.push(...fp); } for (const p of prj.paths) all.push(...p.points);
   const bb = G.bbox(all); prj.terrain.size = Math.ceil(Math.max(Math.abs(bb.x0), Math.abs(bb.x1), Math.abs(bb.z0), Math.abs(bb.z1)) * 2 / 50) * 50 + 120;
@@ -141,7 +169,7 @@ function convert(S, def, v) {
     let st = null;
     if (a.kat === 'Pflege') {
       const m = String(a.volumen || '').match(/(\d+)\s*(Betten|Plätze)/);
-      st = { id: U.uid('st'), name: a.name, typ: a.id === 'intensiv' ? 'intensiv' : 'innere', art: 'stationaer', betten: m ? +m[1] : Math.round((a.flaeche || 800) / 45), plaetze: 0, vwd: a.id === 'intensiv' ? 4 : 5.3, auslastung: 0.85, sel: [], quelle: 'Standortmodell' };
+      st = { id: `st_${def.id}_${a.id}`, name: a.name, typ: a.id === 'intensiv' ? 'intensiv' : 'innere', art: 'stationaer', betten: m ? +m[1] : Math.round((a.flaeche || 800) / 45), plaetze: 0, vwd: a.id === 'intensiv' ? 4 : 5.3, auslastung: 0.85, sel: [], quelle: 'Standortmodell' };
       prj.stations.push(st);
     }
     areaPlaces[a.id] = [];
@@ -152,9 +180,9 @@ function convert(S, def, v) {
       else if (p.b && p.b !== 'X') { const b = bmap[p.b]; hosts = B.parts.filter(x => x.b === b && l >= x.von && l <= x.bis).sort((a, c) => HSS.partArea(c.pt) - HSS.partArea(a.pt)).slice(0, 1).map(x => ({ x, full: true })); }
       else { worldPoly = p.rect ? rectPoly(p.rect) : p.box ? boxPoly(p.box) : p.poly || null; }
       if (worldPoly) {
-        const c = centroid(worldPoly), x = B.find(bid ? 'kob_' + bid : null, c, l) || B.find(bid ? 'han_' + bid : null, c, l) || B.find(null, c, l);
+        const c = centroid(worldPoly), x = B.find(bid ? PRE[def.id] + bid : null, c, l) || B.find(null, c, l);
         if (!x || a.building === 'X') { // Außenbereich
-          const pl = { id: U.uid('pl'), name: a.name, role: role || 'extern', x: r1(c[0]), z: r1(c[1]) }; prj.places.push(pl); areaPlaces[a.id].push(pl.id); return;
+          const pl = { id: `pl_${def.id}_${a.id}_${i}`, standort: true, name: a.name, role: role || 'extern', x: r1(c[0]), z: r1(c[1]) }; prj.places.push(pl); areaPlaces[a.id].push(pl.id); return;
         }
         hosts = [{ x, poly: worldPoly }];
       }
@@ -164,7 +192,7 @@ function convert(S, def, v) {
         const I = HSS.interior(h.x.pt.id, f, true, prj);
         const loc = h.full ? HSS.partFootprintLocal(h.x.pt).outer.map(q => q.slice()) : h.poly.map(q => HSS.toLocal(h.x.pt, q).map(r1));
         const lb = G.bbox(loc), cc = centroid(loc);
-        const r = { id: U.uid('r'), use, name: a.name + (a.parts.length > 1 ? ` (${i + 1})` : ''), poly: loc, x: r1(cc[0]), z: r1(cc[1]), w: r1(lb.w), d: r1(lb.d) };
+        const r = { id: `r_${a.id}_${i}_${h.x.pt.id}_${f}`, standort: true, use, name: a.name + (a.parts.length > 1 ? ` (${i + 1})` : ''), poly: loc, x: r1(cc[0]), z: r1(cc[1]), w: r1(lb.w), d: r1(lb.d) };
         if (h.full) r.noWalls = true;
         if (role) r.role = role;
         if (st) { r.station = st.id; r.role = 'stuetzpunkt'; const s0 = st.sel.find(s => s.part === h.x.pt.id); if (s0) s0.floors.push(f); else st.sel.push({ part: h.x.pt.id, floors: [f] }); }
@@ -179,7 +207,7 @@ function convert(S, def, v) {
     const p = [o.x, o.z], x = B.find(bmap[o.building] ? bmap[o.building].id : null, p, Math.max(0, o.levels?.[0] ?? 0)) || B.find(null, p);
     if (!x) return;
     const loc = HSS.toLocal(x.pt, p), f = Math.max(HSS.partFloors(x.pt)[0], B.localFloor(x, o.levels?.[0] ?? 0));
-    const ob = { id: U.uid('obj'), lib, host: { part: x.pt.id, floor: Math.min(f, x.pt.floors - 1) }, x: r1(loc[0]), z: r1(loc[1]), rot: (360 - (x.pt.rot || 0)) % 360, name: o.name };
+    const ob = { id: `obj_${def.id}_${o.id}`, standort: true, lib, host: { part: x.pt.id, floor: Math.min(f, x.pt.floors - 1) }, x: r1(loc[0]), z: r1(loc[1]), rot: (360 - (x.pt.rot || 0)) % 360, name: o.name };
     if (o.levels) { ob.vonGF = o.levels[0]; ob.bisGF = o.levels[1]; }
     if (role === 'aufzug') { const fg = [...new Set((o.allow || ['*']).map(s => s === '*' ? '*' : s.includes(':') ? s.split(':')[1] : ['rein', 'unrein', 'patient'].includes(s) ? s : 'rein'))]; if (fg.includes('rein')) fg.push('neutral', 'person'); ob.aufzug = { kabinen: o.kabinen || 1, freigabe: fg }; }
     prj.objects.push(ob);
@@ -198,7 +226,7 @@ function convert(S, def, v) {
     conns.set(key, { pa, pb, fa, fb, typ, name: o?.name || `Verbindung ${A.b} – ${Bn.b}` });
   }
   for (const c of conns.values()) {
-    const br = { id: U.uid('br'), name: c.name + (c.typ === 'tunnel' ? ' (Versorgungsgang)' : ''), type: 'gebaeude', a: { part: c.pa.pt.id, floor: c.fa }, b: { part: c.pb.pt.id, floor: c.fb }, width: c.typ === 'tunnel' ? 3.5 : 3, height: 3.2, levels: 1, offset: 0, color: '#eef0ee' };
+    const br = { id: `br_${c.pa.pt.id}_${c.fa}_${c.pb.pt.id}_${c.fb}`, standort: true, name: c.name + (c.typ === 'tunnel' ? ' (Versorgungsgang)' : ''), type: 'gebaeude', a: { part: c.pa.pt.id, floor: c.fa }, b: { part: c.pb.pt.id, floor: c.fb }, width: c.typ === 'tunnel' ? 3.5 : 3, height: 3.2, levels: 1, offset: 0, color: '#eef0ee' };
     const e = HSS.bridgeEnds(br, prj); if (!e || e.len < 1.5 || e.len > 120) continue; // aneinandergrenzende Bauteile sind ohnehin verbunden
     prj.bridges.push(br);
   }
@@ -214,15 +242,15 @@ function convert(S, def, v) {
     if (tryP(c)) pnt = c; else for (let i = 1; i < 8 && !pnt; i++) for (let j = 1; j < 8 && !pnt; j++) { const q = [bb.x0 + bb.w * i / 8, bb.z0 + bb.d * j / 8]; if (tryP(q)) pnt = q; }
     if (!pnt) continue;
     const f0 = HSS.partFloors(x.pt)[0];
-    prj.objects.push({ id: U.uid('obj'), lib: x.src.typ === 'parking' ? 'erschl.aufzug.person' : 'erschl.aufzug.bett', host: { part: x.pt.id, floor: f0 }, x: r1(pnt[0] - 1.3), z: r1(pnt[1]), rot: 0, name: 'Aufzug (angenommen)' });
-    prj.objects.push({ id: U.uid('obj'), lib: 'erschl.treppe', host: { part: x.pt.id, floor: f0 }, x: r1(pnt[0] + 1.6), z: r1(pnt[1]), rot: 0, name: 'Treppenhaus (angenommen)' });
+    prj.objects.push({ id: `obj_auto_l_${x.pt.id}`, standort: true, lib: x.src.typ === 'parking' ? 'erschl.aufzug.person' : 'erschl.aufzug.bett', host: { part: x.pt.id, floor: f0 }, x: r1(pnt[0] - 1.3), z: r1(pnt[1]), rot: 0, name: 'Aufzug (angenommen)' });
+    prj.objects.push({ id: `obj_auto_t_${x.pt.id}`, standort: true, lib: 'erschl.treppe', host: { part: x.pt.id, floor: f0 }, x: r1(pnt[0] + 1.6), z: r1(pnt[1]), rot: 0, name: 'Treppenhaus (angenommen)' });
   }
   /* Externe Orte (Lieferanten, Entsorger) an der Zufahrt */
   const roads = prj.paths.filter(p => p.kind === 'zufahrt');
   const far = roads.flatMap(p => [p.points[0], p.points[p.points.length - 1]]).sort((a, b) => Math.hypot(b[0], b[1]) - Math.hypot(a[0], a[1]));
   if (far.length) {
-    prj.places.push({ id: 'ext_lief', name: 'Großhandel / Lieferanten', role: 'extern', x: r1(far[0][0]), z: r1(far[0][1]), anfahrtM: 15000 });
-    prj.places.push({ id: 'ext_ents', name: 'Entsorgungsfachbetrieb / Fremdwäscherei', role: 'extern', x: r1(far[1][0]), z: r1(far[1][1]), anfahrtM: 9000 });
+    prj.places.push({ id: 'ext_lief', standort: true, name: 'Großhandel / Lieferanten', role: 'extern', x: r1(far[0][0]), z: r1(far[0][1]), anfahrtM: 15000 });
+    prj.places.push({ id: 'ext_ents', standort: true, name: 'Entsorgungsfachbetrieb / Fremdwäscherei', role: 'extern', x: r1(far[1][0]), z: r1(far[1][1]), anfahrtM: 9000 });
   }
   /* Flüsse des Modells */
   HSS.ensureStammdaten(prj);
@@ -241,7 +269,7 @@ function convert(S, def, v) {
       if (pa === pb) continue;
       const fahrten = leg.n * factor * wa * wb;
       if (fahrten < 0.05) continue;
-      prj.flows.push({ id: U.uid('flow'), name: `${fl.name}: ${leg.txt || ''}`.trim(), template: null, material: mat, von: pa, nach: pb, menge: Math.round(fahrten * M.proLadung * 10) / 10, periode: 'tag', betriebstage: 7, fenster: windows(prof), transport: tr, fahrzeitMin: null, rueck: false, aktiv: true, quelle: 'Standortmodell' });
+      prj.flows.push({ id: `fl_${fl.id}_${fl.legs.indexOf(leg)}_${pa}_${pb}`, name: `${fl.name}: ${leg.txt || ''}`.trim(), template: null, material: mat, von: pa, nach: pb, menge: Math.round(fahrten * M.proLadung * 10) / 10, periode: 'tag', betriebstage: 7, fenster: windows(prof), transport: tr, fahrzeitMin: null, rueck: false, aktiv: true, quelle: 'Standortmodell' });
     }
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
@@ -249,27 +277,94 @@ function convert(S, def, v) {
 }
 
 HSS.standorte = {
-  async load(id, v = 'ist') {
+  async load(id, v = 'ist', opts = {}) {
     const def = HSS.STANDORTE.find(s => s.id === id); if (!def) throw new Error('Unbekannter Standort');
-    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei);
-    return convert(window.HSS_STANDORTE[id], def, v);
+    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261014');
+    return convert(window.HSS_STANDORTE[id], def, v, opts);
+  },
+  /* Gespeichertes Standortmodell auf den aktuellen Stand der Übernahme bringen.
+     Eigene Änderungen bleiben erhalten: gelöschte Gebäude und Wege bleiben gelöscht, eigene Gebäude, Wege,
+     Flächen, Räume, Objekte, Stationen, Flüsse, Material und Fuhrpark bleiben; Standort-Gebäude erhalten die
+     neue Geometrie (Sockel mit aufgesetzten Türmen und Technikaufbauten), Gehwege auf Fahrbahnen entfallen. */
+  async aktualisieren(old) {
+    const so = old.meta.standort; if (!so) throw new Error('Kein Standortmodell');
+    const fresh = await HSS.standorte.load(so.id, so.variante || 'ist'), alle = await HSS.standorte.load(so.id, so.variante || 'ist', { allePfade: true });
+    const pre = PRE[so.id], isSt = id => typeof id === 'string' && id.startsWith(pre);
+    const out = U.clone(old);
+    // Gebäude
+    const oldB = new Map(old.buildings.map(b => [b.id, b]));
+    out.buildings = fresh.buildings.filter(b => oldB.has(b.id)).map(b => { const o = oldB.get(b.id); return Object.assign(b, { name: o.name, kurz: o.kurz, color: o.color }); })
+      .concat(old.buildings.filter(b => !isSt(b.id)));
+    const parts = new Set(out.buildings.flatMap(b => b.parts.map(p => p.id)));
+    // Innenausbau: Standortbereiche neu, eigene Räume (z. B. geplante Stationen) bleiben
+    out.interiors = {};
+    for (const [pid, F] of Object.entries(fresh.interiors)) if (parts.has(pid)) out.interiors[pid] = U.clone(F);
+    for (const [pid, F] of Object.entries(old.interiors || {})) {
+      if (!parts.has(pid)) continue;
+      for (const [f, I] of Object.entries(F)) {
+        const eigene = (I.rooms || []).filter(r => !r.standort && !r.hinweis);
+        if (!eigene.length && !isSt(pid)) { (out.interiors[pid] = out.interiors[pid] || {})[f] = U.clone(I); continue; }
+        if (!eigene.length) continue;
+        const T = ((out.interiors[pid] = out.interiors[pid] || {})[f] = out.interiors[pid][f] || { walls: [], doors: [], rooms: [] });
+        const ids = new Set(eigene.map(r => r.id));
+        T.rooms = T.rooms.filter(r => !eigene.some(e => Math.abs(e.x - r.x) < 0.5 && Math.abs(e.z - r.z) < 0.5)).concat(U.clone(eigene));
+        T.walls = T.walls.concat((I.walls || []).filter(w => ids.has(w.room) || (w.auto && eigene.length)));
+        T.doors = T.doors.concat((I.doors || []).filter(d => T.walls.some(w => w.id === d.wall)));
+        HSS.rebuildWalls(T);
+      }
+    }
+    // Objekte: Standort-Erschließung neu, eigene Objekte bleiben
+    const stObj = o => o.standort || (o.host && isSt(o.host.part) && /^erschl\./.test(o.lib) && !o.station);
+    out.objects = fresh.objects.filter(o => !o.host || parts.has(o.host.part)).concat(old.objects.filter(o => !stObj(o) && (!o.host || parts.has(o.host.part))));
+    // Wege: nur noch vorhandene Standortwege, ohne Gehwege auf Fahrbahnen; eigene Wege bleiben
+    const sig = p => p.points.length ? [p.points[0], p.points[p.points.length - 1]].map(q => q.map(v => Math.round(v * 2) / 2).join(',')).join('|') : '';
+    const oldSig = new Set(old.paths.map(sig)), alleSig = new Set(alle.paths.map(sig));
+    out.paths = fresh.paths.filter(p => oldSig.has(sig(p))).concat(old.paths.filter(p => !p.standort && !alleSig.has(sig(p))));
+    // Brücken, Orte, Stationen
+    out.bridges = fresh.bridges.filter(b => parts.has(b.a.part) && parts.has(b.b.part)).concat(old.bridges.filter(b => !(isSt(b.a.part) && isSt(b.b.part)) && parts.has(b.a.part) && parts.has(b.b.part)));
+    const freshPlaceNames = new Set(fresh.places.map(p => p.name));
+    out.places = fresh.places.concat(old.places.filter(p => !p.standort && !/^ext_/.test(p.id) && !freshPlaceNames.has(p.name)));
+    out.stations = fresh.stations.concat(old.stations.filter(st => st.quelle !== 'Standortmodell'));
+    // Flüsse: Standortflüsse neu, eigene Flüsse bleiben (Orte werden über ihren Namen neu zugeordnet)
+    const tmp = HSS.state.project;
+    HSS.state.project = old; const oldPl = new Map(HSS.places(old).map(p => [p.id, p.name]));
+    HSS.state.project = out; const newPl = HSS.places(out), byName = new Map(newPl.map(p => [p.name, p.id])), newIds = new Set(newPl.map(p => p.id));
+    HSS.state.project = tmp;
+    const remap = id => newIds.has(id) ? id : byName.get(oldPl.get(id)) || null;
+    const eigeneFl = old.flows.filter(f => f.quelle !== 'Standortmodell').map(f => Object.assign(U.clone(f), { von: remap(f.von), nach: remap(f.nach) })).filter(f => f.von && f.nach);
+    out.flows = fresh.flows.filter(f => newIds.has(f.von) && newIds.has(f.nach)).concat(eigeneFl);
+    out.meta.standort = Object.assign({}, so, { rev: 2 });
+    out.meta.modified = new Date().toISOString();
+    return out;
+  },
+  /* Flüsse, deren Transportmittel keinen Weg findet (z. B. Routenzug nur über Fußwege erreichbar), auf Handwagen umstellen */
+  wegepruefung(P) {
+    let umgestellt = 0, offen = 0; HSS.invalidateNet?.();
+    for (const f of P.flows) {
+      const T = P.transports.find(t => t.id === f.transport), M = P.materials.find(m => m.id === f.material);
+      if (!T || !M) continue;
+      const ok = r => r && r.ok !== false && !r.fail;
+      if (ok(HSS.route(f.von, f.nach, T.mittel, M.reinheit))) continue;
+      if (T.mittel !== 'hand' && ok(HSS.route(f.von, f.nach, 'hand', M.reinheit))) { f.transport = 't_hand'; f.hinweis = `Standortmodell: ${T.name} findet keinen Weg, daher Handwagen`; umgestellt++; } else offen++;
+    }
+    if (umgestellt) P.meta.notes += `\n${umgestellt} Flüsse auf Handwagen umgestellt (Ziel nur über Fußwege erreichbar).`;
+    HSS.invalidateNet?.();
+    return { umgestellt, offen };
+  },
+  async aktualisierenAktuell() {
+    try {
+      const neu = await HSS.standorte.aktualisieren(HSS.project());
+      HSS.change('Standortmodell aktualisieren', p => { for (const k of Object.keys(p)) delete p[k]; Object.assign(p, neu); });
+      let w; HSS.change('Wege prüfen', p => { w = HSS.standorte.wegepruefung(p); }, { noUndo: true });
+      HSS.ui?.toast(`Standortmodell aktualisiert – eigene Änderungen übernommen${w.offen ? ` · ${w.offen} Flüsse ohne Weg (z. B. wegen gelöschter Gebäude/Wege) – im Arbeitsbereich Simulation/Analyse aufgeführt` : ''}`, 5000);
+    } catch (e) { console.error(e); HSS.ui?.dialog(`<h2>Aktualisieren</h2><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`); }
   },
   async open(id, v) {
     HSS.ui?.toast('Standortmodell wird aufgebaut …', 1500);
     try {
       const prj = await HSS.standorte.load(id, v);
       HSS.load(prj);
-      // Flüsse, deren Transportmittel keinen Weg findet (z. B. Routenzug nur über Fußwege erreichbar), auf Handwagen umstellen
-      const P = HSS.project(); let umgestellt = 0, offen = 0; HSS.invalidateNet?.();
-      for (const f of P.flows) {
-        const T = P.transports.find(t => t.id === f.transport), M = P.materials.find(m => m.id === f.material);
-        if (!T || !M) continue;
-        const ok = r => r && r.ok !== false && !r.fail;
-        if (ok(HSS.route(f.von, f.nach, T.mittel, M.reinheit))) continue;
-        if (T.mittel !== 'hand' && ok(HSS.route(f.von, f.nach, 'hand', M.reinheit))) { f.transport = 't_hand'; f.hinweis = `Standortmodell: ${T.name} findet keinen Weg, daher Handwagen`; umgestellt++; } else offen++;
-      }
-      if (umgestellt) P.meta.notes += `\n${umgestellt} Flüsse auf Handwagen umgestellt (Ziel nur über Fußwege erreichbar).`;
-      if (offen) P.meta.notes += `\n${offen} Flüsse ohne Weg – Verbindungen ergänzen (Wege, Brücken, Aufzüge).`;
+      HSS.standorte.wegepruefung(HSS.project());
       HSS.invalidateNet?.();
       HSS.ui?.toast(`${prj.buildings.length} Gebäude, ${prj.flows.length} Flüsse übernommen – alles ist bearbeitbar`, 4000);
     } catch (e) { console.error(e); HSS.ui?.dialog(`<h2>Standortmodell</h2><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`); }

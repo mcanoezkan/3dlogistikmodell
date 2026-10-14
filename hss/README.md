@@ -13,7 +13,9 @@ Die Suite läuft offline (three.js r160 liegt in `vendor/`) und lässt sich auch
 
 **Demo-Modus** (Kopfzeile): lädt das *UNITY Hospital* – einen Schwerpunktversorger mit rund 650 Betten (Behandlungssockel mit zwei aufgesetzten Bettenhäusern, Eingangshalle, Kinderklinik, Altersmedizin/Psychiatrie, Logistikzentrum mit Tunnel und AWT, Verwaltung, Parkhaus, 23 Stationen) – und führt in 14 Schritten durch alle Funktionen.
 
-**Standortmodelle** (Startdialog oder „Öffnen“): das *Bundeswehrzentralkrankenhaus Koblenz* (Gebäude und Straßen aus OpenStreetMap, Bestand und Soll-Variante) und das *Klinikum Hanau* (Bestand und Variante 2 mit Neubau und Versorgungszentrum) als vollständige, bearbeitbare Projekte – mit Geschossen und Untergeschossen, Verbindungsgängen, Aufzügen, Funktionsbereichen, Pflegebereichen als Stationen und den Transportflüssen der jeweiligen 3D-Logistikmodelle. „Standort verorten“ (Gelände & Wege) setzt Geokoordinaten und Nordwinkel und verschiebt oder dreht das ganze Modell.
+**Standortmodelle** (Startdialog oder „Öffnen“): das *Bundeswehrzentralkrankenhaus Koblenz* (Gebäude und Straßen aus OpenStreetMap, Bestand und Soll-Variante), das *Klinikum Hanau* (Bestand und Variante 2 mit Neubau und Versorgungszentrum) und das *Klinikum Bielefeld-Mitte* (Bestand und Soll-Variante, aus dem bisherigen Modell `index.html`) als vollständige, bearbeitbare Projekte – mit Geschossen und Untergeschossen, Verbindungsgängen, Aufzügen, Funktionsbereichen, Pflegebereichen als Stationen und den Transportflüssen der jeweiligen 3D-Logistikmodelle. „Standort verorten“ (Gelände & Wege) setzt Geokoordinaten und Nordwinkel und verschiebt oder dreht das ganze Modell. Gespeicherte Standortmodelle älterer Stände lassen sich mit „Standortmodell aktualisieren“ auf die aktuelle Übernahme bringen; gelöschte Gebäude und Wege bleiben gelöscht, eigene Ergänzungen bleiben erhalten.
+
+Werden nach einem Update nicht alle Arbeitsbereiche angezeigt, meldet die Suite beim Start, welche Datei nicht geladen wurde (meist veralteter Browser-Cache: Strg + F5). `start.py` liefert alle Dateien ohne Cache aus.
 
 ## Bedienung
 
