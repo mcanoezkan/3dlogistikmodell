@@ -86,6 +86,7 @@ function buildNet(prj) {
   /* 1. Außenwege */
   const pathNodes = [];
   for (const p of prj.paths) {
+    if (p.noNet || ['grenze', 'bach', 'bahn'].includes(p.kind)) continue; // Umgebung, Zäune, Gewässer, Gleise: nicht routen
     const L = HSS.pathLine(p, prj); if (L.length < 2) continue;
     const total = L[L.length - 1][3], k = Math.max(1, Math.round(total / 6));
     let prev = null;

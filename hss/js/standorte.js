@@ -131,6 +131,7 @@ function convert(S, def, v, opts = {}) {
       } else B.part(b, { id: `kob_${id}_0`, name, poly: k.poly || ob.poly, von: ob.minL > 0 ? ob.minL : small ? 0 : basement, bis: maxL, typ, accent: farbe[anz], helipad: id === 'S' });
     }
     for (const [i, r] of (O.roads || []).entries()) { if (r.length < 2) continue; const len = G.polylineLength(r); prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_kob_r${i}`, standort: true, name: 'Erschließungsstraße', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 6, smooth: false, traffic: len > 120 ? 2 : 0 })); }
+    if (O.boundary?.length > 3) prj.paths.push(Object.assign(HSS.defaults.path('grenze'), { id: 'path_kob_grenze', standort: true, name: 'Grundstücksgrenze BwZK (OpenStreetMap)', points: O.boundary.map(q => [r1(q[0]), r1(q[1])]), width: 0.35, smooth: false, noNet: true }));
     for (const [i, r] of (O.paths || []).entries()) { if (r.length < 2) continue; prj.paths.push(Object.assign(HSS.defaults.path('gehweg'), { id: `path_kob_g${i}`, standort: true, name: 'Fußweg', points: r.map(q => [r1(q[0]), r1(q[1])]), width: 2, smooth: false })); }
   } else {
     const ug = D.gebaeude, pre = PRE[def.id];
@@ -273,6 +274,7 @@ function convert(S, def, v, opts = {}) {
     }
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
+  if (HSS.furnishEmpty) HSS.furnishEmpty(prj, { maxArea: 1500, max: 9000 }); // Funktionsflächen einrichten
   return prj;
 }
 

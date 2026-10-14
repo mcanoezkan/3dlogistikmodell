@@ -94,7 +94,7 @@ T.drawArea = (kind) => {
   UI.hint(`<b>${HSS.FLAECHEN[kind]}</b>: Rechteck mit gedrückter Maustaste aufziehen`);
 };
 // Fläche in Standardgröße setzen (für Ziehen aus dem Panel); Größe danach an den Griffen ändern
-const AREA_STD = { parkplatz: [48, 32], gruen: [40, 30], platz: [30, 20], wasser: [24, 16] };
+const AREA_STD = { parkplatz: [48, 32], gruen: [40, 30], platz: [30, 20], wasser: [24, 16], acker: [120, 80], wald: [80, 60] };
 T.placeArea = (kind) => {
   if (readonly()) return;
   const [w, d] = AREA_STD[kind] || [30, 20];
@@ -218,9 +218,9 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
   render(el) {
     const prj = HSS.project(), t = prj.terrain;
     const geo = prj.meta.geo;
-    el.innerHTML = `<h3>Standort</h3><div class="note">${geo?.lat ? `${U.esc(geo.adresse || prj.meta.standort?.id || '')} ${U.fmt(geo.lat, 5)}° N, ${U.fmt(geo.lon, 5)}° O · Nordwinkel ${U.fmt(geo.nord || 0)}°` : 'Noch nicht verortet.'}</div><div class="row" style="gap:6px;margin:6px 0 4px"><button id="gGeo">Standort verorten …</button>${prj.meta.standort ? '<button id="gUpd" title="Geometrie und Daten des Standortmodells neu übernehmen, eigene Änderungen bleiben">Standortmodell aktualisieren</button>' : ''}</div>
+    el.innerHTML = `<h3>Standort</h3><div class="note">${geo?.lat ? `${U.esc(geo.adresse || prj.meta.standort?.id || '')} ${U.fmt(geo.lat, 5)}° N, ${U.fmt(geo.lon, 5)}° O · Nordwinkel ${U.fmt(geo.nord || 0)}°` : 'Noch nicht verortet.'}</div><div class="row" style="gap:6px;margin:6px 0 4px"><button id="gGeo">Standort verorten …</button><button id="gOsm" class="primary" title="Straßen, Felder, Wald, Wasser, Nachbargebäude und Grundstücksgrenze rund um den Standort laden">Umgebung aus OpenStreetMap …</button>${prj.meta.standort ? '<button id="gUpd" title="Geometrie und Daten des Standortmodells neu übernehmen, eigene Änderungen bleiben">Standortmodell aktualisieren</button>' : ''}</div>
     <h3>Wege zeichnen</h3><div class="tiles">${Object.entries(HSS.WEGARTEN).map(([k, v]) => tile(`data-path="${k}"`, v.name, v.info)).join('')}</div>
-    <h3>Flächen aufziehen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'mit Bäumen und Sträuchern')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}</div>
+    <h3>Flächen aufziehen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'mit Bäumen und Sträuchern')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}${tile('data-area="acker"', 'Acker / Feld', 'Umgebung')}${tile('data-area="wald"', 'Wald', 'dichter Baumbestand')}</div>
     <h3>Außenausstattung</h3><div class="tiles">${[['Außenanlagen/Grün', 'Bäume & Grün'], ['Außenanlagen/Beleuchtung', 'Laternen & Leuchten'], ['Außenanlagen/ÖPNV & Verkehr', 'Haltestelle, Schranke, Landeplatz'], ['Fahrzeuge', 'Autos, Busse, RTW, LKW'], ['Außenanlagen/Stadtmobiliar', 'Bänke, Fahrradständer'], ['Außenanlagen/Ver- und Entsorgung', 'Müllplatz, Presscontainer']].map(([c, n]) => tile(`data-cat="${c}"`, n, '')).join('')}</div>
     <div class="note">Parkhäuser finden Sie unter „Gebäude“ als Baustein.</div>
     <h3>Gelände</h3>
@@ -230,7 +230,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     <h3>Externe Orte</h3><p class="note">Lieferanten, externe Wäscherei oder Entsorger als Start/Ziel für LKW-Touren.</p><button id="gExt">+ Externen Ort setzen</button>
     <h3>Vorhandene Wege (${prj.paths.length})</h3><div class="list">${prj.paths.map(p => `<div class="li" data-sel="path:${p.id}"><span class="sw" style="background:${HSS.WEGARTEN[p.kind]?.color}"></span><span class="t">${U.esc(p.name)}</span><span class="s">${U.fmt(HSS.pathStats(p).len)} m</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>
     <h3>Flächen (${prj.areas.length})</h3><div class="list">${prj.areas.map(a => `<div class="li" data-sel="area:${a.id}"><span class="t">${HSS.FLAECHEN[a.kind]}</span><span class="s">${U.fmt(a.w * a.d)} m²${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' St.' : ''}</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
-    $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
+    $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gOsm', el).onclick = () => HSS.osm.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
     $$('[data-path]', el).forEach(b => b.onclick = () => T.drawPath(b.dataset.path));
     $$('[data-area]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.area); HSS.manip?.dragFrom(b, () => T.placeArea(b.dataset.area)); });
     $$('[data-cat]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.cat; UI.setWS('bibliothek'); });

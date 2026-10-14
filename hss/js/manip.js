@@ -106,7 +106,7 @@ function buildHandles() {
     addHandle('move', W(bb.x1 - Math.min(8, bb.w * 0.2), bb.z1 - Math.min(4, bb.d * 0.25), top + 1.5), { op: 'move' });
     const r = [W(bb.x0, bb.z0), W(bb.x1, bb.z0), W(bb.x1, bb.z1), W(bb.x0, bb.z1), W(bb.x0, bb.z0)]; addLine(r);
   } else if (sel.kind === 'area') {
-    const a = U.byId(p.areas, sel.id); if (!a) return;
+    const a = U.byId(p.areas, sel.id); if (!a || a.poly) return;
     const y = HSS.terrainH(a.x, a.z) + 0.6, W = (lx, lz) => { const q = G.rot([lx, lz], U.rad(a.rot || 0)); return new V3(q[0] + a.x, y, q[1] + a.z); };
     addHandle('resize', W(a.w / 2 + 1.2, 0), { op: 'edge', ax: 'x', sg: 1 }); addHandle('resize', W(-a.w / 2 - 1.2, 0), { op: 'edge', ax: 'x', sg: -1 });
     addHandle('resizeV', W(0, a.d / 2 + 1.2), { op: 'edge', ax: 'z', sg: 1 }); addHandle('resizeV', W(0, -a.d / 2 - 1.2), { op: 'edge', ax: 'z', sg: -1 });
@@ -287,7 +287,7 @@ function magnet(pt0, dx, dz) {
 /* Fläche */
 function dragArea(hit, fine) {
   const a0 = D.a0, sel = D.sel; let n = U.clone(a0), label = '';
-  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } const g = groupOf(sel.id); if (g) g.position.set(dx, 0, dz); n.x = a0.x + dx; n.z = a0.z + dz; hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); D.commit = () => HSS.change('Fläche verschieben', p => { const a = U.byId(p.areas, sel.id); a.x = Math.round(n.x * 10) / 10; a.z = Math.round(n.z * 10) / 10; }, { scope: 'outdoor' }); return; }
+  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } const g = groupOf(sel.id); if (g) g.position.set(dx, 0, dz); n.x = a0.x + dx; n.z = a0.z + dz; hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); D.commit = () => HSS.change('Fläche verschieben', p => { const a = U.byId(p.areas, sel.id); a.x = Math.round(n.x * 10) / 10; a.z = Math.round(n.z * 10) / 10; if (a.poly) a.poly = a0.poly.map(q => [Math.round((q[0] + dx) * 10) / 10, Math.round((q[1] + dz) * 10) / 10]); }, { scope: 'outdoor' }); return; }
   if (D.op === 'rot') { let r = (a0.rot || 0) + U.deg(Math.atan2(hit.z - a0.z, hit.x - a0.x) - D.ang0); r = fine ? Math.round(r) : Math.round(r / 5) * 5; n.rot = r; label = `<b>Drehen</b> · ${fmt(((r % 360) + 360) % 360, 0)}°`; }
   if (D.op === 'edge') {
     const loc = G.rot([hit.x - a0.x, hit.z - a0.z], -U.rad(a0.rot || 0)); const ax = D.ax === 'x' ? 0 : 1, key = D.ax === 'x' ? 'w' : 'd';

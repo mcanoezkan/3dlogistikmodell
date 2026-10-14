@@ -220,3 +220,26 @@ RZ.endoskopie = P => { P.near('med.liege.untersuchung', P.W / 2, P.D / 2, 'right
 RZ.herzkatheter = P => { P.near('med.angio', P.W / 2, P.D / 2, 'front'); P.near('med.monitor.patient', P.W / 2 + 1.6, P.D / 2 - 1.0); P.near('med.defi.notfallwagen', P.W - 0.8, 1.4); P.fill('op.sterilschrank', solidOr(P), { max: 2 }); P.any('rad.bleischuerze', ALL, {}); warn(P); };
 RZ.dialyseplatz = P => RZ.behandlung(P, { typ: 'dialyse' });
 })();
+/* Versorgungs-/Logistikflächen (z. B. in Standortmodellen) */
+(function () {
+  const HSS = window.HSS, U = HSS.util, RZ = HSS.EINRICHTUNG;
+  RZ.logistik = P => { P.fill('log.rollcontainer', ['back', 'left', 'right'], { max: 6 }); for (let v = 2.2; v < P.D - 1.5 && v < 12; v += 2.4) for (let u = 1.6; u < P.W - 1.2 && u < 14; u += 2.2) P.at(['log.modulwagen', 'log.waeschewagen.rein', 'log.speisenwagen', 'log.palette'][Math.floor((u + v) * 7) % 4], u, v, 'front'); P.near('log.hubwagen', 1.0, 1.4); };
+  RZ.awt = P => { P.any('awt.station', ['back', 'left', 'right'], { maxH: 3 }); P.near('awt.container', P.W / 2, P.D / 2); P.near('awt.container', P.W / 2 + 1.2, P.D / 2); };
+  // großer Pflegebereich (Standortmodelle: Station als eine Fläche) – Bettenreihen mit Nachttischen, Stützpunkt in der Mitte
+  RZ.pflege = P => { P.near('stat.stuetzpunkt', P.W / 2, P.D / 2, 'front', { radius: 3 }); for (const s of ['back', 'front', 'left', 'right']) { let k = 0; while (k < 40 && P.wall('med.bett.pflege', s, { off: 0.3, edge: 0.6 })) { k++; } } P.fill('stat.nachttisch', ['back', 'front'], { max: 30 }); P.near('stat.visitewagen', P.W / 2 + 2, P.D / 2); P.near('stat.verbandwagen', P.W / 2 - 2, P.D / 2); };
+  /* Räume ohne Einrichtung nachträglich einrichten (Standortmodelle, Demo, ältere Projekte) */
+  HSS.furnishEmpty = (prj = HSS.project(), o = {}) => {
+    let n = 0; const max = o.max || 6000;
+    const byFloor = new Map(); for (const ob of prj.objects) if (ob.host) { const k = ob.host.part + '|' + ob.host.floor; if (!byFloor.has(k)) byFloor.set(k, []); byFloor.get(k).push(ob); }
+    for (const b of prj.buildings) for (const pt of b.parts) for (const [f, I] of Object.entries(prj.interiors[pt.id] || {})) {
+      const objs = byFloor.get(pt.id + '|' + f) || [];
+      for (const r of I.rooms) {
+        if (n > max || ['flur', 'kern', 'schacht', 'lichthof', 'nass', 'vorraum'].includes(r.use) || !RZ[r.use]) continue;
+        if (r.w * r.d > (o.maxArea || 900)) continue;
+        if (objs.some(ob => Math.abs(ob.x - r.x) < r.w / 2 && Math.abs(ob.z - r.z) < r.d / 2)) continue;
+        for (const ob of HSS.furnishRoom(pt, +f, r, I, { typ: r.station ? prj.stations.find(s => s.id === r.station)?.typ : null })) { prj.objects.push(Object.assign({ id: U.uid('obj'), host: { part: pt.id, floor: +f }, auto: true }, ob, r.station ? { station: r.station } : {})); n++; }
+      }
+    }
+    return n;
+  };
+})();
