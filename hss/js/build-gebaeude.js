@@ -211,8 +211,11 @@ HSS.bridgeEnds = (br, prj = HSS.project()) => {
   let best = null;
   const near = (p, ring) => { let bb = null; for (let i = 0; i < ring.length; i++) { const c = G.closestOnSeg(p, ring[i], ring[(i + 1) % ring.length]); const d = G.dist(p, c.pt); if (!bb || d < bb.d) bb = { d, pt: c.pt }; } return bb; };
   const ca = [A.part.x, A.part.z], cb = [B.part.x, B.part.z];
-  let pa = near(cb, fa).pt, pb = near(pa, fb).pt; pa = near(pb, fa).pt;
-  if (br.offset) { const dx = pb[0] - pa[0], dz = pb[1] - pa[1], l = Math.hypot(dx, dz) || 1; const ox = -dz / l * br.offset, oz = dx / l * br.offset; pa = near([pa[0] + ox, pa[1] + oz], fa).pt; pb = near([pb[0] + ox, pb[1] + oz], fb).pt; }
+  let pa, pb;
+  if (br.ma && br.mb) { // von Hand gesetzte Anschlusspunkte (lokal zum Bauteil, wandern mit dem Gebäude)
+    pa = near(HSS.toWorld(A.part, br.ma), fa).pt; pb = near(HSS.toWorld(B.part, br.mb), fb).pt;
+  } else { pa = near(cb, fa).pt; pb = near(pa, fb).pt; pa = near(pb, fa).pt; }
+  if (br.offset && !br.ma) { const dx = pb[0] - pa[0], dz = pb[1] - pa[1], l = Math.hypot(dx, dz) || 1; const ox = -dz / l * br.offset, oz = dx / l * br.offset; pa = near([pa[0] + ox, pa[1] + oz], fa).pt; pb = near([pb[0] + ox, pb[1] + oz], fb).pt; }
   best = { pa, pb, ya: HSS.floorY(A.part, br.a.floor, prj), yb: HSS.floorY(B.part, br.b.floor, prj), len: G.dist(pa, pb), A, B };
   return best;
 };

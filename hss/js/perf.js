@@ -176,7 +176,14 @@ function expandInstanced(o, mat) {
 }
 const triCount = g => (g.index ? g.index.count : g.attributes.position.count) / 3;
 
-P.liveOwner = () => { const s = HSS.state.selection; return s && ['part', 'path', 'area', 'bridge'].includes(s.kind) ? s.id : null; };
+// Gewähltes Element (und was beim Ziehen mitwandert) bleibt ungebündelt, damit es sich flüssig bewegen lässt
+P.liveOwner = () => {
+  const s = HSS.state.selection; if (!s || !['part', 'path', 'area', 'bridge', 'object'].includes(s.kind)) return null;
+  const ids = new Set([s.id]);
+  if (s.kind === 'part') { const prj = HSS.project(); for (const id of HSS.manip?.moveSet?.(s.id) || []) ids.add(id); for (const br of prj.bridges) if (ids.has(br.a?.part) || ids.has(br.b?.part)) ids.add(br.id); }
+  return ids;
+};
+const liveKey = l => (l ? [...l].sort().join(',') : '');
 
 // Vorbereitung je Eigentümer (Bauteil, Weg, Fläche …) wird zwischengespeichert: unveränderte
 // Elemente kommen aus dem Speicher, nur geänderte werden neu in Weltkoordinaten umgerechnet.
@@ -239,7 +246,7 @@ P.batch = () => {
     const cells = new Map();
     for (const owner of layer.children) {
       if (owner === grp || !owner.visible || owner.userData.batch) continue;
-      if (live && owner.userData?.id === live) continue;
+      if (live && live.has(owner.userData?.id)) continue;
       const pr = prepOwner(owner);
       let c = cells.get(pr.cell); if (!c) cells.set(pr.cell, c = { preps: [], sig: '' });
       c.preps.push(pr); c.sig += pr.uid + ',';
@@ -293,7 +300,7 @@ HSS.on('rebuilt', () => { P.batch(); P.invalidate(3); });
 // Auswahl wechselt → gewähltes Element aus dem Bündel lösen (verzögert, damit Doppelklicks flüssig bleiben)
 let lastLive = null, selT = null;
 HSS.on('selection', () => {
-  const l = P.liveOwner(); if (l === lastLive) { P.invalidate(); return; }
+  const l = liveKey(P.liveOwner()); if (l === lastLive) { P.invalidate(); return; }
   lastLive = l; clearTimeout(selT); selT = setTimeout(() => { P.batch(); P.invalidate(); }, 30);
 });
 // Jedes Ereignis kann die Darstellung ändern

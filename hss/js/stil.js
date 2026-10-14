@@ -80,6 +80,17 @@ ST.apply = () => {
   for (const [k, fein] of [['build', false], ['interior', false], ['paths', true]]) L[k]?.traverse(o => { if (o.isMesh && !o.userData.pick && wahl[k](o) && !(o.material && o.material.visible === false)) kontur(o, fein); });
   ST.himmel();
 };
+// Einzelne Gruppe (z. B. Vorschau beim Ziehen) in den Cartoon-Stil überführen
+ST.applyTo = (root, layer = 'build') => {
+  if (ST.mode !== 'cartoon' || !root) return root;
+  root.traverse(o => {
+    if (!o.isMesh || o.userData.kontur) return;
+    if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial) { o.material = zone(o.material); return; }
+    if (Array.isArray(o.material)) o.material = o.material.map(toon); else o.material = toon(o.material);
+  });
+  root.traverse(o => { if (o.isMesh && !o.userData.pick && (layer === 'paths' || o.userData.roof || o.userData.wall || o.userData.kind === 'walls' || o.parent?.userData?.kind === 'bridge') && !(o.material && o.material.visible === false)) kontur(o, layer === 'paths'); });
+  return root;
+};
 ST.himmel = () => {
   const S3 = HSS.s3; if (!S3.scene || ST.mode !== 'cartoon') return;
   const ug = HSS.view.floor !== null && HSS.view.floor < 0;

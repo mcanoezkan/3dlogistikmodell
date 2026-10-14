@@ -176,6 +176,8 @@ function objVisible(o, prj) {
 function buildObjects() {
   const prj = HSS.project(), L = S3.layers.objects; clear(L);
   const groups = new Map();
+  // gewähltes Objekt einzeln aufbauen, damit es sich beim Ziehen direkt mitbewegt
+  const selObj = HSS.state.selection?.kind === 'object' ? HSS.state.selection.id : null;
   for (const o of prj.objects) {
     if (o.hidden) continue;
     const d = HSS.library.get(o.lib); if (!d) continue;
@@ -201,6 +203,7 @@ function buildObjects() {
         const wp = HSS.objWorld(o, prj); wx = wp.x; wy = wp.y; wz = wp.z; rot = wp.rot;
         if (P) { gfKey = HSS.globalFloor(P.part, o.host.floor, prj); wy += gfKey * V.explode; if (d.anchor === 'decke') wy = HSS.floorY(P.part, o.host.floor, prj) + HSS.fh(P.part, o.host.floor) - 0.25 - size.h + gfKey * V.explode; }
       }
+      if (o.id === selObj && !d.model) { const g = HSS.library.build(o.lib, { w: size.w, d: size.d, h: size.h * sy }, { color: o.color }); g.position.set(wx, wy, wz); g.rotation.y = -U.rad(rot); g.userData = { kind: 'object', id: o.id, lib: o.lib }; g.traverse(m => { if (m.isMesh) m.userData = { kind: 'object', id: o.id }; }); HSS.stil?.applyTo(g); L.add(g); continue; }
       if (d.model) { const g = HSS.library.build(o.lib, size); g.position.set(wx, wy, wz); g.rotation.y = -U.rad(rot); g.traverse(m => { if (m.isMesh) m.userData = { kind: 'object', id: o.id }; }); L.add(g); continue; }
       // Gruppen je Geschoss bzw. Geländezelle (80 m): Änderungen betreffen nur einen kleinen Teil
       const where = o.host ? o.host.part + '@' + (fl ? fl.gf : o.host.floor) : 'c' + Math.floor(wx / 80) + ',' + Math.floor(wz / 80);
@@ -311,9 +314,9 @@ S3.showSelection = () => {
   const L = S3.layers.sel; clear(L); S3.tc.detach();
   const sel = HSS.state.selection; if (!sel) return;
   const box = selBounds(sel); if (!box || box.isEmpty()) return;
-  const helper = new THREE.Box3Helper(box, new THREE.Color('#0A967A')); helper.material.depthTest = false; helper.renderOrder = 10; L.add(helper);
-  // Wegpunkte als Griffe
-  if (sel.kind === 'path') {
+  if (!(HSS.manip && ['part', 'area', 'path', 'bridge'].includes(sel.kind))) { const helper = new THREE.Box3Helper(box, new THREE.Color('#0A967A')); helper.material.depthTest = false; helper.renderOrder = 10; L.add(helper); }
+  // Wegpunkte als Griffe (nur ohne Direktbearbeitung – sonst zeichnet manip.js die Griffe)
+  if (sel.kind === 'path' && !HSS.manip) {
     const p = U.byId(HSS.project().paths, sel.id); if (p) p.points.forEach((q, i) => {
       const y = p.elev === 'absolut' ? (p.y ?? -4) : HSS.terrainH(q[0], q[1]);
       const h = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.5, (p.width || 3) * 0.18), 14, 10), new THREE.MeshBasicMaterial({ color: i === sel.point ? '#f2c94c' : '#0A967A', depthTest: false })); h.renderOrder = 11;
@@ -322,7 +325,7 @@ S3.showSelection = () => {
   }
   if (S3.tool) return;
   // Gizmo
-  const movable = ['part', 'object', 'area', 'room'].includes(sel.kind) || (sel.kind === 'path' && sel.point !== undefined) || (sel.kind === 'hill');
+  const movable = HSS.manip ? sel.kind === 'hill' : ['part', 'object', 'area', 'room'].includes(sel.kind) || (sel.kind === 'path' && sel.point !== undefined) || (sel.kind === 'hill');
   if (!movable || HSS.state.demoReadonly) return;
   const piv = selPivot(sel); if (!piv) return;
   S3.proxy.position.copy(piv.pos); S3.proxy.rotation.set(0, piv.rot || 0, 0);
@@ -475,7 +478,7 @@ function bindPointer(dom) {
   });
 }
 function hover(ev) {
-  if (S3.fpvActive || S3.tc.dragging) return;
+  if (S3.fpvActive || S3.tc.dragging || HSS.manip?.dragging) { if (HSS.ui?.tipEl) HSS.ui.tipEl.hidden = true; return; }
   const tip = HSS.ui?.tipEl; if (!tip) return;
   if (S3._hovT && performance.now() - S3._hovT < 60) return; S3._hovT = performance.now();
   const h = S3.pick(ev);

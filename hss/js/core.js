@@ -214,6 +214,7 @@ HSS.redo = () => {
   return r.label;
 };
 HSS.canUndo = () => undoStack.length > 0;
+HSS.undoLen = () => undoStack.length;
 HSS.canRedo = () => redoStack.length > 0;
 
 HSS.migrate = p => {

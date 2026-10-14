@@ -103,7 +103,7 @@ N.buildWidgets = () => {
     vp.appendChild(h);
     h.querySelector('.x').onclick = () => N.toggleHelp(false);
     let hide = false; try { hide = localStorage.getItem('hss-navhelp') === '0'; } catch (e) { /* */ }
-    if (hide) h.classList.add('min'); else setTimeout(() => { if (!h.classList.contains('min')) N.toggleHelp(false); }, 20000);
+    if (hide) h.classList.add('min'); else { setTimeout(() => { if (!h.classList.contains('min')) N.toggleHelp(false); }, 20000); HSS.s3.renderer.domElement.addEventListener('pointerdown', () => setTimeout(() => { if (!h.classList.contains('min')) N.toggleHelp(false); }, 2500), { once: true }); }
   }
   N.refreshFloors();
 };

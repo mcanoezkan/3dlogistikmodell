@@ -34,7 +34,7 @@ T.placeObject = (lib, opts = {}) => {
       }
       ghost.position.set(x, y, z); ghost.rotation.y = -U.rad(r);
       last = { x, z, y, host: gp.host, part: gp.part, r };
-      UI.hint(`<b>${U.esc(d.name)}</b> · Klick: setzen · <b>R</b>: drehen (90°, mit Umschalt 15°) · <b>Esc</b>: fertig${gp.host ? ' · auf ' + HSS.floorName(HSS.view.floor) : ' · Außenbereich'}`);
+      UI.hint(`<b>${U.esc(d.name)}</b> · Klick: setzen (Umschalt+Klick: mehrere) · <b>R</b>: drehen (90°, mit Umschalt 15°) · <b>Esc</b>: abbrechen${gp.host ? ' · auf ' + HSS.floorName(HSS.view.floor) : ' · Außenbereich'}`);
     },
     key(ev) { if (ev.key.toLowerCase() === 'r') { rot = (rot + (ev.shiftKey ? 15 : 90)) % 360; return true; } },
     click(ev) {
@@ -42,8 +42,10 @@ T.placeObject = (lib, opts = {}) => {
       const o = { id: U.uid('obj'), lib, rot: last.r, x: last.x, z: last.z };
       if (last.host) { const loc = HSS.toLocal(last.part, [last.x, last.z]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; o.host = last.host; o.rot = (last.r - (last.part.rot || 0) + 360) % 360; }
       if (d.logistik?.rolle && !['tuer', 'fahrzeug'].includes(d.logistik.rolle)) o.place = true;
+      if (!opts.multi && !ev.shiftKey) HSS.manip?.mark();
       HSS.change('Objekt platzieren', prj => prj.objects.push(o), { scope: 'objects' });
-      if (!opts.multi && !ev.shiftKey && d.logistik?.rolle === 'aufzug') { HSS.s3.setTool(null); HSS.s3.select({ kind: 'object', id: o.id }); }
+      // wie im Spiel: ein Objekt setzen, danach ist es gewählt (✓ / ✗); mit Umschalt weitere setzen
+      if (!opts.multi && !ev.shiftKey) { HSS.s3.setTool(null); UI.hint(null); HSS.s3.select({ kind: 'object', id: o.id }); }
     },
     cancel() { UI.hint(null); }
   });
@@ -91,6 +93,18 @@ T.drawArea = (kind) => {
   });
   UI.hint(`<b>${HSS.FLAECHEN[kind]}</b>: Rechteck mit gedrückter Maustaste aufziehen`);
 };
+// Fläche in Standardgröße setzen (für Ziehen aus dem Panel); Größe danach an den Griffen ändern
+const AREA_STD = { parkplatz: [48, 32], gruen: [40, 30], platz: [30, 20], wasser: [24, 16] };
+T.placeArea = (kind) => {
+  if (readonly()) return;
+  const [w, d] = AREA_STD[kind] || [30, 20];
+  HSS.s3.setTool({
+    name: 'areaPlace',
+    move(ev) { const gp = HSS.s3.groundPoint(ev); if (!gp) return; this.c = [snap(gp.x, 1), snap(gp.z, 1)]; clearGhost(); const [x, z] = this.c; HSS.s3.layers.ghost.add(polyline([[x - w / 2, z - d / 2], [x + w / 2, z - d / 2], [x + w / 2, z + d / 2], [x - w / 2, z + d / 2], [x - w / 2, z - d / 2]])); UI.hint(`${HSS.FLAECHEN[kind]} ${w} × ${d} m · loslassen/klicken zum Setzen`); },
+    click() { if (!this.c) return; const ar = { id: U.uid('area'), kind, x: this.c[0], z: this.c[1], w, d, rot: 0 }; HSS.manip?.mark(); HSS.change('Fläche anlegen', p => p.areas.push(ar), { scope: 'outdoor' }); HSS.s3.setTool(null); UI.hint(null); HSS.s3.select({ kind: 'area', id: ar.id }); },
+    cancel() { clearGhost(); UI.hint(null); }
+  });
+};
 HSS.PRESETS = {
   bettenhaus: { name: 'Bettenhaus', info: 'Riegel 64 × 17 m, 6 Geschosse, Bandfassade', p: { shape: 'rect', w: 64, d: 17, floors: 6, floorHeight: 3.6, basements: 1, facade: { type: 'band', color: '#eef0f2', accent: '#144477', glass: '#6f8fa8', axis: 1.35, windowRatio: 0.55 } } },
   modern: { name: 'Neubau, runde Ecken', info: '72 × 22 m, R = 8 m, Glas + Lamellen', p: { shape: 'rect', w: 72, d: 22, cornerRadius: 8, floors: 7, floorHeight: 3.8, basements: 1, facade: { type: 'lamellen', color: '#f4f5f7', accent: '#d9dde2', glass: '#7fa4bd', axis: 1.5, windowRatio: 0.7 } } },
@@ -109,7 +123,15 @@ T.addBuilding = (preset) => {
   const ghost = new THREE.Group();
   HSS.s3.setTool({
     name: 'building',
-    move(ev) { const gp = HSS.s3.groundPoint(ev); if (!gp) return; clearGhost(); const pt = Object.assign(HSS.defaults.part(), U.clone(P.p), { x: snap(gp.x, 1), z: snap(gp.z, 1) }); HSS.s3.layers.ghost.add(polyline(HSS.partFootprint(pt).outer.concat([HSS.partFootprint(pt).outer[0]]), 0.5)); this.pt = pt; },
+    move(ev) {
+      const gp = HSS.s3.groundPoint(ev); if (!gp) return;
+      const pt = Object.assign(HSS.defaults.part(), U.clone(P.p), { x: snap(gp.x, 1), z: snap(gp.z, 1) }); this.pt = pt;
+      // halbtransparenter Baukörper folgt der Maus
+      if (!this.mass) { const loc = HSS.partFootprintLocal(pt), H = pt.floors * pt.floorHeight; this.mass = new THREE.Group(); const m = new THREE.Mesh(HSS.slabGeo(loc.outer, loc.holes, 0, H), ghostMat); this.mass.add(m); const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 30), lineMat); e.renderOrder = 20; this.mass.add(e); }
+      if (!this.mass.parent) HSS.s3.layers.ghost.add(this.mass);
+      this.mass.position.set(pt.x, HSS.terrainH(pt.x, pt.z), pt.z);
+      UI.hint(`<b>${P.name}</b> · ${U.fmt(pt.w)} × ${U.fmt(pt.d)} m · ${pt.floors} Geschosse · klicken/loslassen zum Setzen · Esc: abbrechen`);
+    },
     click() {
       if (!this.pt) return;
       const prj = HSS.project(), letters = 'ABCDEFGHJKLMNPRSTUVWXYZ', used = new Set(prj.buildings.map(b => b.kurz));
@@ -117,8 +139,10 @@ T.addBuilding = (preset) => {
       const b = Object.assign(HSS.defaults.building(), { name: P.name + ' ' + kurz, kurz, color: ['#144477', '#0A967A', '#2D7694', '#891F5E', '#d9531e', '#6b2c82', '#e3ac0c'][prj.buildings.length % 7] });
       const pt = Object.assign(this.pt, { name: P.name }); pt.facade = Object.assign(HSS.defaults.part().facade, pt.facade); pt.roof = Object.assign(HSS.defaults.part().roof, pt.roof);
       b.parts.push(pt);
+      HSS.manip?.mark();
       HSS.change('Gebäude anlegen', p => p.buildings.push(b));
-      HSS.s3.setTool(null); HSS.s3.select({ kind: 'part', id: pt.id });
+      HSS.s3.setTool(null); UI.hint(null); HSS.s3.select({ kind: 'part', id: pt.id });
+      UI.toast('Gebäude gesetzt – Griffe ziehen für Größe, Drehung und Geschosse · ✓ übernehmen · ✗ verwerfen', 4200);
     },
     cancel() { clearGhost(); UI.hint(null); }
   });
@@ -208,7 +232,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     <h3>Flächen (${prj.areas.length})</h3><div class="list">${prj.areas.map(a => `<div class="li" data-sel="area:${a.id}"><span class="t">${HSS.FLAECHEN[a.kind]}</span><span class="s">${U.fmt(a.w * a.d)} m²${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' St.' : ''}</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
     $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gSites', el).onclick = () => HSS.standorte.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
     $$('[data-path]', el).forEach(b => b.onclick = () => T.drawPath(b.dataset.path));
-    $$('[data-area]', el).forEach(b => b.onclick = () => T.drawArea(b.dataset.area));
+    $$('[data-area]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.area); HSS.manip?.dragFrom(b, () => T.placeArea(b.dataset.area)); });
     $$('[data-cat]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.cat; UI.setWS('bibliothek'); });
     UI.bind($('.tf', el), prj => prj.terrain, 'Gelände', 'all');
     $('#gHill', el).onclick = T.hill; $('#gExt', el).onclick = T.externalPlace;
@@ -221,14 +245,15 @@ W.gebaeude = { name: 'Gebäude', short: 'Gebäude', step: '2', lead: 'Gebäude a
   render(el) {
     const prj = HSS.project();
     el.innerHTML = `<h3>Baustein wählen und platzieren</h3><div class="tiles">${Object.entries(HSS.PRESETS).map(([k, p]) => tile(`data-pre="${k}"`, p.name, p.info)).join('')}</div>
-    <div class="actions"><button id="bBridge">Brücke verbinden …</button></div>
-    <div class="infobox">Tipp: Bauteil anklicken → im Inspektor rechts Maße, <b>Eckrundung</b>, Geschosse und <b>Fassadentyp</b> ändern. Mit <b>R</b> wechselt das Gizmo zwischen Verschieben und Drehen.</div>
+    <div class="actions"><button id="bBridge" class="primary" title="Erst die Fassade des einen, dann des anderen Gebäudes anklicken">⌒ Brücke ziehen</button><button id="bBridgeD">Brücke über Liste …</button></div>
+    <div class="infobox"><b>So geht's:</b> Baustein ins 3D-Bild <b>ziehen</b> (oder anklicken und Lage wählen). Danach am Gebäude: <b>ziehen</b> = verschieben (rastet bündig an Nachbarn ein), <b>⇔ ⇕</b> = Länge/Tiefe, <b>⟳</b> = drehen, <b>blauer ⇕</b> = Geschosse. Unten am Gebäude: <b>✓</b> übernehmen, <b>✗</b> verwerfen. Feinwerte im Inspektor rechts.</div>
     <h3>Gebäude im Projekt (${prj.buildings.length})</h3>
     ${prj.buildings.map(b => `<div class="box" style="padding:6px 8px"><div class="row"><b class="hk" style="background:${b.color};color:#fff;padding:0 6px">${U.esc(b.kurz)}</b><b class="grow">${U.esc(b.name)}</b><span class="note">${U.fmt(U.sum(b.parts.map(p => HSS.partArea(p) * (p.floors + (p.stackOn ? 0 : p.basements)))))} m² BGF</span></div>
       <div class="list" style="margin-top:4px">${b.parts.map(p => `<div class="li ${HSS.state.selection?.id === p.id ? 'on' : ''}" data-sel="part:${p.id}"><span class="t">${U.esc(p.name)}${p.stackOn ? ' <span class="pill">aufgesetzt</span>' : ''}</span><span class="s">${HSS.FORMEN[p.shape]} · ${p.floors} G.</span></div>`).join('')}</div></div>`).join('') || '<p class="note">Noch keine Gebäude. Baustein wählen und im Gelände platzieren – oder im Demo-Modus das UNITY Hospital ansehen.</p>'}
     ${prj.bridges.length ? `<h3>Brücken (${prj.bridges.length})</h3><div class="list">${prj.bridges.map(b => `<div class="li" data-sel="bridge:${b.id}"><span class="t">${U.esc(b.name)}</span><span class="s">${b.type === 'glas' ? 'Glas' : 'Gebäude'}</span></div>`).join('')}</div>` : ''}`;
-    $$('[data-pre]', el).forEach(b => b.onclick = () => T.addBuilding(b.dataset.pre));
-    $('#bBridge', el).onclick = () => UI.bridgeDialog(HSS.state.selection?.kind === 'part' ? HSS.state.selection.id : null);
+    $$('[data-pre]', el).forEach(b => { b.onclick = () => T.addBuilding(b.dataset.pre); HSS.manip?.dragFrom(b, () => T.addBuilding(b.dataset.pre)); });
+    $('#bBridge', el).onclick = () => HSS.manip ? HSS.manip.bridgeTool() : UI.bridgeDialog(HSS.state.selection?.kind === 'part' ? HSS.state.selection.id : null);
+    $('#bBridgeD', el).onclick = () => UI.bridgeDialog(HSS.state.selection?.kind === 'part' ? HSS.state.selection.id : null);
     selLinks(el);
   } };
 
@@ -259,7 +284,7 @@ W.innen = { name: 'Etagen & Innenausbau', short: 'Etagen', step: '3', lead: 'Inn
     $('#fClear', el).onclick = async () => { if (!await UI.confirm('Etage leeren', `Alle Räume, Wände, Türen und Objekte auf ${HSS.floorName(V.floor)} entfernen?`, 'Leeren')) return; HSS.change('Etage leeren', p => { for (const pt of HSS.allParts(p)) { const f = HSS.localFloor(pt, V.floor, p); if (f === null) continue; if (p.interiors[pt.id]) delete p.interiors[pt.id][f]; p.objects = p.objects.filter(o => !(o.host?.part === pt.id && o.host.floor === f)); } }); };
   } };
 
-W.bibliothek = { name: 'Objektbibliothek', short: 'Bibliothek', step: '', sep: true, lead: 'Alle Objekte mit Standardmaßen; Größe nach dem Platzieren im Inspektor anpassbar. Neue Objekte per Upload ergänzen – ohne Programmänderung.',
+W.bibliothek = { name: 'Objektbibliothek', short: 'Bibliothek', step: '', sep: true, lead: 'Objekt ins 3D-Bild ziehen und loslassen – fertig. Danach ziehen zum Verschieben, ⟳ zum Drehen, ✓ / ✗ unten am Objekt. Größe im Inspektor. Neue Objekte per Upload ergänzen.',
   render(el) {
     const cats = HSS.library.categories().sort((a, b) => a[0].localeCompare(b[0]));
     const cur = UI.libCat || '', q = UI.libQ || '';
@@ -281,7 +306,7 @@ W.bibliothek = { name: 'Objektbibliothek', short: 'Bibliothek', step: '', sep: t
     $('#lQ', el).oninput = U.debounce(e => { UI.libQ = e.target.value; UI.renderPanel(); setTimeout(() => { const s = $('#lQ'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }, 0); }, 250);
     $$('[data-c]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.c; UI.renderPanel(); });
     $('#lUp', el) && ($('#lUp', el).onclick = e => { e.preventDefault(); UI.libCat = cur.split('/')[0]; UI.renderPanel(); });
-    $$('.libitem', el).forEach(it => { it.onclick = () => { UI.libSel = it.dataset.id; UI.renderPanel(); }; it.ondblclick = () => T.placeObject(it.dataset.id); });
+    $$('.libitem', el).forEach(it => { it.onclick = () => { UI.libSel = it.dataset.id; UI.renderPanel(); }; it.ondblclick = () => T.placeObject(it.dataset.id); HSS.manip?.dragFrom(it, () => T.placeObject(it.dataset.id)); });
     if (sel) { $('#lPlace', el).onclick = () => T.placeObject(sel.id); $('#lExp', el).onclick = () => HSS.library.exportObject(sel.id); $('#lDel', el) && ($('#lDel', el).onclick = async () => { await HSS.library.remove(sel.id); UI.libSel = null; UI.renderPanel(); }); }
     const drop = $('#lDrop', el), file = $('#lFile', el);
     drop.onclick = () => file.click();
