@@ -154,7 +154,7 @@ S3.rebuild = (scope = 'all') => {
   buildObjects();
   buildLabels();
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') HSS.traffic.build(L.traffic);
-  const ug = V.floor !== null && V.floor < 0; L.traffic.visible = !ug; L.areas.visible = !ug; L.terrain.visible = !ug;
+  const ug = V.floor !== null && V.floor < 0; L.traffic.visible = !ug && (HSS.perf?.trafficAnim !== false); L.areas.visible = !ug; L.terrain.visible = !ug;
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
   // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
   const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };

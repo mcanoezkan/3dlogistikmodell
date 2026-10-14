@@ -275,6 +275,8 @@ function convert(S, def, v, opts = {}) {
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
   if (HSS.furnishEmpty) HSS.furnishEmpty(prj, { maxArea: 1500, max: 9000 }); // Funktionsflächen einrichten
+  // Gelände groß genug für alle Gebäude, Wege und die Grundstücksgrenze
+  { let r = 0; for (const pt of HSS.allParts(prj)) for (const q of HSS.partFootprint(pt, prj).outer) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); for (const pa of prj.paths) for (const q of pa.points) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); prj.terrain.size = Math.max(prj.terrain.size || 500, Math.ceil((r * 2 + 200) / 100) * 100); }
   return prj;
 }
 

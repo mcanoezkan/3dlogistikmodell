@@ -327,5 +327,15 @@ P.init = () => {
   HSS.on('rebuilt', () => { S3.layers.traffic.traverse(o => { o.castShadow = false; }); });
   HSS.on('frame', () => { if (S3.layers.agents.children.length && !S3.layers.agents.userData._ns) S3.layers.agents.traverse(o => { o.castShadow = false; }); });
 };
+P.bindUI = () => {
+  const q = document.getElementById('vQ'), t = document.getElementById('vTraffic'); if (!q || !t) return;
+  let v = 'auto'; try { v = localStorage.getItem('hss-qualitaet') || 'auto'; } catch (e) { /* */ }
+  q.value = v;
+  q.onchange = () => { try { localStorage.setItem('hss-qualitaet', q.value); } catch (e) { /* */ } if (q.value === 'auto') { P.qLocked = false; P.setQuality(P.qIndex); } else { P.qLocked = true; P.setQuality(+q.value); } };
+  HSS.on('quality', i => { if (q.value === 'auto') q.title = 'automatisch – derzeit „' + Q[i].name + '“'; });
+  t.classList.toggle('on', P.trafficAnim);
+  t.onclick = () => { P.setTraffic(!P.trafficAnim); t.classList.toggle('on', P.trafficAnim); S3.layers.traffic.visible = P.trafficAnim; P.invalidate(); };
+  S3.layers.traffic.visible = P.trafficAnim;
+};
 P.setTraffic = on => { P.trafficAnim = on; try { localStorage.setItem('hss-verkehr', on ? 'an' : 'aus'); } catch (e) { /* */ } P.invalidate(); };
 })();

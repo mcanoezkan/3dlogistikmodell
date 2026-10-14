@@ -40,8 +40,11 @@ HSS.buildTerrain = (view = {}) => {
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'terrain' };
   const grp = new THREE.Group(); grp.add(m);
   // Erdkörper-Ränder
-  const skirt = new THREE.Mesh(new THREE.BoxGeometry(S, 12, S), new THREE.MeshStandardMaterial({ color: '#8a7f6e', roughness: 1, transparent: under, opacity: under ? 0.08 : 1, depthWrite: !under }));
-  skirt.position.y = minH - 0.4 - 6; skirt.userData = { kind: 'terrain' };
+  // Erdkörper nur als Seitenwände (keine Deckfläche, die aus der Ferne durch das Gelände flimmert)
+  const h2 = S / 2, ring = [[-h2, -h2], [h2, -h2], [h2, h2], [-h2, h2]], sg = HSS.ringWallGeo(ring, minH - 12, 12);
+  { const pa = sg.attributes.position; for (let i = 0; i < pa.count; i++) if (pa.getY(i) > minH - 6) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i), prj) - 0.05); sg.computeVertexNormals(); }
+  const skirt = new THREE.Mesh(sg, new THREE.MeshStandardMaterial({ color: '#8a7f6e', roughness: 1, transparent: under, opacity: under ? 0.08 : 1, depthWrite: !under, side: THREE.DoubleSide }));
+  skirt.userData = { kind: 'terrain' };
   grp.add(skirt);
   return grp;
 };
