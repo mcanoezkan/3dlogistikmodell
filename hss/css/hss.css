@@ -321,3 +321,18 @@ body.cartoon.lblfar .blbl .blin{padding:3px}
 #mbar .sep{width:1px;height:22px;background:#d5dce3;margin:0 3px}
 .dragsrc{user-select:none;-webkit-user-select:none;cursor:grab}
 body.placing,body.placing *{cursor:grabbing!important}
+
+/* ---------- Startbildschirm, Datei ablegen ---------- */
+.tiles.start3{grid-template-columns:repeat(3,1fr)!important;gap:12px;margin:14px 0 6px}
+.tile.big{padding:18px 16px 16px;text-align:left;min-height:132px;display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);transition:transform .08s, box-shadow .12s}
+.tile.big:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(10,34,60,.14)}
+.tile.big .ic{font-size:26px;line-height:1;color:var(--accent);margin-bottom:6px}
+.tile.big b{font-size:16px;color:var(--navy)}
+.tile.big.drop{border:2px dashed #9fb3c6;background:#f7fafc}
+.tile.big.over,.dropbig.over{border-color:var(--ok);background:#e9f7f2}
+.dropbig{border:2px dashed #9fb3c6;background:#f7fafc;padding:22px;text-align:center;margin:6px 0 10px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.dropbig b{font-size:15px;color:var(--navy)}
+#dropOverlay{position:fixed;inset:0;z-index:50;background:rgba(10,34,60,.45);display:flex;align-items:center;justify-content:center;pointer-events:none}
+#dropOverlay>div{background:#fff;border:3px dashed var(--ok);padding:34px 48px;text-align:center;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+#dropOverlay b{font-size:20px;color:var(--navy)}
+.tile.big small b{font-size:inherit;color:var(--navy)}

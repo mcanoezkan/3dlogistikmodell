@@ -9,7 +9,7 @@ function boot() {
   HSS.s3.init($('#viewport')); HSS.perf.init(); HSS.manip.init();
   HSS.nav.init();
   UI.buildRail(); UI.bindViewbar(); UI.timeline.bind();
-  bindHeader();
+  bindHeader(); bindDrop();
   HSS.on('changed', e => {
     if (e.scope !== 'none') HSS.s3.rebuild(e.scope === 'objects' ? 'objects' : e.scope === 'outdoor' ? 'outdoor' : 'all');
     UI.inspector(); UI.refreshViewbar(); refreshHeader();
@@ -59,7 +59,7 @@ function bindHeader() {
   $('#bNew').onclick = async () => { if (HSS.project().buildings.length && !await UI.confirm('Neues Projekt', 'Das aktuelle Projekt bleibt in der Projektablage des Browsers erhalten.', 'Neues Projekt')) return; const n = await UI.prompt('Name des Projekts', 'Neues Krankenhausprojekt'); if (n === null) return; HSS.load(HSS.newProject(n || 'Neues Projekt')); UI.setWS('gelaende'); };
   $('#bOpen').onclick = openDialog;
   $('#bSave').onclick = saveDialog;
-  $('#fOpen').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const p = await HSS.storage.importFile(f); HSS.load(p); UI.toast('Projekt geladen: ' + p.meta.name); } catch (err) { UI.dialog(`<h2>Datei nicht lesbar</h2><div class="errbox">${U.esc(err.message)}</div><div class="actions"><button data-close>OK</button></div>`); } e.target.value = ''; };
+  $('#fOpen').onchange = async e => { const fs = [...e.target.files]; if (fs.length) await HSS.openFiles(fs); e.target.value = ''; };
   $('#bUndo').onclick = () => { const l = HSS.undo(); if (l) UI.toast(l); };
   $('#bRedo').onclick = () => { const l = HSS.redo(); if (l) UI.toast(l); };
   $('#bDemo').onclick = () => HSS.demo.start();
@@ -78,30 +78,59 @@ async function saveDialog() {
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }
   UI.dialog(`<div class="dh"><h2>Projekt öffnen</h2><button class="x" data-close>×</button></div>
-   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen (.hss.json)</button><button id="oDemo">UNITY Hospital (Demo)</button><button id="oSite">Standortmodelle: Koblenz, Hanau, Bielefeld</button></div>
+   <div class="dropbig" id="oDrop"><b>Projektdatei hierher ziehen</b><small>oder klicken und Datei wählen (.hss.json) – Projektdateien lassen sich auch jederzeit direkt ins Fenster ziehen</small></div>
+   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen …</button><button id="oDemo">▶ Demo (UNITY Hospital)</button></div>
    <h3>Projektablage im Browser</h3>
    <table class="t"><tr><th>Projekt</th><th>zuletzt geändert</th><th class="n">Größe</th><th></th></tr>${list.map(p => `<tr><td><a href="#" data-open="${p.id}">${U.esc(p.name)}</a></td><td>${new Date(p.modified).toLocaleString('de-DE')}</td><td class="n">${U.fmt(p.size / 1024)} kB</td><td><button class="mini danger" data-del="${p.id}">×</button></td></tr>`).join('') || '<tr><td colspan="4" class="note">Noch keine Projekte gespeichert.</td></tr>'}</table>`, d => {
     $('#oFile', d).onclick = () => { d.close(); $('#fOpen').click(); };
     $('#oDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
-    $('#oSite', d).onclick = () => { d.close(); HSS.standorte.dialog(); };
+    const dz = $('#oDrop', d); dz.onclick = () => { d.close(); $('#fOpen').click(); };
+    dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); }; dz.ondragleave = () => dz.classList.remove('over');
+    dz.ondrop = e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('over'); d.close(); HSS.openFiles([...e.dataTransfer.files]); };
     $$('[data-open]', d).forEach(a => a.onclick = async e => { e.preventDefault(); const p = await HSS.storage.loadProject(a.dataset.open); d.close(); HSS.load(p); UI.toast('Projekt geladen: ' + p.meta.name); });
     $$('[data-del]', d).forEach(b => b.onclick = async () => { if (!await UI.confirm('Projekt löschen', 'Projekt aus der Browser-Ablage löschen? Gespeicherte Dateien sind nicht betroffen.', 'Löschen')) return; await HSS.storage.deleteProject(b.dataset.del); openDialog(); });
   });
 }
 function welcome() {
-  UI.dialog(`<div class="dh"><h2>Healthcare Simulation Suite</h2><button class="x" data-close>×</button></div>
-   <p>Krankenhäuser in 3D aus Bausteinen modellieren und Material-, Waren- und Personenflüsse simulieren.</p>
-   <div class="tiles" style="grid-template-columns:1fr 1fr 1fr 1fr">
-    <button class="tile" id="wDemo"><b>▶ Demo-Modus</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
-    <button class="tile" id="wNew"><b>Neues Projekt</b><small>Mit Gelände und Wegen beginnen, dann Gebäude setzen</small></button>
-    <button class="tile" id="wOpen"><b>Projekt öffnen</b><small>Datei (.hss.json) oder Projektablage im Browser</small></button>
-    <button class="tile" id="wSite"><b>Standortmodelle</b><small>BwZK Koblenz, Klinikum Hanau und Klinikum Bielefeld-Mitte (Bestand und Variante) als bearbeitbares Projekt</small></button></div>
-   <h3>Arbeitsschritte</h3><ol class="why"><li><b>Gelände &amp; Wege</b> – Topographie, Straßen, Wege, Parkplätze, Außenausstattung</li><li><b>Gebäude</b> – Bausteine setzen, Form/Fassade/Geschosse anpassen, andocken, Brücken</li><li><b>Etagen</b> – Innenausbau mit Räumen, Wänden, Türen, Aufzügen und Ausstattung</li><li><b>Stationsplaner</b> – Betten- und Flächenbedarf rechnen, Station automatisch belegen</li><li><b>Flüsse</b> – Standardflüsse übernehmen, Material, Fuhrpark und Regeln festlegen</li><li><b>Simulation</b> – Tagesablauf abspielen, Transporte in der Ich-Perspektive begleiten</li><li><b>Analyse</b> – Hotspots je Uhrzeit, Fahrzeugbedarf, Zeitfensterplan</li></ol>`, d => {
+  let recent = [];
+  const show = () => UI.dialog(`<div class="dh"><h2>Healthcare Simulation Suite</h2><button class="x" data-close>×</button></div>
+   <p>Krankenhäuser in 3D planen wie in einem Aufbauspiel – Gebäude ins Bild ziehen, an Griffen formen, Stationen automatisch einrichten und Material-, Waren- und Personenflüsse simulieren.</p>
+   <div class="tiles start3">
+    <button class="tile big" id="wDemo"><span class="ic">▶</span><b>Demo</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
+    <button class="tile big" id="wNew"><span class="ic">＋</span><b>Neues Projekt</b><small>Leeres Gelände – Gebäude, Wege und Stationen selbst planen</small></button>
+    <button class="tile big drop" id="wOpen"><span class="ic">⇩</span><b>Projekt öffnen</b><small>Projektdatei (.hss.json) <b>hierher ziehen</b> oder klicken</small></button></div>
+   ${recent.length ? `<h3>Zuletzt bearbeitet</h3><div class="list">${recent.slice(0, 5).map(p => `<div class="li" data-open="${p.id}"><span class="t">${U.esc(p.name)}</span><span class="s">${new Date(p.modified).toLocaleString('de-DE')}</span></div>`).join('')}</div>` : ''}`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };
-    $('#wOpen', d).onclick = () => { d.close(); openDialog(); };
-    $('#wSite', d).onclick = () => { d.close(); HSS.standorte.dialog(); };
+    const wo = $('#wOpen', d); wo.onclick = () => { d.close(); $('#fOpen').click(); };
+    wo.ondragover = e => { e.preventDefault(); wo.classList.add('over'); }; wo.ondragleave = () => wo.classList.remove('over');
+    wo.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.close(); HSS.openFiles([...e.dataTransfer.files]); };
+    $$('[data-open]', d).forEach(li => li.onclick = async () => { const p = await HSS.storage.loadProject(li.dataset.open); d.close(); if (p) { HSS.load(p); UI.toast('Projekt geladen: ' + p.meta.name); } });
   });
+  HSS.storage.listProjects().then(l => { recent = l.filter(p => !/UNITY Hospital \(Demo\)/.test(p.name)); if (recent.length && $('#dlg').open && $('#wDemo')) show(); }).catch(() => {});
+  show();
+}
+// Dateien öffnen: Projektdateien laden, Bibliotheksdateien in die Bibliothek übernehmen
+HSS.openFiles = async (files) => {
+  const prjF = files.filter(f => /\.hss\.json$|\.json$/i.test(f.name) && !/\.hssobj\.json$|\.hsslib\.json$/i.test(f.name));
+  const libF = files.filter(f => /\.hssobj\.json$|\.hsslib\.json$|\.glb$|\.gltf$/i.test(f.name));
+  if (libF.length) { await UI.uploadLib(libF); }
+  if (!prjF.length) { if (!libF.length) UI.toast('Bitte eine Projektdatei (.hss.json) ablegen'); return; }
+  const f = prjF[0];
+  try {
+    const p = await HSS.storage.importFile(f);
+    if (HSS.project().buildings.length && HSS.state.dirty) { try { await HSS.storage.saveProject(); } catch (e) { /* */ } }
+    HSS.load(p); document.body.classList.remove('demoon'); $('#demoCard').hidden = true;
+    UI.toast('Projekt geöffnet: ' + p.meta.name, 3000);
+  } catch (err) { UI.dialog(`<h2>Datei nicht lesbar</h2><p>${U.esc(f.name)}</p><div class="errbox">${U.esc(err.message)}</div><div class="actions"><button data-close>OK</button></div>`); }
+};
+function bindDrop() {
+  let depth = 0; const ov = document.createElement('div'); ov.id = 'dropOverlay'; ov.hidden = true; ov.innerHTML = '<div><b>Loslassen zum Öffnen</b><small>Projektdatei (.hss.json) · Bibliotheksobjekte (.hssobj.json, .hsslib.json, .glb)</small></div>'; document.body.appendChild(ov);
+  const hasFiles = e => [...(e.dataTransfer?.types || [])].includes('Files');
+  window.addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); depth++; if (!$('#dlg').open) ov.hidden = false; });
+  window.addEventListener('dragleave', e => { if (!hasFiles(e)) return; depth = Math.max(0, depth - 1); if (!depth) ov.hidden = true; });
+  window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+  window.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); depth = 0; ov.hidden = true; if (e.defaultPrevented && e._handled) return; HSS.openFiles([...e.dataTransfer.files]); });
 }
 function help() {
   UI.dialog(`<div class="dh"><h2>Kurzanleitung</h2><button class="x" data-close>×</button></div>
