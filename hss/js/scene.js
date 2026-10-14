@@ -108,31 +108,49 @@ S3.updateLamps = (force) => {
 setInterval(() => { if (S3.night && S3.scene) S3.updateLamps(); }, 2500);
 
 /* ---------- Aufbau aller Ebenen ---------- */
-const clear = g => { while (g.children.length) { const c = g.children.pop(); c.traverse?.(o => { if (o.isCSS2DObject && o.element?.parentNode) o.element.parentNode.removeChild(o.element); }); } };
+const noPriv = (k, v) => (k && k[0] === '_' ? undefined : v);
+const clear = g => { while (g.children.length) { const c = g.children.pop(); c.parent = null; c.traverse?.(o => { if (o.isCSS2DObject && o.element?.parentNode) o.element.parentNode.removeChild(o.element); }); } };
 S3.rebuild = (scope = 'all') => {
   if (!S3.scene) return;
   const prj = HSS.project(), L = S3.layers;
   if (scope === 'objects') { buildObjects(); collectPickables(); S3.showSelection(); HSS.emit('rebuilt'); return; }
   S3.groups.clear();
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
-  const tkey = JSON.stringify(prj.terrain) + '|' + V.explode + '|' + (V.floor ?? 'x') + '|' + V.shell;
+  const tkey = JSON.stringify(prj.terrain) + '|' + V.explode + '|' + (V.floor !== null && V.floor < 0 ? 'ug' : 'og') + '|' + V.shell;
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
   if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
-    clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
-    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a) + tkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
+    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
+  // Gebäude und Innenausbau zwischenspeichern: nur geänderte Bauteile werden neu aufgebaut
+  const bcache = S3._buildCache || (S3._buildCache = new Map()), live = new Set();
+  const vkey = [V.cut, V.shell, V.explode, V.m2, V.stil, V.showBasement, JSON.stringify(prj.terrain)].join('|');
+  // Wirksame Schnittebene je Bauteil: liegt die gewählte Etage über dem Dach, sieht das Bauteil aus wie in der Gesamtansicht
+  const efloor = pt => { if (V.floor === null) return 'n'; const top = HSS.globalFloor(pt, pt.floors - 1, prj); return V.floor > top && V.floor >= 0 ? 'n' : V.floor; };
+  const chain = pt => { const out = []; let p = pt, d = 0; while (p && p.stackOn && d++ < 8) { p = HSS.findPart(p.stackOn, prj)?.part; if (p) out.push(p); } return out; };
+  const tick = (S3._tick = (S3._tick || 0) + 1);
+  // Zwischenspeicher je Element und Ansicht (Etagenwechsel hin und zurück ohne Neuaufbau)
+  const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of b.parts) {
-    const g = HSS.buildPart(pt, b, V); L.build.add(g); S3.groups.set(pt.id, g);
+    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
+    const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
-      if (V.floor === gf || (V.floor === null && V.shell === 'transparent')) L.interior.add(HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 }));
+      if (V.floor === gf || (V.floor === null && V.shell === 'transparent')) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
     }
   }
-  for (const br of prj.bridges) { const g = HSS.buildBridge(br, V); L.build.add(g); S3.groups.set(br.id, g); }
+  for (const br of prj.bridges) {
+    const A = HSS.findPart(br.a?.part, prj), B = HSS.findPart(br.b?.part, prj);
+    const g = bcached(br.id, JSON.stringify([br, A?.part, B?.part, A && chain(A.part), B && chain(B.part)]) + vkey, () => HSS.buildBridge(br, V)); L.build.add(g); S3.groups.set(br.id, g);
+  }
+  if (bcache.size > 700) { const old = [...bcache.entries()].filter(([k]) => !live.has(k)).sort((a, b) => a[1].t - b[1].t); for (const [k] of old.slice(0, bcache.size - 500)) bcache.delete(k); }
+  // gelöschte Elemente sofort verwerfen
+  const ids = new Set(prj.buildings.flatMap(b => b.parts.map(p => p.id)).concat(prj.bridges.map(b => b.id)));
+  for (const [k, c] of bcache) if (!ids.has(String(c.id).split('@')[0])) bcache.delete(k);
   buildObjects();
   buildLabels();
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') HSS.traffic.build(L.traffic);
@@ -168,7 +186,7 @@ function buildObjects() {
     // Aufzüge/Treppen: auf jedem Halt-Geschoss wiederholen
     let floors = null;
     if (P && (role === 'aufzug' || role === 'treppe')) {
-      const net = HSS.net(); const lift = net.lifts.find(l => l.id === o.id);
+      const lift = HSS.liftStops(o, prj);
       floors = (lift?.stops || [HSS.globalFloor(P.part, o.host.floor, prj)]).map(gf => { for (const pt of HSS.allParts(prj)) { const f = HSS.localFloor(pt, gf, prj); if (f !== null && G.pointIn(HSS.toLocal(pt, [lift?.x ?? 0, lift?.z ?? 0]), HSS.partFootprintLocal(pt).outer)) return { pt, f, gf }; } return null; }).filter(Boolean);
     }
     const insts = floors ? floors : [null];
@@ -184,24 +202,37 @@ function buildObjects() {
         if (P) { gfKey = HSS.globalFloor(P.part, o.host.floor, prj); wy += gfKey * V.explode; if (d.anchor === 'decke') wy = HSS.floorY(P.part, o.host.floor, prj) + HSS.fh(P.part, o.host.floor) - 0.25 - size.h + gfKey * V.explode; }
       }
       if (d.model) { const g = HSS.library.build(o.lib, size); g.position.set(wx, wy, wz); g.rotation.y = -U.rad(rot); g.traverse(m => { if (m.isMesh) m.userData = { kind: 'object', id: o.id }; }); L.add(g); continue; }
-      const key = o.lib + '|' + size.w + '|' + size.d + '|' + size.h * sy + '|' + (o.color || '');
-      if (!groups.has(key)) groups.set(key, { lib: o.lib, size, sy, color: o.color, items: [] });
+      // Gruppen je Geschoss bzw. Geländezelle (80 m): Änderungen betreffen nur einen kleinen Teil
+      const where = o.host ? o.host.part + '@' + (fl ? fl.gf : o.host.floor) : 'c' + Math.floor(wx / 80) + ',' + Math.floor(wz / 80);
+      const key = o.lib + '|' + size.w + '|' + size.d + '|' + size.h * sy + '|' + (o.color || '') + '|' + where + (o.host ? '|i' : '');
+      if (!groups.has(key)) groups.set(key, { lib: o.lib, size, sy, color: o.color, items: [], inside: !!o.host });
       groups.get(key).items.push({ id: o.id, x: wx, y: wy, z: wz, rot });
     }
   }
-  for (const gr of groups.values()) {
-    const P = HSS.library.proto(gr.lib); if (!P) continue;
+  const ocache = S3._objCache || (S3._objCache = new Map()), olive = new Set();
+  for (const [key, gr] of groups) {
+    // unveränderte Objektgruppen wiederverwenden (bleiben für die Bündelung zwischengespeichert)
+    const sig = key + '|' + V.stil + '|' + JSON.stringify(gr.items);
+    olive.add(key);
+    const hit = ocache.get(key);
+    if (hit && hit.sig === sig) { hit.meshes.forEach(m => L.add(m)); continue; }
+    const made = [];
+    const P = HSS.library.proto(gr.lib, gr.color); if (!P) continue;
     const d = P.def, sx = gr.size.w / d.size.w, sy = gr.size.h / d.size.h * gr.sy, sz = gr.size.d / d.size.d;
     const meshes = P.meshes.map(m => ({ geo: m.geo, mat: m.mat })).concat(P.swing.map(s => ({ geo: s.g, mat: HSS.library.material(s.p.c, s.p.m) })));
     for (const m of meshes) {
-      const im = new THREE.InstancedMesh(m.geo, gr.color && m.mat.userData.key?.includes('|lack|') ? HSS.library.material(gr.color, 'lack') : m.mat, gr.items.length);
+      const im = new THREE.InstancedMesh(m.geo, m.mat, gr.items.length);
       gr.items.forEach((it, i) => { _q.setFromEuler(_e.set(0, -U.rad(it.rot), 0)); _m.compose(_p.set(it.x, it.y, it.z), _q, _s.set(sx, sy, sz)); im.setMatrixAt(i, _m); });
-      im.castShadow = true; im.receiveShadow = true;
+      im.castShadow = !gr.inside; im.receiveShadow = true;
       im.userData = { kind: 'object', ids: gr.items.map(it => it.id) };
       im.computeBoundingSphere();
-      L.add(im);
+      L.add(im); made.push(im);
     }
+    ocache.set(key, { sig, meshes: made });
   }
+  // nicht sichtbare Gruppen (andere Etagen) eine Weile behalten, damit der Etagenwechsel schnell bleibt
+  for (const [k, v] of ocache) { if (olive.has(k)) v.t = S3._tick || 0; }
+  if (ocache.size > 1500) { const old = [...ocache.entries()].filter(([k]) => !olive.has(k)).sort((a, b) => (a[1].t || 0) - (b[1].t || 0)); for (const [k] of old.slice(0, ocache.size - 1000)) ocache.delete(k); }
 }
 function buildLabels() {
   const prj = HSS.project(), L = S3.layers.labels;
@@ -382,7 +413,7 @@ S3.pick = (ev, list = S3.pickables) => {
   const rc = S3.ray(ev);
   const hits = rc.intersectObjects(list, false);
   for (const h of hits) {
-    const u = h.object.userData || {};
+    const u = (h.object.userData?.ranges ? HSS.perf.rangeData(h.object, h.faceIndex) : h.object.userData) || {};
     if (h.object.material?.visible === false && !u.pick) continue;
     if (u.kind === 'object' && u.ids) return { kind: 'object', id: u.ids[h.instanceId], point: h.point };
     if (u.kind === 'object') return { kind: 'object', id: u.id, point: h.point };

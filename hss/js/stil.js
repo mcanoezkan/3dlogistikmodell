@@ -26,7 +26,9 @@ const pastell = c => { const h = {}; c.getHSL(h); const grau = h.s < 0.12; retur
 function toon(m) {
   if (!m || !m.isMeshStandardMaterial || m.userData.noToon) return m;
   let t = toonCache.get(m.uuid); if (t) return t;
-  if (m.vertexColors) { // Gelände: ruhige, helle Fläche
+  if (m.userData.vc) { // Bibliotheksobjekte mit Vertex-Farben
+    t = new THREE.MeshToonMaterial({ color: '#ffffff', vertexColors: true, gradientMap: grad });
+  } else if (m.vertexColors) { // Gelände: ruhige, helle Fläche
     t = new THREE.MeshToonMaterial({ color: ST.BODEN, gradientMap: grad, transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite });
   } else {
     const glas = m.transparent && m.opacity < 0.6;
@@ -91,6 +93,8 @@ ST.set = (mode) => {
   document.body.classList.toggle('cartoon', mode === 'cartoon');
   const S3 = HSS.s3;
   if (S3._outCache) S3._outCache.clear();
+  S3._buildCache?.clear(); S3._objCache?.clear();
+  HSS.library.clearProto();
   if (mode !== 'cartoon') { S3.renderer.toneMapping = THREE.ACESFilmicToneMapping; S3.renderer.toneMappingExposure = 0.9; }
   S3.setSun(HSS.view.sunHour); S3.rebuild('all');
 };

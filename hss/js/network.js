@@ -58,6 +58,17 @@ HSS.invalidateNet = () => { NET = null; };
 HSS.on('changed', () => { NET = null; });
 
 HSS.net = () => NET || (NET = buildNet(HSS.project()));
+// Haltegeschosse eines Aufzugs/Treppenhauses ohne das ganze Wegenetz zu berechnen (für die Darstellung)
+HSS.liftStops = (o, prj = HSS.project()) => {
+  const P = HSS.findPart(o.host?.part, prj); if (!P) return { stops: [], x: 0, z: 0 };
+  const wpos = HSS.toWorld(P.part, [o.x, o.z]), stops = [];
+  for (const pt of HSS.allParts(prj)) {
+    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+    if (!G.pointIn(HSS.toLocal(pt, wpos), HSS.partFootprintLocal(pt).outer)) continue;
+    for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.includes(gf)) stops.push(gf); }
+  }
+  return { stops: stops.sort((a, b) => a - b), x: wpos[0], z: wpos[1] };
+};
 
 function buildNet(prj) {
   const nodes = new Map(), adj = new Map(), edges = [];

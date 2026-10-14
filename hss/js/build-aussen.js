@@ -84,7 +84,8 @@ HSS.buildPath = (p, view = {}) => {
   const under = p.kind === 'tunnel' || p.kind === 'awt';
   const main = new THREE.Mesh(ribbon(L, w, under ? 0 : 0.02), LM(p.color || def.color)); main.receiveShadow = true; main.userData = { kind: 'path', id: p.id };
   // Wege werden über Gelände leicht nach oben versetzt; polygonOffset gegen Z-Fighting
-  main.material = main.material.clone(); main.material.polygonOffset = true; main.material.polygonOffsetFactor = -2 - (p.kind === 'strasse' ? 1 : 0);
+  const pof = -2 - (p.kind === 'strasse' ? 1 : 0), base = main.material;
+  main.material = HSS.library.shared('weg|' + base.userData.key + '|' + pof, () => { const m = base.clone(); m.polygonOffset = true; m.polygonOffsetFactor = pof; return m; });
   grp.add(main);
   if (p.kind === 'strasse') {
     // Mittellinie gestrichelt, Bordsteine
@@ -102,7 +103,7 @@ HSS.buildPath = (p, view = {}) => {
     // Tunnelröhre: Wände + Decke (halbtransparent), Leitlinie bei AWT
     const showSolid = view.floor !== null && view.floor !== undefined && view.floor < 0;
     const h = p.height || (p.kind === 'awt' ? 2.8 : 3.0);
-    const mat = new THREE.MeshStandardMaterial({ color: '#b8bcc2', roughness: 0.9, transparent: true, opacity: showSolid ? 0.35 : 0.14, depthWrite: false, side: THREE.DoubleSide });
+    const mat = HSS.library.shared('tunnel|' + showSolid, () => new THREE.MeshStandardMaterial({ color: '#b8bcc2', roughness: 0.9, transparent: true, opacity: showSolid ? 0.35 : 0.14, depthWrite: false, side: THREE.DoubleSide }));
     const geos = [];
     for (const s of [-1, 1]) {
       const off = L.map((q, i) => { const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)]; const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1; return [q[0] - dz / l * w / 2 * s, q[1], q[2] + dx / l * w / 2 * s]; });
@@ -127,7 +128,7 @@ const drapedRect = (a, yoff, color, rough = 0.95) => {
   const g = new THREE.PlaneGeometry(a.w, a.d, nx, nz); g.rotateX(-Math.PI / 2); g.rotateY(-U.rad(a.rot || 0)); g.translate(a.x, 0, a.z);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
   g.computeVertexNormals();
-  const mat = new THREE.MeshStandardMaterial({ color, roughness: rough, polygonOffset: true, polygonOffsetFactor: -1 });
+  const mat = HSS.library.shared('flaeche|' + color + '|' + rough, () => new THREE.MeshStandardMaterial({ color, roughness: rough, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
 };
 // Stellplatzlayout: Doppelreihen (2 × 5,0 m Stellplatz + 6,0 m Fahrgasse = 16 m Modul)
@@ -163,9 +164,8 @@ HSS.buildArea = (a, view = {}) => {
     for (const [x, z, side] of L.stalls) {
       if (rnd() > occ) continue;
       const id = models[Math.floor(rnd() * models.length)], p = W(x, z);
-      const car = HSS.library.build(id, null, { noShadow: false });
       const col = colors[Math.floor(rnd() * colors.length)];
-      car.traverse(m => { if (m.isMesh && m.material.userData.key?.includes('lack') && !m.material.userData.key.startsWith('#f4f4f4')) { const k = m.material.userData.key.split('|')[0]; if (['#2d7694', '#4b5058', '#c0392b'].includes(k)) m.material = LM(col, 'lack'); } });
+      const car = HSS.library.build(id, null, { noShadow: false, color: col });
       car.position.set(p[0], HSS.terrainH(p[0], p[1]) + 0.05, p[1]); car.rotation.y = -r + (side ? Math.PI : 0) + Math.PI / 2 * 0 + (rnd() - 0.5) * 0.05;
       car.rotation.y = -r + (side ? 0 : Math.PI);
       grp.add(car);
@@ -178,7 +178,7 @@ HSS.buildArea = (a, view = {}) => {
     const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
     place(rnd() > 0.3 ? 'gruen.baum.laub' : 'gruen.baum.klein', nTrees, 0.7, 1.15); place('gruen.strauch', nShrub, 0.6, 1.3);
   } else if (a.kind === 'wasser') {
-    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); m.material.metalness = 0.3; grp.add(m);
+    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); grp.add(m);
   } else {
     grp.add(drapedRect(a, 0.04, a.color || '#d4cfc4'));
   }

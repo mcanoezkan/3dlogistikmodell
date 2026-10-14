@@ -137,7 +137,7 @@ G.offsetPolyline = (pts, off) => pts.map((p, i) => {
 const listeners = {};
 HSS.on = (ev, fn) => { (listeners[ev] = listeners[ev] || []).push(fn); return () => HSS.off(ev, fn); };
 HSS.off = (ev, fn) => { listeners[ev] = (listeners[ev] || []).filter(f => f !== fn); };
-HSS.emit = (ev, data) => { (listeners[ev] || []).slice().forEach(fn => { try { fn(data); } catch (e) { console.error('[HSS]', ev, e); } }); };
+HSS.emit = (ev, data) => { (listeners[ev] || []).slice().forEach(fn => { const t = HSS._prof ? performance.now() : 0; try { fn(data); } catch (e) { console.error('[HSS]', ev, e); } if (HSS._prof) { const k = ev + ':' + (fn.name || fn.toString().slice(0, 60)); HSS._prof[k] = (HSS._prof[k] || 0) + performance.now() - t; } }); };
 
 /* ---------- Projektmodell ---------- */
 HSS.FORMAT = 'hss-project';

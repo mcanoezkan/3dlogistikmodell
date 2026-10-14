@@ -105,7 +105,7 @@ const L = HSS.library = {
   register(o, opts = {}) {
     const d = norm(o, opts.source || 'standard');
     REG.set(d.id, d);
-    for (const k of [...PROTO.keys()]) if (k.startsWith(d.id + '|')) PROTO.delete(k);
+    for (const k of [...PROTO.keys()]) if (k === d.id || k.startsWith(d.id + '|')) PROTO.delete(k);
     THUMB.delete(d.id);
     if (d.model && !d._gltf) L._loadModel(d);
     if (!opts.silent) HSS.emit('library', { id: d.id });
@@ -204,18 +204,21 @@ L.material = (c, m = 'kunststoff', opacity) => {
 };
 
 L.eachMaterial = fn => matCache.forEach(fn);
+// Gemeinsam genutzte Sondermaterialien (gleiche Parameter → dasselbe Material, damit die Darstellung bündeln kann)
+L.shared = (key, make) => { const k = 'S:' + key; let m = matCache.get(k); if (!m) { m = make(); m.userData.key = m.userData.key || k; matCache.set(k, m); } return m; };
 
 /* ---------- Geometrie aus Primitiven ---------- */
 const AX = { x: new THREE.Euler(0, 0, Math.PI / 2), z: new THREE.Euler(Math.PI / 2, 0, 0) };
 const primGeo = p => {
   let g;
   switch (p.t) {
-    case 'box': g = p.rr ? new RoundedBoxGeometry(p.s[0], p.s[1], p.s[2], 2, Math.min(p.rr, Math.min(...p.s) / 2 - 0.001)) : new THREE.BoxGeometry(p.s[0], p.s[1], p.s[2]); break;
-    case 'cyl': g = new THREE.CylinderGeometry(p.rt ?? p.r, p.r, p.h, p.seg || 16); break;
-    case 'sph': g = new THREE.SphereGeometry(p.r, p.seg || 16, Math.max(8, (p.seg || 16) * 0.75 | 0)); break;
-    case 'cone': g = new THREE.ConeGeometry(p.r, p.h, p.seg || 16); break;
-    case 'tor': g = new THREE.TorusGeometry(p.R, p.r, 8, p.seg || 24, U.rad(p.arc || 360)); break;
-    case 'cap': g = new THREE.CapsuleGeometry(p.r, Math.max(0.001, p.h - 2 * p.r), 4, 10); break;
+    case 'box': g = p.rr ? new RoundedBoxGeometry(p.s[0], p.s[1], p.s[2], 1, Math.min(p.rr, Math.min(...p.s) / 2 - 0.001)) : new THREE.BoxGeometry(p.s[0], p.s[1], p.s[2]); break;
+    // Cartoon-Stil: grobe Segmentierung genügt (weniger Dreiecke, flüssigere Darstellung)
+    case 'cyl': g = new THREE.CylinderGeometry(p.rt ?? p.r, p.r, p.h, p.seg || (p.r > 0.25 ? 14 : 8)); break;
+    case 'sph': g = new THREE.SphereGeometry(p.r, p.seg || (p.r > 0.4 ? 12 : 9), Math.max(5, ((p.seg || (p.r > 0.4 ? 12 : 9)) * 0.66) | 0)); break;
+    case 'cone': g = new THREE.ConeGeometry(p.r, p.h, p.seg || 10); break;
+    case 'tor': g = new THREE.TorusGeometry(p.R, p.r, 5, p.seg || 14, U.rad(p.arc || 360)); break;
+    case 'cap': g = new THREE.CapsuleGeometry(p.r, Math.max(0.001, p.h - 2 * p.r), 2, 7); break;
     default: g = new THREE.BoxGeometry(0.1, 0.1, 0.1);
   }
   if (p.ax && AX[p.ax]) g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(AX[p.ax]));
@@ -227,22 +230,47 @@ const primGeo = p => {
   return g;
 };
 
-// Zusammengeführte Prototyp-Geometrie je Material (für Instancing). Teile mit Schwingachse
-// werden getrennt gehalten (Animation von Personen).
-L.proto = (id) => {
-  if (PROTO.has(id)) return PROTO.get(id);
+// Zusammengeführte Prototyp-Geometrie (für Instancing). Alle undurchsichtigen Teile werden mit
+// Vertex-Farben zu EINEM Netz zusammengefasst (ein Zeichenaufruf je Objekttyp); Glas, Leucht- und
+// Bildschirmteile bleiben getrennt. Teile mit Schwingachse (Personen) bleiben einzeln für die Animation.
+// color: optionale Lackfarbe (ersetzt die vorherrschende Lackfarbe des Objekts, z. B. Fahrzeugfarbe).
+const VC_MAT = {};
+L.vcMaterial = (kind = 'opak') => VC_MAT[kind] || (VC_MAT[kind] = (() => { const m = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, roughness: kind === 'metall' ? 0.4 : 0.62, metalness: kind === 'metall' ? 0.45 : 0.04 }); m.userData.key = '#ffffff|vc-' + kind + '|'; m.userData.vc = true; matCache.set(m.userData.key, m); return m; })());
+// Cartoon: Farben aufhellen wie in einer Modellzeichnung (gleiche Formel wie stil.js)
+const _h = {};
+L.pastell = c => { c.getHSL(_h); const grau = _h.s < 0.12; return c.setHSL(_h.h, Math.min(1, _h.s * 0.85), Math.min(0.95, grau ? _h.l * 0.55 + 0.42 : _h.l * 0.82 + 0.16)); };
+L.clearProto = () => { PROTO.clear(); THUMB.clear(); };
+const SEP = new Set(['glas', 'leucht', 'bildschirm']);
+const _c = new THREE.Color();
+L.mainLack = d => { const vol = new Map(); for (const p of d.parts || []) if (p.m === 'lack' && !p.sw) { const v = p.t === 'box' ? p.s[0] * p.s[1] * p.s[2] : (p.r || 0.1) ** 2 * (p.h || p.r || 0.1); vol.set(p.c, (vol.get(p.c) || 0) + v); } let best = null, bv = 0; for (const [c, v] of vol) if (v > bv) { bv = v; best = c; } return best; };
+L.proto = (id, color) => {
+  const pk = id + (color ? '|' + color : '');
+  if (PROTO.has(pk)) return PROTO.get(pk);
   const d = REG.get(id); if (!d) return null;
   const parts = d.parts || [];
-  const byMat = new Map(), swing = [];
+  const main = color ? L.mainLack(d) : null;
+  const sep = new Map(), opak = { metall: [], opak: [] }, swing = [];
   for (const p of parts) {
     const g = primGeo(p);
     if (p.sw) { swing.push({ g, p }); continue; }
-    const key = (p.c || '#ccc') + '|' + (p.m || 'kunststoff') + '|' + (p.o ?? '');
-    if (!byMat.has(key)) byMat.set(key, { mat: L.material(p.c, p.m, p.o), geos: [] });
-    byMat.get(key).geos.push(g);
+    const m = p.m || 'kunststoff';
+    if (SEP.has(m)) {
+      const key = (p.c || '#ccc') + '|' + m + '|' + (p.o ?? '');
+      if (!sep.has(key)) sep.set(key, { mat: L.material(p.c, m, p.o), geos: [] });
+      sep.get(key).geos.push(g); continue;
+    }
+    const c = main && m === 'lack' && p.c === main ? color : (p.c || '#cccccc');
+    _c.set(c); if (HSS.view?.stil === 'cartoon') L.pastell(_c);
+    const n = g.attributes.position.count, col = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { col[i * 3] = _c.r; col[i * 3 + 1] = _c.g; col[i * 3 + 2] = _c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    (m === 'metall' || m === 'chrom' ? opak.metall : opak.opak).push(g);
   }
-  const out = { def: d, meshes: [...byMat.values()].map(v => ({ geo: mergeGeometries(v.geos, false), mat: v.mat })), swing };
-  PROTO.set(id, out); return out;
+  const meshes = [];
+  for (const k of ['opak', 'metall']) if (opak[k].length) meshes.push({ geo: mergeGeometries(opak[k], false), mat: L.vcMaterial(k) });
+  for (const v of sep.values()) meshes.push({ geo: mergeGeometries(v.geos, false), mat: v.mat });
+  const out = { def: d, meshes, swing };
+  PROTO.set(pk, out); return out;
 };
 
 // Einzelnes Objekt als THREE.Group (für bewegte Agenten, Vorschau, GLB-Modelle)
@@ -257,7 +285,7 @@ L.build = (id, size, opts = {}) => {
     if (d._model) add(d._model); else d._gltf?.then(add);
     return grp;
   }
-  const P = L.proto(id);
+  const P = L.proto(id, opts.color);
   for (const m of P.meshes) { const mesh = new THREE.Mesh(m.geo, opts.material || m.mat); mesh.castShadow = !opts.noShadow; mesh.receiveShadow = true; inner.add(mesh); }
   if (P.swing.length) {
     grp.userData.swing = [];

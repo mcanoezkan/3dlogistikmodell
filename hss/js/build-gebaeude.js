@@ -132,7 +132,7 @@ HSS.buildPart = (pt, building, view = {}) => {
   const transparent = view.shell === 'transparent';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
   const wallBase = fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
-  const wallMat = transparent ? new THREE.MeshStandardMaterial({ color: wallBase, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide }) : new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide });
+  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide })) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
   const slabMat = LM('#d5d8dc'), roofMat = LM(pt.roof?.type === 'gruen' ? '#7fa36a' : (pt.roof?.color || '#9aa3ad'));
   const floors = HSS.partFloors(pt);
@@ -289,6 +289,7 @@ HSS.DIN277 = {
 };
 HSS.roomArea = r => r.poly ? Math.abs(G.area(r.poly)) : r.w * r.d;
 HSS.roomDin = r => r.din || (HSS.ROOMTYPES[r.use] || HSS.ROOMTYPES.sonstiges).din || 'NUF7';
+const PICKMAT = new THREE.MeshBasicMaterial({ visible: false });
 HSS.buildInterior = (pt, f, view = {}) => {
   const I = HSS.interior(pt.id, f); const grp = new THREE.Group(); grp.userData = { kind: 'interior', part: pt.id, floor: f };
   if (!I) return grp;
@@ -333,7 +334,7 @@ HSS.buildInterior = (pt, f, view = {}) => {
   for (const w of I.walls) {
     const len = G.dist(w.a, w.b); if (len < 0.05) continue;
     const ux = (w.b[0] - w.a[0]) / len, uz = (w.b[1] - w.a[1]) / len;
-    const pk = new THREE.Mesh(new THREE.BoxGeometry(len, Math.max(wallH, 0.3), (w.t || 0.15) + 0.1), new THREE.MeshBasicMaterial({ visible: false }));
+    const pk = new THREE.Mesh(new THREE.BoxGeometry(len, Math.max(wallH, 0.3), (w.t || 0.15) + 0.1), PICKMAT);
     pk.rotation.y = -Math.atan2(uz, ux); pk.position.set((w.a[0] + w.b[0]) / 2, Math.max(wallH, 0.3) / 2, (w.a[1] + w.b[1]) / 2);
     pk.userData = { kind: 'wall', id: w.id, part: pt.id, floor: f, pick: true }; local.add(pk);
   }
