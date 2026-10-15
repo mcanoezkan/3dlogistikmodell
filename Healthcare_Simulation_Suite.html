@@ -414,6 +414,20 @@ body.viewer #prjName{pointer-events:none;font-size:14px;color:#fff;opacity:.9}
 #vwCard .x{position:absolute;top:6px;right:6px;border:0;background:transparent;font-size:16px;padding:0 4px}
 body.viewer #zLegend{left:72px}
 body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
+body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.vw-no-rundgang #tourCard,body.viewer.vw-no-rundgang .vw-tour{display:none!important}
+body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
+body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
+.axopt{display:grid;gap:6px}.axopt .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px}.axopt small{font-size:11.5px}
+.fa-dlg{width:min(640px,96vw)}
+.fa-steps{display:flex;gap:6px;margin:0 0 10px}.fa-steps span{flex:1;font-size:12px;padding:6px 8px;border-radius:4px;background:#eef1f4;color:var(--muted)}.fa-steps span.on{background:var(--navy,#0A223C);color:#fff;font-weight:600}
+.fa-route{display:flex;flex-direction:column;gap:0;max-height:52vh;overflow:auto;padding-right:4px}
+.fa-stop{display:flex;gap:10px;align-items:flex-start;background:#f7f9fa;border:1px solid #e1e6ea;border-radius:6px;padding:8px 10px}
+.fa-stop.start{border-left:4px solid #0A967A}.fa-stop.ziel{border-left:4px solid #c0392b}.fa-stop.zw{border-left:4px solid #f2c94c}
+.fa-dot{width:24px;height:24px;border-radius:50%;background:#0A223C;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.fa-stop.start .fa-dot{background:#0A967A}.fa-stop.ziel .fa-dot{background:#c0392b}.fa-stop.zw .fa-dot{background:#d4a514}
+.fa-f{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12.5px}.fa-row{display:flex;gap:6px}.fa-row select:first-child{flex:1}.fa-f select{width:100%}.fa-row select[data-k=gf]{width:110px;flex:none}
+.fa-add{padding:4px 0 4px 44px;border-left:2px dashed #c3c9d0;margin-left:21px}
+.fa-sum{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:10px}.fa-chip{background:#eef1f4;border-radius:12px;padding:3px 10px;font-size:12px}.fa-chip.start{background:#d9f2ec}.fa-chip.ziel{background:#f8dcd8}.fa-arr{color:var(--muted)}
 
 </style>
 <!-- =====================================================================
@@ -5252,7 +5266,8 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Stationsaus
      ladestation – Ladeplatz AWT-Fahrzeuge
      rampe       – Warenannahme/Anlieferung LKW
      lager       – Lager/Puffer
-     fahrzeug    – Transportmittel-Modell (für Animation)  */
+     fahrzeug    – Transportmittel-Modell (für Animation)
+     uebergabe   – Übergabepunkt einer Etage (Fluss-Assistent: Start, Zwischenstopp, Ziel)  */
 (function (K) {
 const W = '#eef1f4', G = '#c3c9d0', DG = '#5a6573', NV = '#144477', PE = '#2D7694', GR = '#0A967A', ST = '#cfd8dc';
 const trolley = (w, d, h, c, o = {}) => [K.box(0, h / 2 + 0.1, 0, w, h - 0.1, d, c, o.m || 'lack', { rr: 0.02 }), K.box(0, h + 0.02, 0, w + 0.02, 0.04, d + 0.02, o.top || G, 'kunststoff', { rr: 0.01 }), ...(o.handle !== false ? [K.box(0, h * 0.8, d / 2 + 0.05, w * 0.7, 0.03, 0.03, '#9aa1aa', 'chrom')] : []), ...(o.stripe ? [K.box(0, h * 0.6, d / 2 + 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack'), K.box(0, h * 0.6, -d / 2 - 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack')] : []), ...K.casters(w, d, 0.06)];
@@ -5265,6 +5280,7 @@ const liftShaft = (w, d, c, glass) => [
 
 HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Logistik, AWT, Erschließung', objects: [
   /* ---------- Transportwagen & Behälter ---------- */
+  { id: 'log.uebergabepunkt', name: 'Übergabepunkt (Etage, Fluss-Assistent)', category: 'Logistik & Transport/Warenannahme', tags: ['Fluss', 'Übergabe', 'Zwischenstopp'], size: { w: 1.4, d: 1.4, h: 2.3 }, parts: [K.cyl(0, 0.01, 0, 0.7, 0.02, '#f2c94c', 'lack'), K.cyl(0, 0.025, 0, 0.45, 0.02, '#0A223C', 'lack'), K.cyl(0, 1.1, 0, 0.04, 2.2, '#5a6573', 'metall'), K.box(0, 2.05, 0, 0.7, 0.4, 0.06, '#f2c94c', 'lack', { rr: 0.04 }), K.box(0, 2.05, 0.035, 0.5, 0.18, 0.01, '#0A223C', 'lack')], logistik: { rolle: 'uebergabe' } },
   { id: 'log.modulwagen', name: 'Modulversorgungswagen (2 × ISO 600 × 400)', category: 'Logistik & Transport/Transportwagen', tags: ['Modulversorgung', 'Rein', 'Verbrauchsgüter'], size: { w: 0.9, d: 0.65, h: 1.6 }, parts: [K.box(0, 0.85, -0.3, 0.9, 1.5, 0.03, G, 'metall'), ...[-1, 1].map(s => K.box(s * 0.44, 0.85, 0, 0.02, 1.5, 0.65, G, 'metall')), ...Array.from({ length: 6 }, (_, i) => K.box(-0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#2d7694' : '#7fb3d5', 'kunststoff')), ...Array.from({ length: 6 }, (_, i) => K.box(0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#7fb3d5' : '#2d7694', 'kunststoff')), ...K.casters(0.85, 0.6, 0.06)], meta: { quelle: 'ISO 3394 Modulmaß 600 × 400 mm' }, logistik: { reinheit: 'rein', kapazitaet: 12, einheit: 'Module' } },
   { id: 'log.speisenwagen', name: 'Speisentransportwagen (Tablettsystem, 20 Tabletts)', category: 'Logistik & Transport/Transportwagen', tags: ['Speisen', 'Küche', 'Rein'], size: { w: 1.35, d: 0.75, h: 1.55 }, parts: trolley(1.35, 0.75, 1.45, '#d6dbe0', { m: 'metall', stripe: '#f2994a' }), logistik: { reinheit: 'rein', kapazitaet: 20, einheit: 'Tabletts' } },
   { id: 'log.waeschewagen.rein', name: 'Wäschewagen rein (geschlossen)', category: 'Logistik & Transport/Transportwagen', tags: ['Wäsche', 'Rein'], size: { w: 1.2, d: 0.7, h: 1.65 }, parts: trolley(1.2, 0.7, 1.55, '#e8f1f8', { stripe: PE }), logistik: { reinheit: 'rein', kapazitaet: 80, einheit: 'kg' } },
@@ -6424,7 +6440,7 @@ HSS.liftStops = (o, prj = HSS.project()) => {
   const P = HSS.findPart(o.host?.part, prj); if (!P) return { stops: [], x: 0, z: 0 };
   const wpos = HSS.toWorld(P.part, [o.x, o.z]), stops = [];
   for (const pt of HSS.allParts(prj)) {
-    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue; // auch übereinanderliegende Bauteile desselben Gebäudes
     if (!G.pointIn(HSS.toLocal(pt, wpos), HSS.partFootprintLocal(pt).outer)) continue;
     for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.includes(gf)) stops.push(gf); }
   }
@@ -6599,7 +6615,7 @@ function buildNet(prj) {
     for (const pt of parts) {
       const loc = HSS.toLocal(pt, wpos), fp = HSS.partFootprintLocal(pt);
       if (!G.pointIn(loc, fp.outer)) continue;
-      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue;
       for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.some(s => s.gf === gf)) stops.push({ gf, pt, f, y: HSS.floorY(pt, f, prj) }); }
     }
     stops.sort((a, c) => a.gf - c.gf);
@@ -6611,7 +6627,7 @@ function buildNet(prj) {
       const inn = nearestIn(floorNodes.get(s.pt.id + '|' + s.f) || [], wpos[0], wpos[1]);
       if (inn) addEdge(id, inn.id, 'zugang', { part: s.pt.id, floor: s.f });
       if (prev) addEdge(prev.id, id, role === 'treppe' ? 'treppe' : 'aufzug', { lift: o.id, gfa: prev.gf, gfb: s.gf, len: role === 'treppe' ? Math.abs(s.y - prev.y) * 2.2 + 6 : Math.abs(s.y - prev.y) });
-      prev = { id, gf: s.gf };
+      prev = { id, gf: s.gf, y: s.y };
     }
   }
 
@@ -10058,9 +10074,9 @@ HSS.STANDORTE = [
   { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
-  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
-    text: 'Baukörper aus dem Lageplan „Klinikum Bielefeld – Mitte“ (Unternehmenskommunikation, Stand Okt. 2025) digitalisiert (±15 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen); Soll-Variante mit Neubau zur Veranschaulichung.',
-    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Optimierung mit Neubau)' }] }
+  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.014139, lon: 8.544318, nord: 115.4, hinweis: 'Modellursprung Mitte Hauptgebäude; Raster um 115,4° gegen Nord gedreht (wie im 3D-Logistikmodell)' },
+    text: 'Gebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.',
+    varianten: [{ id: 'ist', name: 'Ist-Zustand (NIZ in Betrieb)' }, { id: 'soll', name: 'Soll-Variante (Optimierung)' }] }
 ];
 const PRE = { koblenz: 'kob_', hanau: 'han_', bielefeld: 'bie_' };
 
@@ -10184,10 +10200,21 @@ function convert(S, def, v, opts = {}) {
       bmap[g.id] = b;
       g.teile.forEach((t, i) => B.part(b, { id: `${pre}${g.id}_${t.id || i}`, name: t.name ? `${g.kurz || g.id} · ${t.name}` : g.name, ref: `${g.id}/${t.id || g.id + '-' + i}`, poly: t.poly, rect: t.box ? [(t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2, Math.abs(t.box[2] - t.box[0]), Math.abs(t.box[3] - t.box[1]), 0] : null, von: t.von ?? 0, bis: t.bis ?? 0, hoehe: t.hoehe, typ }));
     }
-    for (const [i, s] of (D.aussen?.strassen || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_${pre}r${i}`, standort: true, name: s.name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: G.polylineLength(s.pts) > 100 ? 2 : 0 }));
+    const SKIND = t => ['service', 'track', 'driveway'].includes(t) ? 'zufahrt' : ['footway', 'path', 'pedestrian', 'cycleway', 'steps'].includes(t) ? 'gehweg' : t ? 'strasse' : 'zufahrt';
+    for (const [i, s] of (D.aussen?.strassen || []).entries()) { const kind = SKIND(s.typ); prj.paths.push(Object.assign(HSS.defaults.path(kind), { id: `path_${pre}r${i}`, standort: true, name: s.name || HSS.WEGARTEN[kind].name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: kind === 'strasse' && G.polylineLength(s.pts) > 60 ? (s.typ === 'tertiary' ? 3 : 2) : 0 })); }
+    // Umgebung (Nachbargebäude aus OpenStreetMap)
+    for (const [i, u] of (D.umgebung || []).entries()) {
+      if (!u.poly || u.poly.length < 3 || Math.abs(G.area(u.poly)) < 12) continue;
+      const b = Object.assign(HSS.defaults.building(), { id: `${pre}u${i}`, name: u.name || 'Gebäude (Umgebung)', kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
+      const c = centroid(u.poly), loc = G.ccw(u.poly.map(q => [r1(q[0] - c[0]), r1(q[1] - c[1])])), bb = G.bbox(loc), fl = U.clamp(Math.round((u.h || 9) / 3.1), 1, 30);
+      b.parts.push(Object.assign(HSS.defaults.part(), { id: `${pre}u${i}_0`, name: b.name, shape: 'poly', poly: loc, x: r1(c[0]), z: r1(c[1]), w: r1(bb.w), d: r1(bb.d), rot: 0, floors: fl, floorHeight: r1((u.h || fl * 3.1) / fl), basements: 0, facade: { type: 'loch', color: '#e6e2dc', accent: '#9aa1aa', glass: '#8aa0b2', axis: 1.6, windowRatio: 0.35 }, roof: { type: 'flach', parapet: 0.3, plant: false, color: '#a8a39b' } }));
+      prj.buildings.push(b);
+    }
+    // Klinikgelände (Grundstücksgrenze)
+    if (D.aussen?.gelaende?.length > 3) prj.paths.push(Object.assign(HSS.defaults.path('grenze'), { id: `path_${pre}grenze`, standort: true, name: 'Grundstücksgrenze Klinikum', points: D.aussen.gelaende.concat([D.aussen.gelaende[0]]).map(q => [r1(q[0]), r1(q[1])]), width: 0.35, smooth: false, noNet: true }));
     for (const [i, w] of (D.aussen?.wege || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('weg'), { id: `path_${pre}w${i}`, standort: true, name: 'Campusweg', points: w.map(q => q.slice()), width: 3.5, smooth: false }));
   }
-  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 })); }
+  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 }, D.aussen.teich.length > 4 ? { poly: G.ccw(D.aussen.teich.map(q => [r1(q[0]), r1(q[1])])), lage: 5 } : {})); }
   if (def.geo && !prj.meta.geo) prj.meta.geo = Object.assign({}, def.geo);
   /* Gehwege, die auf einer Fahrbahn liegen (OSM-Bürgersteige entlang der Straße), weglassen */
   const roadsL = prj.paths.filter(p => p.kind === 'zufahrt' || p.kind === 'strasse');
@@ -10313,6 +10340,19 @@ function convert(S, def, v, opts = {}) {
     }
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
+  /* Warenströme (Familien) mit Farbe und Prozess-Tour (Stationen mit Erläuterung) */
+  if ((D.flows || []).some(fl => fl.color || fl.tour)) {
+    const PL = new Map(HSS.places(prj).map(p => [p.id, p])), areaName = id => (D.areas || []).find(a => a.id === id)?.name;
+    const tourPlace = t => {
+      const ids = (areaPlaces[t.area] || []).filter(id => PL.has(id)); if (!ids.length) return null;
+      const n = t.node && nodes[t.node];
+      if (n) { const hit = ids.find(id => PL.get(id).gf === n.l && (!n.b || PL.get(id).building === PRE[def.id] + n.b)) || ids.find(id => PL.get(id).gf === n.l); if (hit) return hit; }
+      return ids[0];
+    };
+    prj.stroeme = D.flows.map(fl => ({ id: fl.id, name: fl.name, farbe: fl.color || null, reinheit: fl.cls || null,
+      tour: (fl.tour || []).map(t => ({ place: tourPlace(t), titel: areaName(t.area) || t.title || '', text: (v === 'soll' && t.textSoll) || t.text || '' })).filter(t => t.place) }));
+    for (const f of prj.flows) { const m = /^fl_(.+?)_\d+_/.exec(f.id); if (m && prj.stroeme.some(x => x.id === m[1])) f.strom = m[1]; }
+  }
   if (HSS.furnishEmpty) HSS.furnishEmpty(prj, { maxArea: 1500, max: 9000 }); // Funktionsflächen einrichten
   // Gelände groß genug für alle Gebäude, Wege und die Grundstücksgrenze
   { let r = 0; for (const pt of HSS.allParts(prj)) for (const q of HSS.partFootprint(pt, prj).outer) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); for (const pa of prj.paths) for (const q of pa.points) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); prj.terrain.size = Math.max(prj.terrain.size || 500, Math.ceil((r * 2 + 200) / 100) * 100); }
@@ -10322,7 +10362,7 @@ function convert(S, def, v, opts = {}) {
 HSS.standorte = {
   async load(id, v = 'ist', opts = {}) {
     const def = HSS.STANDORTE.find(s => s.id === id); if (!def) throw new Error('Unbekannter Standort');
-    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261014');
+    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261016');
     return convert(window.HSS_STANDORTE[id], def, v, opts);
   },
   /* Gespeichertes Standortmodell auf den aktuellen Stand der Übernahme bringen.
@@ -11308,15 +11348,17 @@ W.fluesse = { name: 'Material-, Waren- & Personenflüsse', short: 'Flüsse', ste
 const FT = {};
 FT.fluesse = (el, prj) => {
   const mats = new Map(prj.materials.map(m => [m.id, m]));
-  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fStd">Standardflüsse übernehmen …</button><button id="fNew">+ Fluss</button></div>
+  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button id="fStd">Standardflüsse übernehmen …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button></div>
   <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1))))} Ladungen/Tag</div>
   <div class="list" style="max-height:none">${prj.flows.map(f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span></div>`; }).join('') || '<div class="li note">Noch keine Flüsse.</div>'}</div>
   <div id="fEdit"></div>`;
   $('#fStd', el).onclick = UI.templateDialog;
+  $('#fWiz', el).onclick = () => HSS.flussAssistent.dialog();
   $('#fNew', el).onclick = () => { const f = { id: U.uid('flow'), name: 'Neuer Fluss', material: prj.materials[0].id, von: '', nach: '', menge: 10, periode: 'tag', betriebstage: 7, fenster: [[8, 12]], transport: 't_hand', fahrzeitMin: null, aktiv: true }; HSS.change('Fluss anlegen', p => p.flows.push(f), { scope: 'none' }); UI.flowSel = f.id; UI.renderPanel(); };
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
   $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
+  setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit);
   const ed = $('#fEdit', el);
@@ -11335,8 +11377,14 @@ FT.fluesse = (el, prj) => {
   $('#fDup', ed).onclick = () => { const n = U.clone(f); n.id = U.uid('flow'); n.name += ' (Kopie)'; HSS.change('Fluss duplizieren', p => p.flows.push(n), { scope: 'none' }); UI.flowSel = n.id; UI.renderPanel(); };
   $('#fDel', ed).onclick = () => { HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== f.id)), { scope: 'none' }); UI.flowSel = null; UI.renderPanel(); clearGhost(); };
 };
-UI.showRoute = (fid, focus) => {
-  clearGhost();
+// Mehrere Flüsse (z. B. Etappen aus dem Assistenten) gemeinsam zeigen
+UI.showRoutes = (ids, focus) => {
+  clearGhost(); const box = new THREE.Box3();
+  for (const id of ids) { UI.showRoute(id, false, true); }
+  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); HSS.s3.focusBox(box, { k: 0.8 }); }
+};
+UI.showRoute = (fid, focus, keep) => {
+  if (!keep) clearGhost();
   const prj = HSS.project(), f = U.byId(prj.flows, fid); if (!f) return;
   const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit); if (!r.ok) return;
@@ -13854,6 +13902,190 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 </script>
 <script>
 /* =====================================================================
+   HSS · fluss-assistent.js – Flüsse in zwei Schritten anlegen
+   1. Weg: Start (Gebäude + Etage), beliebig viele Zwischenstopps, Ziel.
+      Ohne genauen Raum wird auf der Etage ein Übergabepunkt angelegt
+      (bzw. ein vorhandener wiederverwendet).
+   2. Menge: Materialgruppe, Menge je Tag/Woche, Zeitfenster, Transportmittel.
+   Je Etappe entsteht ein normaler Fluss (Etappe 1/n, 2/n …), der wie
+   jeder andere Fluss bearbeitet, simuliert und dargestellt wird.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, G = HSS.geo;
+const FA = HSS.flussAssistent = {};
+const LIB = 'log.uebergabepunkt', EXT = '__ext';
+const opt = (v, t, s) => `<option value="${U.esc(v)}"${String(v) === String(s) ? ' selected' : ''}>${U.esc(t)}</option>`;
+HSS.ROLLEN.uebergabe = HSS.ROLLEN.uebergabe || 'Übergabepunkt (Etage)';
+
+/* ---------- Gebäude, Etagen, Orte ---------- */
+const eigene = prj => prj.buildings.filter(b => !b.umgebung && b.parts.length).sort((a, b) => String(a.kurz || a.name).localeCompare(String(b.kurz || b.name), 'de', { numeric: true }));
+const bName = b => (b.kurz && b.kurz !== b.name ? b.kurz + ' – ' : '') + b.name;
+FA.etagen = (b, prj = HSS.project()) => [...new Set(b.parts.flatMap(pt => HSS.partFloors(pt).map(f => HSS.globalFloor(pt, f, prj))))].sort((a, c) => a - c);
+const ortVon = (pl, prj) => { if (pl.building) return pl.building; if (!pl.part) return null; return HSS.findPart(pl.part, prj)?.building.id || null; };
+FA.orte = (bid, gf, prj = HSS.project()) => {
+  const pl = HSS.places(prj);
+  if (bid === EXT) return pl.filter(p => p.kind === 'extern' || (p.kind === 'object' && !p.part));
+  return pl.filter(p => ortVon(p, prj) === bid && p.gf === gf).sort((a, c) => (a.role === 'uebergabe' ? -1 : 0) - (c.role === 'uebergabe' ? -1 : 0) || a.name.localeCompare(c.name, 'de'));
+};
+// Bauteil der Etage: bevorzugt mit Aufzug, sonst das größte
+const bauteil = (b, gf, prj) => {
+  const cand = b.parts.filter(pt => HSS.localFloor(pt, gf, prj) !== null); if (!cand.length) return null;
+  const lifts = prj.objects.filter(o => o.host && /aufzug/.test(o.lib) && cand.some(pt => pt.id === o.host.part));
+  const withLift = cand.filter(pt => lifts.some(o => o.host.part === pt.id));
+  const pool = withLift.length ? withLift : cand;
+  const pt = pool.slice().sort((a, c) => HSS.partArea(c) - HSS.partArea(a))[0];
+  return { pt, lift: lifts.find(o => o.host.part === pt.id) || null };
+};
+// Punkt in der Grundfläche (lokal), möglichst nah am Wunschpunkt
+const innen = (pt, want) => {
+  const L = HSS.partFootprintLocal(pt), inn = q => G.pointIn(q, L.outer) && !L.holes.some(h => G.pointIn(q, h));
+  if (inn(want)) return want;
+  const bb = G.bbox(L.outer); let best = null;
+  for (let x = bb.x0 + 1; x < bb.x1; x += 1.5) for (let z = bb.z0 + 1; z < bb.z1; z += 1.5) {
+    if (!inn([x, z])) continue; const d = Math.hypot(x - want[0], z - want[1]); if (!best || d < best.d) best = { q: [x, z], d };
+  }
+  return best ? best.q : [0, 0];
+};
+// Übergabepunkt anlegen (im Änderungs-Callback) oder vorhandenen wiederverwenden
+const uebergabe = (p, bid, gf) => {
+  const b = p.buildings.find(x => x.id === bid); if (!b) return null;
+  const have = p.objects.find(o => o.lib === LIB && o.host && b.parts.some(pt => pt.id === o.host.part) && HSS.globalFloor(HSS.findPart(o.host.part, p).part, o.host.floor, p) === gf);
+  if (have) return have.id;
+  const T = bauteil(b, gf, p); if (!T) return null;
+  const f = HSS.localFloor(T.pt, gf, p);
+  let want = [0, 0];
+  if (T.lift) want = [T.lift.x + 2.5, T.lift.z + 2.5];
+  else { const L = HSS.partFootprintLocal(T.pt).outer; want = [U.sum(L.map(q => q[0])) / L.length, U.sum(L.map(q => q[1])) / L.length]; }
+  const q = innen(T.pt, want);
+  const o = { id: U.uid('obj'), lib: LIB, host: { part: T.pt.id, floor: f }, x: Math.round(q[0] * 10) / 10, z: Math.round(q[1] * 10) / 10, rot: 0, name: `Übergabepunkt ${b.kurz || b.name} ${HSS.floorName(gf)}`, role: 'uebergabe', place: true, assistent: true };
+  p.objects.push(o);
+  return o.id;
+};
+
+/* ---------- Dialog ---------- */
+FA.dialog = (vorgabe = {}) => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project(); HSS.ensureStammdaten(prj);
+  const B = eigene(prj);
+  if (!B.length) { UI.toast('Zuerst Gebäude anlegen – der Assistent verbindet Gebäude und Etagen.', 3500); return; }
+  const neu = () => { const b = B[0]; const fl = FA.etagen(b); return { b: b.id, gf: fl.includes(0) ? 0 : fl[0], ort: '' }; };
+  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: 1, material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
+  const mat = () => U.byId(prj.materials, S.material);
+  const label = s => {
+    if (s.b === EXT) { const p = HSS.places(prj).find(x => x.id === s.ort); return p ? p.name : 'Außen'; }
+    const b = U.byId(prj.buildings, s.b); const pl = s.ort && HSS.places(prj).find(x => x.id === s.ort);
+    return pl && pl.role !== 'uebergabe' ? pl.name : `${b?.kurz || b?.name || ''} ${HSS.floorName(s.gf)}`;
+  };
+  const autoName = () => `${mat()?.name || 'Fluss'}: ${label(S.stops[0])} → ${label(S.stops[S.stops.length - 1])}${S.stops.length > 2 ? ` (über ${S.stops.slice(1, -1).map(label).join(', ')})` : ''}`;
+  const stopRow = (s, i) => {
+    const n = S.stops.length, rol = i === 0 ? 'Start' : i === n - 1 ? 'Ziel' : 'Zwischenstopp ' + i;
+    const b = U.byId(prj.buildings, s.b);
+    const orte = FA.orte(s.b, s.gf, prj);
+    const ortOpts = s.b === EXT ? (orte.length ? orte.map(p => opt(p.id, p.name, s.ort)).join('') : opt('', '– keine externen Orte (Flüsse › Orte) –', '')) : opt('', 'Übergabepunkt auf der Etage', s.ort) + orte.filter(p => p.role !== 'uebergabe').map(p => opt(p.id, p.name.split(' · ').slice(1).join(' · ') + (p.role && HSS.ROLLEN[p.role] ? ` [${HSS.ROLLEN[p.role]}]` : ''), s.ort)).join('');
+    return `<div class="fa-stop ${i === 0 ? 'start' : i === n - 1 ? 'ziel' : 'zw'}" data-i="${i}">
+      <div class="fa-dot">${i === 0 ? 'A' : i === n - 1 ? 'B' : i}</div>
+      <div class="fa-f"><b>${rol}</b>
+        <div class="fa-row"><select data-k="b" title="Gebäude">${B.map(x => opt(x.id, bName(x), s.b)).join('')}${opt(EXT, 'Außen / extern (Lieferant, Entsorger …)', s.b)}</select>
+        ${s.b === EXT ? '' : `<select data-k="gf" title="Etage">${FA.etagen(b).map(g => opt(g, HSS.floorName(g), s.gf)).join('')}</select>`}</div>
+        <select data-k="ort" title="Genauer Ort (optional)">${ortOpts}</select>
+      </div>
+      ${i > 0 && i < n - 1 ? `<button class="mini" data-x="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>
+      ${i < n - 1 ? `<div class="fa-add"><button class="mini" data-add="${i + 1}">+ Zwischenstopp</button></div>` : ''}`;
+  };
+  const render = d => {
+    const body = $('#faBody', d), m = mat();
+    $$('.fa-steps span', d).forEach((x, k) => x.classList.toggle('on', k + 1 === S.schritt));
+    if (S.schritt === 1) {
+      body.innerHTML = `<p class="note">Richtung festlegen: <b>aus welchem Gebäude und welcher Etage</b> zu welchem – bei Bedarf mit Zwischenstopps. Ohne genauen Raum legt der Assistent auf der Etage einen <b>Übergabepunkt</b> an (z. B. am Aufzug).</p>
+        <div class="fa-route">${S.stops.map(stopRow).join('')}</div>`;
+      $('#faBack', d).hidden = true; $('#faNext', d).textContent = 'Weiter: Menge →';
+    } else {
+      if (!S.name) S.name = autoName();
+      body.innerHTML = `<div class="fa-sum">${S.stops.map((s, i) => `<span class="fa-chip ${i === 0 ? 'start' : i === S.stops.length - 1 ? 'ziel' : ''}">${U.esc(label(s))}</span>`).join('<span class="fa-arr">→</span>')}</div>
+        <div class="fg">
+          <label class="f full"><span>Materialgruppe / Strom</span><select id="faM">${prj.materials.map(x => opt(x.id, x.name + ' (' + x.reinheit + ')', S.material)).join('')}</select></label>
+          <label class="f"><span>Menge</span><input type="number" id="faN" value="${S.menge}" min="0" step="1"></label>
+          <label class="f"><span>Einheit / je</span><select id="faP">${opt('tag', (m?.einheit || 'Einheiten') + ' je Tag', S.periode)}${opt('woche', (m?.einheit || 'Einheiten') + ' je Woche', S.periode)}</select></label>
+          <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="faW" value="${U.esc(S.fenster)}"></label>
+          <label class="f full"><span>Transportmittel</span><select id="faT">${prj.transports.map(x => opt(x.id, x.name, S.transport)).join('')}</select></label>
+          <label class="f full"><span>Name</span><input type="text" id="faName" value="${U.esc(S.name)}"></label>
+        </div>
+        <p class="note">${S.stops.length - 1} Etappe(n) werden als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
+      $('#faM', body).onchange = e => { const old = autoName(); S.material = e.target.value; if (S.name === old || !S.name) S.name = autoName(); render(d); };
+      $('#faN', body).oninput = e => (S.menge = +e.target.value || 0);
+      $('#faP', body).onchange = e => (S.periode = e.target.value);
+      $('#faW', body).oninput = e => (S.fenster = e.target.value);
+      $('#faT', body).onchange = e => (S.transport = e.target.value);
+      $('#faName', body).oninput = e => (S.name = e.target.value);
+      $('#faBack', d).hidden = false; $('#faNext', d).textContent = '✓ Fluss anlegen';
+      return;
+    }
+    $$('[data-k]', body).forEach(sel => sel.onchange = () => {
+      const i = +sel.closest('.fa-stop').dataset.i, s = S.stops[i], k = sel.dataset.k;
+      if (k === 'b') { s.b = sel.value; s.ort = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
+      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; }
+      else s.ort = sel.value;
+      S.name = ''; render(d);
+    });
+    $$('[data-add]', body).forEach(b => b.onclick = () => { const i = +b.dataset.add; S.stops.splice(i, 0, Object.assign({}, S.stops[i - 1], { ort: '' })); S.name = ''; render(d); });
+    $$('[data-x]', body).forEach(b => b.onclick = () => { S.stops.splice(+b.dataset.x, 1); S.name = ''; render(d); });
+  };
+  const $$ = (s, r) => [...r.querySelectorAll(s)];
+  UI.dialog(`<div class="dh"><h2>Fluss-Assistent</h2><button class="x" data-close>×</button></div>
+    <div class="fa-steps"><span>1 · Weg: Start → Zwischenstopps → Ziel</span><span>2 · Menge und Zeit</span></div>
+    <div id="faBody"></div>
+    <div class="actions"><button id="faBack" hidden>← Zurück</button><button class="primary" id="faNext"></button><button data-close>Abbrechen</button></div>`, d => {
+    d.classList.add('fa-dlg');
+    render(d);
+    $('#faBack', d).onclick = () => { S.schritt = 1; render(d); };
+    $('#faNext', d).onclick = () => {
+      if (S.schritt === 1) {
+        if (S.stops.some(s => s.b === EXT && !s.ort)) { UI.toast('Für „Außen / extern“ einen Ort wählen (oder unter Flüsse › Orte anlegen).', 3500); return; }
+        for (let i = 1; i < S.stops.length; i++) { const a = S.stops[i - 1], b = S.stops[i]; if (a.b === b.b && a.gf === b.gf && a.ort === b.ort) { UI.toast(`Etappe ${i}: Start und Ziel sind gleich – bitte anderes Gebäude oder andere Etage wählen.`, 3500); return; } }
+        S.schritt = 2; render(d); return;
+      }
+      const ids = FA.anlegen(S);
+      d.close();
+      FA.zeigen(ids);
+    };
+  });
+};
+
+/* ---------- Anlegen ---------- */
+FA.anlegen = S => {
+  const UI = HSS.ui, prj = HSS.project();
+  const fenster = String(S.fenster || '').split(/[,;]/).map(x => x.trim()).filter(Boolean).map(x => { const m = x.match(/(\d{1,2})[:.]?(\d{2})?\s*[-–]\s*(\d{1,2})[:.]?(\d{2})?/); return m ? [+m[1] + (+(m[2] || 0)) / 60, +m[3] + (+(m[4] || 0)) / 60] : null; }).filter(Boolean);
+  const kette = U.uid('kette'), ids = [];
+  HSS.change('Fluss anlegen (Assistent)', p => {
+    const pid = S.stops.map(s => s.b === EXT ? s.ort : (s.ort || uebergabe(p, s.b, s.gf)));
+    const n = pid.length - 1;
+    for (let i = 0; i < n; i++) {
+      const f = { id: U.uid('flow'), name: n > 1 ? `${S.name} · Etappe ${i + 1}/${n}` : S.name, material: S.material, von: pid[i], nach: pid[i + 1], menge: S.menge, periode: S.periode, betriebstage: 7, fenster: fenster.length ? fenster : [[8, 12]], transport: S.transport, fahrzeitMin: null, aktiv: true, kette, etappe: i + 1, etappen: n, assistent: true };
+      p.flows.push(f); ids.push(f.id);
+    }
+  });
+  UI.flowSel = ids[0]; UI.flowTab = 'fluesse';
+  return ids;
+};
+// Ergebnis: Routen prüfen, im Modell zeigen
+FA.zeigen = ids => {
+  const UI = HSS.ui, prj = HSS.project();
+  const res = ids.map(id => { const f = U.byId(prj.flows, id), m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport); return { f, r: HSS.route(f.von, f.nach, t?.mittel, m?.reinheit) }; });
+  if (UI.current !== 'fluesse') UI.setWS('fluesse'); else UI.renderPanel();
+  HSS.s3.setFloor?.(null);
+  UI.showRoutes ? UI.showRoutes(ids, true) : UI.showRoute(ids[0], true);
+  HSS.emit('flows-changed', ids);
+  const bad = res.filter(x => !x.r.ok);
+  const len = U.sum(res.filter(x => x.r.ok).map(x => x.r.len));
+  if (bad.length) UI.toast(`${ids.length} Fluss/Flüsse angelegt – ${bad.length} Etappe(n) ohne Route: Wege, Aufzüge und Freigaben (rein/unrein) prüfen.`, 6000);
+  else UI.toast(`${ids.length} Fluss/Flüsse angelegt · Weg ${U.fmt(len)} m · ${U.sum(res.map(x => x.r.lifts.length))} Aufzugsfahrt(en)`, 4500);
+  return res;
+};
+})();
+
+</script>
+<script>
+/* =====================================================================
    HSS · ansicht.js – Modell als HTML-Ansicht exportieren (nur ansehen)
    „Als HTML-Ansicht exportieren“ schreibt eine einzige HTML-Datei mit dem
    aktuellen Stand des Modells und der aktuellen Ansicht (Kamera, Etage,
@@ -13877,9 +14109,18 @@ A.state = () => {
   return {
     cam: S3.camera.position.toArray().map(v => Math.round(v * 100) / 100), tgt: S3.controls.target.toArray().map(v => Math.round(v * 100) / 100),
     floor: V.floor, cut: V.cut, shell: V.shell, explode: V.explode, labels: V.labels, wege: V.wege, stil: V.stil, sun: V.sunHour,
-    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false
+    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false,
+    netz: HSS.ui?.netMode || 'aus', sim: !!HSS.state.sim && !document.getElementById('timeline')?.hidden, simT: HSS.player?.t ?? 360,
+    stroeme: HSS.stroeme?.state?.() || null
   };
 };
+/* Was der Empfänger sehen darf (Standard: alles). Module fragen über A.erlaubt('rundgang'|'fluss'|'sim') */
+A.TEILE = [
+  { k: 'rundgang', t: 'Stationsrundgang und Begehen', s: 'Rundgang Raum für Raum, freie Begehung in der Ich-Perspektive' },
+  { k: 'fluss', t: 'Materialflussdarstellungen', s: 'Wegenetz und Auslastung, Flussbild, Warenströme, Prozess-Tour' },
+  { k: 'sim', t: 'Simulation / Tagesablauf', s: 'Transporte über den Tag abspielen (Start / Pause, Zeitleiste)' }
+];
+A.erlaubt = k => !HSS.state.viewer || (window.HSS_VIEWER?.erlaubt?.[k] ?? true);
 
 /* ---------- Quellen der Suite einsammeln ---------- */
 async function text(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status); return r.text(); }
@@ -13923,7 +14164,11 @@ A.export = async (opts = {}) => {
   const p = U.clone(prj);
   const used = new Set(p.objects.map(o => o.lib));
   p.customLibrary = HSS.library ? HSS.library.all().filter(o => o._source !== 'standard' && used.has(o.id)).map(o => HSS.library.serialize(o)) : p.customLibrary;
-  const payload = { project: p, view: A.state(), titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
+  const erlaubt = Object.fromEntries(A.TEILE.map(x => [x.k, opts.erlaubt?.[x.k] !== false]));
+  const view = A.state();
+  if (!erlaubt.fluss) { view.flussbild = false; view.netz = 'aus'; view.stroeme = null; }
+  if (!erlaubt.sim) view.sim = false;
+  const payload = { project: p, view, erlaubt, titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
   const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   const html = `<!DOCTYPE html>
 <html lang="de">
@@ -13948,22 +14193,53 @@ A.dialog = () => {
   UI.dialog(`<div class="dh"><h2>Als HTML-Ansicht exportieren</h2><button class="x" data-close>×</button></div>
     <p>Erstellt <b>eine HTML-Datei</b> mit dem aktuellen Stand des Modells und genau dieser Ansicht (Blickwinkel, Etage, Stil, Flächenplan, Beschriftung). Empfänger öffnen sie per Doppelklick – ohne Installation, ohne Internet. Drehen, zoomen, Etagen wechseln, Flächenplan und Rundgang ansehen ist möglich, <b>ändern nicht</b>.</p>
     <div class="fg"><label class="f full"><span>Titel</span><input type="text" id="axT" value="${U.esc(prj.meta.name)}"></label><label class="f full"><span>Hinweis für den Empfänger (optional)</span><input type="text" id="axH" placeholder="z. B. Variante 2 – Stand Lenkungskreis"></label></div>
+    <h4 style="margin:12px 0 4px">Für den Empfänger freigeben</h4>
+    <div class="axopt">${A.TEILE.map(x => `<label class="chk"><input type="checkbox" data-ax="${x.k}" ${A._last?.[x.k] === false ? '' : 'checked'}> <span><b>${x.t}</b><br><small class="note">${x.s}</small></span></label>`).join('')}</div>
+    <p class="note">Abgewählte Teile erscheinen in der Ansicht nicht – weder als Schaltfläche noch in der gespeicherten Ansicht.</p>
     <div class="actions"><button class="primary" id="axGo">HTML-Ansicht herunterladen</button><button data-close>Abbrechen</button></div>`, d => {
-    $('#axGo', d).onclick = async () => { const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim(); d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h }); };
+    $('#axGo', d).onclick = async () => {
+      const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim();
+      const erlaubt = {}; d.querySelectorAll('[data-ax]').forEach(c => (erlaubt[c.dataset.ax] = c.checked)); A._last = erlaubt;
+      d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h, erlaubt });
+    };
   });
+};
+
+/* Tagesablauf in der Ansicht: rechnen, Zeitleiste zeigen, abspielen */
+A.tagesablauf = (play = true, t = 360) => {
+  const UI = HSS.ui;
+  const go = () => {
+    if (!HSS.state.sim) { try { HSS.runSimulation(); } catch (e) { UI.toast('Tagesablauf nicht möglich: ' + e.message, 4000); return; } }
+    HSS.player.setTime(t); UI.timeline.show(true);
+    if (UI.netMode === 'heat' && A.erlaubt('fluss')) HSS.drawNet('heat', Math.floor(t / 60) % 24);
+    if (play) HSS.player.play(true);
+  };
+  if (HSS.state.sim) go(); else { UI.toast('Tagesablauf wird berechnet …', 1200); setTimeout(go, 40); }
 };
 
 /* ---------- Start im Ansichtsmodus ---------- */
 A.boot = () => {
   const VW = window.HSS_VIEWER, S3 = HSS.s3, V = HSS.view, UI = HSS.ui, $ = UI.$;
   document.body.classList.add('viewer');
-  const st = VW.view || {};
+  const st = VW.view || {}, ok = A.erlaubt;
+  for (const x of A.TEILE) document.body.classList.toggle('vw-no-' + x.k, !(VW.erlaubt?.[x.k] ?? true));
   if (st.stil && HSS.stil && HSS.stil.mode !== st.stil) { HSS.stil.mode = HSS.view.stil = st.stil; document.body.classList.toggle('cartoon', st.stil === 'cartoon' || st.stil === 'plan'); document.body.classList.toggle('plan', st.stil === 'plan'); }
   if (VW.titel) VW.project.meta.name = VW.titel;
   HSS.load(VW.project, { noAutosave: true });
   HSS.state.demoReadonly = true; HSS.state.viewer = true;
   HSS.undo = HSS.redo = () => false; HSS.canUndo = HSS.canRedo = () => false;
   HSS.storage.saveProject = async () => null; HSS.storage.exportFile = () => {};
+  // Gesperrte Teile auch in der Logik abschalten (nicht nur ausblenden)
+  if (!ok('rundgang')) { if (HSS.tour) HSS.tour.dialog = HSS.tour.start = () => {}; if (HSS.fpv) HSS.fpv.walk = () => {}; }
+  if (!ok('fluss')) { const dn = HSS.drawNet; HSS.drawNet = () => dn('aus'); if (HSS.flussbild) HSS.flussbild.set = HSS.flussbild.toggle = () => {}; }
+  const netCtl = document.getElementById('vNet')?.closest('label'); if (netCtl) netCtl.classList.add('vw-fluss');
+  const heatCtl = document.getElementById('tHeat')?.closest('label'); if (heatCtl) heatCtl.classList.add('vw-fluss');
+  // Tagesablauf: Simulation im Browser des Empfängers rechnen und abspielen
+  if (ok('sim')) {
+    const b = document.createElement('button'); b.id = 'vwSim'; b.className = 'primary'; b.title = 'Transporte über den Tag abspielen'; b.textContent = '▶ Tagesablauf';
+    const ref = document.getElementById('vTour'); (ref?.parentNode || document.getElementById('viewbar')).insertBefore(b, ref || null);
+    b.onclick = () => A.tagesablauf(true);
+  }
   // Kopfzeile: Titel, „Nur Ansicht“, Stand
   $('#prjName').textContent = VW.titel || VW.project.meta.name;
   const top = $('#top'), sp = top.querySelector('.sp');
@@ -13981,7 +14257,11 @@ A.boot = () => {
     if (st.floor !== null && st.floor !== undefined) S3.setFloor(st.floor);
     if (st.zonen && HSS.zonen) { V.zonenFokus = st.zonenFokus; HSS.zonen.setView(true); }
     if (st.m2 && HSS.flaechen) HSS.flaechen.toggle(true);
-    if (st.flussbild && HSS.flussbild) HSS.flussbild.set(true);
+    if (st.flussbild && HSS.flussbild && ok('fluss')) HSS.flussbild.set(true);
+    if (st.netz && st.netz !== 'aus' && ok('fluss')) { HSS.ui.netMode = st.netz; const n = document.getElementById('vNet'); if (n) n.value = st.netz; }
+    if (st.stroeme && HSS.stroeme && ok('fluss')) HSS.stroeme.restore?.(st.stroeme);
+    if (st.sim && ok('sim')) A.tagesablauf(false, st.simT);
+    else if (st.netz === 'netz' && ok('fluss')) HSS.drawNet('netz');
     S3.rebuild('all'); UI.refreshViewbar?.();
     setTimeout(() => home(10), 1100); // nach der Startanimation (Gesamtansicht)
   }, 250);
