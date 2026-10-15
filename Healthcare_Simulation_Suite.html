@@ -401,6 +401,20 @@ body.nopanel #zLegend{left:calc(var(--railW) + 12px)}
 #zLegend .zi small{font-size:10px;padding:0 4px;border-radius:3px;background:#eef2f5;color:var(--muted)}#zLegend .zi small.low{background:#fde8ec;color:#a3123a}#zLegend .zi small.ok{background:#e3f1ee;color:#0a6e5a}
 #zLegend .zfoot{padding:4px 10px 7px;color:var(--muted);font-size:11px;border-top:1px solid var(--soft)}#zLegend .zfoot i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 
+/* ---------- HTML-Ansicht (nur ansehen) ---------- */
+body.viewer{--railW:0px;--panelW:0px;--inspW:0px}
+body.viewer #rail,body.viewer #panel,body.viewer #inspector,body.viewer #mbar,body.viewer #top .grp,body.viewer #bDemo,body.viewer #bHelp,body.viewer #saveState,body.viewer #demoCard,body.viewer #v2d,body.viewer #plan2dBar,body.viewer #dropOverlay{display:none!important}
+body.viewer #prjName{pointer-events:none;font-size:14px;color:#fff;opacity:.9}
+#top .vwinfo{display:flex;align-items:center;gap:10px;color:#fff}
+#top .vwbadge{background:var(--ok);color:#fff;font-weight:700;font-size:12px;padding:4px 10px;border-radius:12px}
+#top .vwdate{font-size:12px;opacity:.85}
+#top .vwinfo button{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+#vwCard{position:fixed;left:72px;bottom:16px;z-index:9;background:var(--panel);box-shadow:var(--shadow);border-radius:6px;padding:10px 34px 10px 12px;max-width:360px;font-size:12.5px}
+#vwCard .s{color:var(--muted);font-size:11.5px;margin-top:2px}
+#vwCard .x{position:absolute;top:6px;right:6px;border:0;background:transparent;font-size:16px;padding:0 4px}
+body.viewer #zLegend{left:72px}
+body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
+
 </style>
 <!-- =====================================================================
      HEALTHCARE SIMULATION SUITE · UNITY
@@ -426,6 +440,7 @@ body.nopanel #zLegend{left:calc(var(--railW) + 12px)}
     <button id="bNew" title="Neues, leeres Projekt">Neu</button>
     <button id="bOpen" title="Projekt öffnen (Datei oder Projektablage im Browser)">Öffnen</button>
     <button id="bSave" title="Projekt speichern (Strg+S)">Speichern</button>
+    <button id="bHtml" title="Aktuelle Ansicht als HTML-Datei für Kunden exportieren – nur ansehen, nicht bearbeiten">HTML-Ansicht</button>
     <input type="file" id="fOpen" accept=".json,.hss.json,.glb,.gltf" multiple hidden>
   </div>
   <div class="grp">
@@ -4357,6 +4372,8 @@ const HSS = window.HSS = window.HSS || {};
 // Ladefehler einzelner Skripte sammeln (z. B. veraltete Datei im Browser-Cache) und beim Start anzeigen
 HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
+// Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
+try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
 HSS.VERSION = '1.0.0';
 HSS.APP = 'Healthcare Simulation Suite';
 
@@ -4538,6 +4555,7 @@ HSS.project = () => S.project;
 HSS.snapshot = () => { lastSnap = JSON.stringify(S.project); };
 // Änderung am Projekt: fn(project) mutiert direkt, danach wird neu aufgebaut
 HSS.change = (label, fn, opts = {}) => {
+  if (HSS.state.viewer) return; // HTML-Ansicht: nur ansehen
   const before = JSON.stringify(S.project);
   fn(S.project);
   S.project.meta.modified = new Date().toISOString();
@@ -6241,7 +6259,10 @@ function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
   const bb = G.bbox(a.poly), area = Math.abs(G.area(a.poly)), rnd = U.rng(U.hash(a.id));
-  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
+  // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
+  const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
+  const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
+  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
   else if (a.kind === 'park' || a.kind === 'gruen') { scatter('gruen.baum.laub', Math.min(60, area / 300), 0.7, 1.1); scatter('gruen.strauch', Math.min(60, area / 250), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
@@ -6814,7 +6835,10 @@ S3.rebuild = (scope = 'all') => {
   if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
     clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
-    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    // Bepflanzte Flächen hängen von den Gebäuden ab (keine Bäume in Gebäuden)
+    let bs = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) bs += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.shape === 'poly' ? (pt.poly || []).length : pt.shape) + ';';
+    const bkey = '|b' + U.hash(bs), TREES = { park: 1, gruen: 1, wald: 1, wohngebiet: 1, friedhof: 1 };
+    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
@@ -10031,7 +10055,7 @@ HSS.STANDORTE = [
   { id: 'koblenz', name: 'Bundeswehrzentralkrankenhaus Koblenz', ort: 'Koblenz, Rübenacher Straße 170', datei: 'standorte/koblenz.js',
     text: 'Gebäude und Straßen aus OpenStreetMap, Gebäudebezeichnungen und Geschossbelegung nach Lageplan und Wegweiser; Neubau K1 (im Bau). Bereiche, Aufzüge, Mengen und Zeiten aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4, überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Logistik optimiert)' }] },
-  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js',
+  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
   { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
@@ -13113,7 +13137,7 @@ UI.khGebaeude = async () => {
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo, UI = HSS.ui, $ = UI.$;
 const O = HSS.osm = {};
-const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
 const r1 = v => Math.round(v * 10) / 10;
 
 /* Geokoordinaten → Modellraster (x Osten, z Süden, gedreht um den Nordwinkel des Projekts) */
@@ -13169,15 +13193,46 @@ O.geocode = async (q) => {
   return (await r.json()).map(x => ({ name: x.display_name, lat: +x.lat, lon: +x.lon }));
 };
 
+function hull(pts) {
+  const p = pts.map(q => [q[0], q[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (p.length < 3) return p;
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); const lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
 /* OSM-Antwort ins Projekt übernehmen */
 O.apply = (prj, data, geo, opt) => {
   const T = O.proj(geo), stat = { strassen: 0, wege: 0, flaechen: 0, gebaeude: 0, grenze: 0 };
   if (opt.ersetzen) { prj.paths = prj.paths.filter(p => !p.umgebung); prj.areas = prj.areas.filter(a => !a.umgebung); prj.buildings = prj.buildings.filter(b => !b.umgebung); }
   // vorhandene Gebäude des Projekts (Klinikgebäude nicht doppelt übernehmen)
-  const own = HSS.allParts(prj).map(pt => HSS.partFootprint(pt).outer);
-  const inOwn = p => own.some(fp => G.pointIn(p, fp));
+  const ownParts = prj.buildings.filter(b => !b.umgebung).flatMap(b => b.parts);
+  const own = ownParts.map(pt => { const o = HSS.partFootprint(pt).outer; return { o, bb: G.bbox(o) }; });
+  const near = (p, buf) => own.some(({ o, bb }) => p[0] > bb.x0 - buf && p[0] < bb.x1 + buf && p[1] > bb.z0 - buf && p[1] < bb.z1 + buf && (G.pointIn(p, o) || (buf > 0 && o.some((q, i) => G.dist(p, G.closestOnSeg(p, q, o[(i + 1) % o.length]).pt) < buf))));
+  const inOwn = p => near(p, 0);
   const ringOf = el => (el.geometry || []).map(g => T(g.lat, g.lon));
   const outerRings = el => el.type === 'relation' ? (el.members || []).filter(m => m.role === 'outer' && m.geometry).map(m => m.geometry.map(g => T(g.lat, g.lon))) : [ringOf(el)];
+  // Klinikgelände: OSM-Grenze des Klinikums und Umriss der Gebäude im Modell (+12 m) – dort gilt das Modell, nicht OSM
+  const campus = [];
+  if (opt.campus !== false) {
+    for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of outerRings(el)) if (r.length >= 4) campus.push(r); }
+    const pts = own.flatMap(x => x.o); if (pts.length >= 3) {
+      const h = hull(pts), cx = U.sum(h.map(p => p[0])) / h.length, cz = U.sum(h.map(p => p[1])) / h.length;
+      campus.push(h.map(p => { const dx = p[0] - cx, dz = p[1] - cz, l = Math.hypot(dx, dz) || 1; return [p[0] + dx / l * 12, p[1] + dz / l * 12]; }));
+    }
+  }
+  const inCampus = p => campus.some(r => G.pointIn(p, r));
+  const polyHitsOwn = r => r.some(p => inOwn(p)) || own.some(({ o }) => o.some(q => G.pointIn(q, r)));
+  // Linien auftrennen: Stücke im Klinikgelände bzw. über Modellgebäuden entfallen
+  const splitLine = (pts, drop) => {
+    const out = []; let cur = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], L = G.dist(a, b), n = Math.max(1, Math.ceil(L / 2));
+      for (let j = 0; j < n; j++) { const p = [r1(a[0] + (b[0] - a[0]) * j / n), r1(a[1] + (b[1] - a[1]) * j / n)]; if (drop(p)) { if (cur.length >= 2) out.push(cur); cur = []; } else if (j === 0 || !cur.length || drop([a[0] + (b[0] - a[0]) * (j + 1) / n, a[1] + (b[1] - a[1]) * (j + 1) / n])) cur.push(p); }
+    }
+    const last = pts[pts.length - 1]; if (!drop(last)) cur.push(last); if (cur.length >= 2) out.push(cur);
+    return out.filter(q => G.polylineLength(q) >= 3);
+  };
+  stat.ausgelassen = 0;
   let maxR = 0;
   for (const el of data.elements || []) {
     const t = el.tags || {};
@@ -13186,10 +13241,18 @@ O.apply = (prj, data, geo, opt) => {
       const [w, kind, traffic, kmh] = STRASSE[t.highway];
       const pts = ringOf(el); if (G.polylineLength(pts) < 3) continue;
       const lanes = +t.lanes || 0, width = t.width ? parseFloat(t.width) || w : lanes ? Math.max(w, lanes * 3.2) : w;
-      const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id, name: t.name || HSS.WEGARTEN[kind].name, points: pts, width: U.clamp(width, 1.2, 30), smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
-      if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
-      prj.paths.push(p); stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
-      for (const q of pts) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      const wid = U.clamp(width, 1.2, 30);
+      // im Klinikgelände nur öffentliche Straßen übernehmen; nie über Modellgebäude
+      const drop = p => (kind !== 'strasse' && inCampus(p)) || near(p, wid / 2 + 1);
+      const pieces = campus.length || own.length ? splitLine(pts, drop) : [pts];
+      if (!pieces.length) { stat.ausgelassen++; continue; }
+      pieces.forEach((pc, k) => {
+        const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id + (k ? '_' + k : ''), name: t.name || HSS.WEGARTEN[kind].name, points: pc, width: wid, smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
+        if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
+        prj.paths.push(p);
+        for (const q of pc) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      });
+      stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
       continue;
     }
     if (opt.wege && el.type === 'way' && (t.waterway || t.railway) && el.geometry?.length >= 2) {
@@ -13209,6 +13272,8 @@ O.apply = (prj, data, geo, opt) => {
         let r = r0.slice(); if (r.length > 3 && G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
         const area = Math.abs(G.area(r)); if (area < 30) continue;
         r = G.ccw(r); const bb = G.bbox(r);
+        // Flächen im Klinikgelände (Parkplätze, Rasen …) gibt das Modell vor
+        if (campus.length && (inCampus([bb.cx, bb.cz]) || (area < 20000 && polyHitsOwn(r)))) { stat.ausgelassen++; continue; }
         prj.areas.push({ id: 'osm_a' + el.id + '_' + stat.flaechen, kind, name: t.name || HSS.FLAECHEN[kind], poly: r, x: r1(bb.cx), z: r1(bb.cz), w: r1(bb.w), d: r1(bb.d), rot: 0, lage: LAGE[kind] || 0, umgebung: true, osm: el.type + '/' + el.id });
         stat.flaechen++;
       }
@@ -13218,7 +13283,7 @@ O.apply = (prj, data, geo, opt) => {
     if (opt.gebaeude && t.building && el.type === 'way' && el.geometry?.length >= 4) {
       let r = ringOf(el); if (G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
       const area = Math.abs(G.area(r)); if (area < 12) continue;
-      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz])) continue;
+      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz]) || inCampus([bbw.cx, bbw.cz]) || polyHitsOwn(r)) { stat.ausgelassen++; continue; }
       const lv = U.clamp(Math.round(+t['building:levels'] || (t.height ? parseFloat(t.height) / 3 : 0) || ({ house: 2, detached: 2, garage: 1, garages: 1, shed: 1, apartments: 4, industrial: 2, retail: 1, commercial: 3, office: 4, hospital: 4, school: 3 }[t.building] || 2)), 1, 30);
       const loc = G.ccw(r.map(p => [r1(p[0] - bbw.cx), r1(p[1] - bbw.cz)])), bb = G.bbox(loc);
       const b = Object.assign(HSS.defaults.building(), { id: 'osm_b' + el.id, name: t.name || (t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : 'Gebäude (Umgebung)'), kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
@@ -13234,14 +13299,15 @@ O.apply = (prj, data, geo, opt) => {
 
 /* Dialog */
 O.dialog = () => {
-  const prj = HSS.project(), g = prj.meta.geo || {};
+  const prj = HSS.project(), std = (HSS.STANDORTE || []).find(x => x.id === prj.meta.standort?.id)?.geo;
+  const g = prj.meta.geo?.lat ? prj.meta.geo : (std || prj.meta.geo || {});
   UI.dialog(`<div class="dh"><h2>Umgebung aus OpenStreetMap laden</h2><button class="x" data-close>×</button></div>
     <p class="note">Lädt Straßen, Wege, Felder, Wiesen, Wälder, Gewässer, Gebäude der Nachbarschaft und die Grenze des Klinikgeländes rund um den Standort – so sieht man, wo Autos fahren, wie weit geplant werden kann und was das Gelände umgibt. Benötigt eine Internetverbindung.</p>
     <div class="fg"><label class="f full"><span>Adresse suchen</span><input type="text" id="oQ" placeholder="z. B. Rübenacher Straße 170, Koblenz" value="${U.esc(g.adresse && !/^[a-z]+$/.test(g.adresse) ? g.adresse : '')}"></label></div>
     <div class="row"><button id="oSearch">Suchen</button><span class="note" id="oRes"></span></div>
     <div class="fg"><label class="f"><span>Breite (lat) des Modellursprungs</span><input type="number" id="oLat" step="0.00001" value="${g.lat ?? ''}"></label><label class="f"><span>Länge (lon)</span><input type="number" id="oLon" step="0.00001" value="${g.lon ?? ''}"></label>
     <label class="f"><span>Nordwinkel des Modells [°]</span><input type="number" id="oN" step="0.1" value="${g.nord ?? 0}"></label><label class="f"><span>Radius [m]</span><input type="number" id="oR" step="50" min="150" max="2000" value="600"></label></div>
-    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label></div>
+    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label><label class="chk" title="Auf dem Klinikgelände und über den Gebäuden des Modells werden keine OSM-Gebäude, -Flächen und -Wege übernommen – dort gilt das Modell"><input type="checkbox" id="oC" checked> Klinikgelände wie im Modell (OSM nur außen herum)</label></div>
     <div class="note" id="oSt"></div>
     <div class="actions"><button data-close>Abbrechen</button><button class="primary" id="oGo">Umgebung laden</button></div>
     <p class="note">Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Der Modellursprung (0/0) liegt an der angegebenen Koordinate.</p>`, d => {
@@ -13254,7 +13320,7 @@ O.dialog = () => {
       const geo = { lat: +$('#oLat', d).value, lon: +$('#oLon', d).value, nord: +$('#oN', d).value || 0 };
       if (!geo.lat || !geo.lon) return UI.toast('Bitte Koordinaten angeben oder Adresse suchen');
       const radius = U.clamp(+$('#oR', d).value || 600, 150, 2000);
-      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked };
+      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked, campus: $('#oC', d).checked };
       const st = $('#oSt', d); $('#oGo', d).disabled = true; st.textContent = 'Lade Daten aus OpenStreetMap …';
       try {
         const data = await O.fetch(O.query(geo, radius), url => { st.textContent = 'Lade Daten von ' + new URL(url).host + ' …'; });
@@ -13263,7 +13329,7 @@ O.dialog = () => {
         HSS.manip?.mark();
         HSS.change('Umgebung aus OpenStreetMap', p => { p.meta.geo = Object.assign(p.meta.geo || {}, geo); stat = O.apply(p, data, geo, opt); });
         d.close(); HSS.s3.home();
-        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}`, 5000);
+        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}${stat.ausgelassen ? ` · ${stat.ausgelassen} Objekte auf dem Klinikgelände ausgelassen` : ''}`, 5000);
       } catch (e) { st.innerHTML = `<span class="warnbox" style="display:block">${U.esc(e.message)}</span>`; $('#oGo', d).disabled = false; }
     };
   });
@@ -13312,11 +13378,12 @@ const FACH = [
   ['labor', 'Labor', '#a569bd', 'NUF3', 'Untersuchung & Behandlung'], ['physio', 'Physiotherapie', '#58d68d', 'NUF6', 'Untersuchung & Behandlung'],
   ['ambulanz', 'Ambulanzen / MVZ', '#45b39d', 'NUF6', 'Untersuchung & Behandlung'], ['tagesklinik', 'Tagesklinik', '#8ecae6', 'NUF6', 'Untersuchung & Behandlung'],
   ['dialyse', 'Dialyse', '#76d7c4', 'NUF6', 'Untersuchung & Behandlung'], ['funktion', 'Funktionsdiagnostik', '#7fb3d5', 'NUF6', 'Untersuchung & Behandlung'],
+  ['anaesthesie', 'Anästhesie', '#5b7bb4', 'NUF6', 'Untersuchung & Behandlung'], ['strahlen', 'Strahlentherapie', '#d4a017', 'NUF6', 'Untersuchung & Behandlung'],
   // Service & Verwaltung
   ['eingang', 'Eingangshalle & Information', '#f39c12', 'NUF1', 'Service & Verwaltung'], ['aufnahme', 'Patientenaufnahme', '#e59866', 'NUF2', 'Service & Verwaltung'],
   ['speisesaal', 'Cafeteria / Mitarbeiterrestaurant', '#f8c471', 'NUF1', 'Service & Verwaltung'], ['verwaltung', 'Verwaltung', '#6b2c82', 'NUF2', 'Service & Verwaltung'],
   ['lehre', 'Lehre, Schulung & Forschung', '#bb8fce', 'NUF5', 'Service & Verwaltung'], ['personal', 'Personal (Umkleiden, Bereitschaft)', '#d7bde2', 'NUF7', 'Service & Verwaltung'],
-  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'],
+  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'], ['dienste', 'Allgemeine Dienste', '#b0a18f', 'NUF2', 'Service & Verwaltung'],
   // Ver- und Entsorgung, Technik
   ['apotheke', 'Apotheke', '#16a085', 'NUF4', 'Ver- und Entsorgung'], ['zsva', 'Sterilgutversorgung (ZSVA)', '#5d6d7e', 'NUF3', 'Ver- und Entsorgung'],
   ['kueche', 'Küche', '#ca6f1e', 'NUF3', 'Ver- und Entsorgung'], ['logistik', 'Logistik, Lager & Entsorgung', '#8d6e63', 'NUF4', 'Ver- und Entsorgung'],
@@ -13787,6 +13854,146 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 </script>
 <script>
 /* =====================================================================
+   HSS · ansicht.js – Modell als HTML-Ansicht exportieren (nur ansehen)
+   „Als HTML-Ansicht exportieren“ schreibt eine einzige HTML-Datei mit dem
+   aktuellen Stand des Modells und der aktuellen Ansicht (Kamera, Etage,
+   Stil, Flächenplan, Beschriftung …). Empfänger öffnen sie per Doppelklick
+   ohne Installation und ohne Internet: drehen, zoomen, Etagen wechseln,
+   Flächenplan und Rundgang ansehen – aber nichts ändern, nichts speichern.
+   Die Datei enthält die Suite selbst (ohne Bearbeitungsoberfläche) und das
+   Projekt; die UNITY-Kopfzeile bleibt erhalten.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util;
+const A = HSS.ansicht = {};
+// Hinweis: Zeichenfolgen wie „<" + "!--“ oder „<" + "script“ dürfen hier nicht wörtlich stehen (Einzeldatei-HTML)
+const LT = '<', SCR = LT + 'script', SCRE = LT + '/script', KOMM = new RegExp(LT + '!--', 'g');
+const esc = s => String(s).replace(new RegExp(SCRE, 'gi'), LT + '\\/script').replace(KOMM, LT + '\\!--');
+
+/* ---------- Aktuelle Ansicht ---------- */
+A.state = () => {
+  const S3 = HSS.s3, V = HSS.view;
+  return {
+    cam: S3.camera.position.toArray().map(v => Math.round(v * 100) / 100), tgt: S3.controls.target.toArray().map(v => Math.round(v * 100) / 100),
+    floor: V.floor, cut: V.cut, shell: V.shell, explode: V.explode, labels: V.labels, wege: V.wege, stil: V.stil, sun: V.sunHour,
+    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false
+  };
+};
+
+/* ---------- Quellen der Suite einsammeln ---------- */
+async function text(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status); return r.text(); }
+async function dataUri(url) {
+  const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status);
+  const b = await r.blob(); return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+}
+const cssFromSheet = link => { try { return [...link.sheet.cssRules].map(r => r.cssText).join('\n'); } catch (e) { return null; } };
+async function sammeln() {
+  const head = [];
+  for (const el of document.head.children) {
+    if (el.tagName === 'LINK' && /stylesheet/i.test(el.rel)) { let css; try { css = await text(el.href); } catch (e) { css = cssFromSheet(el); if (css === null) throw e; } head.push('<style>\n' + css + '\n</style>'); }
+    else if (el.tagName === 'LINK' && /icon/i.test(el.rel)) { try { head.push(`<link rel="icon" href="${el.href.startsWith('data:') ? el.href : await dataUri(el.href)}">`); } catch (e) { /* ohne Symbol */ } }
+    else if (el.tagName === 'STYLE' || el.tagName === 'META') head.push(el.outerHTML);
+  }
+  // Grundgerüst der Seite (beim Start festgehalten), Bilder einbetten
+  let body = (HSS._shell?.body || []).join('\n');
+  for (const m of [...body.matchAll(/<img[^>]+src="([^"]+)"/g)]) { if (m[1].startsWith('data:')) continue; try { body = body.split(`src="${m[1]}"`).join(`src="${await dataUri(new URL(m[1], location.href).href)}"`); } catch (e) { /* Bild fehlt */ } }
+  // Skripte in Ladereihenfolge; die Bibliotheksliste wird durch die bereits geladenen Pakete ersetzt
+  const scripts = [];
+  for (const s of document.scripts) {
+    if (s.type && !/javascript/i.test(s.type)) continue;
+    if (s.id === 'hssViewerData') continue;
+    if (s.src) {
+      if (/library\/manifest\.js/.test(s.src)) { scripts.push('window.HSS_LIBRARY_FILES = ' + JSON.stringify(window.HSS_LIBRARY_FILES || []) + ';'); continue; }
+      scripts.push(await text(s.src));
+    } else scripts.push(s.textContent);
+  }
+  return { head, body, scripts };
+}
+
+/* ---------- Export ---------- */
+A.export = async (opts = {}) => {
+  const UI = HSS.ui, prj = HSS.project();
+  UI.toast('HTML-Ansicht wird erstellt …', 2500);
+  let q;
+  try { q = await sammeln(); } catch (e) {
+    UI.dialog(`<div class="dh"><h2>HTML-Ansicht nicht möglich</h2><button class="x" data-close>×</button></div><p>Die Programmdateien lassen sich in dieser Startart nicht einlesen. Bitte die Einzeldatei <b>Healthcare_Simulation_Suite.html</b> verwenden oder die Suite mit <code>python3 start.py</code> starten.</p><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`);
+    return;
+  }
+  const p = U.clone(prj);
+  const used = new Set(p.objects.map(o => o.lib));
+  p.customLibrary = HSS.library ? HSS.library.all().filter(o => o._source !== 'standard' && used.has(o.id)).map(o => HSS.library.serialize(o)) : p.customLibrary;
+  const payload = { project: p, view: A.state(), titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
+  const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>${U.esc(payload.titel)} – Ansicht</title>
+${q.head.filter(h => !/^<meta charset/i.test(h)).join('\n')}
+</head>
+<body class="viewer">
+${q.body}
+${SCR} id="hssViewerData">window.HSS_VIEWER = ${json};${SCRE}>
+${q.scripts.map(s => SCR + '>\n' + esc(s) + '\n' + SCRE + '>').join('\n')}
+</body>
+</html>`;
+  const name = (payload.titel || 'Projekt').replace(/[^\wäöüÄÖÜß.-]+/g, '_') + '_Ansicht.html';
+  U.download ? U.download(name, html, 'text/html') : (() => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' })); a.download = name; a.click(); })();
+  UI.toast(`„${name}“ gespeichert (${U.fmt(html.length / 1e6, 1)} MB) – per Doppelklick öffnen, nur ansehen`, 5000);
+  return html;
+};
+A.dialog = () => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project();
+  UI.dialog(`<div class="dh"><h2>Als HTML-Ansicht exportieren</h2><button class="x" data-close>×</button></div>
+    <p>Erstellt <b>eine HTML-Datei</b> mit dem aktuellen Stand des Modells und genau dieser Ansicht (Blickwinkel, Etage, Stil, Flächenplan, Beschriftung). Empfänger öffnen sie per Doppelklick – ohne Installation, ohne Internet. Drehen, zoomen, Etagen wechseln, Flächenplan und Rundgang ansehen ist möglich, <b>ändern nicht</b>.</p>
+    <div class="fg"><label class="f full"><span>Titel</span><input type="text" id="axT" value="${U.esc(prj.meta.name)}"></label><label class="f full"><span>Hinweis für den Empfänger (optional)</span><input type="text" id="axH" placeholder="z. B. Variante 2 – Stand Lenkungskreis"></label></div>
+    <div class="actions"><button class="primary" id="axGo">HTML-Ansicht herunterladen</button><button data-close>Abbrechen</button></div>`, d => {
+    $('#axGo', d).onclick = async () => { const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim(); d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h }); };
+  });
+};
+
+/* ---------- Start im Ansichtsmodus ---------- */
+A.boot = () => {
+  const VW = window.HSS_VIEWER, S3 = HSS.s3, V = HSS.view, UI = HSS.ui, $ = UI.$;
+  document.body.classList.add('viewer');
+  const st = VW.view || {};
+  if (st.stil && HSS.stil && HSS.stil.mode !== st.stil) { HSS.stil.mode = HSS.view.stil = st.stil; document.body.classList.toggle('cartoon', st.stil === 'cartoon' || st.stil === 'plan'); document.body.classList.toggle('plan', st.stil === 'plan'); }
+  if (VW.titel) VW.project.meta.name = VW.titel;
+  HSS.load(VW.project, { noAutosave: true });
+  HSS.state.demoReadonly = true; HSS.state.viewer = true;
+  HSS.undo = HSS.redo = () => false; HSS.canUndo = HSS.canRedo = () => false;
+  HSS.storage.saveProject = async () => null; HSS.storage.exportFile = () => {};
+  // Kopfzeile: Titel, „Nur Ansicht“, Stand
+  $('#prjName').textContent = VW.titel || VW.project.meta.name;
+  const top = $('#top'), sp = top.querySelector('.sp');
+  const info = document.createElement('div'); info.className = 'vwinfo';
+  info.innerHTML = `<span class="vwbadge">Nur Ansicht</span><span class="vwdate">Stand ${new Date(VW.erstellt).toLocaleDateString('de-DE')}${VW.hinweis ? ' · ' + U.esc(VW.hinweis) : ''}</span><button id="vwHome" title="Zur gespeicherten Ansicht zurück">⌂ Ausgangsansicht</button>`;
+  sp.after(info);
+  const home = (ms = 900) => { if (st.cam && st.tgt) S3.animateCam(new window.THREEX.THREE.Vector3(...st.cam), new window.THREEX.THREE.Vector3(...st.tgt), ms); };
+  $('#vwHome').onclick = () => home();
+  // Ansicht wiederherstellen
+  Object.assign(V, { cut: st.cut || V.cut, shell: st.shell === 'glas' && !HSS.flussbild ? 'transparent' : (st.shell || V.shell), explode: st.explode || 0, labels: st.labels !== false, wege: st.wege || V.wege });
+  const ex = document.getElementById('vExplode'); if (ex) ex.value = V.explode;
+  if (st.verkehr === false) HSS.perf?.setTraffic?.(false);
+  if (st.sun !== undefined) S3.setSun(st.sun);
+  setTimeout(() => {
+    if (st.floor !== null && st.floor !== undefined) S3.setFloor(st.floor);
+    if (st.zonen && HSS.zonen) { V.zonenFokus = st.zonenFokus; HSS.zonen.setView(true); }
+    if (st.m2 && HSS.flaechen) HSS.flaechen.toggle(true);
+    if (st.flussbild && HSS.flussbild) HSS.flussbild.set(true);
+    S3.rebuild('all'); UI.refreshViewbar?.();
+    setTimeout(() => home(10), 1100); // nach der Startanimation (Gesamtansicht)
+  }, 250);
+  // Auswahl: kurze Information statt Inspektor
+  const card = document.createElement('div'); card.id = 'vwCard'; card.hidden = true; document.body.appendChild(card);
+  HSS.on('selection', sel => { const h = sel && UI.describe ? UI.describe(sel) : ''; card.hidden = !h; card.innerHTML = h ? h + '<button class="x" title="Schließen">×</button>' : ''; const x = card.querySelector('.x'); if (x) x.onclick = () => S3.select(null); });
+};
+})();
+
+</script>
+<script>
+/* =====================================================================
    HSS · app.js – Start, Kopfzeile, Projekt öffnen/speichern, Hilfe
    ===================================================================== */
 (function () {
@@ -13797,7 +14004,7 @@ function boot() {
   HSS.s3.init($('#viewport')); HSS.perf.init(); HSS.manip.init();
   HSS.nav.init();
   UI.buildRail(); UI.bindViewbar(); UI.timeline.bind(); HSS.plan2d?.init(); HSS.perf.bindUI();
-  bindHeader(); bindDrop();
+  bindHeader(); if (!window.HSS_VIEWER) bindDrop();
   HSS.on('changed', e => {
     if (e.scope !== 'none') HSS.s3.rebuild(e.scope === 'objects' ? 'objects' : e.scope === 'outdoor' ? 'outdoor' : 'all');
     UI.inspector(); UI.refreshViewbar(); refreshHeader();
@@ -13810,7 +14017,7 @@ function boot() {
   HSS.on('tool', t => { if (!t) UI.hint(null); });
   HSS.on('loaded', () => {
     const so = HSS.project().meta.standort;
-    if (so && (so.rev || 1) < 2) setTimeout(async () => {
+    if (so && (so.rev || 1) < 2 && !window.HSS_VIEWER) setTimeout(async () => {
       if (await UI.confirm('Standortmodell aktualisieren?', 'Für dieses Standortmodell gibt es eine verbesserte Übernahme: Gebäude als Sockel mit aufgesetzten Türmen und schlanken Technikaufbauten, keine Gehwege mehr auf den Fahrbahnen, Bielefeld/Koblenz/Hanau mit festen Bezeichnern. Ihre Änderungen (gelöschte Gebäude und Wege, eigene Gebäude, Räume, Stationen, Flüsse) bleiben erhalten. Rückgängig machen ist möglich.', 'Aktualisieren')) HSS.standorte.aktualisierenAktuell();
     }, 600);
   });
@@ -13818,6 +14025,8 @@ function boot() {
   HSS.on('library-model', U.debounce(() => HSS.s3.rebuild('objects'), 200));
   UI.setWS('gebaeude');
   HSS.library.loadUserObjects();
+  // Exportierte HTML-Ansicht: Projekt nur anzeigen
+  if (window.HSS_VIEWER && HSS.ansicht) { HSS.ansicht.boot(); refreshHeader(); $('#loading').hidden = true; HSS.booted = true; return; }
   const auto = HSS.autosaved();
   let restored = false;
   if (auto) { try { HSS.load(auto, { noAutosave: true }); restored = true; } catch (e) { console.warn(e); } }
@@ -13847,6 +14056,7 @@ function bindHeader() {
   $('#bNew').onclick = async () => { if (HSS.project().buildings.length && !await UI.confirm('Neues Projekt', 'Das aktuelle Projekt bleibt in der Projektablage des Browsers erhalten.', 'Neues Projekt')) return; const n = await UI.prompt('Name des Projekts', 'Neues Krankenhausprojekt'); if (n === null) return; HSS.load(HSS.newProject(n || 'Neues Projekt')); UI.setWS('gelaende'); };
   $('#bOpen').onclick = openDialog;
   $('#bSave').onclick = saveDialog;
+  $('#bHtml') && ($('#bHtml').onclick = () => HSS.ansicht?.dialog());
   $('#fOpen').onchange = async e => { const fs = [...e.target.files]; if (fs.length) await HSS.openFiles(fs); e.target.value = ''; };
   $('#bUndo').onclick = () => { const l = HSS.undo(); if (l) UI.toast(l); };
   $('#bRedo').onclick = () => { const l = HSS.redo(); if (l) UI.toast(l); };
@@ -13861,7 +14071,8 @@ async function saveDialog() {
   UI.dialog(`<div class="dh"><h2>Projekt speichern</h2><button class="x" data-close>×</button></div>
    ${ok ? '<div class="okbox">In der Projektablage dieses Browsers gespeichert.</div>' : '<div class="warnbox">Browser-Ablage nicht verfügbar – bitte als Datei speichern.</div>'}
    <p>Für Weitergabe, Archiv oder anderen Rechner als Datei speichern. Die Datei enthält das komplette Modell (Gebäude, Gelände, Innenausbau, Flüsse, Regeln, Stationen) und alle verwendeten eigenen Bibliotheksobjekte.</p>
-   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; });
+   <p>Für Kunden ohne Bearbeitung: <b>HTML-Ansicht</b> – eine Datei mit genau dieser Ansicht zum Ansehen (drehen, zoomen, Etagen), ohne Ändern.</p>
+   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button id="sHtml">Als HTML-Ansicht exportieren</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; $('#sHtml', d).onclick = () => { d.close(); HSS.ansicht.dialog(); }; });
 }
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }

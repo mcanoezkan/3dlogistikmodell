@@ -9,7 +9,7 @@ function boot() {
   HSS.s3.init($('#viewport')); HSS.perf.init(); HSS.manip.init();
   HSS.nav.init();
   UI.buildRail(); UI.bindViewbar(); UI.timeline.bind(); HSS.plan2d?.init(); HSS.perf.bindUI();
-  bindHeader(); bindDrop();
+  bindHeader(); if (!window.HSS_VIEWER) bindDrop();
   HSS.on('changed', e => {
     if (e.scope !== 'none') HSS.s3.rebuild(e.scope === 'objects' ? 'objects' : e.scope === 'outdoor' ? 'outdoor' : 'all');
     UI.inspector(); UI.refreshViewbar(); refreshHeader();
@@ -22,7 +22,7 @@ function boot() {
   HSS.on('tool', t => { if (!t) UI.hint(null); });
   HSS.on('loaded', () => {
     const so = HSS.project().meta.standort;
-    if (so && (so.rev || 1) < 2) setTimeout(async () => {
+    if (so && (so.rev || 1) < 2 && !window.HSS_VIEWER) setTimeout(async () => {
       if (await UI.confirm('Standortmodell aktualisieren?', 'Für dieses Standortmodell gibt es eine verbesserte Übernahme: Gebäude als Sockel mit aufgesetzten Türmen und schlanken Technikaufbauten, keine Gehwege mehr auf den Fahrbahnen, Bielefeld/Koblenz/Hanau mit festen Bezeichnern. Ihre Änderungen (gelöschte Gebäude und Wege, eigene Gebäude, Räume, Stationen, Flüsse) bleiben erhalten. Rückgängig machen ist möglich.', 'Aktualisieren')) HSS.standorte.aktualisierenAktuell();
     }, 600);
   });
@@ -30,6 +30,8 @@ function boot() {
   HSS.on('library-model', U.debounce(() => HSS.s3.rebuild('objects'), 200));
   UI.setWS('gebaeude');
   HSS.library.loadUserObjects();
+  // Exportierte HTML-Ansicht: Projekt nur anzeigen
+  if (window.HSS_VIEWER && HSS.ansicht) { HSS.ansicht.boot(); refreshHeader(); $('#loading').hidden = true; HSS.booted = true; return; }
   const auto = HSS.autosaved();
   let restored = false;
   if (auto) { try { HSS.load(auto, { noAutosave: true }); restored = true; } catch (e) { console.warn(e); } }
@@ -59,6 +61,7 @@ function bindHeader() {
   $('#bNew').onclick = async () => { if (HSS.project().buildings.length && !await UI.confirm('Neues Projekt', 'Das aktuelle Projekt bleibt in der Projektablage des Browsers erhalten.', 'Neues Projekt')) return; const n = await UI.prompt('Name des Projekts', 'Neues Krankenhausprojekt'); if (n === null) return; HSS.load(HSS.newProject(n || 'Neues Projekt')); UI.setWS('gelaende'); };
   $('#bOpen').onclick = openDialog;
   $('#bSave').onclick = saveDialog;
+  $('#bHtml') && ($('#bHtml').onclick = () => HSS.ansicht?.dialog());
   $('#fOpen').onchange = async e => { const fs = [...e.target.files]; if (fs.length) await HSS.openFiles(fs); e.target.value = ''; };
   $('#bUndo').onclick = () => { const l = HSS.undo(); if (l) UI.toast(l); };
   $('#bRedo').onclick = () => { const l = HSS.redo(); if (l) UI.toast(l); };
@@ -73,7 +76,8 @@ async function saveDialog() {
   UI.dialog(`<div class="dh"><h2>Projekt speichern</h2><button class="x" data-close>×</button></div>
    ${ok ? '<div class="okbox">In der Projektablage dieses Browsers gespeichert.</div>' : '<div class="warnbox">Browser-Ablage nicht verfügbar – bitte als Datei speichern.</div>'}
    <p>Für Weitergabe, Archiv oder anderen Rechner als Datei speichern. Die Datei enthält das komplette Modell (Gebäude, Gelände, Innenausbau, Flüsse, Regeln, Stationen) und alle verwendeten eigenen Bibliotheksobjekte.</p>
-   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; });
+   <p>Für Kunden ohne Bearbeitung: <b>HTML-Ansicht</b> – eine Datei mit genau dieser Ansicht zum Ansehen (drehen, zoomen, Etagen), ohne Ändern.</p>
+   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button id="sHtml">Als HTML-Ansicht exportieren</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; $('#sHtml', d).onclick = () => { d.close(); HSS.ansicht.dialog(); }; });
 }
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }

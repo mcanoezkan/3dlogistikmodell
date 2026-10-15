@@ -10,6 +10,8 @@ const HSS = window.HSS = window.HSS || {};
 // Ladefehler einzelner Skripte sammeln (z. B. veraltete Datei im Browser-Cache) und beim Start anzeigen
 HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
+// Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
+try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
 HSS.VERSION = '1.0.0';
 HSS.APP = 'Healthcare Simulation Suite';
 
@@ -191,6 +193,7 @@ HSS.project = () => S.project;
 HSS.snapshot = () => { lastSnap = JSON.stringify(S.project); };
 // Änderung am Projekt: fn(project) mutiert direkt, danach wird neu aufgebaut
 HSS.change = (label, fn, opts = {}) => {
+  if (HSS.state.viewer) return; // HTML-Ansicht: nur ansehen
   const before = JSON.stringify(S.project);
   fn(S.project);
   S.project.meta.modified = new Date().toISOString();

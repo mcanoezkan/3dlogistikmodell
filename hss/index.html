@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Healthcare Simulation Suite</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/hss.css?v=20261015">
+<link rel="stylesheet" href="css/hss.css?v=20261016">
 <!-- =====================================================================
      HEALTHCARE SIMULATION SUITE · UNITY
      Läuft offline (three.js r160 liegt in vendor/). Start: python3 start.py
@@ -30,6 +30,7 @@
     <button id="bNew" title="Neues, leeres Projekt">Neu</button>
     <button id="bOpen" title="Projekt öffnen (Datei oder Projektablage im Browser)">Öffnen</button>
     <button id="bSave" title="Projekt speichern (Strg+S)">Speichern</button>
+    <button id="bHtml" title="Aktuelle Ansicht als HTML-Datei für Kunden exportieren – nur ansehen, nicht bearbeiten">HTML-Ansicht</button>
     <input type="file" id="fOpen" accept=".json,.hss.json,.glb,.gltf" multiple hidden>
   </div>
   <div class="grp">
@@ -89,35 +90,36 @@
 <dialog id="dlg"></dialog>
 <div id="loading"><div><img src="assets/unity-logo.png" alt="UNITY" style="height:34px"><p>Healthcare Simulation Suite wird geladen …</p></div></div>
 
-<script src="vendor/three-bundle.js?v=20261015"></script>
-<script src="js/core.js?v=20261015"></script>
-<script src="js/library.js?v=20261015"></script>
-<script src="library/manifest.js?v=20261015"></script>
-<script src="js/build-gebaeude.js?v=20261015"></script>
-<script src="js/build-aussen.js?v=20261015"></script>
-<script src="js/network.js?v=20261015"></script>
-<script src="js/scene.js?v=20261015"></script>
-<script src="js/nav.js?v=20261015"></script>
-<script src="js/stil.js?v=20261015"></script>
-<script src="js/perf.js?v=20261015"></script>
-<script src="js/sim.js?v=20261015"></script>
-<script src="js/fpv.js?v=20261015"></script>
-<script src="js/tour.js?v=20261015"></script>
-<script src="js/station.js?v=20261015"></script>
-<script src="js/einrichtung.js?v=20261015"></script>
-<script src="js/einrichtung-plus.js?v=20261015"></script>
-<script src="js/planer.js?v=20261015"></script>
-<script src="js/flaechen.js?v=20261015"></script>
-<script src="js/standorte.js?v=20261015"></script>
-<script src="js/ui.js?v=20261015"></script>
-<script src="js/ui-panels.js?v=20261015"></script>
-<script src="js/manip.js?v=20261015"></script>
-<script src="js/plan2d.js?v=20261015"></script>
-<script src="js/ui-analyse.js?v=20261015"></script>
-<script src="js/demo.js?v=20261015"></script>
-<script src="js/krankenhaus.js?v=20261015"></script>
-<script src="js/osm.js?v=20261015"></script>
-<script src="js/flaechenplan.js?v=20261015"></script>
-<script src="js/app.js?v=20261015"></script>
+<script src="vendor/three-bundle.js?v=20261016"></script>
+<script src="js/core.js?v=20261016"></script>
+<script src="js/library.js?v=20261016"></script>
+<script src="library/manifest.js?v=20261016"></script>
+<script src="js/build-gebaeude.js?v=20261016"></script>
+<script src="js/build-aussen.js?v=20261016"></script>
+<script src="js/network.js?v=20261016"></script>
+<script src="js/scene.js?v=20261016"></script>
+<script src="js/nav.js?v=20261016"></script>
+<script src="js/stil.js?v=20261016"></script>
+<script src="js/perf.js?v=20261016"></script>
+<script src="js/sim.js?v=20261016"></script>
+<script src="js/fpv.js?v=20261016"></script>
+<script src="js/tour.js?v=20261016"></script>
+<script src="js/station.js?v=20261016"></script>
+<script src="js/einrichtung.js?v=20261016"></script>
+<script src="js/einrichtung-plus.js?v=20261016"></script>
+<script src="js/planer.js?v=20261016"></script>
+<script src="js/flaechen.js?v=20261016"></script>
+<script src="js/standorte.js?v=20261016"></script>
+<script src="js/ui.js?v=20261016"></script>
+<script src="js/ui-panels.js?v=20261016"></script>
+<script src="js/manip.js?v=20261016"></script>
+<script src="js/plan2d.js?v=20261016"></script>
+<script src="js/ui-analyse.js?v=20261016"></script>
+<script src="js/demo.js?v=20261016"></script>
+<script src="js/krankenhaus.js?v=20261016"></script>
+<script src="js/osm.js?v=20261016"></script>
+<script src="js/flaechenplan.js?v=20261016"></script>
+<script src="js/ansicht.js?v=20261016"></script>
+<script src="js/app.js?v=20261016"></script>
 </body>
 </html>
