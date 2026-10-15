@@ -7,7 +7,8 @@
      ladestation – Ladeplatz AWT-Fahrzeuge
      rampe       – Warenannahme/Anlieferung LKW
      lager       – Lager/Puffer
-     fahrzeug    – Transportmittel-Modell (für Animation)  */
+     fahrzeug    – Transportmittel-Modell (für Animation)
+     uebergabe   – Übergabepunkt einer Etage (Fluss-Assistent: Start, Zwischenstopp, Ziel)  */
 (function (K) {
 const W = '#eef1f4', G = '#c3c9d0', DG = '#5a6573', NV = '#144477', PE = '#2D7694', GR = '#0A967A', ST = '#cfd8dc';
 const trolley = (w, d, h, c, o = {}) => [K.box(0, h / 2 + 0.1, 0, w, h - 0.1, d, c, o.m || 'lack', { rr: 0.02 }), K.box(0, h + 0.02, 0, w + 0.02, 0.04, d + 0.02, o.top || G, 'kunststoff', { rr: 0.01 }), ...(o.handle !== false ? [K.box(0, h * 0.8, d / 2 + 0.05, w * 0.7, 0.03, 0.03, '#9aa1aa', 'chrom')] : []), ...(o.stripe ? [K.box(0, h * 0.6, d / 2 + 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack'), K.box(0, h * 0.6, -d / 2 - 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack')] : []), ...K.casters(w, d, 0.06)];
@@ -20,6 +21,7 @@ const liftShaft = (w, d, c, glass) => [
 
 HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Logistik, AWT, Erschließung', objects: [
   /* ---------- Transportwagen & Behälter ---------- */
+  { id: 'log.uebergabepunkt', name: 'Übergabepunkt (Etage, Fluss-Assistent)', category: 'Logistik & Transport/Warenannahme', tags: ['Fluss', 'Übergabe', 'Zwischenstopp'], size: { w: 1.4, d: 1.4, h: 2.3 }, parts: [K.cyl(0, 0.01, 0, 0.7, 0.02, '#f2c94c', 'lack'), K.cyl(0, 0.025, 0, 0.45, 0.02, '#0A223C', 'lack'), K.cyl(0, 1.1, 0, 0.04, 2.2, '#5a6573', 'metall'), K.box(0, 2.05, 0, 0.7, 0.4, 0.06, '#f2c94c', 'lack', { rr: 0.04 }), K.box(0, 2.05, 0.035, 0.5, 0.18, 0.01, '#0A223C', 'lack')], logistik: { rolle: 'uebergabe' } },
   { id: 'log.modulwagen', name: 'Modulversorgungswagen (2 × ISO 600 × 400)', category: 'Logistik & Transport/Transportwagen', tags: ['Modulversorgung', 'Rein', 'Verbrauchsgüter'], size: { w: 0.9, d: 0.65, h: 1.6 }, parts: [K.box(0, 0.85, -0.3, 0.9, 1.5, 0.03, G, 'metall'), ...[-1, 1].map(s => K.box(s * 0.44, 0.85, 0, 0.02, 1.5, 0.65, G, 'metall')), ...Array.from({ length: 6 }, (_, i) => K.box(-0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#2d7694' : '#7fb3d5', 'kunststoff')), ...Array.from({ length: 6 }, (_, i) => K.box(0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#7fb3d5' : '#2d7694', 'kunststoff')), ...K.casters(0.85, 0.6, 0.06)], meta: { quelle: 'ISO 3394 Modulmaß 600 × 400 mm' }, logistik: { reinheit: 'rein', kapazitaet: 12, einheit: 'Module' } },
   { id: 'log.speisenwagen', name: 'Speisentransportwagen (Tablettsystem, 20 Tabletts)', category: 'Logistik & Transport/Transportwagen', tags: ['Speisen', 'Küche', 'Rein'], size: { w: 1.35, d: 0.75, h: 1.55 }, parts: trolley(1.35, 0.75, 1.45, '#d6dbe0', { m: 'metall', stripe: '#f2994a' }), logistik: { reinheit: 'rein', kapazitaet: 20, einheit: 'Tabletts' } },
   { id: 'log.waeschewagen.rein', name: 'Wäschewagen rein (geschlossen)', category: 'Logistik & Transport/Transportwagen', tags: ['Wäsche', 'Rein'], size: { w: 1.2, d: 0.7, h: 1.65 }, parts: trolley(1.2, 0.7, 1.55, '#e8f1f8', { stripe: PE }), logistik: { reinheit: 'rein', kapazitaet: 80, einheit: 'kg' } },

@@ -16,12 +16,12 @@ HSS.STANDORTE = [
   { id: 'koblenz', name: 'Bundeswehrzentralkrankenhaus Koblenz', ort: 'Koblenz, Rübenacher Straße 170', datei: 'standorte/koblenz.js',
     text: 'Gebäude und Straßen aus OpenStreetMap, Gebäudebezeichnungen und Geschossbelegung nach Lageplan und Wegweiser; Neubau K1 (im Bau). Bereiche, Aufzüge, Mengen und Zeiten aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4, überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Logistik optimiert)' }] },
-  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js',
+  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
-  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
-    text: 'Baukörper aus dem Lageplan „Klinikum Bielefeld – Mitte“ (Unternehmenskommunikation, Stand Okt. 2025) digitalisiert (±15 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen); Soll-Variante mit Neubau zur Veranschaulichung.',
-    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Optimierung mit Neubau)' }] }
+  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.014139, lon: 8.544318, nord: 115.4, hinweis: 'Modellursprung Mitte Hauptgebäude; Raster um 115,4° gegen Nord gedreht (wie im 3D-Logistikmodell)' },
+    text: 'Gebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.',
+    varianten: [{ id: 'ist', name: 'Ist-Zustand (NIZ in Betrieb)' }, { id: 'soll', name: 'Soll-Variante (Optimierung)' }] }
 ];
 const PRE = { koblenz: 'kob_', hanau: 'han_', bielefeld: 'bie_' };
 
@@ -145,10 +145,21 @@ function convert(S, def, v, opts = {}) {
       bmap[g.id] = b;
       g.teile.forEach((t, i) => B.part(b, { id: `${pre}${g.id}_${t.id || i}`, name: t.name ? `${g.kurz || g.id} · ${t.name}` : g.name, ref: `${g.id}/${t.id || g.id + '-' + i}`, poly: t.poly, rect: t.box ? [(t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2, Math.abs(t.box[2] - t.box[0]), Math.abs(t.box[3] - t.box[1]), 0] : null, von: t.von ?? 0, bis: t.bis ?? 0, hoehe: t.hoehe, typ }));
     }
-    for (const [i, s] of (D.aussen?.strassen || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_${pre}r${i}`, standort: true, name: s.name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: G.polylineLength(s.pts) > 100 ? 2 : 0 }));
+    const SKIND = t => ['service', 'track', 'driveway'].includes(t) ? 'zufahrt' : ['footway', 'path', 'pedestrian', 'cycleway', 'steps'].includes(t) ? 'gehweg' : t ? 'strasse' : 'zufahrt';
+    for (const [i, s] of (D.aussen?.strassen || []).entries()) { const kind = SKIND(s.typ); prj.paths.push(Object.assign(HSS.defaults.path(kind), { id: `path_${pre}r${i}`, standort: true, name: s.name || HSS.WEGARTEN[kind].name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: kind === 'strasse' && G.polylineLength(s.pts) > 60 ? (s.typ === 'tertiary' ? 3 : 2) : 0 })); }
+    // Umgebung (Nachbargebäude aus OpenStreetMap)
+    for (const [i, u] of (D.umgebung || []).entries()) {
+      if (!u.poly || u.poly.length < 3 || Math.abs(G.area(u.poly)) < 12) continue;
+      const b = Object.assign(HSS.defaults.building(), { id: `${pre}u${i}`, name: u.name || 'Gebäude (Umgebung)', kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
+      const c = centroid(u.poly), loc = G.ccw(u.poly.map(q => [r1(q[0] - c[0]), r1(q[1] - c[1])])), bb = G.bbox(loc), fl = U.clamp(Math.round((u.h || 9) / 3.1), 1, 30);
+      b.parts.push(Object.assign(HSS.defaults.part(), { id: `${pre}u${i}_0`, name: b.name, shape: 'poly', poly: loc, x: r1(c[0]), z: r1(c[1]), w: r1(bb.w), d: r1(bb.d), rot: 0, floors: fl, floorHeight: r1((u.h || fl * 3.1) / fl), basements: 0, facade: { type: 'loch', color: '#e6e2dc', accent: '#9aa1aa', glass: '#8aa0b2', axis: 1.6, windowRatio: 0.35 }, roof: { type: 'flach', parapet: 0.3, plant: false, color: '#a8a39b' } }));
+      prj.buildings.push(b);
+    }
+    // Klinikgelände (Grundstücksgrenze)
+    if (D.aussen?.gelaende?.length > 3) prj.paths.push(Object.assign(HSS.defaults.path('grenze'), { id: `path_${pre}grenze`, standort: true, name: 'Grundstücksgrenze Klinikum', points: D.aussen.gelaende.concat([D.aussen.gelaende[0]]).map(q => [r1(q[0]), r1(q[1])]), width: 0.35, smooth: false, noNet: true }));
     for (const [i, w] of (D.aussen?.wege || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('weg'), { id: `path_${pre}w${i}`, standort: true, name: 'Campusweg', points: w.map(q => q.slice()), width: 3.5, smooth: false }));
   }
-  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 })); }
+  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 }, D.aussen.teich.length > 4 ? { poly: G.ccw(D.aussen.teich.map(q => [r1(q[0]), r1(q[1])])), lage: 5 } : {})); }
   if (def.geo && !prj.meta.geo) prj.meta.geo = Object.assign({}, def.geo);
   /* Gehwege, die auf einer Fahrbahn liegen (OSM-Bürgersteige entlang der Straße), weglassen */
   const roadsL = prj.paths.filter(p => p.kind === 'zufahrt' || p.kind === 'strasse');
@@ -283,7 +294,7 @@ function convert(S, def, v, opts = {}) {
 HSS.standorte = {
   async load(id, v = 'ist', opts = {}) {
     const def = HSS.STANDORTE.find(s => s.id === id); if (!def) throw new Error('Unbekannter Standort');
-    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261014');
+    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261016');
     return convert(window.HSS_STANDORTE[id], def, v, opts);
   },
   /* Gespeichertes Standortmodell auf den aktuellen Stand der Übernahme bringen.

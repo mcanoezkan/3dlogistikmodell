@@ -63,7 +63,7 @@ HSS.liftStops = (o, prj = HSS.project()) => {
   const P = HSS.findPart(o.host?.part, prj); if (!P) return { stops: [], x: 0, z: 0 };
   const wpos = HSS.toWorld(P.part, [o.x, o.z]), stops = [];
   for (const pt of HSS.allParts(prj)) {
-    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue; // auch übereinanderliegende Bauteile desselben Gebäudes
     if (!G.pointIn(HSS.toLocal(pt, wpos), HSS.partFootprintLocal(pt).outer)) continue;
     for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.includes(gf)) stops.push(gf); }
   }
@@ -238,7 +238,7 @@ function buildNet(prj) {
     for (const pt of parts) {
       const loc = HSS.toLocal(pt, wpos), fp = HSS.partFootprintLocal(pt);
       if (!G.pointIn(loc, fp.outer)) continue;
-      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue;
       for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.some(s => s.gf === gf)) stops.push({ gf, pt, f, y: HSS.floorY(pt, f, prj) }); }
     }
     stops.sort((a, c) => a.gf - c.gf);
@@ -250,7 +250,7 @@ function buildNet(prj) {
       const inn = nearestIn(floorNodes.get(s.pt.id + '|' + s.f) || [], wpos[0], wpos[1]);
       if (inn) addEdge(id, inn.id, 'zugang', { part: s.pt.id, floor: s.f });
       if (prev) addEdge(prev.id, id, role === 'treppe' ? 'treppe' : 'aufzug', { lift: o.id, gfa: prev.gf, gfb: s.gf, len: role === 'treppe' ? Math.abs(s.y - prev.y) * 2.2 + 6 : Math.abs(s.y - prev.y) });
-      prev = { id, gf: s.gf };
+      prev = { id, gf: s.gf, y: s.y };
     }
   }
 

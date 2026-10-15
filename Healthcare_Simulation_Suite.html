@@ -401,17 +401,19 @@ body.nopanel #zLegend{left:calc(var(--railW) + 12px)}
 #zLegend .zi small{font-size:10px;padding:0 4px;border-radius:3px;background:#eef2f5;color:var(--muted)}#zLegend .zi small.low{background:#fde8ec;color:#a3123a}#zLegend .zi small.ok{background:#e3f1ee;color:#0a6e5a}
 #zLegend .zfoot{padding:4px 10px 7px;color:var(--muted);font-size:11px;border-top:1px solid var(--soft)}#zLegend .zfoot i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 
-/* ---------- Flussbild ---------- */
-#fbLegend{position:fixed;right:12px;bottom:66px;z-index:8;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);width:300px;max-height:50vh;display:flex;flex-direction:column;font-size:12px}
-body.insp #fbLegend{right:calc(var(--inspW) + 24px)}
-#fbLegend .zh{display:flex;align-items:center;gap:8px;padding:7px 8px 6px 10px;border-bottom:1px solid var(--soft)}#fbLegend .zh b{color:var(--navy)}#fbLegend .zh span{flex:1;color:var(--muted);font-size:11px}
-#fbLegend .zl{overflow:auto;padding:4px}
-#fbLegend .zi{display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:4px;cursor:pointer}#fbLegend .zi:hover{background:var(--soft)}#fbLegend .zi.dim{opacity:.45}
-#fbLegend .zi input{margin:0}#fbLegend .zi i{width:22px;height:8px;border-radius:4px;flex:none}
-#fbLegend .zi span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#fbLegend .zi b{font-size:11px;color:var(--navy);white-space:nowrap}#fbLegend .zi small{font-size:10px;color:var(--muted);min-width:42px;text-align:right}
-#fbLegend .zfoot{display:flex;justify-content:space-between;align-items:center;padding:4px 10px 7px;color:var(--muted);font-size:11px;border-top:1px solid var(--soft)}
-/* Planungsmodell: ruhiger, heller Hintergrund */
-body.plan #viewport{background:#DCE3E8}
+/* ---------- HTML-Ansicht (nur ansehen) ---------- */
+body.viewer{--railW:0px;--panelW:0px;--inspW:0px}
+body.viewer #rail,body.viewer #panel,body.viewer #inspector,body.viewer #mbar,body.viewer #top .grp,body.viewer #bDemo,body.viewer #bHelp,body.viewer #saveState,body.viewer #demoCard,body.viewer #v2d,body.viewer #plan2dBar,body.viewer #dropOverlay{display:none!important}
+body.viewer #prjName{pointer-events:none;font-size:14px;color:#fff;opacity:.9}
+#top .vwinfo{display:flex;align-items:center;gap:10px;color:#fff}
+#top .vwbadge{background:var(--ok);color:#fff;font-weight:700;font-size:12px;padding:4px 10px;border-radius:12px}
+#top .vwdate{font-size:12px;opacity:.85}
+#top .vwinfo button{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+#vwCard{position:fixed;left:72px;bottom:16px;z-index:9;background:var(--panel);box-shadow:var(--shadow);border-radius:6px;padding:10px 34px 10px 12px;max-width:360px;font-size:12.5px}
+#vwCard .s{color:var(--muted);font-size:11.5px;margin-top:2px}
+#vwCard .x{position:absolute;top:6px;right:6px;border:0;background:transparent;font-size:16px;padding:0 4px}
+body.viewer #zLegend{left:72px}
+body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
 
 </style>
 <!-- =====================================================================
@@ -438,6 +440,7 @@ body.plan #viewport{background:#DCE3E8}
     <button id="bNew" title="Neues, leeres Projekt">Neu</button>
     <button id="bOpen" title="Projekt öffnen (Datei oder Projektablage im Browser)">Öffnen</button>
     <button id="bSave" title="Projekt speichern (Strg+S)">Speichern</button>
+    <button id="bHtml" title="Aktuelle Ansicht als HTML-Datei für Kunden exportieren – nur ansehen, nicht bearbeiten">HTML-Ansicht</button>
     <input type="file" id="fOpen" accept=".json,.hss.json,.glb,.gltf" multiple hidden>
   </div>
   <div class="grp">
@@ -456,7 +459,7 @@ body.plan #viewport{background:#DCE3E8}
 
 <div id="viewbar">
   <div class="seg" id="vCut" title="Schnitt der gewählten Ebene (wie ein Puppenhaus)"><button data-v="voll">Wände voll</button><button data-v="halb" class="on">halb</button><button data-v="aus">Grundriss</button></div>
-  <label class="ctl" title="Darstellungsstil">Stil <select id="vStil"><option value="plan">Planungsmodell</option><option value="cartoon">Cartoon</option><option value="real">Realistisch</option></select></label>
+  <label class="ctl" title="Darstellungsstil">Stil <select id="vStil"><option value="cartoon">Cartoon</option><option value="real">Realistisch</option></select></label>
   <label class="ctl">Hülle <select id="vShell"><option value="massiv">massiv</option><option value="transparent">transparent</option><option value="aus">ausgeblendet</option></select></label>
   <label class="ctl" title="Geschosse auseinanderziehen">Explosion <input type="range" id="vExplode" min="0" max="12" step="0.5" value="0"></label>
   <label class="ctl" title="Sonnenstand / Nacht">Uhrzeit <input type="range" id="vSun" min="4" max="23.5" step="0.25" value="14"><span id="vSunL">14:00</span></label>
@@ -4369,6 +4372,8 @@ const HSS = window.HSS = window.HSS || {};
 // Ladefehler einzelner Skripte sammeln (z. B. veraltete Datei im Browser-Cache) und beim Start anzeigen
 HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
+// Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
+try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
 HSS.VERSION = '1.0.0';
 HSS.APP = 'Healthcare Simulation Suite';
 
@@ -4550,6 +4555,7 @@ HSS.project = () => S.project;
 HSS.snapshot = () => { lastSnap = JSON.stringify(S.project); };
 // Änderung am Projekt: fn(project) mutiert direkt, danach wird neu aufgebaut
 HSS.change = (label, fn, opts = {}) => {
+  if (HSS.state.viewer) return; // HTML-Ansicht: nur ansehen
   const before = JSON.stringify(S.project);
   fn(S.project);
   S.project.meta.modified = new Date().toISOString();
@@ -5839,15 +5845,12 @@ HSS.buildPart = (pt, building, view = {}) => {
   const grp = new THREE.Group(); grp.userData = { kind: 'part', id: pt.id, building: building.id };
   const fp = HSS.partFootprint(pt), outer = fp.outer, holes = fp.holes;
   const fc = Object.assign({ type: 'band', color: '#e9ecef', accent: '#144477', glass: '#6f8fa8' }, pt.facade);
-  const transparent = view.shell === 'transparent' || view.shell === 'glas', plan = view.stil === 'plan';
+  const transparent = view.shell === 'transparent';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
-  const wallBase = plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
-  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase + view.shell, () => { const m = new THREE.MeshStandardMaterial({ color: view.shell === 'glas' ? '#dfe7ee' : wallBase, transparent: true, opacity: view.shell === 'glas' ? 0.14 : 0.18, depthWrite: false, side: THREE.DoubleSide }); if (view.shell === 'glas') m.userData.noToon = true; return m; }) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
+  const wallBase = fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
+  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide })) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
-  const glasHull = view.shell === 'glas', tMat = (key, c, o) => HSS.library.shared(key + c + o, () => { const m = new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }); m.userData.noToon = true; return m; });
-  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
-  // Planungsmodell: schlichte Hülle – Wand, Fensterband, Geschosslinie (keine Einzelfenster)
-  const bands = [], flines = [];
+  const slabMat = LM('#d5d8dc'), roofMat = LM(pt.roof?.type === 'gruen' ? '#7fa36a' : (pt.roof?.color || '#9aa3ad'));
   const floors = HSS.partFloors(pt);
   const ex = view.explode || 0;
   const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];
@@ -5872,15 +5875,6 @@ HSS.buildPart = (pt, building, view = {}) => {
       for (const { r } of rings) walls.push(ringWallGeo(r, y0, h));
       continue;
     }
-    if (plan && !(isCut && view.cut === 'voll')) {
-      const park = fc.type === 'parkhaus' || pt.use === 'parkhaus';
-      for (const { r } of rings) {
-        walls.push(ringWallGeo(r, y0, park && !isCut ? Math.min(wh, 1.1) : wh));
-        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(ringWallGeo(r, y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
-        if (!isCut && f > 0) flines.push(ringWallGeo(r, y0 - 0.14, 0.16));
-      }
-      continue;
-    }
     if (fc.type === 'glas' || fc.type === 'lamellen') {
       // Brüstung/Deckenstirn als schmales Band
       for (const { r } of rings) walls.push(ringWallGeo(r, y0 - 0.25, 0.3));
@@ -5895,8 +5889,6 @@ HSS.buildPart = (pt, building, view = {}) => {
     }
   }
   if (walls.length) { const wm = new THREE.Mesh(mergeGeometries(walls), wallMat); wm.castShadow = !transparent; wm.receiveShadow = true; wm.userData = Object.assign({ wall: true }, meta); grp.add(wm); }
-  if (bands.length) { const bm = new THREE.Mesh(mergeGeometries(bands), HSS.library.shared('planband' + transparent, () => new THREE.MeshStandardMaterial({ color: '#c6d8e4', roughness: 0.35, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, transparent, opacity: transparent ? 0.3 : 1, depthWrite: !transparent, side: THREE.DoubleSide }))); bm.userData = Object.assign({}, meta); grp.add(bm); }
-  if (flines.length) { const lm = new THREE.Mesh(mergeGeometries(flines), HSS.library.shared('planlinie' + transparent, () => new THREE.MeshStandardMaterial({ color: '#c3cbd3', roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, transparent, opacity: transparent ? 0.4 : 1, depthWrite: !transparent, side: THREE.DoubleSide }))); lm.userData = Object.assign({}, meta); grp.add(lm); }
   inst.meshes(meta).forEach(m => grp.add(m));
   // Dach, Attika, Technikaufbau
   const topGF = HSS.globalFloor(pt, pt.floors - 1, prj);
@@ -5904,8 +5896,8 @@ HSS.buildPart = (pt, building, view = {}) => {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
     const par = pt.roof?.parapet ?? 0.9;
-    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
-    if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
+    if (par > 0) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt, par))), LM(fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({}, meta); grp.add(pm); }
+    if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus') {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
       const box = new THREE.Mesh(new THREE.BoxGeometry(pw, 3.0, pd), LM('#b9c0c7'));
@@ -5913,7 +5905,7 @@ HSS.buildPart = (pt, building, view = {}) => {
       box.castShadow = true; box.userData = Object.assign({}, meta); grp.add(box);
       const grill = new THREE.Mesh(new THREE.BoxGeometry(pw * 0.9, 0.5, pd * 0.9), LM('#8d959e')); grill.position.set(c[0], yt + 3.25, c[1]); grill.rotation.y = box.rotation.y; grp.add(grill);
     }
-    if (pt.roof?.type === 'gruen' && !glasHull) { // Gründach-Aufkantung
+    if (pt.roof?.type === 'gruen') { // Gründach-Aufkantung
       const g = new THREE.Mesh(HSS.slabGeo(G.fillet(outer, 0), holes, yt, 0.08), LM('#88b073')); g.receiveShadow = true; grp.add(g);
     }
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
@@ -6267,7 +6259,10 @@ function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
   const bb = G.bbox(a.poly), area = Math.abs(G.area(a.poly)), rnd = U.rng(U.hash(a.id));
-  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
+  // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
+  const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
+  const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
+  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
   else if (a.kind === 'park' || a.kind === 'gruen') { scatter('gruen.baum.laub', Math.min(60, area / 300), 0.7, 1.1); scatter('gruen.strauch', Math.min(60, area / 250), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
@@ -6840,7 +6835,10 @@ S3.rebuild = (scope = 'all') => {
   if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
     clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
-    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    // Bepflanzte Flächen hängen von den Gebäuden ab (keine Bäume in Gebäuden)
+    let bs = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) bs += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.shape === 'poly' ? (pt.poly || []).length : pt.shape) + ';';
+    const bkey = '|b' + U.hash(bs), TREES = { park: 1, gruen: 1, wald: 1, wohngebiet: 1, friedhof: 1 };
+    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
@@ -6975,14 +6973,14 @@ function buildLabels() {
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
         let a = HSS.roomArea(r);
-        if (V.m2 || HSS.stil?.karte?.()) a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea));
+        if (V.m2 || V.stil === 'cartoon') a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea));
         if (V.m2) { if (a < 1.5) continue; }
         else if (['flur', 'nass', 'patient1', 'patient2', 'wc', 'putz', 'vorraum', 'schacht', 'kern', 'reserve'].includes(r.use) || a < 8) continue;
         const w = HSS.toWorld(pt, [r.x, r.z]);
         const el = document.createElement('div'); el.className = 'rlbl'; el.dataset.a = Math.round(a);
         const nm = r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum';
         if (V.m2) { el.classList.add('m2'); if (a < 12) el.classList.add('sm'); el.innerHTML = `${a >= 16 ? `<span>${U.esc(nm)}</span>` : ''}<b>${U.fmt(a, 1)} m²</b>`; el.title = `${nm} · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${HSS.DIN277[HSS.roomDin(r)]?.name || ''}`; el.style.pointerEvents = 'auto'; el.onclick = () => S3.select({ kind: 'room', id: r.id, part: pt.id, floor: f }); }
-        else if (HSS.stil?.karte?.()) { el.classList.add('card'); el.innerHTML = `<span>${U.esc(nm)}</span><small>${U.fmt(a, 0)} m²</small>`; }
+        else if (V.stil === 'cartoon') { el.classList.add('card'); el.innerHTML = `<span>${U.esc(nm)}</span><small>${U.fmt(a, 0)} m²</small>`; }
         else el.textContent = nm;
         const o = new CSS2DObject(el); o.position.set(w[0], HSS.floorY(pt, f) + V.floor * V.explode + 0.3, w[1]); L.add(o);
       }
@@ -7372,7 +7370,7 @@ N.buildGrid = () => {
       }
     }
     const mk = (pos, col, op) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); l.renderOrder = 1; L.add(l); };
-    const toon = HSS.view.stil !== 'real';
+    const toon = HSS.view.stil === 'cartoon';
     mk(minor, toon ? '#9aa4ae' : '#5d6d5a', toon ? 0.07 : 0.16); mk(major, toon ? '#7d8893' : '#3e4c3c', toon ? 0.16 : 0.32);
   } else {
     const box = new THREE.Box3();
@@ -7400,12 +7398,9 @@ N.setGrid = on => { N.grid = on; N.buildGrid(); };
 const HSS = window.HSS;
 const { THREE } = window.THREEX;
 const ST = HSS.stil = {
-  mode: (() => { try { return localStorage.getItem('hss-stil2') || 'plan'; } catch (e) { return 'plan'; } })(),
-  BG: '#e9ecef', BG_UG: '#d6dbe0', BG_NACHT: '#1b2636', KONTUR: '#3f4a56', BODEN: '#e3e6e9',
-  PLAN_BG: '#DCE3E8', PLAN_BODEN: '#e6eaed'
+  mode: (() => { try { return localStorage.getItem('hss-stil') || 'cartoon'; } catch (e) { return 'cartoon'; } })(),
+  BG: '#e9ecef', BG_UG: '#d6dbe0', BG_NACHT: '#1b2636', KONTUR: '#3f4a56', BODEN: '#e3e6e9'
 };
-// Stile mit Etiketten-Karten (Cartoon und Planungsmodell)
-ST.karte = () => ST.mode === 'cartoon' || ST.mode === 'plan';
 HSS.view.stil = ST.mode;
 
 // Vier Helligkeitsstufen für die Toon-Schattierung
@@ -7440,30 +7435,6 @@ function zone(m) {
   t = new THREE.MeshToonMaterial({ color: new THREE.Color().setHSL(h.h, Math.min(0.62, h.s * 1.9 + 0.12), Math.min(0.86, Math.max(0.7, h.l * 0.9))), gradientMap: grad });
   t.userData.toon = true; toonCache.set('z' + m.uuid, t); return t;
 }
-/* ---------- Planungsmodell: klare, matte Farben wie in einem Präsentationsmodell ---------- */
-const planCache = new Map();
-const planFarbe = c => { const h = {}; c.getHSL(h); const grau = h.s < 0.12; return new THREE.Color().setHSL(h.h, grau ? h.s * 0.6 : Math.min(1, h.s * 1.05), grau ? Math.min(0.97, h.l * 0.45 + 0.52) : U_clamp(h.l, 0.3, 0.72)); };
-const U_clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-function planMat(m) {
-  if (!m || !m.isMeshStandardMaterial || m.userData.noToon || m.userData.plan) return m;
-  let t = planCache.get(m.uuid); if (t) return t;
-  if (m.userData.vc) t = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, roughness: 0.75, metalness: 0.05 });
-  else if (m.vertexColors) t = new THREE.MeshStandardMaterial({ color: ST.PLAN_BODEN, roughness: 0.95, metalness: 0, transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite });
-  else {
-    const glas = m.transparent && m.opacity < 0.6;
-    t = new THREE.MeshStandardMaterial({ color: glas ? new THREE.Color('#c7dbe7') : planFarbe(m.color), roughness: glas ? 0.3 : 0.75, metalness: 0.05, transparent: m.transparent, opacity: glas ? Math.max(0.3, m.opacity) : m.opacity, depthWrite: m.depthWrite, side: m.side,
-      emissive: m.emissive, emissiveIntensity: m.emissiveIntensity, polygonOffset: m.polygonOffset, polygonOffsetFactor: m.polygonOffsetFactor, polygonOffsetUnits: m.polygonOffsetUnits, vertexColors: false });
-  }
-  t.userData.plan = true; planCache.set(m.uuid, t); return t;
-}
-function planZone(m) {
-  let t = planCache.get('z' + m.uuid); if (t) return t;
-  const h = {}; m.color.getHSL(h);
-  t = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(h.h, Math.min(0.7, h.s * 2 + 0.15), U_clamp(h.l * 0.85, 0.62, 0.8)), roughness: 0.9, metalness: 0 });
-  t.userData.plan = true; planCache.set('z' + m.uuid, t); return t;
-}
-ST.planMat = planMat;
-const linePlan = new THREE.LineBasicMaterial({ color: '#7f8b97', transparent: true, opacity: 0.32 });
 /* Etiketten entzerren: überlappende Raumetiketten ausblenden, große Räume haben Vorrang */
 ST.entzerren = () => {
   const els = [...document.querySelectorAll('.labels .rlbl')]; if (!els.length) return;
@@ -7479,23 +7450,12 @@ function kontur(mesh, fein) {
   if (mesh.userData._kontur || mesh.isInstancedMesh || !mesh.geometry) return;
   const g = mesh.geometry, n = g.attributes.position?.count || 0; if (!n || n > 60000) return;
   let e = edgeCache.get(g.uuid); if (!e) { e = new THREE.EdgesGeometry(g, 28); edgeCache.set(g.uuid, e); }
-  const ls = new THREE.LineSegments(e, ST.mode === 'plan' ? linePlan : fein ? lineMatFein : lineMat); ls.userData.kontur = true; ls.raycast = () => {};
+  const ls = new THREE.LineSegments(e, fein ? lineMatFein : lineMat); ls.userData.kontur = true; ls.raycast = () => {};
   mesh.add(ls); mesh.userData._kontur = true;
 }
 // Szene in den Cartoon-Stil überführen (idempotent)
 ST.apply = () => {
-  const S3 = HSS.s3; if (!S3.scene) return;
-  if (ST.mode === 'plan') {
-    const L = S3.layers;
-    S3.scene.traverse(o => {
-      if (!o.isMesh || o.userData.kontur) return;
-      if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial && !o.material.userData.plan) { o.material = planZone(o.material); return; }
-      if (Array.isArray(o.material)) o.material = o.material.map(planMat); else o.material = planMat(o.material);
-    });
-    L.build?.traverse(o => { if (o.isMesh && !o.userData.pick && (o.userData.roof || o.userData.wall || o.userData.parapet) && !(o.material && o.material.visible === false)) kontur(o, false); });
-    ST.himmel(); return;
-  }
-  if (ST.mode !== 'cartoon') return;
+  const S3 = HSS.s3; if (!S3.scene || ST.mode !== 'cartoon') return;
   const L = S3.layers;
   S3.scene.traverse(o => {
     if (!o.isMesh || o.userData.kontur) return;
@@ -7510,9 +7470,7 @@ ST.apply = () => {
 };
 // Einzelne Gruppe (z. B. Vorschau beim Ziehen) in den Cartoon-Stil überführen
 ST.applyTo = (root, layer = 'build') => {
-  if (!root) return root;
-  if (ST.mode === 'plan') { root.traverse(o => { if (!o.isMesh || o.userData.kontur) return; if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial) { o.material = planZone(o.material); return; } if (Array.isArray(o.material)) o.material = o.material.map(planMat); else o.material = planMat(o.material); }); return root; }
-  if (ST.mode !== 'cartoon') return root;
+  if (ST.mode !== 'cartoon' || !root) return root;
   root.traverse(o => {
     if (!o.isMesh || o.userData.kontur) return;
     if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial) { o.material = zone(o.material); return; }
@@ -7522,23 +7480,7 @@ ST.applyTo = (root, layer = 'build') => {
   return root;
 };
 ST.himmel = () => {
-  const S3 = HSS.s3; if (!S3.scene) return;
-  const R = S3.renderer;
-  if (!S3.fill) { S3.fill = new THREE.DirectionalLight('#dfe8ff', 0); S3.fill.position.set(140, 120, 160); S3.scene.add(S3.fill); }
-  if (ST.mode === 'plan') {
-    const ug = HSS.view.floor !== null && HSS.view.floor < 0;
-    S3.sky.visible = false;
-    S3.scene.background = new THREE.Color(S3.night ? ST.BG_NACHT : ug ? ST.BG_UG : ST.PLAN_BG);
-    S3.scene.fog = S3.night || ug ? null : (S3._planFog || (S3._planFog = new THREE.Fog(ST.PLAN_BG, 900, 3200)));
-    R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.0;
-    if (R.shadowMap.enabled) { R.shadowMap.enabled = false; S3.sun.castShadow = false; HSS.library.eachMaterial?.(m => { m.needsUpdate = true; }); }
-    if (!S3.night) { S3.hemi.intensity = 1.6; S3.hemi.color.set('#ffffff'); S3.hemi.groundColor?.set('#cfd6dc'); S3.sun.intensity = 1.4; S3.sun.color.set('#ffffff'); S3.sun.position.set(-170, 310, -110); S3.fill.intensity = 0.5; }
-    else S3.fill.intensity = 0;
-    return;
-  }
-  S3.scene.fog = null; S3.fill.intensity = 0;
-  if (!R.shadowMap.enabled && !HSS.plan2d?.on) { R.shadowMap.enabled = true; S3.sun.castShadow = true; HSS.perf?.shadows?.(); }
-  if (ST.mode !== 'cartoon') return;
+  const S3 = HSS.s3; if (!S3.scene || ST.mode !== 'cartoon') return;
   const ug = HSS.view.floor !== null && HSS.view.floor < 0;
   S3.sky.visible = false;
   S3.scene.background = new THREE.Color(S3.night ? ST.BG_NACHT : ug ? ST.BG_UG : ST.BG);
@@ -7546,23 +7488,22 @@ ST.himmel = () => {
   if (!S3.night) { S3.hemi.intensity = 1.55; S3.hemi.color.set('#ffffff'); S3.hemi.groundColor?.set('#b9c2cc'); S3.sun.intensity = Math.min(S3.sun.intensity, 1.6); S3.sun.color.set('#ffffff'); }
 };
 ST.set = (mode) => {
-  ST.mode = HSS.view.stil = mode; try { localStorage.setItem('hss-stil2', mode); } catch (e) { /* */ }
-  document.body.classList.toggle('cartoon', ST.karte()); document.body.classList.toggle('plan', mode === 'plan');
+  ST.mode = HSS.view.stil = mode; try { localStorage.setItem('hss-stil', mode); } catch (e) { /* */ }
+  document.body.classList.toggle('cartoon', mode === 'cartoon');
   const S3 = HSS.s3;
   if (S3._outCache) S3._outCache.clear();
   S3._buildCache?.clear(); S3._objCache?.clear();
   HSS.library.clearProto();
-  if (mode === 'real') { S3.renderer.toneMapping = THREE.ACESFilmicToneMapping; S3.renderer.toneMappingExposure = 0.9; }
+  if (mode !== 'cartoon') { S3.renderer.toneMapping = THREE.ACESFilmicToneMapping; S3.renderer.toneMappingExposure = 0.9; }
   S3.setSun(HSS.view.sunHour); S3.rebuild('all');
 };
 HSS.on('rebuilt', () => ST.apply());
 // Dynamische Objekte (Verkehr, Simulation) regelmäßig nachziehen
-setInterval(() => { const S3 = HSS.s3; if (!ST.karte() || !S3.scene) return; const f = ST.mode === 'plan' ? planMat : toon; for (const k of ['traffic', 'agents', 'net', 'sel', 'ghost', 'flows']) S3.layers[k]?.traverse(o => { if (o.isMesh && o.material?.isMeshStandardMaterial && !o.material.userData.plan && !o.material.userData.noToon) o.material = f(o.material); }); }, 700);
+setInterval(() => { const S3 = HSS.s3; if (ST.mode !== 'cartoon' || !S3.scene) return; for (const k of ['traffic', 'agents', 'net', 'sel', 'ghost']) S3.layers[k]?.traverse(o => { if (o.isMesh && o.material?.isMeshStandardMaterial) o.material = toon(o.material); }); }, 700);
 // Tageszeit: Cartoon-Hintergrund und Licht nach dem Setzen der Sonne wiederherstellen
 const setSun0 = HSS.s3.setSun; HSS.s3.setSun = h => { setSun0(h); ST.himmel(); };
-const klassen = () => { document.body.classList.toggle('cartoon', ST.karte()); document.body.classList.toggle('plan', ST.mode === 'plan'); };
-document.addEventListener('DOMContentLoaded', klassen);
-if (document.body) klassen();
+document.addEventListener('DOMContentLoaded', () => document.body.classList.toggle('cartoon', ST.mode === 'cartoon'));
+if (document.body) document.body.classList.toggle('cartoon', ST.mode === 'cartoon');
 })();
 
 </script>
@@ -7598,7 +7539,6 @@ function wantsContinuous() {
   if (HSS.player?.playing) return 'sim';
   if (HSS.player?.agents?.size && S3.layers.agents.visible) return 'sim';
   if (P.trafficAnim && HSS.traffic.agents.length && S3.layers.traffic.visible) return 'traffic';
-  if (HSS.flussbild?.animating && S3.layers.flows?.visible) return 'traffic';
   if (P.anim > 0) return 'anim';
   return null;
 }
@@ -8332,10 +8272,8 @@ HSS.player = {
       if (!a) {
         const M = HSS.MITTEL[tr.mittel] || HSS.MITTEL.hand, mat = U.byId(prj.materials, tr.material);
         const obj = new THREE.Group();
-        const einfach = HSS.view.stil === 'plan' && HSS.flussbild?.agentMesh;
-        if (einfach) obj.add(HSS.flussbild.agentMesh(tr.mittel, mat));
-        else if (M.modell) obj.add(HSS.library.build(M.modell));
-        if (!einfach && (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper')) {
+        if (M.modell) obj.add(HSS.library.build(M.modell));
+        if (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper') {
           const lib = tr.mittel === 'awt' ? 'awt.container' : (/speisen|geschirr/i.test(mat?.name) ? 'log.speisenwagen' : /wäsche/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.waeschewagen.unrein' : 'log.waeschewagen.rein') : /steril|instrument/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.instrumentenwagen.unrein' : 'log.sterilgutwagen') : /abfall/i.test(mat?.name) ? 'log.abfall240' : 'log.modulwagen');
           const w = HSS.library.build(lib); w.position.z = tr.mittel === 'awt' ? 0 : tr.mittel === 'schlepper' ? -1.9 : 0.85; if (tr.mittel === 'awt') w.position.y = 0.3; obj.add(w);
           if (tr.mittel === 'schlepper') { const w2 = HSS.library.build(lib); w2.position.z = -3.4; obj.add(w2); }
@@ -10117,7 +10055,7 @@ HSS.STANDORTE = [
   { id: 'koblenz', name: 'Bundeswehrzentralkrankenhaus Koblenz', ort: 'Koblenz, Rübenacher Straße 170', datei: 'standorte/koblenz.js',
     text: 'Gebäude und Straßen aus OpenStreetMap, Gebäudebezeichnungen und Geschossbelegung nach Lageplan und Wegweiser; Neubau K1 (im Bau). Bereiche, Aufzüge, Mengen und Zeiten aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4, überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Logistik optimiert)' }] },
-  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js',
+  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
   { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
@@ -10901,7 +10839,7 @@ UI.bindViewbar = () => {
 
   $$('#vCut button').forEach(b => b.onclick = () => { V.cut = b.dataset.v; UI.refreshViewbar(); S3.rebuild('all'); });
   $('#vShell').onchange = e => { V.shell = e.target.value; S3.rebuild('all'); };
-  $('#vStil').value = HSS.stil?.mode || 'plan';
+  $('#vStil').value = HSS.stil?.mode || 'cartoon';
   $('#vStil').onchange = e => HSS.stil.set(e.target.value);
   $('#vWege').value = V.wege || 'alle';
   $('#vWege').onchange = e => { V.wege = e.target.value; try { localStorage.setItem('hss-wege', V.wege); } catch (er) { /* */ } S3.rebuild('outdoor'); };
@@ -12146,7 +12084,7 @@ P2.set = (on) => {
     cam.fov = p.fov || 45; cam.far = p.far || 6000; cam.updateProjectionMatrix();
     C.maxDistance = p.maxD || 1800; C.minDistance = p.minD || 2; C.enableRotate = true; C.maxPolarAngle = p.maxP || Math.PI * 0.495; C.minPolarAngle = 0; C.screenSpacePanning = p.ssp ?? false; C.mouseButtons.LEFT = p.left ?? THREE.MOUSE.ROTATE;
     const t = C.target.clone(); cam.position.set(t.x - d * 0.5, t.y + d * 0.62, t.z + d * 0.6); C.update();
-    S3.renderer.shadowMap.enabled = HSS.view.stil !== 'plan'; HSS.perf?.shadows();
+    S3.renderer.shadowMap.enabled = true; HSS.perf?.shadows();
     if (S3.tool?.plan2d) S3.setTool(null);
   }
   HSS.perf?.invalidate(4); P2.palette(); HSS.emit('view');
@@ -12789,7 +12727,6 @@ const STEPS = [
   { t: 'Flächenplanung: der Campus im Überblick', p: 'Ohne Räume planen: Fachbereich wählen (z. B. Innere Medizin, 1.500 m²) und auf ein Gebäude ziehen – die Fläche wird in das Geschoss unter der Maus eingepasst und reicht bei Bedarf ins nächste Geschoss. Die Flächenplan-Ansicht zeigt alle Gebäude als Geschossscheiben in den Farben der Fachbereiche, mit Legende und Soll-Ist-Bilanz.', li: ['Griffe ⇔ ⇕ an der Fläche: verlängern, kürzen, verschieben', 'Stationsplaner und Klinik-Planer: „Nur Fläche(n)“ statt Räume'], go: () => { HSS.plan2d?.set(false); HSS.nav.setFloor(null); UI.setWS('zonen'); HSS.view.explode = 4; const r = document.getElementById('vExplode'); if (r) r.value = 4; HSS.zonen.setView(true); HSS.s3.animateCam(V3(-190, 150, 210), V3(0, 10, 0), 1300); } },
   { t: 'Umgebung aus OpenStreetMap', p: 'Unter „Gelände & Wege“ lädt „Umgebung aus OpenStreetMap“ Straßen, Felder, Wiesen, Wald, Gewässer, Nachbargebäude und die Grenze des Klinikgeländes rund um den verorteten Standort – so sieht man, wo Verkehr fließt und wie weit geplant werden kann (Internetverbindung nötig).', go: () => { UI.setWS('gelaende'); HSS.s3.animateCam(V3(-260, 260, 320), V3(0, 0, 0), 1300); } },
   { t: 'Flüsse und Regeln', p: 'Standardflüsse für alle 20 Stationen: Speisen, Wäsche, Arzneimittel, Modulversorgung, Sterilgut, Abfall, Proben, Patienten, Betten, Anlieferung, Entsorgung, Post, Personal, Besucher. Die Bettenhäuser werden per AWT versorgt; nach unreinen Fahrten 2 min Waschanlage.', go: () => { UI.flowTab = 'fluesse'; const f = HSS.project().flows.find(x => x.transport === 't_awt'); UI.flowSel = f?.id; UI.setWS('fluesse'); if (f) UI.showRoute(f.id, true); } },
-  { t: 'Flussbild: Logistik auf einen Blick', p: '„Flussbild“ zeigt alle Material- und Logistikflüsse als farbige Bänder mit Pfeilen – die Dicke entspricht den Fahrten pro Tag, jedes Material hat seine eigene Spur. Die Gebäude werden gläsern, Wagen, Betten und LKW fahren auf ihren Routen. In der Legende lassen sich Materialien ein- und ausblenden.', li: ['Personen- und Besucherströme in der Legende zuschalten', '„Bewegung“ aus = ruhiges Bild für Präsentationen'], go: () => { HSS.nav.setFloor(null); UI.setWS('fluesse'); HSS.flussbild?.set(true); HSS.s3.animateCam(V3(-95, 70, 95), V3(0, 6, -10), 1300); } },
   { t: 'Simulation und Hotspots', p: 'Die Tagessimulation rechnet alle Touren mit Bündelung, Aufzugswarteschlangen und Reinigungsfahrten. Heatmap um 07:00 Uhr; die Hotspot-Liste nennt Engpässe mit Uhrzeit.', go: () => { HSS.nav.setFloor(null); HSS.runSimulation(); HSS.player.setTime(420); UI.timeline.show(true); UI.netMode = 'heat'; $('#vNet').value = 'heat'; $('#tHeat').checked = true; UI.heatHour = 7; HSS.drawNet('heat', 7); UI.anTab = 'hotspots'; UI.setWS('analyse'); HSS.s3.animateCam(V3(-150, 130, 170), V3(0, 0, -10), 1300); } },
   { t: 'Begleitfahrt mit Aufzug', p: 'Ein AWT-Container fährt vom Logistikzentrum durch die Trasse und den Vertikalförderer hinauf auf die Station. Esc beendet.', go: () => { const sim = HSS.state.sim || HSS.runSimulation(); UI.timeline.show(true); const tr = sim.trips.find(t => t.mittel === 'awt' && t.track.some(s => s.lift && s.to > 3) && t.start > 400) || sim.trips.find(t => t.track.some(s => s.lift)); if (tr) { HSS.player.speed = 20; $('#tSpeed').value = '20'; HSS.fpv.follow(tr.id); } } },
   { t: 'Nacht und Beauty Shots', p: 'Abends: Straßen- und Wegeleuchten, beleuchtete Fenster. „📷 Beauty Shot“ speichert ein hochaufgelöstes Bild, „🚶 Begehen“ öffnet die freie Begehung.', go: () => { HSS.fpv.exit(); HSS.nav.setFloor(null); UI.netMode = 'aus'; $('#vNet').value = 'aus'; HSS.drawNet('aus'); HSS.s3.setSun(21.5); $('#vSun').value = 21.5; $('#vSunL').textContent = '21:30'; HSS.s3.animateCam(V3(-150, 60, 200), V3(-20, 8, 40), 1500); } },
@@ -12816,7 +12753,7 @@ HSS.demo = {
     $('#dPrev').onclick = () => { this.step--; this.show(); };
     $('#dNext').onclick = () => { if (this.step < STEPS.length - 1) { this.step++; this.show(); } else this.end(); };
     $('#dEnd').onclick = () => this.end();
-    try { if (!/Flussbild/.test(s.t) && HSS.flussbild?.on) HSS.flussbild.set(false); if (!/2D-Plan/.test(s.t)) HSS.plan2d?.set(false); if (!/Flächenplanung/.test(s.t) && HSS.view.zonen) { HSS.view.explode = 0; const r = document.getElementById('vExplode'); if (r) r.value = 0; HSS.zonen.setView(false); } s.go(); } catch (e) { console.error(e); }
+    try { if (!/2D-Plan/.test(s.t)) HSS.plan2d?.set(false); if (!/Flächenplanung/.test(s.t) && HSS.view.zonen) { HSS.view.explode = 0; const r = document.getElementById('vExplode'); if (r) r.value = 0; HSS.zonen.setView(false); } s.go(); } catch (e) { console.error(e); }
   },
   end() { $('#demoCard').hidden = true; document.body.classList.remove('demoon'); HSS.fpv.exit(); UI.toast('Demo frei erkunden – Änderungen werden als eigenes Projekt gesichert'); }
 };
@@ -13200,7 +13137,7 @@ UI.khGebaeude = async () => {
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo, UI = HSS.ui, $ = UI.$;
 const O = HSS.osm = {};
-const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
 const r1 = v => Math.round(v * 10) / 10;
 
 /* Geokoordinaten → Modellraster (x Osten, z Süden, gedreht um den Nordwinkel des Projekts) */
@@ -13256,15 +13193,46 @@ O.geocode = async (q) => {
   return (await r.json()).map(x => ({ name: x.display_name, lat: +x.lat, lon: +x.lon }));
 };
 
+function hull(pts) {
+  const p = pts.map(q => [q[0], q[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (p.length < 3) return p;
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); const lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
 /* OSM-Antwort ins Projekt übernehmen */
 O.apply = (prj, data, geo, opt) => {
   const T = O.proj(geo), stat = { strassen: 0, wege: 0, flaechen: 0, gebaeude: 0, grenze: 0 };
   if (opt.ersetzen) { prj.paths = prj.paths.filter(p => !p.umgebung); prj.areas = prj.areas.filter(a => !a.umgebung); prj.buildings = prj.buildings.filter(b => !b.umgebung); }
   // vorhandene Gebäude des Projekts (Klinikgebäude nicht doppelt übernehmen)
-  const own = HSS.allParts(prj).map(pt => HSS.partFootprint(pt).outer);
-  const inOwn = p => own.some(fp => G.pointIn(p, fp));
+  const ownParts = prj.buildings.filter(b => !b.umgebung).flatMap(b => b.parts);
+  const own = ownParts.map(pt => { const o = HSS.partFootprint(pt).outer; return { o, bb: G.bbox(o) }; });
+  const near = (p, buf) => own.some(({ o, bb }) => p[0] > bb.x0 - buf && p[0] < bb.x1 + buf && p[1] > bb.z0 - buf && p[1] < bb.z1 + buf && (G.pointIn(p, o) || (buf > 0 && o.some((q, i) => G.dist(p, G.closestOnSeg(p, q, o[(i + 1) % o.length]).pt) < buf))));
+  const inOwn = p => near(p, 0);
   const ringOf = el => (el.geometry || []).map(g => T(g.lat, g.lon));
   const outerRings = el => el.type === 'relation' ? (el.members || []).filter(m => m.role === 'outer' && m.geometry).map(m => m.geometry.map(g => T(g.lat, g.lon))) : [ringOf(el)];
+  // Klinikgelände: OSM-Grenze des Klinikums und Umriss der Gebäude im Modell (+12 m) – dort gilt das Modell, nicht OSM
+  const campus = [];
+  if (opt.campus !== false) {
+    for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of outerRings(el)) if (r.length >= 4) campus.push(r); }
+    const pts = own.flatMap(x => x.o); if (pts.length >= 3) {
+      const h = hull(pts), cx = U.sum(h.map(p => p[0])) / h.length, cz = U.sum(h.map(p => p[1])) / h.length;
+      campus.push(h.map(p => { const dx = p[0] - cx, dz = p[1] - cz, l = Math.hypot(dx, dz) || 1; return [p[0] + dx / l * 12, p[1] + dz / l * 12]; }));
+    }
+  }
+  const inCampus = p => campus.some(r => G.pointIn(p, r));
+  const polyHitsOwn = r => r.some(p => inOwn(p)) || own.some(({ o }) => o.some(q => G.pointIn(q, r)));
+  // Linien auftrennen: Stücke im Klinikgelände bzw. über Modellgebäuden entfallen
+  const splitLine = (pts, drop) => {
+    const out = []; let cur = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], L = G.dist(a, b), n = Math.max(1, Math.ceil(L / 2));
+      for (let j = 0; j < n; j++) { const p = [r1(a[0] + (b[0] - a[0]) * j / n), r1(a[1] + (b[1] - a[1]) * j / n)]; if (drop(p)) { if (cur.length >= 2) out.push(cur); cur = []; } else if (j === 0 || !cur.length || drop([a[0] + (b[0] - a[0]) * (j + 1) / n, a[1] + (b[1] - a[1]) * (j + 1) / n])) cur.push(p); }
+    }
+    const last = pts[pts.length - 1]; if (!drop(last)) cur.push(last); if (cur.length >= 2) out.push(cur);
+    return out.filter(q => G.polylineLength(q) >= 3);
+  };
+  stat.ausgelassen = 0;
   let maxR = 0;
   for (const el of data.elements || []) {
     const t = el.tags || {};
@@ -13273,10 +13241,18 @@ O.apply = (prj, data, geo, opt) => {
       const [w, kind, traffic, kmh] = STRASSE[t.highway];
       const pts = ringOf(el); if (G.polylineLength(pts) < 3) continue;
       const lanes = +t.lanes || 0, width = t.width ? parseFloat(t.width) || w : lanes ? Math.max(w, lanes * 3.2) : w;
-      const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id, name: t.name || HSS.WEGARTEN[kind].name, points: pts, width: U.clamp(width, 1.2, 30), smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
-      if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
-      prj.paths.push(p); stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
-      for (const q of pts) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      const wid = U.clamp(width, 1.2, 30);
+      // im Klinikgelände nur öffentliche Straßen übernehmen; nie über Modellgebäude
+      const drop = p => (kind !== 'strasse' && inCampus(p)) || near(p, wid / 2 + 1);
+      const pieces = campus.length || own.length ? splitLine(pts, drop) : [pts];
+      if (!pieces.length) { stat.ausgelassen++; continue; }
+      pieces.forEach((pc, k) => {
+        const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id + (k ? '_' + k : ''), name: t.name || HSS.WEGARTEN[kind].name, points: pc, width: wid, smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
+        if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
+        prj.paths.push(p);
+        for (const q of pc) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      });
+      stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
       continue;
     }
     if (opt.wege && el.type === 'way' && (t.waterway || t.railway) && el.geometry?.length >= 2) {
@@ -13296,6 +13272,8 @@ O.apply = (prj, data, geo, opt) => {
         let r = r0.slice(); if (r.length > 3 && G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
         const area = Math.abs(G.area(r)); if (area < 30) continue;
         r = G.ccw(r); const bb = G.bbox(r);
+        // Flächen im Klinikgelände (Parkplätze, Rasen …) gibt das Modell vor
+        if (campus.length && (inCampus([bb.cx, bb.cz]) || (area < 20000 && polyHitsOwn(r)))) { stat.ausgelassen++; continue; }
         prj.areas.push({ id: 'osm_a' + el.id + '_' + stat.flaechen, kind, name: t.name || HSS.FLAECHEN[kind], poly: r, x: r1(bb.cx), z: r1(bb.cz), w: r1(bb.w), d: r1(bb.d), rot: 0, lage: LAGE[kind] || 0, umgebung: true, osm: el.type + '/' + el.id });
         stat.flaechen++;
       }
@@ -13305,7 +13283,7 @@ O.apply = (prj, data, geo, opt) => {
     if (opt.gebaeude && t.building && el.type === 'way' && el.geometry?.length >= 4) {
       let r = ringOf(el); if (G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
       const area = Math.abs(G.area(r)); if (area < 12) continue;
-      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz])) continue;
+      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz]) || inCampus([bbw.cx, bbw.cz]) || polyHitsOwn(r)) { stat.ausgelassen++; continue; }
       const lv = U.clamp(Math.round(+t['building:levels'] || (t.height ? parseFloat(t.height) / 3 : 0) || ({ house: 2, detached: 2, garage: 1, garages: 1, shed: 1, apartments: 4, industrial: 2, retail: 1, commercial: 3, office: 4, hospital: 4, school: 3 }[t.building] || 2)), 1, 30);
       const loc = G.ccw(r.map(p => [r1(p[0] - bbw.cx), r1(p[1] - bbw.cz)])), bb = G.bbox(loc);
       const b = Object.assign(HSS.defaults.building(), { id: 'osm_b' + el.id, name: t.name || (t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : 'Gebäude (Umgebung)'), kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
@@ -13321,14 +13299,15 @@ O.apply = (prj, data, geo, opt) => {
 
 /* Dialog */
 O.dialog = () => {
-  const prj = HSS.project(), g = prj.meta.geo || {};
+  const prj = HSS.project(), std = (HSS.STANDORTE || []).find(x => x.id === prj.meta.standort?.id)?.geo;
+  const g = prj.meta.geo?.lat ? prj.meta.geo : (std || prj.meta.geo || {});
   UI.dialog(`<div class="dh"><h2>Umgebung aus OpenStreetMap laden</h2><button class="x" data-close>×</button></div>
     <p class="note">Lädt Straßen, Wege, Felder, Wiesen, Wälder, Gewässer, Gebäude der Nachbarschaft und die Grenze des Klinikgeländes rund um den Standort – so sieht man, wo Autos fahren, wie weit geplant werden kann und was das Gelände umgibt. Benötigt eine Internetverbindung.</p>
     <div class="fg"><label class="f full"><span>Adresse suchen</span><input type="text" id="oQ" placeholder="z. B. Rübenacher Straße 170, Koblenz" value="${U.esc(g.adresse && !/^[a-z]+$/.test(g.adresse) ? g.adresse : '')}"></label></div>
     <div class="row"><button id="oSearch">Suchen</button><span class="note" id="oRes"></span></div>
     <div class="fg"><label class="f"><span>Breite (lat) des Modellursprungs</span><input type="number" id="oLat" step="0.00001" value="${g.lat ?? ''}"></label><label class="f"><span>Länge (lon)</span><input type="number" id="oLon" step="0.00001" value="${g.lon ?? ''}"></label>
     <label class="f"><span>Nordwinkel des Modells [°]</span><input type="number" id="oN" step="0.1" value="${g.nord ?? 0}"></label><label class="f"><span>Radius [m]</span><input type="number" id="oR" step="50" min="150" max="2000" value="600"></label></div>
-    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label></div>
+    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label><label class="chk" title="Auf dem Klinikgelände und über den Gebäuden des Modells werden keine OSM-Gebäude, -Flächen und -Wege übernommen – dort gilt das Modell"><input type="checkbox" id="oC" checked> Klinikgelände wie im Modell (OSM nur außen herum)</label></div>
     <div class="note" id="oSt"></div>
     <div class="actions"><button data-close>Abbrechen</button><button class="primary" id="oGo">Umgebung laden</button></div>
     <p class="note">Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Der Modellursprung (0/0) liegt an der angegebenen Koordinate.</p>`, d => {
@@ -13341,7 +13320,7 @@ O.dialog = () => {
       const geo = { lat: +$('#oLat', d).value, lon: +$('#oLon', d).value, nord: +$('#oN', d).value || 0 };
       if (!geo.lat || !geo.lon) return UI.toast('Bitte Koordinaten angeben oder Adresse suchen');
       const radius = U.clamp(+$('#oR', d).value || 600, 150, 2000);
-      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked };
+      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked, campus: $('#oC', d).checked };
       const st = $('#oSt', d); $('#oGo', d).disabled = true; st.textContent = 'Lade Daten aus OpenStreetMap …';
       try {
         const data = await O.fetch(O.query(geo, radius), url => { st.textContent = 'Lade Daten von ' + new URL(url).host + ' …'; });
@@ -13350,7 +13329,7 @@ O.dialog = () => {
         HSS.manip?.mark();
         HSS.change('Umgebung aus OpenStreetMap', p => { p.meta.geo = Object.assign(p.meta.geo || {}, geo); stat = O.apply(p, data, geo, opt); });
         d.close(); HSS.s3.home();
-        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}`, 5000);
+        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}${stat.ausgelassen ? ` · ${stat.ausgelassen} Objekte auf dem Klinikgelände ausgelassen` : ''}`, 5000);
       } catch (e) { st.innerHTML = `<span class="warnbox" style="display:block">${U.esc(e.message)}</span>`; $('#oGo', d).disabled = false; }
     };
   });
@@ -13399,11 +13378,12 @@ const FACH = [
   ['labor', 'Labor', '#a569bd', 'NUF3', 'Untersuchung & Behandlung'], ['physio', 'Physiotherapie', '#58d68d', 'NUF6', 'Untersuchung & Behandlung'],
   ['ambulanz', 'Ambulanzen / MVZ', '#45b39d', 'NUF6', 'Untersuchung & Behandlung'], ['tagesklinik', 'Tagesklinik', '#8ecae6', 'NUF6', 'Untersuchung & Behandlung'],
   ['dialyse', 'Dialyse', '#76d7c4', 'NUF6', 'Untersuchung & Behandlung'], ['funktion', 'Funktionsdiagnostik', '#7fb3d5', 'NUF6', 'Untersuchung & Behandlung'],
+  ['anaesthesie', 'Anästhesie', '#5b7bb4', 'NUF6', 'Untersuchung & Behandlung'], ['strahlen', 'Strahlentherapie', '#d4a017', 'NUF6', 'Untersuchung & Behandlung'],
   // Service & Verwaltung
   ['eingang', 'Eingangshalle & Information', '#f39c12', 'NUF1', 'Service & Verwaltung'], ['aufnahme', 'Patientenaufnahme', '#e59866', 'NUF2', 'Service & Verwaltung'],
   ['speisesaal', 'Cafeteria / Mitarbeiterrestaurant', '#f8c471', 'NUF1', 'Service & Verwaltung'], ['verwaltung', 'Verwaltung', '#6b2c82', 'NUF2', 'Service & Verwaltung'],
   ['lehre', 'Lehre, Schulung & Forschung', '#bb8fce', 'NUF5', 'Service & Verwaltung'], ['personal', 'Personal (Umkleiden, Bereitschaft)', '#d7bde2', 'NUF7', 'Service & Verwaltung'],
-  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'],
+  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'], ['dienste', 'Allgemeine Dienste', '#b0a18f', 'NUF2', 'Service & Verwaltung'],
   // Ver- und Entsorgung, Technik
   ['apotheke', 'Apotheke', '#16a085', 'NUF4', 'Ver- und Entsorgung'], ['zsva', 'Sterilgutversorgung (ZSVA)', '#5d6d7e', 'NUF3', 'Ver- und Entsorgung'],
   ['kueche', 'Küche', '#ca6f1e', 'NUF3', 'Ver- und Entsorgung'], ['logistik', 'Logistik, Lager & Entsorgung', '#8d6e63', 'NUF4', 'Ver- und Entsorgung'],
@@ -13650,7 +13630,7 @@ function legend() {
   if (!el) { el = document.createElement('div'); el.id = 'zLegend'; document.body.appendChild(el); }
   const bil = HSS.zoneBilanz(), tot = U.sum(bil.map(e => e.ist));
   el.hidden = false;
-  el.innerHTML = `<div class="zh"><b>Flächenplan</b><span>${U.fmt(tot)} m² verplant</span><button class="mini" data-zx title="Flächenplan-Ansicht schließen">×</button></div>` + (bil.length ? `<div class="zl">${bil.map(e => `<button class="zi ${V.zonenFokus === e.fach ? 'on' : ''} ${V.zonenFokus && V.zonenFokus !== e.fach ? 'dim' : ''}" data-zf="${U.esc(e.fach || '')}" title="Klick: nur diesen Fachbereich hervorheben"><i style="background:${U.esc(e.color)}"></i><span>${U.esc(e.name)}</span><b>${U.fmt(e.ist)} m²</b>${e.soll ? `<small class="${e.ist >= e.soll * 0.97 ? 'ok' : 'low'}">Soll ${U.fmt(e.soll)}</small>` : ''}</button>`).join('')}</div>` : '<div class="note" style="padding:6px 8px">Noch keine Flächen. Fachbereich im Arbeitsbereich „Flächenplanung“ auf ein Gebäude ziehen.</div>') + `<div class="zfoot"><span><i style="background:${FREI}"></i> frei</span></div>`;
+  el.innerHTML = `<div class="zh"><b>Flächenplan</b><span>${U.fmt(tot)} m² verplant</span><button class="mini" data-zx title="Flächenplan-Ansicht schließen">×</button></div>` + (bil.length ? `<div class="zl">${bil.map(e => `<button class="zi ${V.zonenFokus && V.zonenFokus === e.fach ? 'on' : ''} ${V.zonenFokus && V.zonenFokus !== e.fach ? 'dim' : ''}" data-zf="${U.esc(e.fach || '')}" title="Klick: nur diesen Fachbereich hervorheben"><i style="background:${U.esc(e.color)}"></i><span>${U.esc(e.name)}</span><b>${U.fmt(e.ist)} m²</b>${e.soll ? `<small class="${e.ist >= e.soll * 0.97 ? 'ok' : 'low'}">Soll ${U.fmt(e.soll)}</small>` : ''}</button>`).join('')}</div>` : '<div class="note" style="padding:6px 8px">Noch keine Flächen. Fachbereich im Arbeitsbereich „Flächenplanung“ auf ein Gebäude ziehen.</div>') + `<div class="zfoot"><span><i style="background:${FREI}"></i> frei</span></div>`;
   el.querySelector('[data-zx]').onclick = () => HSS.zonen.setView(false);
   el.querySelectorAll('[data-zf]').forEach(b => b.onclick = () => { const f = b.dataset.zf || null; V.zonenFokus = V.zonenFokus === f ? null : f; S3.rebuild('all'); });
 }
@@ -13874,196 +13854,141 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 </script>
 <script>
 /* =====================================================================
-   HSS · flussbild.js – Material- und Logistikflüsse als kräftige Bänder
-   Alle aktiven Flüsse werden über das Wegenetz geroutet und je Wegabschnitt
-   und Material zusammengefasst: ein farbiges Rohr je Material, so dick wie
-   die Zahl der Fahrten pro Tag, mit Pfeilen in Fahrtrichtung. Materialien
-   laufen auf eigenen Spuren nebeneinander. Dazu bewegen sich Wagen, Personen
-   und LKW auf ihren Routen (ohne Simulation, als Animation).
-   Gebäudehüllen werden dabei gläsern, damit die Flüsse im Gebäude sichtbar sind.
+   HSS · ansicht.js – Modell als HTML-Ansicht exportieren (nur ansehen)
+   „Als HTML-Ansicht exportieren“ schreibt eine einzige HTML-Datei mit dem
+   aktuellen Stand des Modells und der aktuellen Ansicht (Kamera, Etage,
+   Stil, Flächenplan, Beschriftung …). Empfänger öffnen sie per Doppelklick
+   ohne Installation und ohne Internet: drehen, zoomen, Etagen wechseln,
+   Flächenplan und Rundgang ansehen – aber nichts ändern, nichts speichern.
+   Die Datei enthält die Suite selbst (ohne Bearbeitungsoberfläche) und das
+   Projekt; die UNITY-Kopfzeile bleibt erhalten.
    ===================================================================== */
 (function () {
 'use strict';
 const HSS = window.HSS, U = HSS.util;
-const { THREE, mergeGeometries } = window.THREEX;
-const S3 = HSS.s3, V = HSS.view;
-const FB = HSS.flussbild = { on: false, move: true, aus: new Set(), animating: false, personen: false };
-let layer = null, movers = [], routes = [], shell0 = null;
+const A = HSS.ansicht = {};
+// Hinweis: Zeichenfolgen wie „<" + "!--“ oder „<" + "script“ dürfen hier nicht wörtlich stehen (Einzeldatei-HTML)
+const LT = '<', SCR = LT + 'script', SCRE = LT + '/script', KOMM = new RegExp(LT + '!--', 'g');
+const esc = s => String(s).replace(new RegExp(SCRE, 'gi'), LT + '\\/script').replace(KOMM, LT + '\\!--');
 
-const UP = new THREE.Vector3(0, 1, 0);
-const matCache = new Map();
-const fmat = (c) => { if (!matCache.has(c)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.25, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; matCache.set(c, m); } return matCache.get(c); };
-const solid = (c) => { const k = 's' + c; if (!matCache.has(k)) { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.05 }); m.userData.noToon = true; matCache.set(k, m); } return matCache.get(k); };
+/* ---------- Aktuelle Ansicht ---------- */
+A.state = () => {
+  const S3 = HSS.s3, V = HSS.view;
+  return {
+    cam: S3.camera.position.toArray().map(v => Math.round(v * 100) / 100), tgt: S3.controls.target.toArray().map(v => Math.round(v * 100) / 100),
+    floor: V.floor, cut: V.cut, shell: V.shell, explode: V.explode, labels: V.labels, wege: V.wege, stil: V.stil, sun: V.sunHour,
+    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false
+  };
+};
 
-/* ---------- Routen aller Flüsse ---------- */
-function collect() {
-  const prj = HSS.project(); HSS.ensureStammdaten?.(prj);
-  const out = [];
-  for (const f of prj.flows) {
-    if (f.aktiv === false) continue;
-    const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
-    if (!m) continue;
-    const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
-    const perDay = HSS.flowPerDay(f), trips = Math.max(0.2, perDay / Math.max(1, m.proLadung || 1));
-    out.push({ f, m, t, r, perDay, trips, mittel: t?.mittel || 'hand' });
+/* ---------- Quellen der Suite einsammeln ---------- */
+async function text(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status); return r.text(); }
+async function dataUri(url) {
+  const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status);
+  const b = await r.blob(); return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+}
+const cssFromSheet = link => { try { return [...link.sheet.cssRules].map(r => r.cssText).join('\n'); } catch (e) { return null; } };
+async function sammeln() {
+  const head = [];
+  for (const el of document.head.children) {
+    if (el.tagName === 'LINK' && /stylesheet/i.test(el.rel)) { let css; try { css = await text(el.href); } catch (e) { css = cssFromSheet(el); if (css === null) throw e; } head.push('<style>\n' + css + '\n</style>'); }
+    else if (el.tagName === 'LINK' && /icon/i.test(el.rel)) { try { head.push(`<link rel="icon" href="${el.href.startsWith('data:') ? el.href : await dataUri(el.href)}">`); } catch (e) { /* ohne Symbol */ } }
+    else if (el.tagName === 'STYLE' || el.tagName === 'META') head.push(el.outerHTML);
   }
-  return out;
+  // Grundgerüst der Seite (beim Start festgehalten), Bilder einbetten
+  let body = (HSS._shell?.body || []).join('\n');
+  for (const m of [...body.matchAll(/<img[^>]+src="([^"]+)"/g)]) { if (m[1].startsWith('data:')) continue; try { body = body.split(`src="${m[1]}"`).join(`src="${await dataUri(new URL(m[1], location.href).href)}"`); } catch (e) { /* Bild fehlt */ } }
+  // Skripte in Ladereihenfolge; die Bibliotheksliste wird durch die bereits geladenen Pakete ersetzt
+  const scripts = [];
+  for (const s of document.scripts) {
+    if (s.type && !/javascript/i.test(s.type)) continue;
+    if (s.id === 'hssViewerData') continue;
+    if (s.src) {
+      if (/library\/manifest\.js/.test(s.src)) { scripts.push('window.HSS_LIBRARY_FILES = ' + JSON.stringify(window.HSS_LIBRARY_FILES || []) + ';'); continue; }
+      scripts.push(await text(s.src));
+    } else scripts.push(s.textContent);
+  }
+  return { head, body, scripts };
 }
 
-/* ---------- Geometrie ---------- */
-const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d = new THREE.Vector3(), _q = new THREE.Quaternion();
-function cyl(a, b, r) {
-  const len = a.distanceTo(b); if (len < 0.05) return null;
-  const g = new THREE.CylinderGeometry(r, r, len, 8, 1, true);
-  _d.subVectors(b, a).normalize(); _q.setFromUnitVectors(UP, _d);
-  g.applyQuaternion(_q); g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2); return g;
-}
-function cone(p, dir, r) { const g = new THREE.ConeGeometry(r * 2.3, r * 4.5, 10); _q.setFromUnitVectors(UP, dir); g.applyQuaternion(_q); g.translate(p.x, p.y, p.z); return g; }
-function ball(p, r) { const g = new THREE.SphereGeometry(r, 8, 6); g.translate(p.x, p.y, p.z); return g; }
-// Spurversatz: quer zur Fahrtrichtung in der Ebene
-function offsetPts(pts, lane, h) {
-  return pts.map((p, i) => {
-    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
-    const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz);
-    if (l < 1e-3) return new THREE.Vector3(p[0], p[1] + h, p[2]);
-    return new THREE.Vector3(p[0] - dz / l * lane, p[1] + h, p[2] + dx / l * lane);
+/* ---------- Export ---------- */
+A.export = async (opts = {}) => {
+  const UI = HSS.ui, prj = HSS.project();
+  UI.toast('HTML-Ansicht wird erstellt …', 2500);
+  let q;
+  try { q = await sammeln(); } catch (e) {
+    UI.dialog(`<div class="dh"><h2>HTML-Ansicht nicht möglich</h2><button class="x" data-close>×</button></div><p>Die Programmdateien lassen sich in dieser Startart nicht einlesen. Bitte die Einzeldatei <b>Healthcare_Simulation_Suite.html</b> verwenden oder die Suite mit <code>python3 start.py</code> starten.</p><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`);
+    return;
+  }
+  const p = U.clone(prj);
+  const used = new Set(p.objects.map(o => o.lib));
+  p.customLibrary = HSS.library ? HSS.library.all().filter(o => o._source !== 'standard' && used.has(o.id)).map(o => HSS.library.serialize(o)) : p.customLibrary;
+  const payload = { project: p, view: A.state(), titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
+  const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>${U.esc(payload.titel)} – Ansicht</title>
+${q.head.filter(h => !/^<meta charset/i.test(h)).join('\n')}
+</head>
+<body class="viewer">
+${q.body}
+${SCR} id="hssViewerData">window.HSS_VIEWER = ${json};${SCRE}>
+${q.scripts.map(s => SCR + '>\n' + esc(s) + '\n' + SCRE + '>').join('\n')}
+</body>
+</html>`;
+  const name = (payload.titel || 'Projekt').replace(/[^\wäöüÄÖÜß.-]+/g, '_') + '_Ansicht.html';
+  U.download ? U.download(name, html, 'text/html') : (() => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' })); a.download = name; a.click(); })();
+  UI.toast(`„${name}“ gespeichert (${U.fmt(html.length / 1e6, 1)} MB) – per Doppelklick öffnen, nur ansehen`, 5000);
+  return html;
+};
+A.dialog = () => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project();
+  UI.dialog(`<div class="dh"><h2>Als HTML-Ansicht exportieren</h2><button class="x" data-close>×</button></div>
+    <p>Erstellt <b>eine HTML-Datei</b> mit dem aktuellen Stand des Modells und genau dieser Ansicht (Blickwinkel, Etage, Stil, Flächenplan, Beschriftung). Empfänger öffnen sie per Doppelklick – ohne Installation, ohne Internet. Drehen, zoomen, Etagen wechseln, Flächenplan und Rundgang ansehen ist möglich, <b>ändern nicht</b>.</p>
+    <div class="fg"><label class="f full"><span>Titel</span><input type="text" id="axT" value="${U.esc(prj.meta.name)}"></label><label class="f full"><span>Hinweis für den Empfänger (optional)</span><input type="text" id="axH" placeholder="z. B. Variante 2 – Stand Lenkungskreis"></label></div>
+    <div class="actions"><button class="primary" id="axGo">HTML-Ansicht herunterladen</button><button data-close>Abbrechen</button></div>`, d => {
+    $('#axGo', d).onclick = async () => { const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim(); d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h }); };
   });
-}
-const HOEHE = { lkw: 2.2, transporter: 1.9, awt: 0.7 };
-
-FB.build = () => {
-  if (!layer) { layer = new THREE.Group(); layer.name = 'flows'; S3.scene.add(layer); S3.layers.flows = layer; }
-  while (layer.children.length) layer.remove(layer.children[0]);
-  movers = []; routes = [];
-  if (!FB.on) { legend(); HSS.perf?.invalidate(2); return; }
-  const all = collect();
-  const mats = [...new Map(all.map(x => [x.m.id, x.m])).values()];
-  const laneOf = new Map(mats.map((m, i) => [m.id, (i - (mats.length - 1) / 2) * 0.95]));
-  const maxTrips = Math.max(1, ...all.filter(x => x.m.reinheit !== 'person' || FB.personen).map(x => x.trips));
-  const rad = trips => 0.16 + 0.5 * Math.sqrt(trips / maxTrips);
-  // Abschnitte je Material und Richtung zusammenfassen
-  const seg = new Map(); // key → { m, a, b, trips }
-  for (const x of all) {
-    if (FB.aus.has(x.m.id) || (x.m.reinheit === 'person' && !FB.personen)) continue;
-    const ids = x.r.nodes;
-    for (let i = 0; i < x.r.pts.length - 1; i++) {
-      const k = x.m.id + '|' + ids[i] + '>' + ids[i + 1];
-      const s = seg.get(k) || { m: x.m, a: x.r.pts[i], b: x.r.pts[i + 1], trips: 0, mittel: x.mittel }; s.trips += x.trips; seg.set(k, s);
-    }
-    routes.push(x);
-  }
-  // je Material ein Netz: Rohre, Gelenke, Pfeile
-  const byMat = new Map();
-  for (const s of seg.values()) { if (!byMat.has(s.m.id)) byMat.set(s.m.id, { m: s.m, geos: [] }); }
-  for (const s of seg.values()) {
-    const lane = laneOf.get(s.m.id), h = (HOEHE[s.mittel] || 1.1) + (lane > 0 ? 0.05 : 0);
-    const [a, b] = offsetPts([s.a, s.b], lane, h), r = rad(s.trips), G = byMat.get(s.m.id).geos;
-    const c = cyl(a, b, r); if (c) G.push(c);
-    G.push(ball(b, r));
-    const len = a.distanceTo(b);
-    if (len > 9) for (let d = 6; d < len - 2; d += 16) { _d.subVectors(b, a).normalize(); G.push(cone(a.clone().addScaledVector(_d, d), _d.clone(), r)); }
-    else if (len > 3 && Math.abs(b.y - a.y) < 0.5 && (s.a[0] * 7 + s.a[2] * 13) % 3 < 1) { _d.subVectors(b, a).normalize(); G.push(cone(a.clone().lerp(b, 0.5), _d.clone(), r)); }
-  }
-  for (const { m, geos } of byMat.values()) {
-    if (!geos.length) continue;
-    const mesh = new THREE.Mesh(mergeGeometries(geos.map(g => g.index ? g.toNonIndexed() : g), false), fmat(m.farbe || '#2D7694'));
-    mesh.userData = { flow: m.id }; mesh.renderOrder = 6; mesh.raycast = () => {}; layer.add(mesh);
-  }
-  // Bewegte Wagen, Personen und LKW auf ihren Routen
-  if (FB.move) for (const x of routes) {
-    const n = Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2)));
-    const lane = laneOf.get(x.m.id), h = (HOEHE[x.mittel] || 1.1);
-    const pts = offsetPts(x.r.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
-    for (let i = 0; i < n; i++) {
-      const mesh = moverMesh(x); layer.add(mesh);
-      movers.push({ mesh, pl, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
-    }
-  }
-  FB.animating = FB.move && movers.length > 0;
-  legend(); HSS.perf?.invalidate(3);
 };
 
-/* ---------- Bewegungen ---------- */
-function poly(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1])); return { pts, cum, L: cum[cum.length - 1] }; }
-function at(pl, s, out) {
-  if (s <= 0) return out.copy(pl.pts[0]); if (s >= pl.L) return out.copy(pl.pts[pl.pts.length - 1]);
-  let lo = 1, hi = pl.cum.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (pl.cum[mid] < s) lo = mid + 1; else hi = mid; }
-  const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
-}
-const box = (w, h, d, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); return o; };
-function truck() {
-  const g = new THREE.Group();
-  g.add(box(5.4, 2.6, 2.3, solid('#eef1f4'), -0.9, 0.7, 0), box(1.7, 2.0, 2.2, solid('#0A223C'), 2.6, 0.7, 0), box(0.06, 0.8, 1.9, solid('#9fc3dc'), 3.46, 1.75, 0), box(4.2, 0.35, 0.03, solid('#2D7694'), -0.9, 2.3, 1.16), box(4.2, 0.35, 0.03, solid('#2D7694'), -0.9, 2.3, -1.16));
-  for (const x of [-2.7, 0.2, 2.6]) for (const z of [-1.05, 1.05]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.32, 12), solid('#3F4A55')); w.rotation.x = Math.PI / 2; w.position.set(x, 0.48, z); g.add(w); }
-  return g;
-}
-const capsGeo = new THREE.CapsuleGeometry(0.28, 1.0, 4, 8), cubeGeo = new THREE.BoxGeometry(1.1, 0.9, 0.8);
-function moverMesh(x) {
-  if (x.mittel === 'lkw' || x.mittel === 'transporter') { const t = truck(); if (x.mittel === 'transporter') t.scale.setScalar(0.7); return t; }
-  const c = x.m.farbe || '#2D7694';
-  if (x.m.reinheit === 'person' || x.m.reinheit === 'patient') { const g = new THREE.Group(); const o = new THREE.Mesh(capsGeo, solid(c)); o.position.y = 0.8; g.add(o); if (x.m.reinheit === 'patient') g.add(box(2.1, 0.5, 0.95, solid('#eef1f4'), 0, 0.35, 0)); return g; }
-  const g = new THREE.Group(); g.add(box(1.1, 0.95, 0.8, solid(c), 0, 0.2, 0)); g.add(box(1.15, 0.08, 0.85, solid('#3F4A55'), 0, 0.1, 0)); return g;
-}
-// einfache Figuren für die Simulation (Planungsmodell): LKW, Wagen mit Person, AWT-Behälter, Bett
-FB.agentMesh = (mittel, mat) => {
-  const g = new THREE.Group(), c = mat?.farbe || '#2D7694';
-  if (mittel === 'lkw' || mittel === 'transporter') { const t = truck(); t.rotation.y = -Math.PI / 2; if (mittel === 'transporter') t.scale.setScalar(0.7); g.add(t); return g; }
-  if (mittel === 'awt') { g.add(box(0.8, 0.9, 1.1, solid(c), 0, 0.3, 0)); return g; }
-  const p = new THREE.Mesh(capsGeo, solid('#144477')); p.position.set(0, 0.85, -0.45); g.add(p);
-  if (mat?.reinheit === 'patient' || mittel === 'bett') g.add(box(0.95, 0.55, 2.1, solid('#eef1f4'), 0, 0.3, 0.8), box(0.7, 0.2, 1.6, solid(c), 0, 0.85, 0.8));
-  else if (mat?.reinheit !== 'person') g.add(box(0.7, 0.95, 1.0, solid(c), 0, 0.15, 0.65), box(0.75, 0.08, 1.05, solid('#3F4A55'), 0, 0.08, 0.65));
-  return g;
+/* ---------- Start im Ansichtsmodus ---------- */
+A.boot = () => {
+  const VW = window.HSS_VIEWER, S3 = HSS.s3, V = HSS.view, UI = HSS.ui, $ = UI.$;
+  document.body.classList.add('viewer');
+  const st = VW.view || {};
+  if (st.stil && HSS.stil && HSS.stil.mode !== st.stil) { HSS.stil.mode = HSS.view.stil = st.stil; document.body.classList.toggle('cartoon', st.stil === 'cartoon' || st.stil === 'plan'); document.body.classList.toggle('plan', st.stil === 'plan'); }
+  if (VW.titel) VW.project.meta.name = VW.titel;
+  HSS.load(VW.project, { noAutosave: true });
+  HSS.state.demoReadonly = true; HSS.state.viewer = true;
+  HSS.undo = HSS.redo = () => false; HSS.canUndo = HSS.canRedo = () => false;
+  HSS.storage.saveProject = async () => null; HSS.storage.exportFile = () => {};
+  // Kopfzeile: Titel, „Nur Ansicht“, Stand
+  $('#prjName').textContent = VW.titel || VW.project.meta.name;
+  const top = $('#top'), sp = top.querySelector('.sp');
+  const info = document.createElement('div'); info.className = 'vwinfo';
+  info.innerHTML = `<span class="vwbadge">Nur Ansicht</span><span class="vwdate">Stand ${new Date(VW.erstellt).toLocaleDateString('de-DE')}${VW.hinweis ? ' · ' + U.esc(VW.hinweis) : ''}</span><button id="vwHome" title="Zur gespeicherten Ansicht zurück">⌂ Ausgangsansicht</button>`;
+  sp.after(info);
+  const home = (ms = 900) => { if (st.cam && st.tgt) S3.animateCam(new window.THREEX.THREE.Vector3(...st.cam), new window.THREEX.THREE.Vector3(...st.tgt), ms); };
+  $('#vwHome').onclick = () => home();
+  // Ansicht wiederherstellen
+  Object.assign(V, { cut: st.cut || V.cut, shell: st.shell === 'glas' && !HSS.flussbild ? 'transparent' : (st.shell || V.shell), explode: st.explode || 0, labels: st.labels !== false, wege: st.wege || V.wege });
+  const ex = document.getElementById('vExplode'); if (ex) ex.value = V.explode;
+  if (st.verkehr === false) HSS.perf?.setTraffic?.(false);
+  if (st.sun !== undefined) S3.setSun(st.sun);
+  setTimeout(() => {
+    if (st.floor !== null && st.floor !== undefined) S3.setFloor(st.floor);
+    if (st.zonen && HSS.zonen) { V.zonenFokus = st.zonenFokus; HSS.zonen.setView(true); }
+    if (st.m2 && HSS.flaechen) HSS.flaechen.toggle(true);
+    if (st.flussbild && HSS.flussbild) HSS.flussbild.set(true);
+    S3.rebuild('all'); UI.refreshViewbar?.();
+    setTimeout(() => home(10), 1100); // nach der Startanimation (Gesamtansicht)
+  }, 250);
+  // Auswahl: kurze Information statt Inspektor
+  const card = document.createElement('div'); card.id = 'vwCard'; card.hidden = true; document.body.appendChild(card);
+  HSS.on('selection', sel => { const h = sel && UI.describe ? UI.describe(sel) : ''; card.hidden = !h; card.innerHTML = h ? h + '<button class="x" title="Schließen">×</button>' : ''; const x = card.querySelector('.x'); if (x) x.onclick = () => S3.select(null); });
 };
-const _p = new THREE.Vector3(), _n = new THREE.Vector3();
-let T = 0;
-HSS.on('frame', dt => {
-  if (!FB.animating || !layer?.visible) return;
-  T += dt;
-  for (const mv of movers) {
-    const s = ((T * mv.speed / mv.pl.L) + mv.phase) % 1;
-    at(mv.pl, s * mv.pl.L, _p); at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
-    mv.mesh.position.copy(_p);
-    const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.mesh.rotation.y = -Math.atan2(dz, dx);
-  }
-});
-
-/* ---------- Legende ---------- */
-function legend() {
-  let el = document.getElementById('fbLegend');
-  if (!FB.on) { if (el) el.hidden = true; return; }
-  if (!el) { el = document.createElement('div'); el.id = 'fbLegend'; document.body.appendChild(el); }
-  const all = collect(), by = new Map();
-  for (const x of all) { const e = by.get(x.m.id) || { m: x.m, trips: 0, menge: 0, n: 0 }; e.trips += x.trips; e.menge += x.perDay; e.n++; by.set(x.m.id, e); }
-  const rows = [...by.values()].sort((a, b) => b.trips - a.trips);
-  el.hidden = false;
-  el.innerHTML = `<div class="zh"><b>Flussbild</b><span>${all.length} Flüsse · ${U.fmt(U.sum(rows.map(r => r.trips)))} Fahrten/Tag</span><button class="mini" data-fx title="Flussbild schließen">×</button></div>
-    <div class="zl">${rows.map(r => { const off = FB.aus.has(r.m.id) || (r.m.reinheit === 'person' && !FB.personen); return `<label class="zi ${off ? 'dim' : ''}"><input type="checkbox" data-fm="${r.m.id}" data-pers="${r.m.reinheit === 'person' ? 1 : ''}" ${off ? '' : 'checked'}><i style="background:${U.esc(r.m.farbe || '#2D7694')}"></i><span>${U.esc(r.m.name)}</span><b>${U.fmt(r.menge)} ${U.esc(r.m.einheit || '')}</b><small>${U.fmt(r.trips, 1)} F.</small></label>`; }).join('') || '<div class="note" style="padding:6px 8px">Noch keine Flüsse – im Arbeitsbereich „Flüsse“ Standardflüsse übernehmen.</div>'}</div>
-    <div class="zfoot"><label class="chk"><input type="checkbox" data-fmove ${FB.move ? 'checked' : ''}> Bewegung</label><span>Dicke = Fahrten pro Tag</span></div>`;
-  el.querySelector('[data-fx]').onclick = () => FB.set(false);
-  el.querySelectorAll('[data-fm]').forEach(c => c.onchange = () => { if (c.dataset.pers && c.checked) FB.personen = true; if (c.checked) FB.aus.delete(c.dataset.fm); else FB.aus.add(c.dataset.fm); FB.build(); });
-  el.querySelector('[data-fmove]').onchange = e => { FB.move = e.target.checked; FB.build(); };
-}
-
-/* ---------- Ein/Aus ---------- */
-FB.set = (on) => {
-  FB.on = on; document.body.classList.toggle('flussbild', on);
-  const b = document.getElementById('vFlow'); if (b) b.classList.toggle('on', on);
-  // Gebäude gläsern, damit die Flüsse im Haus zu sehen sind
-  if (on && V.shell !== 'glas') { shell0 = V.shell; V.shell = 'glas'; S3.rebuild('all'); }
-  if (!on && V.shell === 'glas') { V.shell = shell0 && shell0 !== 'glas' ? shell0 : 'massiv'; S3.rebuild('all'); }
-  const sel = document.getElementById('vShell'); if (sel) sel.value = V.shell;
-  FB.build();
-};
-FB.toggle = () => FB.set(!FB.on);
-// Projekt- oder Netzänderungen: neu aufbauen (verzögert)
-const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
-HSS.on('changed', rebuild); HSS.on('loaded', () => { if (FB.on) setTimeout(FB.build, 50); });
-
-(() => {
-  const vb = document.getElementById('vM2');
-  if (vb && !document.getElementById('vFlow')) { const b = document.createElement('button'); b.className = 'tgl'; b.id = 'vFlow'; b.title = 'Flussbild: alle Material- und Logistikflüsse als farbige Bänder mit Pfeilen, Dicke nach Fahrten pro Tag, mit bewegten Wagen und LKW'; b.textContent = 'Flussbild'; b.onclick = () => FB.toggle(); vb.before(b); }
-  const sh = document.getElementById('vShell'); if (sh && !sh.querySelector('option[value="glas"]')) sh.insertAdjacentHTML('beforeend', '<option value="glas">gläsern</option>');
-})();
 })();
 
 </script>
@@ -14079,7 +14004,7 @@ function boot() {
   HSS.s3.init($('#viewport')); HSS.perf.init(); HSS.manip.init();
   HSS.nav.init();
   UI.buildRail(); UI.bindViewbar(); UI.timeline.bind(); HSS.plan2d?.init(); HSS.perf.bindUI();
-  bindHeader(); bindDrop();
+  bindHeader(); if (!window.HSS_VIEWER) bindDrop();
   HSS.on('changed', e => {
     if (e.scope !== 'none') HSS.s3.rebuild(e.scope === 'objects' ? 'objects' : e.scope === 'outdoor' ? 'outdoor' : 'all');
     UI.inspector(); UI.refreshViewbar(); refreshHeader();
@@ -14092,7 +14017,7 @@ function boot() {
   HSS.on('tool', t => { if (!t) UI.hint(null); });
   HSS.on('loaded', () => {
     const so = HSS.project().meta.standort;
-    if (so && (so.rev || 1) < 2) setTimeout(async () => {
+    if (so && (so.rev || 1) < 2 && !window.HSS_VIEWER) setTimeout(async () => {
       if (await UI.confirm('Standortmodell aktualisieren?', 'Für dieses Standortmodell gibt es eine verbesserte Übernahme: Gebäude als Sockel mit aufgesetzten Türmen und schlanken Technikaufbauten, keine Gehwege mehr auf den Fahrbahnen, Bielefeld/Koblenz/Hanau mit festen Bezeichnern. Ihre Änderungen (gelöschte Gebäude und Wege, eigene Gebäude, Räume, Stationen, Flüsse) bleiben erhalten. Rückgängig machen ist möglich.', 'Aktualisieren')) HSS.standorte.aktualisierenAktuell();
     }, 600);
   });
@@ -14100,6 +14025,8 @@ function boot() {
   HSS.on('library-model', U.debounce(() => HSS.s3.rebuild('objects'), 200));
   UI.setWS('gebaeude');
   HSS.library.loadUserObjects();
+  // Exportierte HTML-Ansicht: Projekt nur anzeigen
+  if (window.HSS_VIEWER && HSS.ansicht) { HSS.ansicht.boot(); refreshHeader(); $('#loading').hidden = true; HSS.booted = true; return; }
   const auto = HSS.autosaved();
   let restored = false;
   if (auto) { try { HSS.load(auto, { noAutosave: true }); restored = true; } catch (e) { console.warn(e); } }
@@ -14129,6 +14056,7 @@ function bindHeader() {
   $('#bNew').onclick = async () => { if (HSS.project().buildings.length && !await UI.confirm('Neues Projekt', 'Das aktuelle Projekt bleibt in der Projektablage des Browsers erhalten.', 'Neues Projekt')) return; const n = await UI.prompt('Name des Projekts', 'Neues Krankenhausprojekt'); if (n === null) return; HSS.load(HSS.newProject(n || 'Neues Projekt')); UI.setWS('gelaende'); };
   $('#bOpen').onclick = openDialog;
   $('#bSave').onclick = saveDialog;
+  $('#bHtml') && ($('#bHtml').onclick = () => HSS.ansicht?.dialog());
   $('#fOpen').onchange = async e => { const fs = [...e.target.files]; if (fs.length) await HSS.openFiles(fs); e.target.value = ''; };
   $('#bUndo').onclick = () => { const l = HSS.undo(); if (l) UI.toast(l); };
   $('#bRedo').onclick = () => { const l = HSS.redo(); if (l) UI.toast(l); };
@@ -14143,7 +14071,8 @@ async function saveDialog() {
   UI.dialog(`<div class="dh"><h2>Projekt speichern</h2><button class="x" data-close>×</button></div>
    ${ok ? '<div class="okbox">In der Projektablage dieses Browsers gespeichert.</div>' : '<div class="warnbox">Browser-Ablage nicht verfügbar – bitte als Datei speichern.</div>'}
    <p>Für Weitergabe, Archiv oder anderen Rechner als Datei speichern. Die Datei enthält das komplette Modell (Gebäude, Gelände, Innenausbau, Flüsse, Regeln, Stationen) und alle verwendeten eigenen Bibliotheksobjekte.</p>
-   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; });
+   <p>Für Kunden ohne Bearbeitung: <b>HTML-Ansicht</b> – eine Datei mit genau dieser Ansicht zum Ansehen (drehen, zoomen, Etagen), ohne Ändern.</p>
+   <div class="actions"><button class="primary" id="sFile">Als Datei herunterladen (.hss.json)</button><button id="sHtml">Als HTML-Ansicht exportieren</button><button data-close>Schließen</button></div>`, d => { $('#sFile', d).onclick = () => { HSS.storage.exportFile(); d.close(); refreshHeader(); }; $('#sHtml', d).onclick = () => { d.close(); HSS.ansicht.dialog(); }; });
 }
 async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }

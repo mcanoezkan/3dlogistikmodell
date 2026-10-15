@@ -12,7 +12,7 @@
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo, UI = HSS.ui, $ = UI.$;
 const O = HSS.osm = {};
-const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+const SERVER = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
 const r1 = v => Math.round(v * 10) / 10;
 
 /* Geokoordinaten → Modellraster (x Osten, z Süden, gedreht um den Nordwinkel des Projekts) */
@@ -68,15 +68,46 @@ O.geocode = async (q) => {
   return (await r.json()).map(x => ({ name: x.display_name, lat: +x.lat, lon: +x.lon }));
 };
 
+function hull(pts) {
+  const p = pts.map(q => [q[0], q[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (p.length < 3) return p;
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); const lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
 /* OSM-Antwort ins Projekt übernehmen */
 O.apply = (prj, data, geo, opt) => {
   const T = O.proj(geo), stat = { strassen: 0, wege: 0, flaechen: 0, gebaeude: 0, grenze: 0 };
   if (opt.ersetzen) { prj.paths = prj.paths.filter(p => !p.umgebung); prj.areas = prj.areas.filter(a => !a.umgebung); prj.buildings = prj.buildings.filter(b => !b.umgebung); }
   // vorhandene Gebäude des Projekts (Klinikgebäude nicht doppelt übernehmen)
-  const own = HSS.allParts(prj).map(pt => HSS.partFootprint(pt).outer);
-  const inOwn = p => own.some(fp => G.pointIn(p, fp));
+  const ownParts = prj.buildings.filter(b => !b.umgebung).flatMap(b => b.parts);
+  const own = ownParts.map(pt => { const o = HSS.partFootprint(pt).outer; return { o, bb: G.bbox(o) }; });
+  const near = (p, buf) => own.some(({ o, bb }) => p[0] > bb.x0 - buf && p[0] < bb.x1 + buf && p[1] > bb.z0 - buf && p[1] < bb.z1 + buf && (G.pointIn(p, o) || (buf > 0 && o.some((q, i) => G.dist(p, G.closestOnSeg(p, q, o[(i + 1) % o.length]).pt) < buf))));
+  const inOwn = p => near(p, 0);
   const ringOf = el => (el.geometry || []).map(g => T(g.lat, g.lon));
   const outerRings = el => el.type === 'relation' ? (el.members || []).filter(m => m.role === 'outer' && m.geometry).map(m => m.geometry.map(g => T(g.lat, g.lon))) : [ringOf(el)];
+  // Klinikgelände: OSM-Grenze des Klinikums und Umriss der Gebäude im Modell (+12 m) – dort gilt das Modell, nicht OSM
+  const campus = [];
+  if (opt.campus !== false) {
+    for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of outerRings(el)) if (r.length >= 4) campus.push(r); }
+    const pts = own.flatMap(x => x.o); if (pts.length >= 3) {
+      const h = hull(pts), cx = U.sum(h.map(p => p[0])) / h.length, cz = U.sum(h.map(p => p[1])) / h.length;
+      campus.push(h.map(p => { const dx = p[0] - cx, dz = p[1] - cz, l = Math.hypot(dx, dz) || 1; return [p[0] + dx / l * 12, p[1] + dz / l * 12]; }));
+    }
+  }
+  const inCampus = p => campus.some(r => G.pointIn(p, r));
+  const polyHitsOwn = r => r.some(p => inOwn(p)) || own.some(({ o }) => o.some(q => G.pointIn(q, r)));
+  // Linien auftrennen: Stücke im Klinikgelände bzw. über Modellgebäuden entfallen
+  const splitLine = (pts, drop) => {
+    const out = []; let cur = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], L = G.dist(a, b), n = Math.max(1, Math.ceil(L / 2));
+      for (let j = 0; j < n; j++) { const p = [r1(a[0] + (b[0] - a[0]) * j / n), r1(a[1] + (b[1] - a[1]) * j / n)]; if (drop(p)) { if (cur.length >= 2) out.push(cur); cur = []; } else if (j === 0 || !cur.length || drop([a[0] + (b[0] - a[0]) * (j + 1) / n, a[1] + (b[1] - a[1]) * (j + 1) / n])) cur.push(p); }
+    }
+    const last = pts[pts.length - 1]; if (!drop(last)) cur.push(last); if (cur.length >= 2) out.push(cur);
+    return out.filter(q => G.polylineLength(q) >= 3);
+  };
+  stat.ausgelassen = 0;
   let maxR = 0;
   for (const el of data.elements || []) {
     const t = el.tags || {};
@@ -85,10 +116,18 @@ O.apply = (prj, data, geo, opt) => {
       const [w, kind, traffic, kmh] = STRASSE[t.highway];
       const pts = ringOf(el); if (G.polylineLength(pts) < 3) continue;
       const lanes = +t.lanes || 0, width = t.width ? parseFloat(t.width) || w : lanes ? Math.max(w, lanes * 3.2) : w;
-      const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id, name: t.name || HSS.WEGARTEN[kind].name, points: pts, width: U.clamp(width, 1.2, 30), smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
-      if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
-      prj.paths.push(p); stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
-      for (const q of pts) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      const wid = U.clamp(width, 1.2, 30);
+      // im Klinikgelände nur öffentliche Straßen übernehmen; nie über Modellgebäude
+      const drop = p => (kind !== 'strasse' && inCampus(p)) || near(p, wid / 2 + 1);
+      const pieces = campus.length || own.length ? splitLine(pts, drop) : [pts];
+      if (!pieces.length) { stat.ausgelassen++; continue; }
+      pieces.forEach((pc, k) => {
+        const p = Object.assign(HSS.defaults.path(kind), { id: 'osm_w' + el.id + (k ? '_' + k : ''), name: t.name || HSS.WEGARTEN[kind].name, points: pc, width: wid, smooth: false, umgebung: true, osm: 'way/' + el.id, traffic: opt.verkehr ? traffic : 0, speedKmh: kmh || null, noNet: !['strasse', 'zufahrt'].includes(kind) });
+        if (t.bridge === 'yes' || t.tunnel === 'yes') p.noNet = true;
+        prj.paths.push(p);
+        for (const q of pc) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+      });
+      stat[kind === 'strasse' || kind === 'zufahrt' ? 'strassen' : 'wege']++;
       continue;
     }
     if (opt.wege && el.type === 'way' && (t.waterway || t.railway) && el.geometry?.length >= 2) {
@@ -108,6 +147,8 @@ O.apply = (prj, data, geo, opt) => {
         let r = r0.slice(); if (r.length > 3 && G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
         const area = Math.abs(G.area(r)); if (area < 30) continue;
         r = G.ccw(r); const bb = G.bbox(r);
+        // Flächen im Klinikgelände (Parkplätze, Rasen …) gibt das Modell vor
+        if (campus.length && (inCampus([bb.cx, bb.cz]) || (area < 20000 && polyHitsOwn(r)))) { stat.ausgelassen++; continue; }
         prj.areas.push({ id: 'osm_a' + el.id + '_' + stat.flaechen, kind, name: t.name || HSS.FLAECHEN[kind], poly: r, x: r1(bb.cx), z: r1(bb.cz), w: r1(bb.w), d: r1(bb.d), rot: 0, lage: LAGE[kind] || 0, umgebung: true, osm: el.type + '/' + el.id });
         stat.flaechen++;
       }
@@ -117,7 +158,7 @@ O.apply = (prj, data, geo, opt) => {
     if (opt.gebaeude && t.building && el.type === 'way' && el.geometry?.length >= 4) {
       let r = ringOf(el); if (G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
       const area = Math.abs(G.area(r)); if (area < 12) continue;
-      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz])) continue;
+      const bbw = G.bbox(r); if (inOwn([bbw.cx, bbw.cz]) || inCampus([bbw.cx, bbw.cz]) || polyHitsOwn(r)) { stat.ausgelassen++; continue; }
       const lv = U.clamp(Math.round(+t['building:levels'] || (t.height ? parseFloat(t.height) / 3 : 0) || ({ house: 2, detached: 2, garage: 1, garages: 1, shed: 1, apartments: 4, industrial: 2, retail: 1, commercial: 3, office: 4, hospital: 4, school: 3 }[t.building] || 2)), 1, 30);
       const loc = G.ccw(r.map(p => [r1(p[0] - bbw.cx), r1(p[1] - bbw.cz)])), bb = G.bbox(loc);
       const b = Object.assign(HSS.defaults.building(), { id: 'osm_b' + el.id, name: t.name || (t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : 'Gebäude (Umgebung)'), kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
@@ -133,14 +174,15 @@ O.apply = (prj, data, geo, opt) => {
 
 /* Dialog */
 O.dialog = () => {
-  const prj = HSS.project(), g = prj.meta.geo || {};
+  const prj = HSS.project(), std = (HSS.STANDORTE || []).find(x => x.id === prj.meta.standort?.id)?.geo;
+  const g = prj.meta.geo?.lat ? prj.meta.geo : (std || prj.meta.geo || {});
   UI.dialog(`<div class="dh"><h2>Umgebung aus OpenStreetMap laden</h2><button class="x" data-close>×</button></div>
     <p class="note">Lädt Straßen, Wege, Felder, Wiesen, Wälder, Gewässer, Gebäude der Nachbarschaft und die Grenze des Klinikgeländes rund um den Standort – so sieht man, wo Autos fahren, wie weit geplant werden kann und was das Gelände umgibt. Benötigt eine Internetverbindung.</p>
     <div class="fg"><label class="f full"><span>Adresse suchen</span><input type="text" id="oQ" placeholder="z. B. Rübenacher Straße 170, Koblenz" value="${U.esc(g.adresse && !/^[a-z]+$/.test(g.adresse) ? g.adresse : '')}"></label></div>
     <div class="row"><button id="oSearch">Suchen</button><span class="note" id="oRes"></span></div>
     <div class="fg"><label class="f"><span>Breite (lat) des Modellursprungs</span><input type="number" id="oLat" step="0.00001" value="${g.lat ?? ''}"></label><label class="f"><span>Länge (lon)</span><input type="number" id="oLon" step="0.00001" value="${g.lon ?? ''}"></label>
     <label class="f"><span>Nordwinkel des Modells [°]</span><input type="number" id="oN" step="0.1" value="${g.nord ?? 0}"></label><label class="f"><span>Radius [m]</span><input type="number" id="oR" step="50" min="150" max="2000" value="600"></label></div>
-    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label></div>
+    <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label><label class="chk" title="Auf dem Klinikgelände und über den Gebäuden des Modells werden keine OSM-Gebäude, -Flächen und -Wege übernommen – dort gilt das Modell"><input type="checkbox" id="oC" checked> Klinikgelände wie im Modell (OSM nur außen herum)</label></div>
     <div class="note" id="oSt"></div>
     <div class="actions"><button data-close>Abbrechen</button><button class="primary" id="oGo">Umgebung laden</button></div>
     <p class="note">Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Der Modellursprung (0/0) liegt an der angegebenen Koordinate.</p>`, d => {
@@ -153,7 +195,7 @@ O.dialog = () => {
       const geo = { lat: +$('#oLat', d).value, lon: +$('#oLon', d).value, nord: +$('#oN', d).value || 0 };
       if (!geo.lat || !geo.lon) return UI.toast('Bitte Koordinaten angeben oder Adresse suchen');
       const radius = U.clamp(+$('#oR', d).value || 600, 150, 2000);
-      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked };
+      const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked, campus: $('#oC', d).checked };
       const st = $('#oSt', d); $('#oGo', d).disabled = true; st.textContent = 'Lade Daten aus OpenStreetMap …';
       try {
         const data = await O.fetch(O.query(geo, radius), url => { st.textContent = 'Lade Daten von ' + new URL(url).host + ' …'; });
@@ -162,7 +204,7 @@ O.dialog = () => {
         HSS.manip?.mark();
         HSS.change('Umgebung aus OpenStreetMap', p => { p.meta.geo = Object.assign(p.meta.geo || {}, geo); stat = O.apply(p, data, geo, opt); });
         d.close(); HSS.s3.home();
-        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}`, 5000);
+        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}${stat.ausgelassen ? ` · ${stat.ausgelassen} Objekte auf dem Klinikgelände ausgelassen` : ''}`, 5000);
       } catch (e) { st.innerHTML = `<span class="warnbox" style="display:block">${U.esc(e.message)}</span>`; $('#oGo', d).disabled = false; }
     };
   });
