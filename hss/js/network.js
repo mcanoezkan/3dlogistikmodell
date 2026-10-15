@@ -250,7 +250,7 @@ function buildNet(prj) {
       const inn = nearestIn(floorNodes.get(s.pt.id + '|' + s.f) || [], wpos[0], wpos[1]);
       if (inn) addEdge(id, inn.id, 'zugang', { part: s.pt.id, floor: s.f });
       if (prev) addEdge(prev.id, id, role === 'treppe' ? 'treppe' : 'aufzug', { lift: o.id, gfa: prev.gf, gfb: s.gf, len: role === 'treppe' ? Math.abs(s.y - prev.y) * 2.2 + 6 : Math.abs(s.y - prev.y) });
-      prev = { id, gf: s.gf };
+      prev = { id, gf: s.gf, y: s.y };
     }
   }
 

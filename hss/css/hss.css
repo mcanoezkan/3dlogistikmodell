@@ -410,3 +410,13 @@ body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.
 body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
 body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
 .axopt{display:grid;gap:6px}.axopt .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px}.axopt small{font-size:11.5px}
+.fa-dlg{width:min(640px,96vw)}
+.fa-steps{display:flex;gap:6px;margin:0 0 10px}.fa-steps span{flex:1;font-size:12px;padding:6px 8px;border-radius:4px;background:#eef1f4;color:var(--muted)}.fa-steps span.on{background:var(--navy,#0A223C);color:#fff;font-weight:600}
+.fa-route{display:flex;flex-direction:column;gap:0;max-height:52vh;overflow:auto;padding-right:4px}
+.fa-stop{display:flex;gap:10px;align-items:flex-start;background:#f7f9fa;border:1px solid #e1e6ea;border-radius:6px;padding:8px 10px}
+.fa-stop.start{border-left:4px solid #0A967A}.fa-stop.ziel{border-left:4px solid #c0392b}.fa-stop.zw{border-left:4px solid #f2c94c}
+.fa-dot{width:24px;height:24px;border-radius:50%;background:#0A223C;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.fa-stop.start .fa-dot{background:#0A967A}.fa-stop.ziel .fa-dot{background:#c0392b}.fa-stop.zw .fa-dot{background:#d4a514}
+.fa-f{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12.5px}.fa-row{display:flex;gap:6px}.fa-row select:first-child{flex:1}.fa-f select{width:100%}.fa-row select[data-k=gf]{width:110px;flex:none}
+.fa-add{padding:4px 0 4px 44px;border-left:2px dashed #c3c9d0;margin-left:21px}
+.fa-sum{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:10px}.fa-chip{background:#eef1f4;border-radius:12px;padding:3px 10px;font-size:12px}.fa-chip.start{background:#d9f2ec}.fa-chip.ziel{background:#f8dcd8}.fa-arr{color:var(--muted)}

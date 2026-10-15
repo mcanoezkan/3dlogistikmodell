@@ -447,15 +447,17 @@ W.fluesse = { name: 'Material-, Waren- & Personenflüsse', short: 'Flüsse', ste
 const FT = {};
 FT.fluesse = (el, prj) => {
   const mats = new Map(prj.materials.map(m => [m.id, m]));
-  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fStd">Standardflüsse übernehmen …</button><button id="fNew">+ Fluss</button></div>
+  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button id="fStd">Standardflüsse übernehmen …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button></div>
   <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1))))} Ladungen/Tag</div>
   <div class="list" style="max-height:none">${prj.flows.map(f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span></div>`; }).join('') || '<div class="li note">Noch keine Flüsse.</div>'}</div>
   <div id="fEdit"></div>`;
   $('#fStd', el).onclick = UI.templateDialog;
+  $('#fWiz', el).onclick = () => HSS.flussAssistent.dialog();
   $('#fNew', el).onclick = () => { const f = { id: U.uid('flow'), name: 'Neuer Fluss', material: prj.materials[0].id, von: '', nach: '', menge: 10, periode: 'tag', betriebstage: 7, fenster: [[8, 12]], transport: 't_hand', fahrzeitMin: null, aktiv: true }; HSS.change('Fluss anlegen', p => p.flows.push(f), { scope: 'none' }); UI.flowSel = f.id; UI.renderPanel(); };
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
   $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
+  setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit);
   const ed = $('#fEdit', el);
@@ -474,8 +476,14 @@ FT.fluesse = (el, prj) => {
   $('#fDup', ed).onclick = () => { const n = U.clone(f); n.id = U.uid('flow'); n.name += ' (Kopie)'; HSS.change('Fluss duplizieren', p => p.flows.push(n), { scope: 'none' }); UI.flowSel = n.id; UI.renderPanel(); };
   $('#fDel', ed).onclick = () => { HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== f.id)), { scope: 'none' }); UI.flowSel = null; UI.renderPanel(); clearGhost(); };
 };
-UI.showRoute = (fid, focus) => {
-  clearGhost();
+// Mehrere Flüsse (z. B. Etappen aus dem Assistenten) gemeinsam zeigen
+UI.showRoutes = (ids, focus) => {
+  clearGhost(); const box = new THREE.Box3();
+  for (const id of ids) { UI.showRoute(id, false, true); }
+  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); HSS.s3.focusBox(box, { k: 0.8 }); }
+};
+UI.showRoute = (fid, focus, keep) => {
+  if (!keep) clearGhost();
   const prj = HSS.project(), f = U.byId(prj.flows, fid); if (!f) return;
   const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit); if (!r.ok) return;
