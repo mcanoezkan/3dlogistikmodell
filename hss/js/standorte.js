@@ -285,6 +285,19 @@ function convert(S, def, v, opts = {}) {
     }
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
+  /* Warenströme (Familien) mit Farbe und Prozess-Tour (Stationen mit Erläuterung) */
+  if ((D.flows || []).some(fl => fl.color || fl.tour)) {
+    const PL = new Map(HSS.places(prj).map(p => [p.id, p])), areaName = id => (D.areas || []).find(a => a.id === id)?.name;
+    const tourPlace = t => {
+      const ids = (areaPlaces[t.area] || []).filter(id => PL.has(id)); if (!ids.length) return null;
+      const n = t.node && nodes[t.node];
+      if (n) { const hit = ids.find(id => PL.get(id).gf === n.l && (!n.b || PL.get(id).building === PRE[def.id] + n.b)) || ids.find(id => PL.get(id).gf === n.l); if (hit) return hit; }
+      return ids[0];
+    };
+    prj.stroeme = D.flows.map(fl => ({ id: fl.id, name: fl.name, farbe: fl.color || null, reinheit: fl.cls || null,
+      tour: (fl.tour || []).map(t => ({ place: tourPlace(t), titel: areaName(t.area) || t.title || '', text: (v === 'soll' && t.textSoll) || t.text || '' })).filter(t => t.place) }));
+    for (const f of prj.flows) { const m = /^fl_(.+?)_\d+_/.exec(f.id); if (m && prj.stroeme.some(x => x.id === m[1])) f.strom = m[1]; }
+  }
   if (HSS.furnishEmpty) HSS.furnishEmpty(prj, { maxArea: 1500, max: 9000 }); // Funktionsflächen einrichten
   // Gelände groß genug für alle Gebäude, Wege und die Grundstücksgrenze
   { let r = 0; for (const pt of HSS.allParts(prj)) for (const q of HSS.partFootprint(pt, prj).outer) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); for (const pa of prj.paths) for (const q of pa.points) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); prj.terrain.size = Math.max(prj.terrain.size || 500, Math.ceil((r * 2 + 200) / 100) * 100); }
