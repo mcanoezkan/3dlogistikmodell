@@ -406,3 +406,7 @@ body.viewer #prjName{pointer-events:none;font-size:14px;color:#fff;opacity:.9}
 #vwCard .x{position:absolute;top:6px;right:6px;border:0;background:transparent;font-size:16px;padding:0 4px}
 body.viewer #zLegend{left:72px}
 body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
+body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.vw-no-rundgang #tourCard,body.viewer.vw-no-rundgang .vw-tour{display:none!important}
+body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
+body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
+.axopt{display:grid;gap:6px}.axopt .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px}.axopt small{font-size:11.5px}
