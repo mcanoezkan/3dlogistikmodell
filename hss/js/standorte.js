@@ -16,7 +16,7 @@ HSS.STANDORTE = [
   { id: 'koblenz', name: 'Bundeswehrzentralkrankenhaus Koblenz', ort: 'Koblenz, Rübenacher Straße 170', datei: 'standorte/koblenz.js',
     text: 'Gebäude und Straßen aus OpenStreetMap, Gebäudebezeichnungen und Geschossbelegung nach Lageplan und Wegweiser; Neubau K1 (im Bau). Bereiche, Aufzüge, Mengen und Zeiten aus dem Patient-, Prozess- und Ressourcenmodell (BwZK v4, überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Logistik optimiert)' }] },
-  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js',
+  { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
   { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },

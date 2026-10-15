@@ -38,11 +38,12 @@ const FACH = [
   ['labor', 'Labor', '#a569bd', 'NUF3', 'Untersuchung & Behandlung'], ['physio', 'Physiotherapie', '#58d68d', 'NUF6', 'Untersuchung & Behandlung'],
   ['ambulanz', 'Ambulanzen / MVZ', '#45b39d', 'NUF6', 'Untersuchung & Behandlung'], ['tagesklinik', 'Tagesklinik', '#8ecae6', 'NUF6', 'Untersuchung & Behandlung'],
   ['dialyse', 'Dialyse', '#76d7c4', 'NUF6', 'Untersuchung & Behandlung'], ['funktion', 'Funktionsdiagnostik', '#7fb3d5', 'NUF6', 'Untersuchung & Behandlung'],
+  ['anaesthesie', 'Anästhesie', '#5b7bb4', 'NUF6', 'Untersuchung & Behandlung'], ['strahlen', 'Strahlentherapie', '#d4a017', 'NUF6', 'Untersuchung & Behandlung'],
   // Service & Verwaltung
   ['eingang', 'Eingangshalle & Information', '#f39c12', 'NUF1', 'Service & Verwaltung'], ['aufnahme', 'Patientenaufnahme', '#e59866', 'NUF2', 'Service & Verwaltung'],
   ['speisesaal', 'Cafeteria / Mitarbeiterrestaurant', '#f8c471', 'NUF1', 'Service & Verwaltung'], ['verwaltung', 'Verwaltung', '#6b2c82', 'NUF2', 'Service & Verwaltung'],
   ['lehre', 'Lehre, Schulung & Forschung', '#bb8fce', 'NUF5', 'Service & Verwaltung'], ['personal', 'Personal (Umkleiden, Bereitschaft)', '#d7bde2', 'NUF7', 'Service & Verwaltung'],
-  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'],
+  ['seelsorge', 'Seelsorge & Sozialdienst', '#c39bd3', 'NUF1', 'Service & Verwaltung'], ['dienste', 'Allgemeine Dienste', '#b0a18f', 'NUF2', 'Service & Verwaltung'],
   // Ver- und Entsorgung, Technik
   ['apotheke', 'Apotheke', '#16a085', 'NUF4', 'Ver- und Entsorgung'], ['zsva', 'Sterilgutversorgung (ZSVA)', '#5d6d7e', 'NUF3', 'Ver- und Entsorgung'],
   ['kueche', 'Küche', '#ca6f1e', 'NUF3', 'Ver- und Entsorgung'], ['logistik', 'Logistik, Lager & Entsorgung', '#8d6e63', 'NUF4', 'Ver- und Entsorgung'],

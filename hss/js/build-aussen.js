@@ -170,7 +170,10 @@ function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
   const bb = G.bbox(a.poly), area = Math.abs(G.area(a.poly)), rnd = U.rng(U.hash(a.id));
-  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
+  // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
+  const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
+  const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
+  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
   else if (a.kind === 'park' || a.kind === 'gruen') { scatter('gruen.baum.laub', Math.min(60, area / 300), 0.7, 1.1); scatter('gruen.strauch', Math.min(60, area / 250), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
