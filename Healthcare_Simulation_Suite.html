@@ -401,6 +401,9 @@ body.nopanel #zLegend{left:calc(var(--railW) + 12px)}
 #zLegend .zi small{font-size:10px;padding:0 4px;border-radius:3px;background:#eef2f5;color:var(--muted)}#zLegend .zi small.low{background:#fde8ec;color:#a3123a}#zLegend .zi small.ok{background:#e3f1ee;color:#0a6e5a}
 #zLegend .zfoot{padding:4px 10px 7px;color:var(--muted);font-size:11px;border-top:1px solid var(--soft)}#zLegend .zfoot i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 
+/* ---------- Flussbild ---------- */
+/* Planungsmodell: ruhiger, heller Hintergrund */
+body.plan #viewport{background:#DCE3E8}
 /* ---------- HTML-Ansicht (nur ansehen) ---------- */
 body.viewer{--railW:0px;--panelW:0px;--inspW:0px}
 body.viewer #rail,body.viewer #panel,body.viewer #inspector,body.viewer #mbar,body.viewer #top .grp,body.viewer #bDemo,body.viewer #bHelp,body.viewer #saveState,body.viewer #demoCard,body.viewer #v2d,body.viewer #plan2dBar,body.viewer #dropOverlay{display:none!important}
@@ -414,6 +417,46 @@ body.viewer #prjName{pointer-events:none;font-size:14px;color:#fff;opacity:.9}
 #vwCard .x{position:absolute;top:6px;right:6px;border:0;background:transparent;font-size:16px;padding:0 4px}
 body.viewer #zLegend{left:72px}
 body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
+body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.vw-no-rundgang #tourCard,body.viewer.vw-no-rundgang .vw-tour{display:none!important}
+body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
+body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
+.axopt{display:grid;gap:6px}.axopt .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px}.axopt small{font-size:11.5px}
+.fa-dlg{width:min(640px,96vw)}
+.fa-steps{display:flex;gap:6px;margin:0 0 10px}.fa-steps span{flex:1;font-size:12px;padding:6px 8px;border-radius:4px;background:#eef1f4;color:var(--muted)}.fa-steps span.on{background:var(--navy,#0A223C);color:#fff;font-weight:600}
+.fa-route{display:flex;flex-direction:column;gap:0;max-height:52vh;overflow:auto;padding-right:4px}
+.fa-stop{display:flex;gap:10px;align-items:flex-start;background:#f7f9fa;border:1px solid #e1e6ea;border-radius:6px;padding:8px 10px}
+.fa-stop.start{border-left:4px solid #0A967A}.fa-stop.ziel{border-left:4px solid #c0392b}.fa-stop.zw{border-left:4px solid #f2c94c}
+.fa-dot{width:24px;height:24px;border-radius:50%;background:#0A223C;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.fa-stop.start .fa-dot{background:#0A967A}.fa-stop.ziel .fa-dot{background:#c0392b}.fa-stop.zw .fa-dot{background:#d4a514}
+.fa-f{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12.5px}.fa-row{display:flex;gap:6px}.fa-row select:first-child{flex:1}.fa-f select{width:100%}.fa-row select[data-k=gf]{width:110px;flex:none}
+.fa-add{padding:4px 0 4px 44px;border-left:2px dashed #c3c9d0;margin-left:21px}
+.fa-sum{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:10px}.fa-chip{background:#eef1f4;border-radius:12px;padding:3px 10px;font-size:12px}.fa-chip.start{background:#d9f2ec}.fa-chip.ziel{background:#f8dcd8}.fa-arr{color:var(--muted)}
+/* ---------- Warenströme (Planungsmodell) ---------- */
+#stroeme{position:fixed;right:12px;top:calc(var(--topH) + 96px);z-index:8;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);width:310px;max-height:calc(100vh - var(--topH) - 96px - 12px);overflow:auto;font-size:12.5px;padding:10px 12px}
+body.stachse #stroeme{max-height:calc(100vh - var(--topH) - 96px - 214px)}
+body.insp #stroeme{right:calc(var(--inspW) + 24px)}
+#stroeme .sh{display:flex;align-items:center;gap:6px}#stroeme .sh b{flex:1;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;font-size:12px}#stroeme .sh .x{border:0;background:transparent;font-size:16px;padding:0 4px}
+#stroeme .sn{margin:2px 0 6px;font-size:11px}
+#stroeme .sl{display:flex;flex-direction:column;margin-bottom:6px}
+#stroeme .si{display:flex;align-items:center;gap:8px;padding:5px 2px;cursor:pointer;border-radius:4px}#stroeme .si:hover{background:var(--soft)}#stroeme .si.dim span{color:var(--muted)}
+#stroeme .si i{width:12px;height:12px;border-radius:3px;flex:none}#stroeme .si span{flex:1}#stroeme .si small{color:var(--muted);font-size:11px;white-space:nowrap}#stroeme .si input{margin:0}
+#stroeme .chk{display:flex;gap:8px;align-items:center;padding:3px 0}
+#stroeme .sh2{margin:12px 0 6px;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;font-size:12px;font-weight:700}
+#stroeme .row{display:flex;gap:6px}#stroeme .row select{flex:1}
+#stroeme .ctl{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px}#stroeme .ctl input{flex:1}
+#stroeme .note{font-size:11px;margin-top:6px}
+#stAchse{position:fixed;left:calc(var(--railW) + var(--panelW) + 12px);right:12px;bottom:12px;height:142px;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);padding:8px 12px 6px;z-index:8;display:flex;flex-direction:column}
+#stAchse .ah{display:flex;align-items:center;gap:10px;font-size:12px}#stAchse .ah b{color:var(--navy)}#stAchse .ai{color:var(--muted)}#stAchse .ah .sp{flex:1}#stAchse .ah button.on{background:var(--navy);color:#fff}
+#stAchse canvas{flex:1 1 0;min-height:0;width:100%;cursor:pointer}
+body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #navHelp{bottom:164px}
+#stTour{position:fixed;left:50%;bottom:170px;transform:translateX(-50%);width:min(560px,calc(100% - 760px));min-width:360px;background:rgba(10,34,60,.96);color:#fff;border-radius:4px;padding:12px 16px;z-index:10;box-shadow:var(--shadow)}
+#stTour .tk{font-size:11px;color:#BDC6D1;text-transform:uppercase;letter-spacing:.05em}
+#stTour h3{color:#fff;font-size:16px;margin:4px 0}#stTour p{margin:0 0 10px;color:#fff;font-size:13px;line-height:1.45}
+#stTour .bar{height:3px;background:#144477;border-radius:2px;margin-bottom:10px}#stTour .bar i{display:block;height:100%;background:#0A967A;border-radius:2px;width:0}
+#stTour .row{display:flex;align-items:center;gap:8px}#stTour .sp{flex:1}
+#stTour button{background:#144477;border-color:#2D7694;color:#fff}#stTour button:hover{background:#2D7694}
+#stTour .ctl{color:#fff;display:flex;gap:6px;align-items:center;font-size:12px}#stTour input[type=range]{accent-color:#fff;width:110px}
+@media (max-width:1100px){#stTour{width:calc(100% - 40px);min-width:0}#stroeme{width:260px}}
 
 </style>
 <!-- =====================================================================
@@ -459,7 +502,7 @@ body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
 
 <div id="viewbar">
   <div class="seg" id="vCut" title="Schnitt der gewählten Ebene (wie ein Puppenhaus)"><button data-v="voll">Wände voll</button><button data-v="halb" class="on">halb</button><button data-v="aus">Grundriss</button></div>
-  <label class="ctl" title="Darstellungsstil">Stil <select id="vStil"><option value="cartoon">Cartoon</option><option value="real">Realistisch</option></select></label>
+  <label class="ctl" title="Darstellungsstil">Stil <select id="vStil"><option value="plan">Planungsmodell</option><option value="cartoon">Cartoon</option><option value="real">Realistisch</option></select></label>
   <label class="ctl">Hülle <select id="vShell"><option value="massiv">massiv</option><option value="transparent">transparent</option><option value="aus">ausgeblendet</option></select></label>
   <label class="ctl" title="Geschosse auseinanderziehen">Explosion <input type="range" id="vExplode" min="0" max="12" step="0.5" value="0"></label>
   <label class="ctl" title="Sonnenstand / Nacht">Uhrzeit <input type="range" id="vSun" min="4" max="23.5" step="0.25" value="14"><span id="vSunL">14:00</span></label>
@@ -5252,7 +5295,8 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Stationsaus
      ladestation – Ladeplatz AWT-Fahrzeuge
      rampe       – Warenannahme/Anlieferung LKW
      lager       – Lager/Puffer
-     fahrzeug    – Transportmittel-Modell (für Animation)  */
+     fahrzeug    – Transportmittel-Modell (für Animation)
+     uebergabe   – Übergabepunkt einer Etage (Fluss-Assistent: Start, Zwischenstopp, Ziel)  */
 (function (K) {
 const W = '#eef1f4', G = '#c3c9d0', DG = '#5a6573', NV = '#144477', PE = '#2D7694', GR = '#0A967A', ST = '#cfd8dc';
 const trolley = (w, d, h, c, o = {}) => [K.box(0, h / 2 + 0.1, 0, w, h - 0.1, d, c, o.m || 'lack', { rr: 0.02 }), K.box(0, h + 0.02, 0, w + 0.02, 0.04, d + 0.02, o.top || G, 'kunststoff', { rr: 0.01 }), ...(o.handle !== false ? [K.box(0, h * 0.8, d / 2 + 0.05, w * 0.7, 0.03, 0.03, '#9aa1aa', 'chrom')] : []), ...(o.stripe ? [K.box(0, h * 0.6, d / 2 + 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack'), K.box(0, h * 0.6, -d / 2 - 0.002, w * 0.95, 0.08, 0.005, o.stripe, 'lack')] : []), ...K.casters(w, d, 0.06)];
@@ -5265,6 +5309,7 @@ const liftShaft = (w, d, c, glass) => [
 
 HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Logistik, AWT, Erschließung', objects: [
   /* ---------- Transportwagen & Behälter ---------- */
+  { id: 'log.uebergabepunkt', name: 'Übergabepunkt (Etage, Fluss-Assistent)', category: 'Logistik & Transport/Warenannahme', tags: ['Fluss', 'Übergabe', 'Zwischenstopp'], size: { w: 1.4, d: 1.4, h: 2.3 }, parts: [K.cyl(0, 0.01, 0, 0.7, 0.02, '#f2c94c', 'lack'), K.cyl(0, 0.025, 0, 0.45, 0.02, '#0A223C', 'lack'), K.cyl(0, 1.1, 0, 0.04, 2.2, '#5a6573', 'metall'), K.box(0, 2.05, 0, 0.7, 0.4, 0.06, '#f2c94c', 'lack', { rr: 0.04 }), K.box(0, 2.05, 0.035, 0.5, 0.18, 0.01, '#0A223C', 'lack')], logistik: { rolle: 'uebergabe' } },
   { id: 'log.modulwagen', name: 'Modulversorgungswagen (2 × ISO 600 × 400)', category: 'Logistik & Transport/Transportwagen', tags: ['Modulversorgung', 'Rein', 'Verbrauchsgüter'], size: { w: 0.9, d: 0.65, h: 1.6 }, parts: [K.box(0, 0.85, -0.3, 0.9, 1.5, 0.03, G, 'metall'), ...[-1, 1].map(s => K.box(s * 0.44, 0.85, 0, 0.02, 1.5, 0.65, G, 'metall')), ...Array.from({ length: 6 }, (_, i) => K.box(-0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#2d7694' : '#7fb3d5', 'kunststoff')), ...Array.from({ length: 6 }, (_, i) => K.box(0.215, 0.3 + i * 0.22, 0.02, 0.41, 0.18, 0.6, i % 2 ? '#7fb3d5' : '#2d7694', 'kunststoff')), ...K.casters(0.85, 0.6, 0.06)], meta: { quelle: 'ISO 3394 Modulmaß 600 × 400 mm' }, logistik: { reinheit: 'rein', kapazitaet: 12, einheit: 'Module' } },
   { id: 'log.speisenwagen', name: 'Speisentransportwagen (Tablettsystem, 20 Tabletts)', category: 'Logistik & Transport/Transportwagen', tags: ['Speisen', 'Küche', 'Rein'], size: { w: 1.35, d: 0.75, h: 1.55 }, parts: trolley(1.35, 0.75, 1.45, '#d6dbe0', { m: 'metall', stripe: '#f2994a' }), logistik: { reinheit: 'rein', kapazitaet: 20, einheit: 'Tabletts' } },
   { id: 'log.waeschewagen.rein', name: 'Wäschewagen rein (geschlossen)', category: 'Logistik & Transport/Transportwagen', tags: ['Wäsche', 'Rein'], size: { w: 1.2, d: 0.7, h: 1.65 }, parts: trolley(1.2, 0.7, 1.55, '#e8f1f8', { stripe: PE }), logistik: { reinheit: 'rein', kapazitaet: 80, einheit: 'kg' } },
@@ -5845,12 +5890,15 @@ HSS.buildPart = (pt, building, view = {}) => {
   const grp = new THREE.Group(); grp.userData = { kind: 'part', id: pt.id, building: building.id };
   const fp = HSS.partFootprint(pt), outer = fp.outer, holes = fp.holes;
   const fc = Object.assign({ type: 'band', color: '#e9ecef', accent: '#144477', glass: '#6f8fa8' }, pt.facade);
-  const transparent = view.shell === 'transparent';
+  const transparent = view.shell === 'transparent' || view.shell === 'glas', plan = view.stil === 'plan';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
-  const wallBase = fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
-  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide })) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
+  const wallBase = plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
+  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase + view.shell, () => { const m = new THREE.MeshStandardMaterial({ color: view.shell === 'glas' ? '#dfe7ee' : wallBase, transparent: true, opacity: view.shell === 'glas' ? 0.14 : 0.18, depthWrite: false, side: THREE.DoubleSide }); if (view.shell === 'glas') m.userData.noToon = true; return m; }) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
-  const slabMat = LM('#d5d8dc'), roofMat = LM(pt.roof?.type === 'gruen' ? '#7fa36a' : (pt.roof?.color || '#9aa3ad'));
+  const glasHull = view.shell === 'glas', tMat = (key, c, o) => HSS.library.shared(key + c + o, () => { const m = new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }); m.userData.noToon = true; return m; });
+  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
+  // Planungsmodell: schlichte Hülle – Wand, Fensterband, Geschosslinie (keine Einzelfenster)
+  const bands = [], flines = [];
   const floors = HSS.partFloors(pt);
   const ex = view.explode || 0;
   const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];
@@ -5875,6 +5923,15 @@ HSS.buildPart = (pt, building, view = {}) => {
       for (const { r } of rings) walls.push(ringWallGeo(r, y0, h));
       continue;
     }
+    if (plan && !(isCut && view.cut === 'voll')) {
+      const park = fc.type === 'parkhaus' || pt.use === 'parkhaus';
+      for (const { r } of rings) {
+        walls.push(ringWallGeo(r, y0, park && !isCut ? Math.min(wh, 1.1) : wh));
+        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(ringWallGeo(r, y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
+        if (!isCut && f > 0) flines.push(ringWallGeo(r, y0 - 0.14, 0.16));
+      }
+      continue;
+    }
     if (fc.type === 'glas' || fc.type === 'lamellen') {
       // Brüstung/Deckenstirn als schmales Band
       for (const { r } of rings) walls.push(ringWallGeo(r, y0 - 0.25, 0.3));
@@ -5889,6 +5946,8 @@ HSS.buildPart = (pt, building, view = {}) => {
     }
   }
   if (walls.length) { const wm = new THREE.Mesh(mergeGeometries(walls), wallMat); wm.castShadow = !transparent; wm.receiveShadow = true; wm.userData = Object.assign({ wall: true }, meta); grp.add(wm); }
+  if (bands.length) { const bm = new THREE.Mesh(mergeGeometries(bands), HSS.library.shared('planband' + transparent, () => new THREE.MeshStandardMaterial({ color: '#c6d8e4', roughness: 0.35, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, transparent, opacity: transparent ? 0.3 : 1, depthWrite: !transparent, side: THREE.DoubleSide }))); bm.userData = Object.assign({}, meta); grp.add(bm); }
+  if (flines.length) { const lm = new THREE.Mesh(mergeGeometries(flines), HSS.library.shared('planlinie' + transparent, () => new THREE.MeshStandardMaterial({ color: '#c3cbd3', roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, transparent, opacity: transparent ? 0.4 : 1, depthWrite: !transparent, side: THREE.DoubleSide }))); lm.userData = Object.assign({}, meta); grp.add(lm); }
   inst.meshes(meta).forEach(m => grp.add(m));
   // Dach, Attika, Technikaufbau
   const topGF = HSS.globalFloor(pt, pt.floors - 1, prj);
@@ -5896,8 +5955,8 @@ HSS.buildPart = (pt, building, view = {}) => {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
     const par = pt.roof?.parapet ?? 0.9;
-    if (par > 0) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt, par))), LM(fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({}, meta); grp.add(pm); }
-    if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus') {
+    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
+    if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
       const box = new THREE.Mesh(new THREE.BoxGeometry(pw, 3.0, pd), LM('#b9c0c7'));
@@ -5905,7 +5964,7 @@ HSS.buildPart = (pt, building, view = {}) => {
       box.castShadow = true; box.userData = Object.assign({}, meta); grp.add(box);
       const grill = new THREE.Mesh(new THREE.BoxGeometry(pw * 0.9, 0.5, pd * 0.9), LM('#8d959e')); grill.position.set(c[0], yt + 3.25, c[1]); grill.rotation.y = box.rotation.y; grp.add(grill);
     }
-    if (pt.roof?.type === 'gruen') { // Gründach-Aufkantung
+    if (pt.roof?.type === 'gruen' && !glasHull) { // Gründach-Aufkantung
       const g = new THREE.Mesh(HSS.slabGeo(G.fillet(outer, 0), holes, yt, 0.08), LM('#88b073')); g.receiveShadow = true; grp.add(g);
     }
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
@@ -6424,7 +6483,7 @@ HSS.liftStops = (o, prj = HSS.project()) => {
   const P = HSS.findPart(o.host?.part, prj); if (!P) return { stops: [], x: 0, z: 0 };
   const wpos = HSS.toWorld(P.part, [o.x, o.z]), stops = [];
   for (const pt of HSS.allParts(prj)) {
-    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+    if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue; // auch übereinanderliegende Bauteile desselben Gebäudes
     if (!G.pointIn(HSS.toLocal(pt, wpos), HSS.partFootprintLocal(pt).outer)) continue;
     for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.includes(gf)) stops.push(gf); }
   }
@@ -6599,7 +6658,7 @@ function buildNet(prj) {
     for (const pt of parts) {
       const loc = HSS.toLocal(pt, wpos), fp = HSS.partFootprintLocal(pt);
       if (!G.pointIn(loc, fp.outer)) continue;
-      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id) continue;
+      if (pt.id !== P.part.id && pt.stackOn !== P.part.id && P.part.stackOn !== pt.id && !P.building.parts.includes(pt)) continue;
       for (const f of HSS.partFloors(pt)) { const gf = HSS.globalFloor(pt, f, prj); if (o.vonGF !== undefined && gf < o.vonGF) continue; if (o.bisGF !== undefined && gf > o.bisGF) continue; if (!stops.some(s => s.gf === gf)) stops.push({ gf, pt, f, y: HSS.floorY(pt, f, prj) }); }
     }
     stops.sort((a, c) => a.gf - c.gf);
@@ -6611,7 +6670,7 @@ function buildNet(prj) {
       const inn = nearestIn(floorNodes.get(s.pt.id + '|' + s.f) || [], wpos[0], wpos[1]);
       if (inn) addEdge(id, inn.id, 'zugang', { part: s.pt.id, floor: s.f });
       if (prev) addEdge(prev.id, id, role === 'treppe' ? 'treppe' : 'aufzug', { lift: o.id, gfa: prev.gf, gfb: s.gf, len: role === 'treppe' ? Math.abs(s.y - prev.y) * 2.2 + 6 : Math.abs(s.y - prev.y) });
-      prev = { id, gf: s.gf };
+      prev = { id, gf: s.gf, y: s.y };
     }
   }
 
@@ -6973,14 +7032,14 @@ function buildLabels() {
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
         let a = HSS.roomArea(r);
-        if (V.m2 || V.stil === 'cartoon') a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea));
+        if (V.m2 || HSS.stil?.karte?.()) a -= U.sum(I.rooms.filter(y => y !== r && Math.abs(y.x - r.x) <= (r.w - y.w) / 2 + 0.05 && Math.abs(y.z - r.z) <= (r.d - y.d) / 2 + 0.05 && HSS.roomArea(y) < a).map(HSS.roomArea));
         if (V.m2) { if (a < 1.5) continue; }
         else if (['flur', 'nass', 'patient1', 'patient2', 'wc', 'putz', 'vorraum', 'schacht', 'kern', 'reserve'].includes(r.use) || a < 8) continue;
         const w = HSS.toWorld(pt, [r.x, r.z]);
         const el = document.createElement('div'); el.className = 'rlbl'; el.dataset.a = Math.round(a);
         const nm = r.name || (HSS.ROOMTYPES[r.use] || {}).name || 'Raum';
         if (V.m2) { el.classList.add('m2'); if (a < 12) el.classList.add('sm'); el.innerHTML = `${a >= 16 ? `<span>${U.esc(nm)}</span>` : ''}<b>${U.fmt(a, 1)} m²</b>`; el.title = `${nm} · ${U.fmt(r.w, 2)} × ${U.fmt(r.d, 2)} m · ${HSS.DIN277[HSS.roomDin(r)]?.name || ''}`; el.style.pointerEvents = 'auto'; el.onclick = () => S3.select({ kind: 'room', id: r.id, part: pt.id, floor: f }); }
-        else if (V.stil === 'cartoon') { el.classList.add('card'); el.innerHTML = `<span>${U.esc(nm)}</span><small>${U.fmt(a, 0)} m²</small>`; }
+        else if (HSS.stil?.karte?.()) { el.classList.add('card'); el.innerHTML = `<span>${U.esc(nm)}</span><small>${U.fmt(a, 0)} m²</small>`; }
         else el.textContent = nm;
         const o = new CSS2DObject(el); o.position.set(w[0], HSS.floorY(pt, f) + V.floor * V.explode + 0.3, w[1]); L.add(o);
       }
@@ -7370,7 +7429,7 @@ N.buildGrid = () => {
       }
     }
     const mk = (pos, col, op) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); l.renderOrder = 1; L.add(l); };
-    const toon = HSS.view.stil === 'cartoon';
+    const toon = HSS.view.stil !== 'real';
     mk(minor, toon ? '#9aa4ae' : '#5d6d5a', toon ? 0.07 : 0.16); mk(major, toon ? '#7d8893' : '#3e4c3c', toon ? 0.16 : 0.32);
   } else {
     const box = new THREE.Box3();
@@ -7398,9 +7457,12 @@ N.setGrid = on => { N.grid = on; N.buildGrid(); };
 const HSS = window.HSS;
 const { THREE } = window.THREEX;
 const ST = HSS.stil = {
-  mode: (() => { try { return localStorage.getItem('hss-stil') || 'cartoon'; } catch (e) { return 'cartoon'; } })(),
-  BG: '#e9ecef', BG_UG: '#d6dbe0', BG_NACHT: '#1b2636', KONTUR: '#3f4a56', BODEN: '#e3e6e9'
+  mode: (() => { try { return localStorage.getItem('hss-stil2') || 'plan'; } catch (e) { return 'plan'; } })(),
+  BG: '#e9ecef', BG_UG: '#d6dbe0', BG_NACHT: '#1b2636', KONTUR: '#3f4a56', BODEN: '#e3e6e9',
+  PLAN_BG: '#DCE3E8', PLAN_BODEN: '#e6eaed'
 };
+// Stile mit Etiketten-Karten (Cartoon und Planungsmodell)
+ST.karte = () => ST.mode === 'cartoon' || ST.mode === 'plan';
 HSS.view.stil = ST.mode;
 
 // Vier Helligkeitsstufen für die Toon-Schattierung
@@ -7435,6 +7497,30 @@ function zone(m) {
   t = new THREE.MeshToonMaterial({ color: new THREE.Color().setHSL(h.h, Math.min(0.62, h.s * 1.9 + 0.12), Math.min(0.86, Math.max(0.7, h.l * 0.9))), gradientMap: grad });
   t.userData.toon = true; toonCache.set('z' + m.uuid, t); return t;
 }
+/* ---------- Planungsmodell: klare, matte Farben wie in einem Präsentationsmodell ---------- */
+const planCache = new Map();
+const planFarbe = c => { const h = {}; c.getHSL(h); const grau = h.s < 0.12; return new THREE.Color().setHSL(h.h, grau ? h.s * 0.6 : Math.min(1, h.s * 1.05), grau ? Math.min(0.97, h.l * 0.45 + 0.52) : U_clamp(h.l, 0.3, 0.72)); };
+const U_clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function planMat(m) {
+  if (!m || !m.isMeshStandardMaterial || m.userData.noToon || m.userData.plan) return m;
+  let t = planCache.get(m.uuid); if (t) return t;
+  if (m.userData.vc) t = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, roughness: 0.75, metalness: 0.05 });
+  else if (m.vertexColors) t = new THREE.MeshStandardMaterial({ color: ST.PLAN_BODEN, roughness: 0.95, metalness: 0, transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite });
+  else {
+    const glas = m.transparent && m.opacity < 0.6;
+    t = new THREE.MeshStandardMaterial({ color: glas ? new THREE.Color('#c7dbe7') : planFarbe(m.color), roughness: glas ? 0.3 : 0.75, metalness: 0.05, transparent: m.transparent, opacity: glas ? Math.max(0.3, m.opacity) : m.opacity, depthWrite: m.depthWrite, side: m.side,
+      emissive: m.emissive, emissiveIntensity: m.emissiveIntensity, polygonOffset: m.polygonOffset, polygonOffsetFactor: m.polygonOffsetFactor, polygonOffsetUnits: m.polygonOffsetUnits, vertexColors: false });
+  }
+  t.userData.plan = true; planCache.set(m.uuid, t); return t;
+}
+function planZone(m) {
+  let t = planCache.get('z' + m.uuid); if (t) return t;
+  const h = {}; m.color.getHSL(h);
+  t = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(h.h, Math.min(0.7, h.s * 2 + 0.15), U_clamp(h.l * 0.85, 0.62, 0.8)), roughness: 0.9, metalness: 0 });
+  t.userData.plan = true; planCache.set('z' + m.uuid, t); return t;
+}
+ST.planMat = planMat;
+const linePlan = new THREE.LineBasicMaterial({ color: '#7f8b97', transparent: true, opacity: 0.32 });
 /* Etiketten entzerren: überlappende Raumetiketten ausblenden, große Räume haben Vorrang */
 ST.entzerren = () => {
   const els = [...document.querySelectorAll('.labels .rlbl')]; if (!els.length) return;
@@ -7450,12 +7536,23 @@ function kontur(mesh, fein) {
   if (mesh.userData._kontur || mesh.isInstancedMesh || !mesh.geometry) return;
   const g = mesh.geometry, n = g.attributes.position?.count || 0; if (!n || n > 60000) return;
   let e = edgeCache.get(g.uuid); if (!e) { e = new THREE.EdgesGeometry(g, 28); edgeCache.set(g.uuid, e); }
-  const ls = new THREE.LineSegments(e, fein ? lineMatFein : lineMat); ls.userData.kontur = true; ls.raycast = () => {};
+  const ls = new THREE.LineSegments(e, ST.mode === 'plan' ? linePlan : fein ? lineMatFein : lineMat); ls.userData.kontur = true; ls.raycast = () => {};
   mesh.add(ls); mesh.userData._kontur = true;
 }
 // Szene in den Cartoon-Stil überführen (idempotent)
 ST.apply = () => {
-  const S3 = HSS.s3; if (!S3.scene || ST.mode !== 'cartoon') return;
+  const S3 = HSS.s3; if (!S3.scene) return;
+  if (ST.mode === 'plan') {
+    const L = S3.layers;
+    S3.scene.traverse(o => {
+      if (!o.isMesh || o.userData.kontur) return;
+      if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial && !o.material.userData.plan) { o.material = planZone(o.material); return; }
+      if (Array.isArray(o.material)) o.material = o.material.map(planMat); else o.material = planMat(o.material);
+    });
+    L.build?.traverse(o => { if (o.isMesh && !o.userData.pick && (o.userData.roof || o.userData.wall || o.userData.parapet) && !(o.material && o.material.visible === false)) kontur(o, false); });
+    ST.himmel(); return;
+  }
+  if (ST.mode !== 'cartoon') return;
   const L = S3.layers;
   S3.scene.traverse(o => {
     if (!o.isMesh || o.userData.kontur) return;
@@ -7470,7 +7567,9 @@ ST.apply = () => {
 };
 // Einzelne Gruppe (z. B. Vorschau beim Ziehen) in den Cartoon-Stil überführen
 ST.applyTo = (root, layer = 'build') => {
-  if (ST.mode !== 'cartoon' || !root) return root;
+  if (!root) return root;
+  if (ST.mode === 'plan') { root.traverse(o => { if (!o.isMesh || o.userData.kontur) return; if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial) { o.material = planZone(o.material); return; } if (Array.isArray(o.material)) o.material = o.material.map(planMat); else o.material = planMat(o.material); }); return root; }
+  if (ST.mode !== 'cartoon') return root;
   root.traverse(o => {
     if (!o.isMesh || o.userData.kontur) return;
     if (o.userData.kind === 'room' && o.material?.isMeshStandardMaterial) { o.material = zone(o.material); return; }
@@ -7480,7 +7579,23 @@ ST.applyTo = (root, layer = 'build') => {
   return root;
 };
 ST.himmel = () => {
-  const S3 = HSS.s3; if (!S3.scene || ST.mode !== 'cartoon') return;
+  const S3 = HSS.s3; if (!S3.scene) return;
+  const R = S3.renderer;
+  if (!S3.fill) { S3.fill = new THREE.DirectionalLight('#dfe8ff', 0); S3.fill.position.set(140, 120, 160); S3.scene.add(S3.fill); }
+  if (ST.mode === 'plan') {
+    const ug = HSS.view.floor !== null && HSS.view.floor < 0;
+    S3.sky.visible = false;
+    S3.scene.background = new THREE.Color(S3.night ? ST.BG_NACHT : ug ? ST.BG_UG : ST.PLAN_BG);
+    S3.scene.fog = S3.night || ug ? null : (S3._planFog || (S3._planFog = new THREE.Fog(ST.PLAN_BG, 900, 3200)));
+    R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.0;
+    if (R.shadowMap.enabled) { R.shadowMap.enabled = false; S3.sun.castShadow = false; HSS.library.eachMaterial?.(m => { m.needsUpdate = true; }); }
+    if (!S3.night) { S3.hemi.intensity = 1.6; S3.hemi.color.set('#ffffff'); S3.hemi.groundColor?.set('#cfd6dc'); S3.sun.intensity = 1.4; S3.sun.color.set('#ffffff'); S3.sun.position.set(-170, 310, -110); S3.fill.intensity = 0.5; }
+    else S3.fill.intensity = 0;
+    return;
+  }
+  S3.scene.fog = null; S3.fill.intensity = 0;
+  if (!R.shadowMap.enabled && !HSS.plan2d?.on) { R.shadowMap.enabled = true; S3.sun.castShadow = true; HSS.perf?.shadows?.(); }
+  if (ST.mode !== 'cartoon') return;
   const ug = HSS.view.floor !== null && HSS.view.floor < 0;
   S3.sky.visible = false;
   S3.scene.background = new THREE.Color(S3.night ? ST.BG_NACHT : ug ? ST.BG_UG : ST.BG);
@@ -7488,22 +7603,23 @@ ST.himmel = () => {
   if (!S3.night) { S3.hemi.intensity = 1.55; S3.hemi.color.set('#ffffff'); S3.hemi.groundColor?.set('#b9c2cc'); S3.sun.intensity = Math.min(S3.sun.intensity, 1.6); S3.sun.color.set('#ffffff'); }
 };
 ST.set = (mode) => {
-  ST.mode = HSS.view.stil = mode; try { localStorage.setItem('hss-stil', mode); } catch (e) { /* */ }
-  document.body.classList.toggle('cartoon', mode === 'cartoon');
+  ST.mode = HSS.view.stil = mode; try { localStorage.setItem('hss-stil2', mode); } catch (e) { /* */ }
+  document.body.classList.toggle('cartoon', ST.karte()); document.body.classList.toggle('plan', mode === 'plan');
   const S3 = HSS.s3;
   if (S3._outCache) S3._outCache.clear();
   S3._buildCache?.clear(); S3._objCache?.clear();
   HSS.library.clearProto();
-  if (mode !== 'cartoon') { S3.renderer.toneMapping = THREE.ACESFilmicToneMapping; S3.renderer.toneMappingExposure = 0.9; }
+  if (mode === 'real') { S3.renderer.toneMapping = THREE.ACESFilmicToneMapping; S3.renderer.toneMappingExposure = 0.9; }
   S3.setSun(HSS.view.sunHour); S3.rebuild('all');
 };
 HSS.on('rebuilt', () => ST.apply());
 // Dynamische Objekte (Verkehr, Simulation) regelmäßig nachziehen
-setInterval(() => { const S3 = HSS.s3; if (ST.mode !== 'cartoon' || !S3.scene) return; for (const k of ['traffic', 'agents', 'net', 'sel', 'ghost']) S3.layers[k]?.traverse(o => { if (o.isMesh && o.material?.isMeshStandardMaterial) o.material = toon(o.material); }); }, 700);
+setInterval(() => { const S3 = HSS.s3; if (!ST.karte() || !S3.scene) return; const f = ST.mode === 'plan' ? planMat : toon; for (const k of ['traffic', 'agents', 'net', 'sel', 'ghost', 'flows']) S3.layers[k]?.traverse(o => { if (o.isMesh && o.material?.isMeshStandardMaterial && !o.material.userData.plan && !o.material.userData.noToon) o.material = f(o.material); }); }, 700);
 // Tageszeit: Cartoon-Hintergrund und Licht nach dem Setzen der Sonne wiederherstellen
 const setSun0 = HSS.s3.setSun; HSS.s3.setSun = h => { setSun0(h); ST.himmel(); };
-document.addEventListener('DOMContentLoaded', () => document.body.classList.toggle('cartoon', ST.mode === 'cartoon'));
-if (document.body) document.body.classList.toggle('cartoon', ST.mode === 'cartoon');
+const klassen = () => { document.body.classList.toggle('cartoon', ST.karte()); document.body.classList.toggle('plan', ST.mode === 'plan'); };
+document.addEventListener('DOMContentLoaded', klassen);
+if (document.body) klassen();
 })();
 
 </script>
@@ -7539,6 +7655,7 @@ function wantsContinuous() {
   if (HSS.player?.playing) return 'sim';
   if (HSS.player?.agents?.size && S3.layers.agents.visible) return 'sim';
   if (P.trafficAnim && HSS.traffic.agents.length && S3.layers.traffic.visible) return 'traffic';
+  if (HSS.flussbild?.animating && S3.layers.flows?.visible) return 'traffic';
   if (P.anim > 0) return 'anim';
   return null;
 }
@@ -8272,8 +8389,10 @@ HSS.player = {
       if (!a) {
         const M = HSS.MITTEL[tr.mittel] || HSS.MITTEL.hand, mat = U.byId(prj.materials, tr.material);
         const obj = new THREE.Group();
-        if (M.modell) obj.add(HSS.library.build(M.modell));
-        if (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper') {
+        const einfach = HSS.view.stil === 'plan' && HSS.flussbild?.agentMesh;
+        if (einfach) obj.add(HSS.flussbild.agentMesh(tr.mittel, mat));
+        else if (M.modell) obj.add(HSS.library.build(M.modell));
+        if (!einfach && (M.wagen || tr.mittel === 'awt' || tr.mittel === 'schlepper')) {
           const lib = tr.mittel === 'awt' ? 'awt.container' : (/speisen|geschirr/i.test(mat?.name) ? 'log.speisenwagen' : /wäsche/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.waeschewagen.unrein' : 'log.waeschewagen.rein') : /steril|instrument/i.test(mat?.name) ? (tr.reinheit === 'unrein' ? 'log.instrumentenwagen.unrein' : 'log.sterilgutwagen') : /abfall/i.test(mat?.name) ? 'log.abfall240' : 'log.modulwagen');
           const w = HSS.library.build(lib); w.position.z = tr.mittel === 'awt' ? 0 : tr.mittel === 'schlepper' ? -1.9 : 0.85; if (tr.mittel === 'awt') w.position.y = 0.3; obj.add(w);
           if (tr.mittel === 'schlepper') { const w2 = HSS.library.build(lib); w2.position.z = -3.4; obj.add(w2); }
@@ -10058,9 +10177,9 @@ HSS.STANDORTE = [
   { id: 'hanau', name: 'Klinikum Hanau', ort: 'Hanau, Leimenstraße 20', datei: 'standorte/hanau.js', geo: { lat: 50.133627, lon: 8.923008, nord: 45.8, hinweis: 'aus der Lage der Häuser H, HB, W, A, M, K1, K2, Z, N, D und I zu OpenStreetMap ausgeglichen (Abweichung im Mittel ca. 12 m); Modellraster um 45,8° gegen Nord gedreht' },
     text: 'Baukörper, Baujahre, BGF/NGF aus dem baulichen Konzept (Bestandsanalyse und Variante 2, DF Architekten), aus der Isometrie in Meter umgerechnet (±20 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen).',
     varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Variante 2 (Zielvariante mit Neubau und Versorgungszentrum)' }] },
-  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.0285, lon: 8.5455, nord: -22.3, hinweis: 'Lage ungefähr; Modellraster um 22,3° gegen Nord gedreht' },
-    text: 'Baukörper aus dem Lageplan „Klinikum Bielefeld – Mitte“ (Unternehmenskommunikation, Stand Okt. 2025) digitalisiert (±15 %). Bereiche, Aufzüge, Mengen und Zeiten aus dem 3D-Logistikmodell (überwiegend Annahmen); Soll-Variante mit Neubau zur Veranschaulichung.',
-    varianten: [{ id: 'ist', name: 'Bestand (Ist)' }, { id: 'soll', name: 'Soll-Variante (Optimierung mit Neubau)' }] }
+  { id: 'bielefeld', name: 'Klinikum Bielefeld-Mitte', ort: 'Bielefeld, Teutoburger Straße 50', datei: 'standorte/bielefeld.js', geo: { lat: 52.014139, lon: 8.544318, nord: 115.4, hinweis: 'Modellursprung Mitte Hauptgebäude; Raster um 115,4° gegen Nord gedreht (wie im 3D-Logistikmodell)' },
+    text: 'Gebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.',
+    varianten: [{ id: 'ist', name: 'Ist-Zustand (NIZ in Betrieb)' }, { id: 'soll', name: 'Soll-Variante (Optimierung)' }] }
 ];
 const PRE = { koblenz: 'kob_', hanau: 'han_', bielefeld: 'bie_' };
 
@@ -10184,10 +10303,21 @@ function convert(S, def, v, opts = {}) {
       bmap[g.id] = b;
       g.teile.forEach((t, i) => B.part(b, { id: `${pre}${g.id}_${t.id || i}`, name: t.name ? `${g.kurz || g.id} · ${t.name}` : g.name, ref: `${g.id}/${t.id || g.id + '-' + i}`, poly: t.poly, rect: t.box ? [(t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2, Math.abs(t.box[2] - t.box[0]), Math.abs(t.box[3] - t.box[1]), 0] : null, von: t.von ?? 0, bis: t.bis ?? 0, hoehe: t.hoehe, typ }));
     }
-    for (const [i, s] of (D.aussen?.strassen || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('zufahrt'), { id: `path_${pre}r${i}`, standort: true, name: s.name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: G.polylineLength(s.pts) > 100 ? 2 : 0 }));
+    const SKIND = t => ['service', 'track', 'driveway'].includes(t) ? 'zufahrt' : ['footway', 'path', 'pedestrian', 'cycleway', 'steps'].includes(t) ? 'gehweg' : t ? 'strasse' : 'zufahrt';
+    for (const [i, s] of (D.aussen?.strassen || []).entries()) { const kind = SKIND(s.typ); prj.paths.push(Object.assign(HSS.defaults.path(kind), { id: `path_${pre}r${i}`, standort: true, name: s.name || HSS.WEGARTEN[kind].name, points: s.pts.map(q => q.slice()), width: s.b || 7, smooth: false, traffic: kind === 'strasse' && G.polylineLength(s.pts) > 60 ? (s.typ === 'tertiary' ? 3 : 2) : 0 })); }
+    // Umgebung (Nachbargebäude aus OpenStreetMap)
+    for (const [i, u] of (D.umgebung || []).entries()) {
+      if (!u.poly || u.poly.length < 3 || Math.abs(G.area(u.poly)) < 12) continue;
+      const b = Object.assign(HSS.defaults.building(), { id: `${pre}u${i}`, name: u.name || 'Gebäude (Umgebung)', kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
+      const c = centroid(u.poly), loc = G.ccw(u.poly.map(q => [r1(q[0] - c[0]), r1(q[1] - c[1])])), bb = G.bbox(loc), fl = U.clamp(Math.round((u.h || 9) / 3.1), 1, 30);
+      b.parts.push(Object.assign(HSS.defaults.part(), { id: `${pre}u${i}_0`, name: b.name, shape: 'poly', poly: loc, x: r1(c[0]), z: r1(c[1]), w: r1(bb.w), d: r1(bb.d), rot: 0, floors: fl, floorHeight: r1((u.h || fl * 3.1) / fl), basements: 0, facade: { type: 'loch', color: '#e6e2dc', accent: '#9aa1aa', glass: '#8aa0b2', axis: 1.6, windowRatio: 0.35 }, roof: { type: 'flach', parapet: 0.3, plant: false, color: '#a8a39b' } }));
+      prj.buildings.push(b);
+    }
+    // Klinikgelände (Grundstücksgrenze)
+    if (D.aussen?.gelaende?.length > 3) prj.paths.push(Object.assign(HSS.defaults.path('grenze'), { id: `path_${pre}grenze`, standort: true, name: 'Grundstücksgrenze Klinikum', points: D.aussen.gelaende.concat([D.aussen.gelaende[0]]).map(q => [r1(q[0]), r1(q[1])]), width: 0.35, smooth: false, noNet: true }));
     for (const [i, w] of (D.aussen?.wege || []).entries()) prj.paths.push(Object.assign(HSS.defaults.path('weg'), { id: `path_${pre}w${i}`, standort: true, name: 'Campusweg', points: w.map(q => q.slice()), width: 3.5, smooth: false }));
   }
-  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 })); }
+  if (D.aussen?.teich) { const t = G.bbox(D.aussen.teich); prj.areas.push(Object.assign({ id: 'area_teich', kind: 'wasser', name: 'Teich', x: r1(t.cx), z: r1(t.cz), w: r1(t.w), d: r1(t.d), rot: 0 }, D.aussen.teich.length > 4 ? { poly: G.ccw(D.aussen.teich.map(q => [r1(q[0]), r1(q[1])])), lage: 5 } : {})); }
   if (def.geo && !prj.meta.geo) prj.meta.geo = Object.assign({}, def.geo);
   /* Gehwege, die auf einer Fahrbahn liegen (OSM-Bürgersteige entlang der Straße), weglassen */
   const roadsL = prj.paths.filter(p => p.kind === 'zufahrt' || p.kind === 'strasse');
@@ -10313,6 +10443,19 @@ function convert(S, def, v, opts = {}) {
     }
   }
   prj.meta.notes += skipped ? `\n${skipped} Relationen des Modells ohne Ort in dieser Variante.` : '';
+  /* Warenströme (Familien) mit Farbe und Prozess-Tour (Stationen mit Erläuterung) */
+  if ((D.flows || []).some(fl => fl.color || fl.tour)) {
+    const PL = new Map(HSS.places(prj).map(p => [p.id, p])), areaName = id => (D.areas || []).find(a => a.id === id)?.name;
+    const tourPlace = t => {
+      const ids = (areaPlaces[t.area] || []).filter(id => PL.has(id)); if (!ids.length) return null;
+      const n = t.node && nodes[t.node];
+      if (n) { const hit = ids.find(id => PL.get(id).gf === n.l && (!n.b || PL.get(id).building === PRE[def.id] + n.b)) || ids.find(id => PL.get(id).gf === n.l); if (hit) return hit; }
+      return ids[0];
+    };
+    prj.stroeme = D.flows.map(fl => ({ id: fl.id, name: fl.name, farbe: fl.color || null, reinheit: fl.cls || null,
+      tour: (fl.tour || []).map(t => ({ place: tourPlace(t), titel: areaName(t.area) || t.title || '', text: (v === 'soll' && t.textSoll) || t.text || '' })).filter(t => t.place) }));
+    for (const f of prj.flows) { const m = /^fl_(.+?)_\d+_/.exec(f.id); if (m && prj.stroeme.some(x => x.id === m[1])) f.strom = m[1]; }
+  }
   if (HSS.furnishEmpty) HSS.furnishEmpty(prj, { maxArea: 1500, max: 9000 }); // Funktionsflächen einrichten
   // Gelände groß genug für alle Gebäude, Wege und die Grundstücksgrenze
   { let r = 0; for (const pt of HSS.allParts(prj)) for (const q of HSS.partFootprint(pt, prj).outer) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); for (const pa of prj.paths) for (const q of pa.points) r = Math.max(r, Math.abs(q[0]), Math.abs(q[1])); prj.terrain.size = Math.max(prj.terrain.size || 500, Math.ceil((r * 2 + 200) / 100) * 100); }
@@ -10322,7 +10465,7 @@ function convert(S, def, v, opts = {}) {
 HSS.standorte = {
   async load(id, v = 'ist', opts = {}) {
     const def = HSS.STANDORTE.find(s => s.id === id); if (!def) throw new Error('Unbekannter Standort');
-    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261014');
+    if (!window.HSS_STANDORTE?.[id]) await loadScript(def.datei + '?v=20261016');
     return convert(window.HSS_STANDORTE[id], def, v, opts);
   },
   /* Gespeichertes Standortmodell auf den aktuellen Stand der Übernahme bringen.
@@ -10839,7 +10982,7 @@ UI.bindViewbar = () => {
 
   $$('#vCut button').forEach(b => b.onclick = () => { V.cut = b.dataset.v; UI.refreshViewbar(); S3.rebuild('all'); });
   $('#vShell').onchange = e => { V.shell = e.target.value; S3.rebuild('all'); };
-  $('#vStil').value = HSS.stil?.mode || 'cartoon';
+  $('#vStil').value = HSS.stil?.mode || 'plan';
   $('#vStil').onchange = e => HSS.stil.set(e.target.value);
   $('#vWege').value = V.wege || 'alle';
   $('#vWege').onchange = e => { V.wege = e.target.value; try { localStorage.setItem('hss-wege', V.wege); } catch (er) { /* */ } S3.rebuild('outdoor'); };
@@ -11308,15 +11451,17 @@ W.fluesse = { name: 'Material-, Waren- & Personenflüsse', short: 'Flüsse', ste
 const FT = {};
 FT.fluesse = (el, prj) => {
   const mats = new Map(prj.materials.map(m => [m.id, m]));
-  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fStd">Standardflüsse übernehmen …</button><button id="fNew">+ Fluss</button></div>
+  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button id="fStd">Standardflüsse übernehmen …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button></div>
   <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1))))} Ladungen/Tag</div>
   <div class="list" style="max-height:none">${prj.flows.map(f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span></div>`; }).join('') || '<div class="li note">Noch keine Flüsse.</div>'}</div>
   <div id="fEdit"></div>`;
   $('#fStd', el).onclick = UI.templateDialog;
+  $('#fWiz', el).onclick = () => HSS.flussAssistent.dialog();
   $('#fNew', el).onclick = () => { const f = { id: U.uid('flow'), name: 'Neuer Fluss', material: prj.materials[0].id, von: '', nach: '', menge: 10, periode: 'tag', betriebstage: 7, fenster: [[8, 12]], transport: 't_hand', fahrzeitMin: null, aktiv: true }; HSS.change('Fluss anlegen', p => p.flows.push(f), { scope: 'none' }); UI.flowSel = f.id; UI.renderPanel(); };
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
   $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
+  setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit);
   const ed = $('#fEdit', el);
@@ -11335,8 +11480,14 @@ FT.fluesse = (el, prj) => {
   $('#fDup', ed).onclick = () => { const n = U.clone(f); n.id = U.uid('flow'); n.name += ' (Kopie)'; HSS.change('Fluss duplizieren', p => p.flows.push(n), { scope: 'none' }); UI.flowSel = n.id; UI.renderPanel(); };
   $('#fDel', ed).onclick = () => { HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== f.id)), { scope: 'none' }); UI.flowSel = null; UI.renderPanel(); clearGhost(); };
 };
-UI.showRoute = (fid, focus) => {
-  clearGhost();
+// Mehrere Flüsse (z. B. Etappen aus dem Assistenten) gemeinsam zeigen
+UI.showRoutes = (ids, focus) => {
+  clearGhost(); const box = new THREE.Box3();
+  for (const id of ids) { UI.showRoute(id, false, true); }
+  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); HSS.s3.focusBox(box, { k: 0.8 }); }
+};
+UI.showRoute = (fid, focus, keep) => {
+  if (!keep) clearGhost();
   const prj = HSS.project(), f = U.byId(prj.flows, fid); if (!f) return;
   const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit); if (!r.ok) return;
@@ -12084,7 +12235,7 @@ P2.set = (on) => {
     cam.fov = p.fov || 45; cam.far = p.far || 6000; cam.updateProjectionMatrix();
     C.maxDistance = p.maxD || 1800; C.minDistance = p.minD || 2; C.enableRotate = true; C.maxPolarAngle = p.maxP || Math.PI * 0.495; C.minPolarAngle = 0; C.screenSpacePanning = p.ssp ?? false; C.mouseButtons.LEFT = p.left ?? THREE.MOUSE.ROTATE;
     const t = C.target.clone(); cam.position.set(t.x - d * 0.5, t.y + d * 0.62, t.z + d * 0.6); C.update();
-    S3.renderer.shadowMap.enabled = true; HSS.perf?.shadows();
+    S3.renderer.shadowMap.enabled = HSS.view.stil !== 'plan'; HSS.perf?.shadows();
     if (S3.tool?.plan2d) S3.setTool(null);
   }
   HSS.perf?.invalidate(4); P2.palette(); HSS.emit('view');
@@ -12727,6 +12878,7 @@ const STEPS = [
   { t: 'Flächenplanung: der Campus im Überblick', p: 'Ohne Räume planen: Fachbereich wählen (z. B. Innere Medizin, 1.500 m²) und auf ein Gebäude ziehen – die Fläche wird in das Geschoss unter der Maus eingepasst und reicht bei Bedarf ins nächste Geschoss. Die Flächenplan-Ansicht zeigt alle Gebäude als Geschossscheiben in den Farben der Fachbereiche, mit Legende und Soll-Ist-Bilanz.', li: ['Griffe ⇔ ⇕ an der Fläche: verlängern, kürzen, verschieben', 'Stationsplaner und Klinik-Planer: „Nur Fläche(n)“ statt Räume'], go: () => { HSS.plan2d?.set(false); HSS.nav.setFloor(null); UI.setWS('zonen'); HSS.view.explode = 4; const r = document.getElementById('vExplode'); if (r) r.value = 4; HSS.zonen.setView(true); HSS.s3.animateCam(V3(-190, 150, 210), V3(0, 10, 0), 1300); } },
   { t: 'Umgebung aus OpenStreetMap', p: 'Unter „Gelände & Wege“ lädt „Umgebung aus OpenStreetMap“ Straßen, Felder, Wiesen, Wald, Gewässer, Nachbargebäude und die Grenze des Klinikgeländes rund um den verorteten Standort – so sieht man, wo Verkehr fließt und wie weit geplant werden kann (Internetverbindung nötig).', go: () => { UI.setWS('gelaende'); HSS.s3.animateCam(V3(-260, 260, 320), V3(0, 0, 0), 1300); } },
   { t: 'Flüsse und Regeln', p: 'Standardflüsse für alle 20 Stationen: Speisen, Wäsche, Arzneimittel, Modulversorgung, Sterilgut, Abfall, Proben, Patienten, Betten, Anlieferung, Entsorgung, Post, Personal, Besucher. Die Bettenhäuser werden per AWT versorgt; nach unreinen Fahrten 2 min Waschanlage.', go: () => { UI.flowTab = 'fluesse'; const f = HSS.project().flows.find(x => x.transport === 't_awt'); UI.flowSel = f?.id; UI.setWS('fluesse'); if (f) UI.showRoute(f.id, true); } },
+  { t: 'Warenströme: Flussbild, Tagesachse und Prozess-Tour', p: '„Warenströme“ zeigt alle Flüsse als farbige Bänder je Strom – Speisen, Wäsche, Sterilgut, Arzneimittel, Verbrauchsgüter, Betten, Abfall, Patiententransport, Post & Proben. Die Dicke entspricht den Fahrten pro Tag; Wagen, Betten und LKW fahren auf ihren Routen. Die Gebäude werden gläsern.', li: ['Tagesachse unten: Stunde anklicken oder „▶ Abspielen“ – die Transporte folgen der Uhrzeit', 'Prozess-Tour: Strom wählen, „▶ Start“ – die Kamera fährt von der Quelle zur Senke, Aufzüge und Außenwege werden erläutert', 'Neue Flüsse mit dem Fluss-Assistenten: Gebäude und Etage für Start, Zwischenstopps und Ziel, dann die Menge'], go: () => { HSS.nav.setFloor(null); UI.setWS('fluesse'); HSS.flussbild?.set(true); HSS.s3.animateCam(V3(-95, 70, 95), V3(0, 6, -10), 1300); } },
   { t: 'Simulation und Hotspots', p: 'Die Tagessimulation rechnet alle Touren mit Bündelung, Aufzugswarteschlangen und Reinigungsfahrten. Heatmap um 07:00 Uhr; die Hotspot-Liste nennt Engpässe mit Uhrzeit.', go: () => { HSS.nav.setFloor(null); HSS.runSimulation(); HSS.player.setTime(420); UI.timeline.show(true); UI.netMode = 'heat'; $('#vNet').value = 'heat'; $('#tHeat').checked = true; UI.heatHour = 7; HSS.drawNet('heat', 7); UI.anTab = 'hotspots'; UI.setWS('analyse'); HSS.s3.animateCam(V3(-150, 130, 170), V3(0, 0, -10), 1300); } },
   { t: 'Begleitfahrt mit Aufzug', p: 'Ein AWT-Container fährt vom Logistikzentrum durch die Trasse und den Vertikalförderer hinauf auf die Station. Esc beendet.', go: () => { const sim = HSS.state.sim || HSS.runSimulation(); UI.timeline.show(true); const tr = sim.trips.find(t => t.mittel === 'awt' && t.track.some(s => s.lift && s.to > 3) && t.start > 400) || sim.trips.find(t => t.track.some(s => s.lift)); if (tr) { HSS.player.speed = 20; $('#tSpeed').value = '20'; HSS.fpv.follow(tr.id); } } },
   { t: 'Nacht und Beauty Shots', p: 'Abends: Straßen- und Wegeleuchten, beleuchtete Fenster. „📷 Beauty Shot“ speichert ein hochaufgelöstes Bild, „🚶 Begehen“ öffnet die freie Begehung.', go: () => { HSS.fpv.exit(); HSS.nav.setFloor(null); UI.netMode = 'aus'; $('#vNet').value = 'aus'; HSS.drawNet('aus'); HSS.s3.setSun(21.5); $('#vSun').value = 21.5; $('#vSunL').textContent = '21:30'; HSS.s3.animateCam(V3(-150, 60, 200), V3(-20, 8, 40), 1500); } },
@@ -12753,7 +12905,7 @@ HSS.demo = {
     $('#dPrev').onclick = () => { this.step--; this.show(); };
     $('#dNext').onclick = () => { if (this.step < STEPS.length - 1) { this.step++; this.show(); } else this.end(); };
     $('#dEnd').onclick = () => this.end();
-    try { if (!/2D-Plan/.test(s.t)) HSS.plan2d?.set(false); if (!/Flächenplanung/.test(s.t) && HSS.view.zonen) { HSS.view.explode = 0; const r = document.getElementById('vExplode'); if (r) r.value = 0; HSS.zonen.setView(false); } s.go(); } catch (e) { console.error(e); }
+    try { if (!/Flussbild/.test(s.t) && HSS.flussbild?.on) HSS.flussbild.set(false); if (!/2D-Plan/.test(s.t)) HSS.plan2d?.set(false); if (!/Flächenplanung/.test(s.t) && HSS.view.zonen) { HSS.view.explode = 0; const r = document.getElementById('vExplode'); if (r) r.value = 0; HSS.zonen.setView(false); } s.go(); } catch (e) { console.error(e); }
   },
   end() { $('#demoCard').hidden = true; document.body.classList.remove('demoon'); HSS.fpv.exit(); UI.toast('Demo frei erkunden – Änderungen werden als eigenes Projekt gesichert'); }
 };
@@ -13854,6 +14006,647 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 </script>
 <script>
 /* =====================================================================
+   HSS · flussbild.js – Warenströme als kräftige Bänder (Planungsmodell)
+   Alle aktiven Flüsse werden über das Wegenetz geroutet und je Wegabschnitt
+   und Warenstrom (Speisen, Wäsche, Sterilgut, Arzneimittel, Verbrauchsgüter,
+   Betten, Abfall, Patiententransport, Post & Proben …) zusammengefasst: ein
+   farbiges Rohr je Strom, Dicke nach Fahrten pro Tag, Pfeile in Fahrtrichtung,
+   eigene Spuren nebeneinander, bewegte Wagen/Betten/LKW.
+   Dazu wie im Logistikmodell Bielefeld:
+     · Panel „Warenströme“ (Fahrten/Tag · km/Tag, alle/keine, Routen, Animation)
+     · Tagesachse (Fahrten je Stunde, Stunde wählen, Ganzer Tag, Abspielen/Pause)
+     · Prozess-Tour (Kamerafahrt Quelle → Senke mit Halten, Pause/Weiter/Beenden)
+   Gebäudehüllen werden gläsern, damit die Ströme im Gebäude sichtbar sind.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util;
+const { THREE, mergeGeometries } = window.THREEX;
+const S3 = HSS.s3, V = HSS.view;
+const FB = HSS.flussbild = HSS.stroeme = { on: false, move: true, routes: true, aus: new Set(), animating: false, personen: false, hour: null, playing: false, tour: null, zoom: 2.2, tempo: 1 };
+let layer = null, movers = [], routes = [], shell0 = null, famMats = new Map();
+try { FB.zoom = +(localStorage.getItem('hss-tourZoom') || 2.2) || 2.2; } catch (e) { /* ohne Speicher */ }
+
+const UP = new THREE.Vector3(0, 1, 0);
+const matCache = new Map();
+const solid = (c) => { const k = 's' + c; if (!matCache.has(k)) { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.05 }); m.userData.noToon = true; matCache.set(k, m); } return matCache.get(k); };
+const tubeMat = (id, c) => { if (!famMats.has(id)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.25, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; famMats.set(id, m); } return famMats.get(id); };
+
+/* ---------- Warenströme (Familien) ---------- */
+const FAM = [
+  ['speisen', 'Speisen', '#e07b39'], ['waesche', 'Wäsche', '#3b82c4'], ['sterilgut', 'Sterilgut', '#7b5cc4'], ['arznei', 'Arzneimittel', '#1f9d7a'],
+  ['lager', 'Verbrauchsgüter', '#a07a3c'], ['betten', 'Betten', '#d1a21f'], ['abfall', 'Abfall', '#6b6f76'], ['patient', 'Patiententransport', '#d94452'],
+  ['post', 'Post & Proben', '#16a3b8'], ['personen', 'Personen', '#7b5ea7']
+];
+const MAT2FAM = { m_speisen: 'speisen', m_geschirr: 'speisen', m_waesche_r: 'waesche', m_waesche_u: 'waesche', m_steril: 'sterilgut', m_instr_u: 'sterilgut', m_arznei: 'arznei', m_modul: 'lager', m_ware: 'lager',
+  m_betten: 'betten', m_betten_r: 'betten', m_abfall: 'abfall', m_entsorgung: 'abfall', m_patient: 'patient', m_proben: 'post', m_post: 'post', m_personal: 'personen', m_besucher: 'personen' };
+FB.familien = (prj = HSS.project()) => {
+  const list = (prj.stroeme || []).map(s => ({ id: s.id, name: s.name, farbe: s.farbe || FAM.find(x => x[0] === s.id || x[1] === s.name)?.[2] || '#2D7694', tour: s.tour || [] }));
+  for (const [id, name, farbe] of FAM) if (!list.some(x => x.id === id || x.name === name)) list.push({ id, name, farbe, tour: [] });
+  return list;
+};
+FB.stromOf = (f, prj, fams) => {
+  fams = fams || FB.familien(prj);
+  if (f.strom) { const s = fams.find(x => x.id === f.strom); if (s) return s; }
+  const pre = /^([^:]+):/.exec(f.name || '')?.[1]?.trim(); if (pre) { const s = fams.find(x => x.name === pre); if (s) return s; }
+  const k = MAT2FAM[f.material]; if (k) { const s = fams.find(x => x.id === k) || fams.find(x => x.name === FAM.find(y => y[0] === k)?.[1]); if (s) return s; }
+  const m = U.byId(prj.materials, f.material);
+  let s = fams.find(x => x.id === 'mat:' + f.material);
+  if (!s) { s = { id: 'mat:' + f.material, name: m?.name || 'Sonstige', farbe: m?.farbe || '#2D7694', tour: [] }; fams.push(s); }
+  return s;
+};
+const isPers = s => s.id === 'personen';
+
+/* ---------- Zeitprofil: Fahrten je Stunde aus den Zeitfenstern ---------- */
+function profil(f) {
+  const w = (f.fenster && f.fenster.length ? f.fenster : [[6, 22]]), a = new Array(24).fill(0);
+  let tot = 0;
+  for (const [s, e0] of w) { const e = e0 < s ? e0 + 24 : e0; for (let h = Math.floor(s); h < Math.ceil(e); h++) { const ov = Math.min(e, h + 1) - Math.max(s, h); if (ov > 0) { a[h % 24] += ov; tot += ov; } } }
+  return tot ? a.map(v => v / tot) : a.map(() => 1 / 24);
+}
+
+/* ---------- Routen aller Flüsse ---------- */
+function collect() {
+  const prj = HSS.project(); HSS.ensureStammdaten?.(prj);
+  const fams = FB.familien(prj), out = [];
+  for (const f of prj.flows) {
+    if (f.aktiv === false) continue;
+    const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
+    if (!m) continue;
+    const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
+    const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
+    out.push({ f, m, t, r, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
+  }
+  return { all: out, fams };
+}
+FB.stats = () => {
+  const { all, fams } = collect(), by = new Map();
+  for (const x of all) { const e = by.get(x.s.id) || { s: x.s, trips: 0, km: 0, n: 0 }; e.trips += x.trips; e.km += x.trips * (x.r.len || 0) / 1000; e.n++; by.set(x.s.id, e); }
+  return { all, fams, rows: fams.map(s => by.get(s.id)).filter(Boolean) };
+};
+const aktiv = s => !FB.aus.has(s.id) && (!isPers(s) || FB.personen);
+
+/* ---------- Geometrie ---------- */
+const _d = new THREE.Vector3(), _q = new THREE.Quaternion();
+function cyl(a, b, r) {
+  const len = a.distanceTo(b); if (len < 0.05) return null;
+  const g = new THREE.CylinderGeometry(r, r, len, 8, 1, true);
+  _d.subVectors(b, a).normalize(); _q.setFromUnitVectors(UP, _d);
+  g.applyQuaternion(_q); g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2); return g;
+}
+function cone(p, dir, r) { const g = new THREE.ConeGeometry(r * 2.3, r * 4.5, 10); _q.setFromUnitVectors(UP, dir); g.applyQuaternion(_q); g.translate(p.x, p.y, p.z); return g; }
+function ball(p, r) { const g = new THREE.SphereGeometry(r, 8, 6); g.translate(p.x, p.y, p.z); return g; }
+// Spurversatz: quer zur Fahrtrichtung in der Ebene
+function offsetPts(pts, lane, h) {
+  return pts.map((p, i) => {
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+    const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz);
+    if (l < 1e-3) return new THREE.Vector3(p[0], p[1] + h, p[2]);
+    return new THREE.Vector3(p[0] - dz / l * lane, p[1] + h, p[2] + dx / l * lane);
+  });
+}
+const HOEHE = { lkw: 2.2, transporter: 1.9, awt: 0.7 };
+
+FB.build = () => {
+  if (!layer) { layer = new THREE.Group(); layer.name = 'flows'; S3.scene.add(layer); S3.layers.flows = layer; }
+  while (layer.children.length) layer.remove(layer.children[0]);
+  movers = []; routes = [];
+  if (!FB.on) { panel(); achse(); HSS.perf?.invalidate(2); return; }
+  const { all, fams } = collect();
+  const used = fams.filter(s => all.some(x => x.s === s));
+  const laneOf = new Map(used.map((s, i) => [s.id, (i - (used.length - 1) / 2) * 0.95]));
+  const vis = all.filter(x => aktiv(x.s));
+  const maxTrips = Math.max(1, ...vis.map(x => x.trips));
+  const rad = trips => 0.16 + 0.5 * Math.sqrt(trips / maxTrips);
+  // Abschnitte je Strom und Richtung zusammenfassen
+  const seg = new Map();
+  for (const x of vis) {
+    const ids = x.r.nodes;
+    for (let i = 0; i < x.r.pts.length - 1; i++) {
+      const k = x.s.id + '|' + ids[i] + '>' + ids[i + 1];
+      const s = seg.get(k) || { s: x.s, a: x.r.pts[i], b: x.r.pts[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
+    }
+    routes.push(x);
+  }
+  if (FB.routes) {
+    const by = new Map();
+    for (const s of seg.values()) {
+      if (!by.has(s.s.id)) by.set(s.s.id, { s: s.s, geos: [] });
+      const lane = laneOf.get(s.s.id), h = (HOEHE[s.mittel] || 1.1) + (lane > 0 ? 0.05 : 0);
+      const [a, b] = offsetPts([s.a, s.b], lane, h), r = rad(s.trips), G = by.get(s.s.id).geos;
+      const c = cyl(a, b, r); if (c) G.push(c);
+      G.push(ball(b, r));
+      const len = a.distanceTo(b);
+      if (len > 9) for (let d = 6; d < len - 2; d += 16) { _d.subVectors(b, a).normalize(); G.push(cone(a.clone().addScaledVector(_d, d), _d.clone(), r)); }
+      else if (len > 3 && Math.abs(b.y - a.y) < 0.5 && (s.a[0] * 7 + s.a[2] * 13) % 3 < 1) { _d.subVectors(b, a).normalize(); G.push(cone(a.clone().lerp(b, 0.5), _d.clone(), r)); }
+    }
+    for (const { s, geos } of by.values()) {
+      if (!geos.length) continue;
+      const mesh = new THREE.Mesh(mergeGeometries(geos.map(g => g.index ? g.toNonIndexed() : g), false), tubeMat(s.id, s.farbe));
+      mesh.userData = { strom: s.id }; mesh.renderOrder = 6; mesh.raycast = () => {}; layer.add(mesh);
+    }
+  }
+  // Bewegte Wagen, Betten, Personen und LKW – ganzer Tag oder gewählte Stunde
+  if (FB.move) for (const x of routes) {
+    const tph = FB.hour === null ? x.trips / 16 : x.trips * x.prof[FB.hour];
+    if (tph < 0.05) continue;
+    const n = FB.hour === null ? Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2))) : Math.min(3, Math.max(1, Math.round(tph / 2)));
+    const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
+    const pts = offsetPts(x.r.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
+    for (let i = 0; i < n; i++) {
+      const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
+      movers.push({ mesh, pl, strom: x.s.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
+    }
+  }
+  if (FB.tour) tourGeo();
+  emphasis();
+  FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing;
+  panel(); achse(); HSS.perf?.invalidate(3);
+};
+// Tour: nur der gezeigte Strom kräftig
+function emphasis() {
+  for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom ? 0.95 : 0.07) : 0.92; m.depthWrite = m.opacity > 0.5; }
+  for (const mv of movers) mv.mesh.visible = !FB.tour || mv.strom === FB.tour.strom;
+  HSS.perf?.invalidate(2);
+}
+
+/* ---------- Bewegungen ---------- */
+function poly(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1])); return { pts, cum, L: cum[cum.length - 1] }; }
+function at(pl, s, out) {
+  if (s <= 0) return out.copy(pl.pts[0]); if (s >= pl.L) return out.copy(pl.pts[pl.pts.length - 1]);
+  let lo = 1, hi = pl.cum.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (pl.cum[mid] < s) lo = mid + 1; else hi = mid; }
+  const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
+}
+const box = (w, h, d, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); return o; };
+function truck() {
+  const g = new THREE.Group();
+  g.add(box(5.4, 2.6, 2.3, solid('#eef1f4'), -0.9, 0.7, 0), box(1.7, 2.0, 2.2, solid('#0A223C'), 2.6, 0.7, 0), box(0.06, 0.8, 1.9, solid('#9fc3dc'), 3.46, 1.75, 0), box(4.2, 0.35, 0.03, solid('#2D7694'), -0.9, 2.3, 1.16), box(4.2, 0.35, 0.03, solid('#2D7694'), -0.9, 2.3, -1.16));
+  for (const x of [-2.7, 0.2, 2.6]) for (const z of [-1.05, 1.05]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.32, 12), solid('#3F4A55')); w.rotation.x = Math.PI / 2; w.position.set(x, 0.48, z); g.add(w); }
+  return g;
+}
+const capsGeo = new THREE.CapsuleGeometry(0.28, 1.0, 4, 8);
+function moverMesh(x) {
+  if (x.mittel === 'lkw' || x.mittel === 'transporter') { const t = truck(); if (x.mittel === 'transporter') t.scale.setScalar(0.7); return t; }
+  const c = x.s.farbe || x.m.farbe || '#2D7694';
+  if (x.m.reinheit === 'person' || x.m.reinheit === 'patient' || x.mittel === 'bett' || x.s.id === 'betten') { const g = new THREE.Group(); if (x.m.reinheit === 'person') { const o = new THREE.Mesh(capsGeo, solid(c)); o.position.y = 0.8; g.add(o); } else g.add(box(2.3, 0.6, 1.1, solid(c), 0, 0.35, 0), box(2.1, 0.12, 0.95, solid('#eef1f4'), 0, 0.95, 0)); return g; }
+  const g = new THREE.Group(); g.add(box(1.4, 1.05, 1.3, solid(c), 0, 0.2, 0)); g.add(box(1.45, 0.08, 1.35, solid('#3F4A55'), 0, 0.1, 0)); return g;
+}
+// einfache Figuren für die Simulation (Planungsmodell): LKW, Wagen mit Person, AWT-Behälter, Bett
+FB.agentMesh = (mittel, mat) => {
+  const g = new THREE.Group(), c = mat?.farbe || '#2D7694';
+  if (mittel === 'lkw' || mittel === 'transporter') { const t = truck(); t.rotation.y = -Math.PI / 2; if (mittel === 'transporter') t.scale.setScalar(0.7); g.add(t); return g; }
+  if (mittel === 'awt') { g.add(box(0.8, 0.9, 1.1, solid(c), 0, 0.3, 0)); return g; }
+  const p = new THREE.Mesh(capsGeo, solid('#144477')); p.position.set(0, 0.85, -0.45); g.add(p);
+  if (mat?.reinheit === 'patient' || mittel === 'bett') g.add(box(0.95, 0.55, 2.1, solid('#eef1f4'), 0, 0.3, 0.8), box(0.7, 0.2, 1.6, solid(c), 0, 0.85, 0.8));
+  else if (mat?.reinheit !== 'person') g.add(box(0.7, 0.95, 1.0, solid(c), 0, 0.15, 0.65), box(0.75, 0.08, 1.05, solid('#3F4A55'), 0, 0.08, 0.65));
+  return g;
+};
+const _p = new THREE.Vector3(), _n = new THREE.Vector3();
+let T = 0, playT = 0;
+HSS.on('frame', dt => {
+  if (FB.playing) { playT += dt; if (playT > 1.6) { playT = 0; FB.setHour(((FB.hour ?? 4) + 1) % 24); } }
+  if (FB.tour) updateTour(dt);
+  if (!FB.animating || !layer?.visible) return;
+  T += dt;
+  for (const mv of movers) {
+    if (!mv.mesh.visible) continue;
+    const s = ((T * mv.speed / mv.pl.L) + mv.phase) % 1;
+    at(mv.pl, s * mv.pl.L, _p); at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
+    mv.mesh.position.copy(_p);
+    const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.mesh.rotation.y = -Math.atan2(dz, dx);
+  }
+});
+
+/* ---------- Panel „Warenströme“ ---------- */
+const opt = (v, t, s) => `<option value="${U.esc(v)}"${v === s ? ' selected' : ''}>${U.esc(t)}</option>`;
+function panel() {
+  let el = document.getElementById('stroeme');
+  if (!FB.on) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement('div'); el.id = 'stroeme'; el.className = 'vw-fluss'; document.body.appendChild(el); }
+  const { all, rows } = FB.stats();
+  el.hidden = false;
+  const tourSel = FB._tourSel && rows.some(r => r.s.id === FB._tourSel) ? FB._tourSel : rows.find(r => !isPers(r.s))?.s.id;
+  el.innerHTML = `<div class="sh"><b>Warenströme</b><button class="mini" data-sa>alle</button><button class="mini" data-sn>keine</button><button class="mini x" data-sx title="Warenströme schließen">×</button></div>
+    <div class="note sn">Fahrten/Tag · Transportleistung km/Tag · ${all.length} Flüsse</div>
+    <div class="sl">${rows.map(r => `<label class="si ${aktiv(r.s) ? '' : 'dim'}"><input type="checkbox" data-s="${U.esc(r.s.id)}" ${aktiv(r.s) ? 'checked' : ''}><i style="background:${U.esc(r.s.farbe)}"></i><span>${U.esc(r.s.name)}</span><small>${U.fmt(r.trips)} · ${U.fmt(r.km, 1)} km</small></label>`).join('') || '<div class="note" style="padding:6px 8px">Noch keine Flüsse – im Arbeitsbereich „Flüsse“ mit dem Fluss-Assistenten anlegen oder Standardflüsse übernehmen.</div>'}</div>
+    <label class="chk"><input type="checkbox" data-sr ${FB.routes ? 'checked' : ''}> Routen anzeigen</label>
+    <label class="chk"><input type="checkbox" data-sm ${FB.move ? 'checked' : ''}> Transporte animieren</label>
+    ${rows.length ? `<div class="sh2">Prozess-Tour</div>
+    <div class="row"><select data-ts>${rows.filter(r => !isPers(r.s)).map(r => opt(r.s.id, r.s.name, tourSel)).join('')}</select><button class="primary" data-tgo>▶ Start</button></div>
+    <label class="ctl">Tempo <input type="range" data-tt min="0.5" max="4" step="0.25" value="${FB.tempo}"></label>
+    <label class="ctl">Kameraabstand <input type="range" class="tourZoomIn" min="0.6" max="6" step="0.1" value="${FB.zoom}"></label>
+    <div class="note">Automatische Kamerafahrt von der Quelle zur Senke. Aufzüge und Außenwege werden als Zwischenhalte erläutert.</div>` : ''}`;
+  el.querySelector('[data-sx]').onclick = () => FB.set(false);
+  el.querySelector('[data-sa]').onclick = () => { FB.aus.clear(); FB.personen = true; FB.build(); };
+  el.querySelector('[data-sn]').onclick = () => { for (const r of rows) FB.aus.add(r.s.id); FB.build(); };
+  el.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const id = c.dataset.s; if (id === 'personen' && c.checked) FB.personen = true; if (c.checked) FB.aus.delete(id); else FB.aus.add(id); FB.build(); });
+  el.querySelector('[data-sr]').onchange = e => { FB.routes = e.target.checked; FB.build(); };
+  el.querySelector('[data-sm]').onchange = e => { FB.move = e.target.checked; FB.build(); };
+  const ts = el.querySelector('[data-ts]'); if (ts) { ts.onchange = () => (FB._tourSel = ts.value); el.querySelector('[data-tgo]').onclick = () => FB.startTour(ts.value); el.querySelector('[data-tt]').oninput = e => (FB.tempo = +e.target.value); }
+  el.querySelectorAll('.tourZoomIn').forEach(i => i.oninput = () => setZoom(+i.value));
+}
+
+/* ---------- Tagesachse ---------- */
+let bars = [];
+function hourly() {
+  const { all, fams } = collect(), res = new Map();
+  for (const x of all) { if (!aktiv(x.s)) continue; const a = res.get(x.s.id) || new Array(24).fill(0); for (let h = 0; h < 24; h++) a[h] += x.trips * x.prof[h]; res.set(x.s.id, a); }
+  return { res, fams: fams.filter(s => res.has(s.id)) };
+}
+function achse() {
+  let el = document.getElementById('stAchse');
+  const show = FB.on && !document.body.classList.contains('timeline');
+  document.body.classList.toggle('stachse', !!show);
+  if (!show) { if (el) el.hidden = true; return; }
+  if (!el) {
+    el = document.createElement('div'); el.id = 'stAchse'; el.className = 'vw-fluss vw-sim';
+    el.innerHTML = `<div class="ah"><b>Tagesachse</b><span class="ai"></span><div class="sp"></div><button data-day>Ganzer Tag</button><button data-play>▶ Abspielen</button></div><canvas></canvas>`;
+    document.body.appendChild(el);
+    const cv = el.querySelector('canvas');
+    el.querySelector('[data-day]').onclick = () => { FB.play(false); FB.setHour(null); };
+    el.querySelector('[data-play]').onclick = () => FB.play(!FB.playing);
+    cv.onclick = ev => { const x = ev.clientX - cv.getBoundingClientRect().left, b = bars.find(([a, c]) => x >= a - 2 && x <= c + 2); if (b) FB.setHour(b[2]); };
+    const tip = () => document.getElementById('tip');
+    cv.onmousemove = ev => {
+      const t = tip(); if (!t) return;
+      const x = ev.clientX - cv.getBoundingClientRect().left, b = bars.find(([a, c]) => x >= a - 2 && x <= c + 2);
+      if (!b) { t.hidden = true; return; }
+      const { res, fams } = hourly(), hr = b[2];
+      t.innerHTML = `<b>${String(hr).padStart(2, '0')}:00 Uhr</b><div class="s">${fams.filter(s => res.get(s.id)[hr] > 0.05).map(s => `<span style="color:${s.farbe}">●</span> ${U.esc(s.name)}: ${U.fmt(res.get(s.id)[hr], 1)}`).join('<br>') || 'keine Transporte'}</div>`;
+      t.hidden = false; t.style.left = `${ev.clientX + 12}px`; t.style.top = `${ev.clientY - 20 - t.offsetHeight}px`;
+    };
+    cv.onmouseleave = () => { const t = tip(); if (t) t.hidden = true; };
+  }
+  el.hidden = false;
+  el.querySelector('[data-day]').classList.toggle('on', FB.hour === null);
+  el.querySelector('[data-play]').textContent = FB.playing ? '❚❚ Pause' : '▶ Abspielen';
+  requestAnimationFrame(() => zeichnen(el));
+}
+function zeichnen(el) {
+  const cv = el.querySelector('canvas'), dpr = Math.min(window.devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const { res, fams } = hourly(), H = [...Array(24).keys()], tot = H.map(hr => U.sum(fams.map(s => res.get(s.id)[hr])));
+  const max = Math.max(1, ...tot), L = 34, B = 16, Tp = 4, cw = (w - L - 4) / 24, nice = Math.ceil(max / 20) * 20 || 20;
+  g.font = '10px Arial, sans-serif'; g.fillStyle = '#94a3b8'; g.strokeStyle = '#e2e8f0'; g.lineWidth = 1;
+  for (const v of [0, nice / 2, nice]) { const y = h - B - (v / nice) * (h - B - Tp); g.beginPath(); g.moveTo(L, y + 0.5); g.lineTo(w, y + 0.5); g.stroke(); g.textAlign = 'right'; g.fillText(U.fmt(v), L - 5, y + 3); }
+  bars = [];
+  for (const hr of H) {
+    const x = L + hr * cw + 2, bw = cw - 4; let y = h - B;
+    for (const s of fams) {
+      const v = res.get(s.id)[hr]; if (!v) continue;
+      const bh = (v / nice) * (h - B - Tp); g.fillStyle = s.farbe; g.globalAlpha = FB.hour === null || FB.hour === hr ? 0.9 : 0.35;
+      g.fillRect(x, y - bh, bw, bh); y -= bh;
+    }
+    g.globalAlpha = 1;
+    if (FB.hour === hr) { g.strokeStyle = '#144477'; g.lineWidth = 2; g.strokeRect(x - 1, Tp, bw + 2, h - B - Tp); g.lineWidth = 1; g.strokeStyle = '#e2e8f0'; }
+    g.fillStyle = '#64748b'; g.textAlign = 'center';
+    if (hr % 2 === 0) g.fillText(String(hr).padStart(2, '0'), x + bw / 2, h - 3);
+    bars.push([x, x + bw, hr]);
+  }
+  const peak = tot.indexOf(Math.max(...tot)), sum = U.sum(tot);
+  el.querySelector('.ai').innerHTML = FB.hour === null
+    ? `Ganzer Tag · ${U.fmt(sum)} Fahrten · Spitze ${String(peak).padStart(2, '0')}:00 Uhr (${U.fmt(tot[peak])} Fahrten/h)`
+    : `${String(FB.hour).padStart(2, '0')}:00–${String(FB.hour + 1).padStart(2, '0')}:00 Uhr · ${U.fmt(tot[FB.hour], 1)} Fahrten/h`;
+}
+FB.setHour = hr => { FB.hour = hr; FB.build(); };
+FB.play = on => { FB.playing = on; playT = 0; if (on && FB.hour === null) FB.setHour(5); else achse(); FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing; };
+window.addEventListener('resize', U.debounce(() => { const el = document.getElementById('stAchse'); if (el && !el.hidden) zeichnen(el); }, 100));
+
+/* ---------- Prozess-Tour ---------- */
+const tourG = new THREE.Group(); tourG.visible = false;
+const tMark = new THREE.Mesh(new THREE.SphereGeometry(1.8, 20, 14), new THREE.MeshStandardMaterial({ color: '#0A967A', emissive: '#0A967A', emissiveIntensity: 0.6 }));
+const tRing = new THREE.Mesh(new THREE.TorusGeometry(3.4, 0.25, 8, 40), new THREE.MeshBasicMaterial({ color: '#0A967A' })); tRing.rotation.x = Math.PI / 2;
+const tPole = new THREE.Mesh(new THREE.ConeGeometry(1.3, 2.6, 3), new THREE.MeshBasicMaterial({ color: '#0A967A' })); tPole.rotation.x = Math.PI;
+[tMark, tRing, tPole].forEach(m => { m.userData.noToon = true; m.renderOrder = 40; m.material.depthTest = false; });
+tourG.add(tMark, tRing, tPole);
+const AUSSEN = new Set(['strasse', 'zufahrt', 'weg', 'gehweg', 'anbindung']);
+// Stationen eines Stroms: aus dem Projekt (Prozess-Tour) oder aus den größten Flüssen abgeleitet
+function stationen(sid) {
+  const prj = HSS.project(), { all, fams } = collect(), s = fams.find(x => x.id === sid), mine = all.filter(x => x.s.id === sid);
+  if (!s || !mine.length) return null;
+  const PL = new Map(HSS.places(prj).map(p => [p.id, p]));
+  let st = (s.tour || []).filter(t => PL.has(t.place)).map(t => ({ place: t.place, titel: t.titel || PL.get(t.place).name, text: t.text || '' }));
+  if (st.length < 2) {
+    const top = mine.slice().sort((a, b) => b.trips - a.trips)[0];
+    const seq = [top.f.von, top.f.nach];
+    while (seq.length < 4) { const nx = mine.filter(x => x.f.von === seq[seq.length - 1] && !seq.includes(x.f.nach)).sort((a, b) => b.trips - a.trips)[0]; if (!nx) break; seq.push(nx.f.nach); }
+    st = seq.map((pid, i) => { const p = PL.get(pid), out = mine.filter(x => x.f.von === pid), inn = mine.filter(x => x.f.nach === pid);
+      return { place: pid, titel: (p?.name || pid).split(' · ').pop(), text: `${p?.name || ''}${i === 0 ? ` – Quelle: ${U.fmt(U.sum(out.map(x => x.trips)), 1)} Fahrten/Tag ab hier.` : i === seq.length - 1 ? ` – Ziel: ${U.fmt(U.sum(inn.map(x => x.trips)), 1)} Fahrten/Tag kommen hier an.` : ` – Umschlag: ${U.fmt(U.sum(inn.map(x => x.trips)), 1)} Fahrten/Tag an, ${U.fmt(U.sum(out.map(x => x.trips)), 1)} ab.`}` }; });
+  }
+  const cnt = {}; for (const x of mine) cnt[x.mittel] = (cnt[x.mittel] || 0) + x.trips; const mittel = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0], rein = mine[0].m.reinheit || 'neutral';
+  return { s, st, mittel, rein, PL };
+}
+FB.startTour = sid => {
+  FB.stopTour();
+  const D = stationen(sid); if (!D) { HSS.ui.toast('Für diesen Strom gibt es keine Flüsse mit Route.', 3000); return; }
+  if (FB.aus.has(sid)) { FB.aus.delete(sid); }
+  const net = HSS.net(), pts = [], stops = [];
+  const push = (p, y = 1.2) => pts.push(new THREE.Vector3(p[0], p[1] + y, p[2]));
+  stops.push({ i: 0, titel: D.st[0].titel, text: D.st[0].text, main: true });
+  for (let k = 1; k < D.st.length; k++) {
+    let r = HSS.route(D.st[k - 1].place, D.st[k].place, D.mittel, D.rein);
+    if (!r.ok) r = HSS.route(D.st[k - 1].place, D.st[k].place, 'hand', 'neutral');
+    if (!r.ok) { HSS.ui.toast(`Tour: kein zulässiger Weg zu ${D.st[k].titel}`, 3000); continue; }
+    const base = Math.max(0, pts.length - 1);
+    r.pts.forEach((p, j) => { if (j === 0 && pts.length) return; push(p); });
+    for (const L of r.lifts) {
+      const N = net.lifts.find(x => x.id === L.lift);
+      stops.push({ i: base + L.startIdx, titel: N?.name || 'Aufzug', text: `Fahrt ${HSS.floorName(L.from)} → ${HSS.floorName(L.to)}${N?.cfg?.kabinen ? ` · ${N.cfg.kabinen} Kabine(n)` : ''}${N?.cfg?.freigabe && !N.cfg.freigabe.includes('*') ? ` · zugelassen: ${N.cfg.freigabe.join(', ')}` : ''}.`, auto: true });
+    }
+    for (let j = 0; j < r.edges.length; j++) {
+      const e = r.edges[j]; if (!AUSSEN.has(e.type) || (j && AUSSEN.has(r.edges[j - 1].type))) continue;
+      let len = 0; for (let q = j; q < r.edges.length && AUSSEN.has(r.edges[q].type); q++) len += r.edges[q].len || 0;
+      if (len > 15) stops.push({ i: base + j, titel: 'Außenweg', text: `${U.fmt(len)} m im Freien: witterungsabhängig, Schnittstelle Gebäude/Außenbereich.`, auto: true });
+    }
+    stops.push({ i: pts.length - 1, titel: D.st[k].titel, text: D.st[k].text, main: true });
+  }
+  if (pts.length < 2) { HSS.ui.toast('Tour: keine Route gefunden', 3000); return; }
+  stops.sort((a, b) => a.i - b.i);
+  const pl = poly(pts);
+  stops.forEach(s => (s.s = pl.cum[Math.min(s.i, pl.cum.length - 1)]));
+  FB.tour = { strom: sid, name: D.s.name, farbe: D.s.farbe, pl, stops, next: 0, s: 0, pause: 0, paused: false, done: false, look: S3.controls.target.clone(), dir: new THREE.Vector3(1, 0, 0) };
+  if (!tourG.parent) S3.scene.add(tourG);
+  tourG.visible = true; S3.controls.enabled = false; wheel();
+  if (V.floor !== null && V.floor !== undefined) S3.setFloor(null);
+  FB._tourSel = sid;
+  karte();
+  FB.build();
+};
+function tourGeo() { /* Route der Tour ist unabhängig vom Flussbild – nichts neu zu bauen */ }
+FB.stopTour = () => {
+  if (!FB.tour) return;
+  FB.tour = null; tourG.visible = false; S3.controls.enabled = true;
+  const c = document.getElementById('stTour'); if (c) c.hidden = true;
+  emphasis(); FB.animating = (FB.move && movers.length > 0) || FB.playing;
+};
+function karte() {
+  let c = document.getElementById('stTour');
+  if (!c) {
+    c = document.createElement('div'); c.id = 'stTour'; c.className = 'vw-fluss';
+    c.innerHTML = `<div class="tk"></div><h3></h3><p></p><div class="bar"><i></i></div><div class="row"><button data-tp>❚❚ Pause</button><button data-tw>Weiter ›</button><div class="sp"></div><label class="ctl">Abstand <input type="range" class="tourZoomIn" min="0.6" max="6" step="0.1"></label><button data-te>Beenden</button></div>`;
+    document.body.appendChild(c);
+    c.querySelector('[data-tp]').onclick = e => { const t = FB.tour; if (!t) return; t.paused = !t.paused; e.target.textContent = t.paused ? '▶ Weiter' : '❚❚ Pause'; };
+    c.querySelector('[data-tw]').onclick = () => { if (FB.tour) FB.tour.pause = 0; };
+    c.querySelector('[data-te]').onclick = () => FB.stopTour();
+    c.querySelector('.tourZoomIn').oninput = e => setZoom(+e.target.value);
+  }
+  c.hidden = false; c.querySelector('.tourZoomIn').value = FB.zoom; c.querySelector('[data-tp]').textContent = '❚❚ Pause';
+  c.querySelector('.tk').textContent = `Prozess-Tour · ${FB.tour.name}`; c.querySelector('h3').textContent = FB.tour.stops[0]?.titel || ''; c.querySelector('p').textContent = '';
+}
+function zeigeHalt(i) {
+  const t = FB.tour, st = t.stops[i], mains = t.stops.filter(s => s.main), mi = mains.indexOf(st), c = document.getElementById('stTour'); if (!c) return;
+  c.querySelector('.tk').textContent = `Prozess-Tour · ${t.name} · ${st.main ? `Station ${mi + 1}/${mains.length}` : 'Zwischenhalt'}`;
+  c.querySelector('h3').textContent = st.titel; c.querySelector('p').textContent = st.text || '';
+}
+function setZoom(v) {
+  FB.zoom = Math.min(6, Math.max(0.6, Math.round(v * 10) / 10));
+  document.querySelectorAll('.tourZoomIn').forEach(i => (i.value = FB.zoom));
+  try { localStorage.setItem('hss-tourZoom', FB.zoom); } catch (e) { /* ohne Speicher */ }
+}
+function updateTour(dt) {
+  const t = FB.tour; if (!t) return;
+  const mul = FB.tempo;
+  if (!t.paused) {
+    if (t.pause > 0) t.pause -= dt * mul;
+    else if (t.next < t.stops.length && t.stops[t.next].s <= t.s + 0.01) { zeigeHalt(t.next); t.pause = t.stops[t.next].auto ? 3 : 5; t.next++; }
+    else if (t.s < t.pl.L) { const cap = t.next < t.stops.length ? t.stops[t.next].s : t.pl.L; t.s = Math.min(cap, t.s + dt * 16 * mul); }
+    else if (!t.done) { t.done = true; const c = document.getElementById('stTour'); if (c) c.querySelector('.tk').textContent = `Prozess-Tour · ${t.name} · Tour beendet`; }
+  }
+  const p = at(t.pl, t.s, new THREE.Vector3()), a = at(t.pl, Math.min(t.pl.L, t.s + 10), new THREE.Vector3()), b = at(t.pl, Math.max(0, t.s - 10), new THREE.Vector3());
+  const d = a.sub(b); d.y = 0;
+  if (d.lengthSq() > 4) t.dir.lerp(d.normalize(), 1 - Math.exp(-dt * 2)).normalize();
+  const side = new THREE.Vector3(-t.dir.z, 0, t.dir.x), z = FB.zoom;
+  const want = p.clone().addScaledVector(t.dir, -38 * z).addScaledVector(side, 18 * z).add(new THREE.Vector3(0, 34 * z, 0));
+  S3.camera.position.lerp(want, 1 - Math.exp(-dt * 1.6));
+  t.look.lerp(p, 1 - Math.exp(-dt * 3));
+  S3.camera.lookAt(t.look); S3.controls.target.copy(t.look);
+  tMark.position.copy(p); tRing.position.copy(p); tPole.position.copy(p).add(new THREE.Vector3(0, 4.2 + 0.4 * Math.sin(performance.now() / 300), 0));
+  tRing.scale.setScalar(1 + 0.25 * Math.sin(performance.now() / 250));
+  const c = document.getElementById('stTour'); if (c) c.querySelector('.bar i').style.width = `${(t.s / (t.pl.L || 1)) * 100}%`;
+  HSS.perf?.invalidate(1);
+}
+window.addEventListener('keydown', e => { if (e.key === 'Escape' && FB.tour && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) FB.stopTour(); });
+let wheelOn = false;
+const wheel = () => { if (wheelOn || !S3.renderer) return; wheelOn = true; S3.renderer.domElement.addEventListener('wheel', ev => { if (!FB.tour) return; ev.preventDefault(); ev.stopImmediatePropagation(); setZoom(FB.zoom * (ev.deltaY > 0 ? 1.12 : 1 / 1.12)); }, { passive: false, capture: true }); };
+
+/* ---------- Ein/Aus, Ansicht speichern ---------- */
+FB.set = (on) => {
+  if (!on) { FB.stopTour(); FB.playing = false; }
+  FB.on = on; document.body.classList.toggle('flussbild', on);
+  const b = document.getElementById('vFlow'); if (b) b.classList.toggle('on', on);
+  // Gebäude gläsern, damit die Ströme im Haus zu sehen sind
+  if (on && V.shell !== 'glas') { shell0 = V.shell; V.shell = 'glas'; S3.rebuild('all'); }
+  if (!on && V.shell === 'glas') { V.shell = shell0 && shell0 !== 'glas' ? shell0 : 'massiv'; S3.rebuild('all'); }
+  const sel = document.getElementById('vShell'); if (sel) sel.value = V.shell;
+  FB.build();
+};
+FB.toggle = () => FB.set(!FB.on);
+FB.state = () => FB.on ? { aus: [...FB.aus], personen: FB.personen, routes: FB.routes, move: FB.move, hour: FB.hour } : null;
+FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.personen = !!st.personen; FB.routes = st.routes !== false; FB.move = st.move !== false; FB.hour = st.hour ?? null; if (FB.on) FB.build(); else FB.set(true); };
+// Projekt- oder Netzänderungen: neu aufbauen (verzögert)
+const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
+HSS.on('changed', rebuild); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
+// Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
+HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) FB.set(true); });
+// Simulations-Zeitleiste und Tagesachse nicht übereinander
+new MutationObserver(() => { if (FB.on) achse(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+(() => {
+  const vb = document.getElementById('vM2');
+  if (vb && !document.getElementById('vFlow')) { const b = document.createElement('button'); b.className = 'tgl vw-fluss'; b.id = 'vFlow'; b.title = 'Warenströme: alle Flüsse als farbige Bänder je Strom (Speisen, Wäsche, Sterilgut …), Tagesachse und Prozess-Tour'; b.textContent = 'Warenströme'; b.onclick = () => FB.toggle(); vb.before(b); }
+  const sh = document.getElementById('vShell'); if (sh && !sh.querySelector('option[value="glas"]')) sh.insertAdjacentHTML('beforeend', '<option value="glas">gläsern</option>');
+})();
+})();
+
+</script>
+<script>
+/* =====================================================================
+   HSS · fluss-assistent.js – Flüsse in zwei Schritten anlegen
+   1. Weg: Start (Gebäude + Etage), beliebig viele Zwischenstopps, Ziel.
+      Ohne genauen Raum wird auf der Etage ein Übergabepunkt angelegt
+      (bzw. ein vorhandener wiederverwendet).
+   2. Menge: Materialgruppe, Menge je Tag/Woche, Zeitfenster, Transportmittel.
+   Je Etappe entsteht ein normaler Fluss (Etappe 1/n, 2/n …), der wie
+   jeder andere Fluss bearbeitet, simuliert und dargestellt wird.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, G = HSS.geo;
+const FA = HSS.flussAssistent = {};
+const LIB = 'log.uebergabepunkt', EXT = '__ext';
+const opt = (v, t, s) => `<option value="${U.esc(v)}"${String(v) === String(s) ? ' selected' : ''}>${U.esc(t)}</option>`;
+HSS.ROLLEN.uebergabe = HSS.ROLLEN.uebergabe || 'Übergabepunkt (Etage)';
+
+/* ---------- Gebäude, Etagen, Orte ---------- */
+const eigene = prj => prj.buildings.filter(b => !b.umgebung && b.parts.length).sort((a, b) => String(a.kurz || a.name).localeCompare(String(b.kurz || b.name), 'de', { numeric: true }));
+const bName = b => (b.kurz && b.kurz !== b.name ? b.kurz + ' – ' : '') + b.name;
+FA.etagen = (b, prj = HSS.project()) => [...new Set(b.parts.flatMap(pt => HSS.partFloors(pt).map(f => HSS.globalFloor(pt, f, prj))))].sort((a, c) => a - c);
+const ortVon = (pl, prj) => { if (pl.building) return pl.building; if (!pl.part) return null; return HSS.findPart(pl.part, prj)?.building.id || null; };
+FA.orte = (bid, gf, prj = HSS.project()) => {
+  const pl = HSS.places(prj);
+  if (bid === EXT) return pl.filter(p => p.kind === 'extern' || (p.kind === 'object' && !p.part));
+  return pl.filter(p => ortVon(p, prj) === bid && p.gf === gf).sort((a, c) => (a.role === 'uebergabe' ? -1 : 0) - (c.role === 'uebergabe' ? -1 : 0) || a.name.localeCompare(c.name, 'de'));
+};
+// Bauteil der Etage: bevorzugt mit Aufzug, sonst das größte
+const bauteil = (b, gf, prj) => {
+  const cand = b.parts.filter(pt => HSS.localFloor(pt, gf, prj) !== null); if (!cand.length) return null;
+  const lifts = prj.objects.filter(o => o.host && /aufzug/.test(o.lib) && cand.some(pt => pt.id === o.host.part));
+  const withLift = cand.filter(pt => lifts.some(o => o.host.part === pt.id));
+  const pool = withLift.length ? withLift : cand;
+  const pt = pool.slice().sort((a, c) => HSS.partArea(c) - HSS.partArea(a))[0];
+  return { pt, lift: lifts.find(o => o.host.part === pt.id) || null };
+};
+// Punkt in der Grundfläche (lokal), möglichst nah am Wunschpunkt
+const innen = (pt, want) => {
+  const L = HSS.partFootprintLocal(pt), inn = q => G.pointIn(q, L.outer) && !L.holes.some(h => G.pointIn(q, h));
+  if (inn(want)) return want;
+  const bb = G.bbox(L.outer); let best = null;
+  for (let x = bb.x0 + 1; x < bb.x1; x += 1.5) for (let z = bb.z0 + 1; z < bb.z1; z += 1.5) {
+    if (!inn([x, z])) continue; const d = Math.hypot(x - want[0], z - want[1]); if (!best || d < best.d) best = { q: [x, z], d };
+  }
+  return best ? best.q : [0, 0];
+};
+// Übergabepunkt anlegen (im Änderungs-Callback) oder vorhandenen wiederverwenden
+const uebergabe = (p, bid, gf) => {
+  const b = p.buildings.find(x => x.id === bid); if (!b) return null;
+  const have = p.objects.find(o => o.lib === LIB && o.host && b.parts.some(pt => pt.id === o.host.part) && HSS.globalFloor(HSS.findPart(o.host.part, p).part, o.host.floor, p) === gf);
+  if (have) return have.id;
+  const T = bauteil(b, gf, p); if (!T) return null;
+  const f = HSS.localFloor(T.pt, gf, p);
+  let want = [0, 0];
+  if (T.lift) want = [T.lift.x + 2.5, T.lift.z + 2.5];
+  else { const L = HSS.partFootprintLocal(T.pt).outer; want = [U.sum(L.map(q => q[0])) / L.length, U.sum(L.map(q => q[1])) / L.length]; }
+  const q = innen(T.pt, want);
+  const o = { id: U.uid('obj'), lib: LIB, host: { part: T.pt.id, floor: f }, x: Math.round(q[0] * 10) / 10, z: Math.round(q[1] * 10) / 10, rot: 0, name: `Übergabepunkt ${b.kurz || b.name} ${HSS.floorName(gf)}`, role: 'uebergabe', place: true, assistent: true };
+  p.objects.push(o);
+  return o.id;
+};
+
+/* ---------- Dialog ---------- */
+FA.dialog = (vorgabe = {}) => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project(); HSS.ensureStammdaten(prj);
+  const B = eigene(prj);
+  if (!B.length) { UI.toast('Zuerst Gebäude anlegen – der Assistent verbindet Gebäude und Etagen.', 3500); return; }
+  const neu = () => { const b = B[0]; const fl = FA.etagen(b); return { b: b.id, gf: fl.includes(0) ? 0 : fl[0], ort: '' }; };
+  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: 1, material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
+  const mat = () => U.byId(prj.materials, S.material);
+  const label = s => {
+    if (s.b === EXT) { const p = HSS.places(prj).find(x => x.id === s.ort); return p ? p.name : 'Außen'; }
+    const b = U.byId(prj.buildings, s.b); const pl = s.ort && HSS.places(prj).find(x => x.id === s.ort);
+    return pl && pl.role !== 'uebergabe' ? pl.name : `${b?.kurz || b?.name || ''} ${HSS.floorName(s.gf)}`;
+  };
+  const autoName = () => `${mat()?.name || 'Fluss'}: ${label(S.stops[0])} → ${label(S.stops[S.stops.length - 1])}${S.stops.length > 2 ? ` (über ${S.stops.slice(1, -1).map(label).join(', ')})` : ''}`;
+  const stopRow = (s, i) => {
+    const n = S.stops.length, rol = i === 0 ? 'Start' : i === n - 1 ? 'Ziel' : 'Zwischenstopp ' + i;
+    const b = U.byId(prj.buildings, s.b);
+    const orte = FA.orte(s.b, s.gf, prj);
+    const ortOpts = s.b === EXT ? (orte.length ? orte.map(p => opt(p.id, p.name, s.ort)).join('') : opt('', '– keine externen Orte (Flüsse › Orte) –', '')) : opt('', 'Übergabepunkt auf der Etage', s.ort) + orte.filter(p => p.role !== 'uebergabe').map(p => opt(p.id, p.name.split(' · ').slice(1).join(' · ') + (p.role && HSS.ROLLEN[p.role] ? ` [${HSS.ROLLEN[p.role]}]` : ''), s.ort)).join('');
+    return `<div class="fa-stop ${i === 0 ? 'start' : i === n - 1 ? 'ziel' : 'zw'}" data-i="${i}">
+      <div class="fa-dot">${i === 0 ? 'A' : i === n - 1 ? 'B' : i}</div>
+      <div class="fa-f"><b>${rol}</b>
+        <div class="fa-row"><select data-k="b" title="Gebäude">${B.map(x => opt(x.id, bName(x), s.b)).join('')}${opt(EXT, 'Außen / extern (Lieferant, Entsorger …)', s.b)}</select>
+        ${s.b === EXT ? '' : `<select data-k="gf" title="Etage">${FA.etagen(b).map(g => opt(g, HSS.floorName(g), s.gf)).join('')}</select>`}</div>
+        <select data-k="ort" title="Genauer Ort (optional)">${ortOpts}</select>
+      </div>
+      ${i > 0 && i < n - 1 ? `<button class="mini" data-x="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>
+      ${i < n - 1 ? `<div class="fa-add"><button class="mini" data-add="${i + 1}">+ Zwischenstopp</button></div>` : ''}`;
+  };
+  const render = d => {
+    const body = $('#faBody', d), m = mat();
+    $$('.fa-steps span', d).forEach((x, k) => x.classList.toggle('on', k + 1 === S.schritt));
+    if (S.schritt === 1) {
+      body.innerHTML = `<p class="note">Richtung festlegen: <b>aus welchem Gebäude und welcher Etage</b> zu welchem – bei Bedarf mit Zwischenstopps. Ohne genauen Raum legt der Assistent auf der Etage einen <b>Übergabepunkt</b> an (z. B. am Aufzug).</p>
+        <div class="fa-route">${S.stops.map(stopRow).join('')}</div>`;
+      $('#faBack', d).hidden = true; $('#faNext', d).textContent = 'Weiter: Menge →';
+    } else {
+      if (!S.name) S.name = autoName();
+      body.innerHTML = `<div class="fa-sum">${S.stops.map((s, i) => `<span class="fa-chip ${i === 0 ? 'start' : i === S.stops.length - 1 ? 'ziel' : ''}">${U.esc(label(s))}</span>`).join('<span class="fa-arr">→</span>')}</div>
+        <div class="fg">
+          <label class="f full"><span>Materialgruppe / Strom</span><select id="faM">${prj.materials.map(x => opt(x.id, x.name + ' (' + x.reinheit + ')', S.material)).join('')}</select></label>
+          <label class="f"><span>Menge</span><input type="number" id="faN" value="${S.menge}" min="0" step="1"></label>
+          <label class="f"><span>Einheit / je</span><select id="faP">${opt('tag', (m?.einheit || 'Einheiten') + ' je Tag', S.periode)}${opt('woche', (m?.einheit || 'Einheiten') + ' je Woche', S.periode)}</select></label>
+          <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="faW" value="${U.esc(S.fenster)}"></label>
+          <label class="f full"><span>Transportmittel</span><select id="faT">${prj.transports.map(x => opt(x.id, x.name, S.transport)).join('')}</select></label>
+          <label class="f full"><span>Name</span><input type="text" id="faName" value="${U.esc(S.name)}"></label>
+        </div>
+        <p class="note">${S.stops.length - 1} Etappe(n) werden als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
+      $('#faM', body).onchange = e => { const old = autoName(); S.material = e.target.value; if (S.name === old || !S.name) S.name = autoName(); render(d); };
+      $('#faN', body).oninput = e => (S.menge = +e.target.value || 0);
+      $('#faP', body).onchange = e => (S.periode = e.target.value);
+      $('#faW', body).oninput = e => (S.fenster = e.target.value);
+      $('#faT', body).onchange = e => (S.transport = e.target.value);
+      $('#faName', body).oninput = e => (S.name = e.target.value);
+      $('#faBack', d).hidden = false; $('#faNext', d).textContent = '✓ Fluss anlegen';
+      return;
+    }
+    $$('[data-k]', body).forEach(sel => sel.onchange = () => {
+      const i = +sel.closest('.fa-stop').dataset.i, s = S.stops[i], k = sel.dataset.k;
+      if (k === 'b') { s.b = sel.value; s.ort = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
+      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; }
+      else s.ort = sel.value;
+      S.name = ''; render(d);
+    });
+    $$('[data-add]', body).forEach(b => b.onclick = () => { const i = +b.dataset.add; S.stops.splice(i, 0, Object.assign({}, S.stops[i - 1], { ort: '' })); S.name = ''; render(d); });
+    $$('[data-x]', body).forEach(b => b.onclick = () => { S.stops.splice(+b.dataset.x, 1); S.name = ''; render(d); });
+  };
+  const $$ = (s, r) => [...r.querySelectorAll(s)];
+  UI.dialog(`<div class="dh"><h2>Fluss-Assistent</h2><button class="x" data-close>×</button></div>
+    <div class="fa-steps"><span>1 · Weg: Start → Zwischenstopps → Ziel</span><span>2 · Menge und Zeit</span></div>
+    <div id="faBody"></div>
+    <div class="actions"><button id="faBack" hidden>← Zurück</button><button class="primary" id="faNext"></button><button data-close>Abbrechen</button></div>`, d => {
+    d.classList.add('fa-dlg');
+    render(d);
+    $('#faBack', d).onclick = () => { S.schritt = 1; render(d); };
+    $('#faNext', d).onclick = () => {
+      if (S.schritt === 1) {
+        if (S.stops.some(s => s.b === EXT && !s.ort)) { UI.toast('Für „Außen / extern“ einen Ort wählen (oder unter Flüsse › Orte anlegen).', 3500); return; }
+        for (let i = 1; i < S.stops.length; i++) { const a = S.stops[i - 1], b = S.stops[i]; if (a.b === b.b && a.gf === b.gf && a.ort === b.ort) { UI.toast(`Etappe ${i}: Start und Ziel sind gleich – bitte anderes Gebäude oder andere Etage wählen.`, 3500); return; } }
+        S.schritt = 2; render(d); return;
+      }
+      const ids = FA.anlegen(S);
+      d.close();
+      FA.zeigen(ids);
+    };
+  });
+};
+
+/* ---------- Anlegen ---------- */
+FA.anlegen = S => {
+  const UI = HSS.ui, prj = HSS.project();
+  const fenster = String(S.fenster || '').split(/[,;]/).map(x => x.trim()).filter(Boolean).map(x => { const m = x.match(/(\d{1,2})[:.]?(\d{2})?\s*[-–]\s*(\d{1,2})[:.]?(\d{2})?/); return m ? [+m[1] + (+(m[2] || 0)) / 60, +m[3] + (+(m[4] || 0)) / 60] : null; }).filter(Boolean);
+  const kette = U.uid('kette'), ids = [];
+  HSS.change('Fluss anlegen (Assistent)', p => {
+    const pid = S.stops.map(s => s.b === EXT ? s.ort : (s.ort || uebergabe(p, s.b, s.gf)));
+    const n = pid.length - 1;
+    for (let i = 0; i < n; i++) {
+      const f = { id: U.uid('flow'), name: n > 1 ? `${S.name} · Etappe ${i + 1}/${n}` : S.name, material: S.material, von: pid[i], nach: pid[i + 1], menge: S.menge, periode: S.periode, betriebstage: 7, fenster: fenster.length ? fenster : [[8, 12]], transport: S.transport, fahrzeitMin: null, aktiv: true, kette, etappe: i + 1, etappen: n, assistent: true };
+      p.flows.push(f); ids.push(f.id);
+    }
+  });
+  UI.flowSel = ids[0]; UI.flowTab = 'fluesse';
+  return ids;
+};
+// Ergebnis: Routen prüfen, im Modell zeigen
+FA.zeigen = ids => {
+  const UI = HSS.ui, prj = HSS.project();
+  const res = ids.map(id => { const f = U.byId(prj.flows, id), m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport); return { f, r: HSS.route(f.von, f.nach, t?.mittel, m?.reinheit) }; });
+  if (UI.current !== 'fluesse') UI.setWS('fluesse'); else UI.renderPanel();
+  HSS.s3.setFloor?.(null);
+  UI.showRoutes ? UI.showRoutes(ids, true) : UI.showRoute(ids[0], true);
+  HSS.emit('flows-changed', ids);
+  const bad = res.filter(x => !x.r.ok);
+  const len = U.sum(res.filter(x => x.r.ok).map(x => x.r.len));
+  if (bad.length) UI.toast(`${ids.length} Fluss/Flüsse angelegt – ${bad.length} Etappe(n) ohne Route: Wege, Aufzüge und Freigaben (rein/unrein) prüfen.`, 6000);
+  else UI.toast(`${ids.length} Fluss/Flüsse angelegt · Weg ${U.fmt(len)} m · ${U.sum(res.map(x => x.r.lifts.length))} Aufzugsfahrt(en)`, 4500);
+  return res;
+};
+})();
+
+</script>
+<script>
+/* =====================================================================
    HSS · ansicht.js – Modell als HTML-Ansicht exportieren (nur ansehen)
    „Als HTML-Ansicht exportieren“ schreibt eine einzige HTML-Datei mit dem
    aktuellen Stand des Modells und der aktuellen Ansicht (Kamera, Etage,
@@ -13877,9 +14670,18 @@ A.state = () => {
   return {
     cam: S3.camera.position.toArray().map(v => Math.round(v * 100) / 100), tgt: S3.controls.target.toArray().map(v => Math.round(v * 100) / 100),
     floor: V.floor, cut: V.cut, shell: V.shell, explode: V.explode, labels: V.labels, wege: V.wege, stil: V.stil, sun: V.sunHour,
-    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false
+    zonen: !!V.zonen, zonenFokus: V.zonenFokus || null, m2: !!V.m2, flussbild: !!HSS.flussbild?.on, verkehr: HSS.perf?.trafficAnim !== false,
+    netz: HSS.ui?.netMode || 'aus', sim: !!HSS.state.sim && !document.getElementById('timeline')?.hidden, simT: HSS.player?.t ?? 360,
+    stroeme: HSS.stroeme?.state?.() || null
   };
 };
+/* Was der Empfänger sehen darf (Standard: alles). Module fragen über A.erlaubt('rundgang'|'fluss'|'sim') */
+A.TEILE = [
+  { k: 'rundgang', t: 'Stationsrundgang und Begehen', s: 'Rundgang Raum für Raum, freie Begehung in der Ich-Perspektive' },
+  { k: 'fluss', t: 'Materialflussdarstellungen', s: 'Wegenetz und Auslastung, Flussbild, Warenströme, Prozess-Tour' },
+  { k: 'sim', t: 'Simulation / Tagesablauf', s: 'Transporte über den Tag abspielen (Start / Pause, Zeitleiste)' }
+];
+A.erlaubt = k => !HSS.state.viewer || (window.HSS_VIEWER?.erlaubt?.[k] ?? true);
 
 /* ---------- Quellen der Suite einsammeln ---------- */
 async function text(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ': HTTP ' + r.status); return r.text(); }
@@ -13923,7 +14725,11 @@ A.export = async (opts = {}) => {
   const p = U.clone(prj);
   const used = new Set(p.objects.map(o => o.lib));
   p.customLibrary = HSS.library ? HSS.library.all().filter(o => o._source !== 'standard' && used.has(o.id)).map(o => HSS.library.serialize(o)) : p.customLibrary;
-  const payload = { project: p, view: A.state(), titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
+  const erlaubt = Object.fromEntries(A.TEILE.map(x => [x.k, opts.erlaubt?.[x.k] !== false]));
+  const view = A.state();
+  if (!erlaubt.fluss) { view.flussbild = false; view.netz = 'aus'; view.stroeme = null; }
+  if (!erlaubt.sim) view.sim = false;
+  const payload = { project: p, view, erlaubt, titel: opts.titel || p.meta.name, hinweis: opts.hinweis || '', erstellt: new Date().toISOString() };
   const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   const html = `<!DOCTYPE html>
 <html lang="de">
@@ -13948,22 +14754,53 @@ A.dialog = () => {
   UI.dialog(`<div class="dh"><h2>Als HTML-Ansicht exportieren</h2><button class="x" data-close>×</button></div>
     <p>Erstellt <b>eine HTML-Datei</b> mit dem aktuellen Stand des Modells und genau dieser Ansicht (Blickwinkel, Etage, Stil, Flächenplan, Beschriftung). Empfänger öffnen sie per Doppelklick – ohne Installation, ohne Internet. Drehen, zoomen, Etagen wechseln, Flächenplan und Rundgang ansehen ist möglich, <b>ändern nicht</b>.</p>
     <div class="fg"><label class="f full"><span>Titel</span><input type="text" id="axT" value="${U.esc(prj.meta.name)}"></label><label class="f full"><span>Hinweis für den Empfänger (optional)</span><input type="text" id="axH" placeholder="z. B. Variante 2 – Stand Lenkungskreis"></label></div>
+    <h4 style="margin:12px 0 4px">Für den Empfänger freigeben</h4>
+    <div class="axopt">${A.TEILE.map(x => `<label class="chk"><input type="checkbox" data-ax="${x.k}" ${A._last?.[x.k] === false ? '' : 'checked'}> <span><b>${x.t}</b><br><small class="note">${x.s}</small></span></label>`).join('')}</div>
+    <p class="note">Abgewählte Teile erscheinen in der Ansicht nicht – weder als Schaltfläche noch in der gespeicherten Ansicht.</p>
     <div class="actions"><button class="primary" id="axGo">HTML-Ansicht herunterladen</button><button data-close>Abbrechen</button></div>`, d => {
-    $('#axGo', d).onclick = async () => { const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim(); d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h }); };
+    $('#axGo', d).onclick = async () => {
+      const t = $('#axT', d).value.trim(), h = $('#axH', d).value.trim();
+      const erlaubt = {}; d.querySelectorAll('[data-ax]').forEach(c => (erlaubt[c.dataset.ax] = c.checked)); A._last = erlaubt;
+      d.close(); await A.export({ titel: t || prj.meta.name, hinweis: h, erlaubt });
+    };
   });
+};
+
+/* Tagesablauf in der Ansicht: rechnen, Zeitleiste zeigen, abspielen */
+A.tagesablauf = (play = true, t = 360) => {
+  const UI = HSS.ui;
+  const go = () => {
+    if (!HSS.state.sim) { try { HSS.runSimulation(); } catch (e) { UI.toast('Tagesablauf nicht möglich: ' + e.message, 4000); return; } }
+    HSS.player.setTime(t); UI.timeline.show(true);
+    if (UI.netMode === 'heat' && A.erlaubt('fluss')) HSS.drawNet('heat', Math.floor(t / 60) % 24);
+    if (play) HSS.player.play(true);
+  };
+  if (HSS.state.sim) go(); else { UI.toast('Tagesablauf wird berechnet …', 1200); setTimeout(go, 40); }
 };
 
 /* ---------- Start im Ansichtsmodus ---------- */
 A.boot = () => {
   const VW = window.HSS_VIEWER, S3 = HSS.s3, V = HSS.view, UI = HSS.ui, $ = UI.$;
   document.body.classList.add('viewer');
-  const st = VW.view || {};
+  const st = VW.view || {}, ok = A.erlaubt;
+  for (const x of A.TEILE) document.body.classList.toggle('vw-no-' + x.k, !(VW.erlaubt?.[x.k] ?? true));
   if (st.stil && HSS.stil && HSS.stil.mode !== st.stil) { HSS.stil.mode = HSS.view.stil = st.stil; document.body.classList.toggle('cartoon', st.stil === 'cartoon' || st.stil === 'plan'); document.body.classList.toggle('plan', st.stil === 'plan'); }
   if (VW.titel) VW.project.meta.name = VW.titel;
   HSS.load(VW.project, { noAutosave: true });
   HSS.state.demoReadonly = true; HSS.state.viewer = true;
   HSS.undo = HSS.redo = () => false; HSS.canUndo = HSS.canRedo = () => false;
   HSS.storage.saveProject = async () => null; HSS.storage.exportFile = () => {};
+  // Gesperrte Teile auch in der Logik abschalten (nicht nur ausblenden)
+  if (!ok('rundgang')) { if (HSS.tour) HSS.tour.dialog = HSS.tour.start = () => {}; if (HSS.fpv) HSS.fpv.walk = () => {}; }
+  if (!ok('fluss')) { const dn = HSS.drawNet; HSS.drawNet = () => dn('aus'); if (HSS.flussbild) HSS.flussbild.set = HSS.flussbild.toggle = () => {}; }
+  const netCtl = document.getElementById('vNet')?.closest('label'); if (netCtl) netCtl.classList.add('vw-fluss');
+  const heatCtl = document.getElementById('tHeat')?.closest('label'); if (heatCtl) heatCtl.classList.add('vw-fluss');
+  // Tagesablauf: Simulation im Browser des Empfängers rechnen und abspielen
+  if (ok('sim')) {
+    const b = document.createElement('button'); b.id = 'vwSim'; b.className = 'primary'; b.title = 'Transporte über den Tag abspielen'; b.textContent = '▶ Tagesablauf';
+    const ref = document.getElementById('vTour'); (ref?.parentNode || document.getElementById('viewbar')).insertBefore(b, ref || null);
+    b.onclick = () => A.tagesablauf(true);
+  }
   // Kopfzeile: Titel, „Nur Ansicht“, Stand
   $('#prjName').textContent = VW.titel || VW.project.meta.name;
   const top = $('#top'), sp = top.querySelector('.sp');
@@ -13981,7 +14818,11 @@ A.boot = () => {
     if (st.floor !== null && st.floor !== undefined) S3.setFloor(st.floor);
     if (st.zonen && HSS.zonen) { V.zonenFokus = st.zonenFokus; HSS.zonen.setView(true); }
     if (st.m2 && HSS.flaechen) HSS.flaechen.toggle(true);
-    if (st.flussbild && HSS.flussbild) HSS.flussbild.set(true);
+    if (st.flussbild && HSS.flussbild && ok('fluss')) HSS.flussbild.set(true);
+    if (st.netz && st.netz !== 'aus' && ok('fluss')) { HSS.ui.netMode = st.netz; const n = document.getElementById('vNet'); if (n) n.value = st.netz; }
+    if (st.stroeme && HSS.stroeme && ok('fluss')) HSS.stroeme.restore?.(st.stroeme);
+    if (st.sim && ok('sim')) A.tagesablauf(false, st.simT);
+    else if (st.netz === 'netz' && ok('fluss')) HSS.drawNet('netz');
     S3.rebuild('all'); UI.refreshViewbar?.();
     setTimeout(() => home(10), 1100); // nach der Startanimation (Gesamtansicht)
   }, 250);
