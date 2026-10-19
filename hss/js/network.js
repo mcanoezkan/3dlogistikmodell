@@ -281,7 +281,32 @@ function buildNet(prj) {
     const id = `L:${L.id}@${L.stops[0]}`, n = nodes.get(id);
     const near = nearestIn(pathNodes.filter(p => nodes.get(p).kind === 'awt'), n.x, n.z, n.y); if (near && near.d < 30) addEdge(id, near.id, 'awt', {});
   }
-  return { nodes, adj, edges, lifts, places, placeNode, floorNodes, cache: new Map() };
+  /* 8. Festgelegte Wege einzelner Flüsse: „über Aufzug/Treppe X“ oder von Hand gezeichneter Pfad */
+  const fixed = new Map(), placeGf = new Map(places.map(p => [p.id, p.gf ?? 0]));
+  for (const f of prj.flows || []) {
+    if (!placeNode.has(f.von) || !placeNode.has(f.nach)) continue;
+    const key = f.von + '|' + f.nach;
+    if (Array.isArray(f.pfad) && f.pfad.length >= 2) {
+      const ids = [placeNode.get(f.von)], es = [];
+      f.pfad.forEach((q, i) => ids.push(addNode(`P:${f.id}:${i}`, q.x, q.y, q.z, { gf: q.gf ?? 0, pfad: f.id })));
+      ids.push(placeNode.get(f.nach));
+      for (let i = 0; i < ids.length - 1; i++) {
+        const A = nodes.get(ids[i]), B = nodes.get(ids[i + 1]), q = f.pfad[i - 1] ? f.pfad[i] : null;
+        const vert = i > 0 && i < ids.length - 2 && A.gf !== B.gf;
+        let type = i === 0 || i === ids.length - 2 ? 'anbindung' : 'flur', lift = null;
+        if (vert) {
+          const want = f.pfad[i].vertikal || f.pfad[i - 1]?.vertikal || {}, real = want.lift && lifts.find(L => L.id === want.lift);
+          type = (real ? real.role : want.typ) === 'treppe' ? 'treppe' : 'aufzug';
+          if (real) lift = real.id;
+          else { lift = `pv:${f.id}:${i}`; lifts.push({ id: lift, name: type === 'treppe' ? 'Treppenhaus (gezeichnet)' : 'Vertikalverbindung (gezeichnet)', role: type, cfg: { typ: 'lasten', kabinen: 1, sekProGeschoss: 5, tuerS: 12, kapazitaet: 1, freigabe: ['*'] }, stops: [A.gf, B.gf].sort((a, b) => a - b), x: A.x, z: A.z, obj: { name: 'gezeichnet' } }); }
+        } else if (i > 0 && i < ids.length - 2 && A.gf === 0 && !HSS.allParts(prj).some(pt => { const fl = HSS.localFloor(pt, 0, prj); return fl !== null && G.pointIn(HSS.toLocal(pt, [(A.x + B.x) / 2, (A.z + B.z) / 2]), HSS.partFootprintLocal(pt).outer); })) type = 'weg';
+        const len = type === 'treppe' ? Math.abs(B.y - A.y) * 2.2 + 6 : Math.abs(B.y - A.y) > 0.5 && type === 'aufzug' ? Math.abs(B.y - A.y) : Math.hypot(A.x - B.x, A.z - B.z);
+        es.push({ id: `pe:${f.id}:${i}`, a: ids[i], b: ids[i + 1], type, len, lift, pfad: f.id, gfa: A.gf, gfb: B.gf });
+      }
+      fixed.set(key, { pfad: f.id, nodes: ids, edges: es });
+    } else if (f.via) fixed.set(key, { via: f.via, gfA: placeGf.get(f.von), gfB: placeGf.get(f.nach) });
+  }
+  return { nodes, adj, edges, lifts, places, placeNode, floorNodes, fixed, cache: new Map() };
 }
 
 /* ---------- Routing ---------- */
@@ -304,46 +329,120 @@ HSS.edgeAllowed = (e, mittel, klasse, net) => {
 };
 class Heap { constructor() { this.a = []; } push(x) { const a = this.a; a.push(x); let i = a.length - 1; while (i) { const p = (i - 1) >> 1; if (a[p][0] <= a[i][0]) break; [a[p], a[i]] = [a[i], a[p]]; i = p; } } pop() { const a = this.a, top = a[0], last = a.pop(); if (a.length) { a[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < a.length && a[l][0] < a[m][0]) m = l; if (r < a.length && a[r][0] < a[m][0]) m = r; if (m === i) break; [a[m], a[i]] = [a[i], a[m]]; i = m; } } return top; } get size() { return this.a.length; } }
 
+// kürzester Weg zwischen zwei Knoten (Zeit); allow: Aufzug/Treppe, die unabhängig von Freigaben benutzt werden darf
+function dijk(net, s, t, mittel, klasse, allow, only) {
+  const M = HSS.MITTEL[mittel] || HSS.MITTEL.hand;
+  const dist = new Map([[s, 0]]), prev = new Map(), h = new Heap(); h.push([0, s]);
+  while (h.size) {
+    const [d, u] = h.pop(); if (u === t) break; if (d > (dist.get(u) ?? Infinity)) continue;
+    for (const e of net.adj.get(u) || []) {
+      if (only ? e.lift !== only : !(allow && e.lift === allow) && !HSS.edgeAllowed(e, mittel, klasse, net)) continue;
+      const v = e.a === u ? e.b : e.a;
+      let c = e.len / M.v / 60;
+      if (e.type === 'aufzug') { const L = net.lifts.find(l => l.id === e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
+      if (e.type === 'treppe') c = e.len / 0.6 / 60;
+      const nd = d + c;
+      if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, { u, e }); h.push([nd, v]); }
+    }
+  }
+  if (!dist.has(t)) return null;
+  const path = [t], es = []; let c = t; while (prev.has(c)) { const { u, e } = prev.get(c); es.unshift(e); path.unshift(u); c = u; }
+  return { path, es, time: dist.get(t) };
+}
+function assemble(net, path, es, time) {
+  const pts = path.map(id => { const n = net.nodes.get(id); return [n.x, n.y, n.z]; });
+  let len = 0; for (const e of es) len += e.len;
+  // Aufzugsfahrten zusammenfassen
+  const lifts = []; let cur = null;
+  es.forEach((e, i) => {
+    if (e.type === 'aufzug') { const a = net.nodes.get(path[i]).gf, b = net.nodes.get(path[i + 1]).gf; if (cur && cur.lift === e.lift && cur.idx === i - 1) { cur.to = b; cur.idx = i; } else { cur = { lift: e.lift, from: a, to: b, idx: i, startIdx: i }; lifts.push(cur); } }
+  });
+  const types = {}; for (const e of es) types[e.type] = (types[e.type] || 0) + e.len;
+  return { ok: true, len, timeMin: time, nodes: path, edges: es, lifts, pts, types };
+}
+const NO_ROUTE = () => ({ ok: false, len: 0, timeMin: 0, nodes: [], edges: [], lifts: [], pts: [] });
 HSS.route = (fromPlace, toPlace, mittel = 'hand', klasse = 'neutral') => {
   const net = HSS.net(), key = [fromPlace, toPlace, mittel, klasse].join('|');
   if (net.cache.has(key)) return net.cache.get(key);
   const M = HSS.MITTEL[mittel] || HSS.MITTEL.hand;
   const s = net.placeNode.get(fromPlace), t = net.placeNode.get(toPlace);
   let res = null;
-  if (s && t) {
+  const fx = net.fixed?.get(fromPlace + '|' + toPlace);
+  if (s && t && fx && fx.pfad) {
+    // gezeichneter Pfad: genau so, wie er gezeichnet wurde
+    let time = 0; for (const e of fx.edges) time += e.type === 'aufzug' ? (5 * Math.abs((e.gfb ?? 0) - (e.gfa ?? 0)) + 12) / 60 + LIFT_WAIT_EST / 2 : e.type === 'treppe' ? e.len / 0.6 / 60 : e.len / M.v / 60;
+    res = Object.assign(assemble(net, fx.nodes, fx.edges, time), { gezeichnet: true });
+  } else if (s && t && fx && fx.via) {
+    // über einen bestimmten Aufzug / ein bestimmtes Treppenhaus
+    const a = `L:${fx.via}@${fx.gfA}`, b = `L:${fx.via}@${fx.gfB}`;
+    const p1 = net.nodes.has(a) && dijk(net, s, a, mittel, klasse), p2 = p1 && net.nodes.has(b) && dijk(net, a, b, mittel, klasse, fx.via, fx.via), p3 = p2 && dijk(net, b, t, mittel, klasse);
+    if (p3) res = Object.assign(assemble(net, [...p1.path, ...p2.path.slice(1), ...p3.path.slice(1)], [...p1.es, ...p2.es, ...p3.es], p1.time + p2.time + p3.time), { via: fx.via });
+  }
+  if (!res && s && t) {
     if (M.direkt) {
       const A = net.nodes.get(s), B = net.nodes.get(t), len = Math.hypot(A.x - B.x, A.y - B.y, A.z - B.z) * 1.3;
       res = { ok: true, len, timeMin: len / M.v / 60 + 1, nodes: [s, t], edges: [], lifts: [], pts: [[A.x, A.y, A.z], [B.x, B.y, B.z]], direkt: true };
-    } else {
-      const dist = new Map([[s, 0]]), prev = new Map(), h = new Heap(); h.push([0, s]);
-      while (h.size) {
-        const [d, u] = h.pop(); if (u === t) break; if (d > (dist.get(u) ?? Infinity)) continue;
-        for (const e of net.adj.get(u) || []) {
-          if (!HSS.edgeAllowed(e, mittel, klasse, net)) continue;
-          const v = e.a === u ? e.b : e.a;
-          let c = e.len / M.v / 60;
-          if (e.type === 'aufzug') { const L = net.lifts.find(l => l.id === e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
-          if (e.type === 'treppe') c = e.len / 0.6 / 60;
-          const nd = d + c;
-          if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, { u, e }); h.push([nd, v]); }
-        }
-      }
-      if (dist.has(t)) {
-        const path = [t], es = []; let c = t; while (prev.has(c)) { const { u, e } = prev.get(c); es.unshift(e); path.unshift(u); c = u; }
-        const pts = path.map(id => { const n = net.nodes.get(id); return [n.x, n.y, n.z]; });
-        let len = 0; for (const e of es) len += e.len;
-        // Aufzugsfahrten zusammenfassen
-        const lifts = []; let cur = null;
-        es.forEach((e, i) => {
-          if (e.type === 'aufzug') { const a = net.nodes.get(path[i]).gf, b = net.nodes.get(path[i + 1]).gf; if (cur && cur.lift === e.lift && cur.idx === i - 1) { cur.to = b; cur.idx = i; } else { cur = { lift: e.lift, from: a, to: b, idx: i, startIdx: i }; lifts.push(cur); } }
-        });
-        const types = {}; for (const e of es) types[e.type] = (types[e.type] || 0) + e.len;
-        res = { ok: true, len, timeMin: dist.get(t), nodes: path, edges: es, lifts, pts, types };
-      }
-    }
+    } else { const r = dijk(net, s, t, mittel, klasse); if (r) res = assemble(net, r.path, r.es, r.time); }
   }
-  if (!res) res = { ok: false, len: 0, timeMin: 0, nodes: [], edges: [], lifts: [], pts: [] };
+  if (!res) res = NO_ROUTE();
   net.cache.set(key, res);
   return res;
+};
+
+})();
+(function () {
+'use strict';
+const HSS = window.HSS, G = HSS.geo;
+/* ---------- Darstellung: Routen begradigen ----------
+   Das Wegenetz verbindet Räume mit dem nächsten Flurknoten; dadurch entstehen in
+   der Darstellung kurze Stichwege („Überstände“) und schräge Anschlüsse. Für die
+   Anzeige werden Spitzen entfernt, gerade Stücke zusammengefasst und schräge
+   Abschnitte innerhalb von Gebäuden rechtwinklig (in der Gebäudeachse) geführt. */
+let frames = null, framesNet = null;
+const partFrames = () => {
+  const net = HSS.net(); if (frames && framesNet === net) return frames;
+  framesNet = net; frames = [];
+  for (const b of HSS.project().buildings) { if (b.umgebung) continue; for (const pt of b.parts) { const fp = HSS.partFootprint(pt).outer, bb = G.bbox(fp); const r = (pt.rot || 0) * Math.PI / 180; frames.push({ pt, fp, bb, eu: G.rot([1, 0], r), ev: G.rot([0, 1], r) }); } }
+  return frames;
+};
+const frameAt = (x, z) => { for (const F of partFrames()) { const b = F.bb; if (x < b.x0 || x > b.x1 || z < b.z0 || z > b.z1) continue; if (G.pointIn([x, z], F.fp)) return F; } return null; };
+HSS.cleanPts = (src) => {
+  let p = src.map(q => [q[0], q[1], q[2]]);
+  const same = (a, b) => Math.abs(a[1] - b[1]) < 0.3;
+  // doppelte Punkte
+  p = p.filter((q, i) => i === 0 || Math.hypot(q[0] - p[i - 1][0], q[1] - p[i - 1][1], q[2] - p[i - 1][2]) > 0.05);
+  // Spitzen (hin und zurück) und gerade Zwischenpunkte entfernen
+  for (let pass = 0; pass < 4; pass++) {
+    let ch = false;
+    for (let i = 1; i < p.length - 1; i++) {
+      const a = p[i - 1], b = p[i], c = p[i + 1]; if (!same(a, b) || !same(b, c)) continue;
+      const ux = b[0] - a[0], uz = b[2] - a[2], vx = c[0] - b[0], vz = c[2] - b[2], lu = Math.hypot(ux, uz), lv = Math.hypot(vx, vz);
+      if (lu < 0.05 || lv < 0.05) { p.splice(i, 1); i--; ch = true; continue; }
+      const cos = (ux * vx + uz * vz) / (lu * lv), cr = Math.abs(ux * vz - uz * vx) / (lu * lv);
+      if (cos < -0.5 || (cos > 0 && cr < 0.03)) { p.splice(i, 1); i--; ch = true; }
+    }
+    if (!ch) break;
+  }
+  // schräge Stücke im Gebäude rechtwinklig führen
+  const out = [p[0]];
+  for (let i = 1; i < p.length; i++) {
+    const a = out[out.length - 1], b = p[i];
+    if (same(a, b)) {
+      const F = frameAt((a[0] + b[0]) / 2, (a[2] + b[2]) / 2);
+      if (F) {
+        const { eu, ev } = F, dx = b[0] - a[0], dz = b[2] - a[2];
+        const du = dx * eu[0] + dz * eu[1], dv = dx * ev[0] + dz * ev[1]; // lokale Achsen
+        if (Math.abs(du) > 0.4 && Math.abs(dv) > 0.4) {
+          const prev = out.length > 1 ? out[out.length - 2] : null;
+          let uFirst = Math.abs(du) >= Math.abs(dv);
+          if (prev && same(prev, a)) { const px = a[0] - prev[0], pz = a[2] - prev[2], pu = px * eu[0] + pz * eu[1], pv = px * ev[0] + pz * ev[1]; if (Math.abs(pu) > 0.3 || Math.abs(pv) > 0.3) uFirst = Math.abs(pu) > Math.abs(pv); }
+          const c = uFirst ? [a[0] + du * eu[0], a[1], a[2] + du * eu[1]] : [a[0] + dv * ev[0], a[1], a[2] + dv * ev[1]];
+          out.push(c);
+        }
+      }
+    }
+    out.push(b);
+  }
+  return out;
 };
 })();

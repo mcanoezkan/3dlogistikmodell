@@ -60,15 +60,37 @@ const uebergabe = (p, bid, gf) => {
   return o.id;
 };
 
+/* ---------- Höhenwechsel: Aufzüge und Treppenhäuser, die beide Etagen bedienen ---------- */
+FA.vertikal = (gfA, gfB, bevorzugt = []) => {
+  const prj = HSS.project(), out = [];
+  for (const L of HSS.net().lifts) {
+    if (String(L.id).startsWith('pv:') || !L.stops.includes(gfA) || !L.stops.includes(gfB)) continue;
+    const P = L.obj?.host ? HSS.findPart(L.obj.host.part, prj) : null, b = P?.building;
+    out.push({ id: L.id, typ: L.role, bid: b?.id || '', label: `${L.role === 'treppe' ? 'Treppenhaus' : 'Aufzug'} · ${L.name}${b ? ` (${b.kurz || b.name})` : ''}`, rang: bevorzugt.indexOf(b?.id) < 0 ? 9 : bevorzugt.indexOf(b?.id) });
+  }
+  return out.sort((a, c) => a.rang - c.rang || a.label.localeCompare(c.label, 'de', { numeric: true }));
+};
+const viaHtml = (gfA, gfB, bids, sel, grp = ['im Startgebäude', 'im Zielgebäude']) => {
+  const L = FA.vertikal(gfA, gfB, bids), g = k => L.filter(x => x.rang === k);
+  return opt('', 'automatisch (schnellster zulässiger Weg)', sel) + [0, 1, 9].map(k => g(k).length ? `<optgroup label="${k === 9 ? 'andere Gebäude' : grp[k]}">${g(k).map(x => opt(x.id, x.label, sel)).join('')}</optgroup>` : '').join('');
+};
+FA.viaOpts = (von, nach, sel) => {
+  const pl = HSS.places(), A = pl.find(p => p.id === von), B = pl.find(p => p.id === nach);
+  if (!A || !B || (A.gf ?? 0) === (B.gf ?? 0)) return opt('', A && B ? 'kein Höhenwechsel' : '–', '') + (sel ? opt(sel, sel, sel) : '');
+  const bid = x => x.building || (x.part ? HSS.findPart(x.part)?.building.id : null);
+  return viaHtml(A.gf ?? 0, B.gf ?? 0, [bid(A), bid(B)], sel);
+};
+
 /* ---------- Dialog ---------- */
 FA.dialog = (vorgabe = {}) => {
   const UI = HSS.ui, $ = UI.$, prj = HSS.project(); HSS.ensureStammdaten(prj);
   const B = eigene(prj);
   if (!B.length) { UI.toast('Zuerst Gebäude anlegen – der Assistent verbindet Gebäude und Etagen.', 3500); return; }
   const neu = () => { const b = B[0]; const fl = FA.etagen(b); return { b: b.id, gf: fl.includes(0) ? 0 : fl[0], ort: '' }; };
-  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: 1, material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
+  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: vorgabe.pfad ? 2 : 1, pfad: vorgabe.pfad || null, strom: vorgabe.strom || '', material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
   const mat = () => U.byId(prj.materials, S.material);
   const label = s => {
+    if (s.lbl) return s.lbl;
     if (s.b === EXT) { const p = HSS.places(prj).find(x => x.id === s.ort); return p ? p.name : 'Außen'; }
     const b = U.byId(prj.buildings, s.b); const pl = s.ort && HSS.places(prj).find(x => x.id === s.ort);
     return pl && pl.role !== 'uebergabe' ? pl.name : `${b?.kurz || b?.name || ''} ${HSS.floorName(s.gf)}`;
@@ -85,6 +107,7 @@ FA.dialog = (vorgabe = {}) => {
         <div class="fa-row"><select data-k="b" title="Gebäude">${B.map(x => opt(x.id, bName(x), s.b)).join('')}${opt(EXT, 'Außen / extern (Lieferant, Entsorger …)', s.b)}</select>
         ${s.b === EXT ? '' : `<select data-k="gf" title="Etage">${FA.etagen(b).map(g => opt(g, HSS.floorName(g), s.gf)).join('')}</select>`}</div>
         <select data-k="ort" title="Genauer Ort (optional)">${ortOpts}</select>
+        ${i > 0 && S.stops[i - 1].b !== EXT && s.b !== EXT && S.stops[i - 1].gf !== s.gf ? `<label class="fa-via"><span>↕ Höhenwechsel ${HSS.floorName(S.stops[i - 1].gf)} → ${HSS.floorName(s.gf)} über</span><select data-k="via">${viaHtml(S.stops[i - 1].gf, s.gf, [S.stops[i - 1].b, s.b], s.via || '', S.stops[i - 1].b === s.b ? ['in diesem Gebäude', 'in diesem Gebäude'] : ['im Startgebäude', 'im Zielgebäude'])}</select></label>` : ''}
       </div>
       ${i > 0 && i < n - 1 ? `<button class="mini" data-x="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>
       ${i < n - 1 ? `<div class="fa-add"><button class="mini" data-add="${i + 1}">+ Zwischenstopp</button></div>` : ''}`;
@@ -106,21 +129,24 @@ FA.dialog = (vorgabe = {}) => {
           <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="faW" value="${U.esc(S.fenster)}"></label>
           <label class="f full"><span>Transportmittel</span><select id="faT">${prj.transports.map(x => opt(x.id, x.name, S.transport)).join('')}</select></label>
           <label class="f full"><span>Name</span><input type="text" id="faName" value="${U.esc(S.name)}"></label>
+          <label class="f full"><span>Sektion</span><select id="faS">${opt('', 'automatisch (nach Material)', S.strom)}${HSS.sektionen.list(prj).map(x => opt(x.id, x.name, S.strom)).join('')}</select></label>
         </div>
-        <p class="note">${S.stops.length - 1} Etappe(n) werden als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
+        <p class="note">${S.pfad ? 'Der Fluss folgt dem gezeichneten Weg' : `${S.stops.length - 1} Etappe(n) werden`} als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
       $('#faM', body).onchange = e => { const old = autoName(); S.material = e.target.value; if (S.name === old || !S.name) S.name = autoName(); render(d); };
       $('#faN', body).oninput = e => (S.menge = +e.target.value || 0);
       $('#faP', body).onchange = e => (S.periode = e.target.value);
       $('#faW', body).oninput = e => (S.fenster = e.target.value);
       $('#faT', body).onchange = e => (S.transport = e.target.value);
       $('#faName', body).oninput = e => (S.name = e.target.value);
-      $('#faBack', d).hidden = false; $('#faNext', d).textContent = '✓ Fluss anlegen';
+      $('#faS', body).onchange = e => (S.strom = e.target.value);
+      $('#faBack', d).hidden = !!S.pfad; $('#faNext', d).textContent = '✓ Fluss anlegen';
       return;
     }
     $$('[data-k]', body).forEach(sel => sel.onchange = () => {
       const i = +sel.closest('.fa-stop').dataset.i, s = S.stops[i], k = sel.dataset.k;
-      if (k === 'b') { s.b = sel.value; s.ort = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
-      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; }
+      if (k === 'b') { s.b = sel.value; s.ort = ''; s.via = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
+      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; s.via = ''; }
+      else if (k === 'via') s.via = sel.value;
       else s.ort = sel.value;
       S.name = ''; render(d);
     });
@@ -158,6 +184,9 @@ FA.anlegen = S => {
     const n = pid.length - 1;
     for (let i = 0; i < n; i++) {
       const f = { id: U.uid('flow'), name: n > 1 ? `${S.name} · Etappe ${i + 1}/${n}` : S.name, material: S.material, von: pid[i], nach: pid[i + 1], menge: S.menge, periode: S.periode, betriebstage: 7, fenster: fenster.length ? fenster : [[8, 12]], transport: S.transport, fahrzeitMin: null, aktiv: true, kette, etappe: i + 1, etappen: n, assistent: true };
+      if (S.stops[i + 1].via) f.via = S.stops[i + 1].via;
+      if (S.strom) f.strom = S.strom;
+      if (S.pfad) { f.pfad = U.clone(S.pfad); f.gezeichnet = true; }
       p.flows.push(f); ids.push(f.id);
     }
   });

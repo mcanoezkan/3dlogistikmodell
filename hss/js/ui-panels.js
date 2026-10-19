@@ -447,15 +447,43 @@ W.fluesse = { name: 'Material-, Waren- & Personenflüsse', short: 'Flüsse', ste
 const FT = {};
 FT.fluesse = (el, prj) => {
   const mats = new Map(prj.materials.map(m => [m.id, m]));
-  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button id="fStd">Standardflüsse übernehmen …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button></div>
-  <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1))))} Ladungen/Tag</div>
-  <div class="list" style="max-height:none">${prj.flows.map(f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span></div>`; }).join('') || '<div class="li note">Noch keine Flüsse.</div>'}</div>
+  const SK = HSS.sektionen, gr = SK.gruppen(prj), q = (UI.flowQ || '').trim().toLowerCase();
+  UI.flowOpen = UI.flowOpen || new Set();
+  const selF = U.byId(prj.flows, UI.flowSel); if (selF) UI.flowOpen.add(SK.of(selF, prj).id);
+  const fahrten = f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1);
+  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
+  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button class="primary" id="fDraw" title="Fluss im 3D-Bild mit geraden Abschnitten zeichnen, Höhenwechsel per Aufzug oder Treppe">✎ Fluss zeichnen</button></div>
+  <div class="actions" style="margin-top:4px"><button id="fStd">Standardflüsse …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button><button id="fSek" title="Eigene Sektion anlegen">+ Sektion</button></div>
+  <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse in ${gr.length} Sektionen · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(fahrten)))} Ladungen/Tag</div>
+  <input type="search" id="fQ" class="fq" placeholder="Flüsse suchen …" value="${U.esc(UI.flowQ || '')}">
+  <div class="seklist">${gr.map(g => {
+    const fl = q ? g.flows.filter(f => f.name.toLowerCase().includes(q)) : g.flows; if (q && !fl.length) return '';
+    const open = !!q || UI.flowOpen.has(g.s.id), akt = g.flows.filter(f => f.aktiv !== false).length, vis = SK.istSichtbar(g.s.id);
+    return `<div class="sek ${open ? 'open' : ''}" data-sek="${U.esc(g.s.id)}"><div class="sekh" data-st title="auf-/zuklappen"><span class="sekt">${open ? '▾' : '▸'}</span><i style="background:${U.esc(g.s.farbe)}"></i><b>${U.esc(g.s.name)}</b><span class="note">${fl.length}${q ? '/' + g.flows.length : ''} · ${U.fmt(U.sum(g.flows.filter(f => f.aktiv !== false).map(fahrten)))} F./Tag</span>
+      <button class="mini eye ${vis ? 'on' : ''}" data-sv title="${vis ? 'im 3D-Bild ausblenden' : 'im 3D-Bild einblenden'}">${vis ? '◉' : '○'}</button><input type="checkbox" data-sa ${akt === g.flows.length && akt ? 'checked' : ''} ${akt && akt < g.flows.length ? 'data-mixed="1"' : ''} title="alle Flüsse der Sektion aktiv (Simulation)"><button class="mini danger" data-sd title="Sektion mit allen Flüssen löschen">🗑</button></div>
+      ${open ? `<div class="list" style="max-height:none">${fl.map(row).join('') || '<div class="li note">Keine Flüsse – mit Assistent oder „✎ Fluss zeichnen“ anlegen und hier zuordnen.</div>'}</div>` : ''}</div>`;
+  }).join('') || '<div class="note">Noch keine Flüsse.</div>'}</div>
   <div id="fEdit"></div>`;
   $('#fStd', el).onclick = UI.templateDialog;
   $('#fWiz', el).onclick = () => HSS.flussAssistent.dialog();
-  $('#fNew', el).onclick = () => { const f = { id: U.uid('flow'), name: 'Neuer Fluss', material: prj.materials[0].id, von: '', nach: '', menge: 10, periode: 'tag', betriebstage: 7, fenster: [[8, 12]], transport: 't_hand', fahrzeitMin: null, aktiv: true }; HSS.change('Fluss anlegen', p => p.flows.push(f), { scope: 'none' }); UI.flowSel = f.id; UI.renderPanel(); };
+  $('#fDraw', el).onclick = () => HSS.flussZeichnen.start();
+  $('#fSek', el).onclick = async () => { const n = await UI.prompt('Neue Sektion', 'Eigene Sektion'); if (!n) return; let id; HSS.change('Sektion anlegen', p => (id = SK.neu(p, n, '#' + Math.floor(0x404040 + Math.random() * 0x9f9f9f).toString(16).padStart(6, '0'))), { scope: 'none' }); UI.flowOpen.add(id); UI.renderPanel(); };
+  const qi = $('#fQ', el); qi.oninput = U.debounce(() => { UI.flowQ = qi.value; UI.renderPanel(); const n = document.getElementById('fQ'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 250);
+  $$('.sek', el).forEach(box => {
+    const id = box.dataset.sek, g = gr.find(x => x.s.id === id);
+    $('[data-st]', box).onclick = e => { if (e.target.closest('[data-sv],[data-sa],[data-sd]')) return; if (UI.flowOpen.has(id)) UI.flowOpen.delete(id); else UI.flowOpen.add(id); UI.renderPanel(); };
+    const ca = $('[data-sa]', box); if (ca.dataset.mixed) ca.indeterminate = true;
+    ca.onchange = () => HSS.change(`Sektion ${g.s.name} ${ca.checked ? 'aktiv' : 'inaktiv'}`, p => { const ids = new Set(g.flows.map(f => f.id)); for (const f of p.flows) if (ids.has(f.id)) f.aktiv = ca.checked; }, { scope: 'none' });
+    $('[data-sv]', box).onclick = () => { SK.setSichtbar(id, !SK.istSichtbar(id)); UI.renderPanel(); };
+    $('[data-sd]', box).onclick = async () => {
+      if (!await UI.confirm('Sektion löschen', `Sektion „${g.s.name}“ mit ${g.flows.length} Flüssen löschen? (Rückgängig mit Strg+Z)`, 'Löschen')) return;
+      HSS.change('Sektion löschen', p => { const ids = new Set(g.flows.map(f => f.id)); p.flows = p.flows.filter(f => !ids.has(f.id)); if (p.stroeme) p.stroeme = p.stroeme.filter(s => !(s.id === id && s.eigen)); }, { scope: 'none' });
+      if (g.flows.some(f => f.id === UI.flowSel)) UI.flowSel = null; clearGhost(); UI.renderPanel();
+    };
+  });
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
-  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
+  $$('[data-fx]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const id = b.dataset.fx; HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== id)), { scope: 'none' }); if (UI.flowSel === id) { UI.flowSel = null; clearGhost(); } UI.renderPanel(); });
+  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
   setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
@@ -467,12 +495,17 @@ FT.fluesse = (el, prj) => {
    ${UI.fNum('Menge', 'menge', f.menge, { step: 1, unit: m?.einheit })}${UI.fSel('je', 'periode', f.periode, opt('tag', 'Tag', f.periode) + opt('woche', 'Woche', f.periode) + opt('monat', 'Monat', f.periode) + opt('jahr', 'Jahr', f.periode))}
    ${UI.fNum('Betriebstage/Woche', 'betriebstage', f.betriebstage, { min: 1, max: 7, step: 1 })}${UI.fSel('Transportmittel', 'transport', f.transport, prj.transports.map(x => opt(x.id, x.name, f.transport)).join(''))}
    <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="fWin" value="${fenster(f)}"></label>
-   ${UI.fNum('Fahrzeit hinterlegt', 'fahrzeitMin', f.fahrzeitMin, { unit: 'min', step: 1, ph: 'aus Wegenetz' })}</div>
+   ${UI.fNum('Fahrzeit hinterlegt', 'fahrzeitMin', f.fahrzeitMin, { unit: 'min', step: 1, ph: 'aus Wegenetz' })}
+   ${UI.fSel('Sektion', 'strom', HSS.sektionen.of(f, prj).id, HSS.sektionen.list(prj).map(x => opt(x.id, x.name, HSS.sektionen.of(f, prj).id)).join(''), { full: true })}
+   ${f.pfad ? '' : UI.fSel('Höhenwechsel über', 'via', f.via || '', HSS.flussAssistent.viaOpts(f.von, f.nach, f.via || ''), { full: true, t: 'ns' })}</div>
+   ${f.pfad ? `<div class="infobox">Gezeichneter Weg: ${f.pfad.length} Punkte${f.pfad.some((q, i) => i && q.gf !== f.pfad[i - 1].gf) ? ', mit Höhenwechsel' : ''}. Der Fluss folgt genau diesem Weg.<div class="actions" style="margin-top:6px"><button class="mini" id="fRedraw">neu zeichnen</button><button class="mini" id="fUnpfad">Weg aus dem Wegenetz</button></div></div>` : ''}
    <div class="${r.ok ? 'okbox' : 'errbox'}">${r.ok ? `Route: ${U.fmt(r.len)} m · ${U.dur(r.timeMin)} Fahrzeit · ${r.lifts.length} Aufzugsfahrt(en)${r.direkt ? ' · Rohrpost (Luftlinie)' : ''}` : 'Keine Route gefunden: Quelle/Ziel wählen, Wege und Eingänge prüfen; Aufzugsfreigaben (rein/unrein) und AWT-Anbindung beachten.'}</div>
    <div class="actions"><button id="fRoute">Route zeigen</button><button id="fDup">Duplizieren</button><button class="danger" id="fDel">Löschen</button></div>`;
   UI.bind($('.fe', ed), p => U.byId(p.flows, f.id), 'Fluss', 'none', () => setTimeout(() => { UI.renderPanel(); UI.showRoute(f.id); }, 0));
   $('#fWin', ed).onchange = e => HSS.change('Zeitfenster', p => (U.byId(p.flows, f.id).fenster = parseFenster(e.target.value)), { scope: 'none' });
   $('#fRoute', ed).onclick = () => UI.showRoute(f.id, true);
+  const rd = $('#fRedraw', ed); if (rd) rd.onclick = () => HSS.flussZeichnen.start({ flow: f.id });
+  const up = $('#fUnpfad', ed); if (up) up.onclick = () => { HSS.change('Gezeichneten Weg entfernen', p => { delete U.byId(p.flows, f.id).pfad; }, { scope: 'none' }); UI.renderPanel(); UI.showRoute(f.id); };
   $('#fDup', ed).onclick = () => { const n = U.clone(f); n.id = U.uid('flow'); n.name += ' (Kopie)'; HSS.change('Fluss duplizieren', p => p.flows.push(n), { scope: 'none' }); UI.flowSel = n.id; UI.renderPanel(); };
   $('#fDel', ed).onclick = () => { HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== f.id)), { scope: 'none' }); UI.flowSel = null; UI.renderPanel(); clearGhost(); };
 };
@@ -480,14 +513,14 @@ FT.fluesse = (el, prj) => {
 UI.showRoutes = (ids, focus) => {
   clearGhost(); const box = new THREE.Box3();
   for (const id of ids) { UI.showRoute(id, false, true); }
-  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); HSS.s3.focusBox(box, { k: 0.8 }); }
+  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); box.expandByScalar(18); HSS.s3.focusBox(box, { k: 0.8 }); }
 };
 UI.showRoute = (fid, focus, keep) => {
   if (!keep) clearGhost();
   const prj = HSS.project(), f = U.byId(prj.flows, fid); if (!f) return;
   const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit); if (!r.ok) return;
-  const g = new THREE.BufferGeometry().setFromPoints(r.pts.map(p => new THREE.Vector3(p[0], p[1] + 0.6, p[2])));
+  const g = new THREE.BufferGeometry().setFromPoints(HSS.cleanPts(r.pts).map(p => new THREE.Vector3(p[0], p[1] + 0.6, p[2])));
   const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: m?.farbe || '#0A967A', depthTest: false, linewidth: 2 })); l.renderOrder = 30; HSS.s3.layers.ghost.add(l);
   for (const p of [r.pts[0], r.pts[r.pts.length - 1]]) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 12), new THREE.MeshBasicMaterial({ color: m?.farbe || '#0A967A', depthTest: false })); s.position.set(p[0], p[1] + 0.8, p[2]); s.renderOrder = 31; HSS.s3.layers.ghost.add(s); }
   if (focus) { const box = new THREE.Box3().setFromObject(l); HSS.s3.focusBox(box, { k: 0.8 }); }

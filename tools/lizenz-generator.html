@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSS Lizenzgenerator</title>
+<style>
+:root{--navy:#0A223C;--blue:#2D7694;--ok:#0A967A;--muted:#5a6573;--line:#dfe4e8;--bg:#f3f5f7}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 Arial,Helvetica,sans-serif;background:var(--bg);color:#1d2833}
+header{background:var(--navy);color:#fff;padding:12px 20px;display:flex;gap:14px;align-items:center}header b{font-size:16px}header span{opacity:.75;font-size:12px}
+main{max-width:980px;margin:0 auto;padding:16px;display:grid;gap:14px}
+section{background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:14px 16px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin:0 0 10px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input,select,textarea{font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:4px;color:#1d2833;background:#fff}
+textarea{font-family:Consolas,monospace;font-size:12px}
+button{font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer}button.p{background:var(--navy);color:#fff;border-color:var(--navy)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.note{font-size:12px;color:var(--muted)}
+.ok{color:var(--ok);font-weight:700}.err{color:#c0392b;font-weight:700}
+.seg{display:flex;gap:0}.seg label{flex-direction:row;align-items:center;gap:6px;border:1px solid var(--line);padding:6px 10px;color:#1d2833;font-size:13px}.seg label:first-child{border-radius:4px 0 0 4px}.seg label:last-child{border-radius:0 4px 4px 0}
+#out{width:100%;min-height:90px}
+table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}th{color:var(--muted);font-weight:600}
+td.k{font-family:Consolas,monospace;font-size:10.5px;word-break:break-all;max-width:320px}
+@media (max-width:600px){.g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><b>UNITY · Healthcare Simulation Suite</b><span>Lizenzschlüssel erzeugen – nur für UNITY, offline</span></header>
+<main>
+<section>
+  <h2>1 · Privater Schlüssel</h2>
+  <p class="note">Die Lizenzschlüssel werden mit dem privaten Schlüssel <b>HSS_Lizenz_PRIVAT.jwk.json</b> signiert. Er bleibt bei UNITY – nie an Kunden geben und nicht ins Repository legen. Die Suite enthält nur den passenden öffentlichen Schlüssel und kann Schlüssel prüfen, aber keine erzeugen.</p>
+  <div class="row"><input type="file" id="kf" accept=".json,.jwk"><span id="ks" class="note">kein Schlüssel geladen</span></div>
+  <details style="margin-top:8px"><summary class="note">Neues Schlüsselpaar erzeugen (nur für eine neue Produktlinie – alte Lizenzen werden dann ungültig)</summary>
+    <p class="note">Erzeugt einen neuen privaten Schlüssel (Download) und zeigt den öffentlichen Schlüssel, der in <code>hss/js/lizenz.js</code> (OEFFENTLICH) eingetragen werden muss.</p>
+    <button id="kgen">Neues Paar erzeugen</button><pre id="kpub" class="note" style="white-space:pre-wrap"></pre></details>
+</section>
+<section>
+  <h2>2 · Lizenz</h2>
+  <div class="g">
+    <label>Kunde<input id="kunde" placeholder="z. B. Klinikum Bielefeld gem. GmbH"></label>
+    <label>Lizenz-Nr.<input id="lid" placeholder="automatisch"></label>
+    <label>Anzahl Nutzer<input id="n" type="number" min="1" value="1"></label>
+    <label>Gültig ab<input id="ab" type="datetime-local"></label>
+  </div>
+  <div style="margin:12px 0 6px" class="seg"><label><input type="radio" name="art" value="dauer" checked> Laufzeit</label><label><input type="radio" name="art" value="bis"> bis Zeitpunkt</label><label><input type="radio" name="art" value="unbefristet"> unbefristet</label></div>
+  <div class="g" id="gDauer"><label>Dauer<input id="dz" type="number" min="1" value="3"></label><label>Einheit<select id="de"><option value="min">Minuten</option><option value="h">Stunden</option><option value="d">Tage</option><option value="w">Wochen</option><option value="m" selected>Monate</option><option value="y">Jahre</option></select></label><label>Ablauf (berechnet)<input id="bisCalc" disabled></label></div>
+  <div class="g" id="gBis" hidden><label>Gültig bis<input id="bis" type="datetime-local"></label></div>
+  <div class="g" style="margin-top:10px">
+    <label style="grid-column:1/-1">Geräte binden (optional) – Geräte-IDs, je Zeile eine. Leer = Schlüssel gilt auf jedem Gerät; die Nutzerzahl ist dann vertraglich, nicht technisch begrenzt.<textarea id="g" rows="3" placeholder="A1B2-C3D4-E5F6-0718"></textarea></label>
+    <label style="grid-column:1/-1">Hinweis (erscheint in der Lizenzanzeige)<input id="hinweis" placeholder="z. B. Pilotprojekt Logistik"></label>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="p" id="go">Lizenzschlüssel erzeugen</button><span id="msg" class="note"></span></div>
+</section>
+<section>
+  <h2>3 · Schlüssel für den Kunden</h2>
+  <textarea id="out" readonly placeholder="Hier erscheint der Lizenzschlüssel"></textarea>
+  <div class="row" style="margin-top:8px"><button id="copy">Kopieren</button><button id="test">Schlüssel prüfen</button><span id="tmsg" class="note"></span></div>
+</section>
+<section>
+  <h2>Ausgestellte Lizenzen (in diesem Browser)</h2>
+  <div class="row" style="margin-bottom:8px"><button id="csv">Als CSV speichern</button><button id="clr">Liste leeren</button></div>
+  <table><thead><tr><th>Erstellt</th><th>Kunde</th><th>Nr.</th><th>Nutzer</th><th>gültig</th><th>Schlüssel</th></tr></thead><tbody id="hist"></tbody></table>
+</section>
+</main>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64d = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+let priv = null, privJwk = null;
+const pad = n => String(n).padStart(2, '0');
+const local = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+$('#ab').value = local(new Date());
+$('#kf').onchange = async e => {
+  try {
+    const j = JSON.parse(await e.target.files[0].text()); privJwk = { kty: j.kty, crv: j.crv, x: j.x, y: j.y, d: j.d };
+    priv = await crypto.subtle.importKey('jwk', Object.assign({ ext: true }, privJwk), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+    $('#ks').innerHTML = '<span class="ok">Schlüssel geladen</span>';
+  } catch (er) { priv = null; $('#ks').innerHTML = '<span class="err">Datei ist kein privater Schlüssel: ' + er.message + '</span>'; }
+};
+$('#kgen').onclick = async () => {
+  const kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  const pj = await crypto.subtle.exportKey('jwk', kp.privateKey), pu = await crypto.subtle.exportKey('jwk', kp.publicKey);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(Object.assign({ hinweis: 'PRIVATER Lizenzschlüssel – geheim halten' }, pj), null, 1)], { type: 'application/json' })); a.download = 'HSS_Lizenz_PRIVAT.jwk.json'; a.click();
+  $('#kpub').textContent = 'In hss/js/lizenz.js eintragen:\nconst OEFFENTLICH = ' + JSON.stringify({ kty: pu.kty, crv: pu.crv, x: pu.x, y: pu.y }) + ';';
+};
+const art = () => document.querySelector('[name=art]:checked').value;
+document.querySelectorAll('[name=art]').forEach(r => r.onchange = () => { $('#gDauer').hidden = art() !== 'dauer'; $('#gBis').hidden = art() !== 'bis'; calc(); });
+function ende() {
+  const ab = new Date($('#ab').value || Date.now());
+  if (art() === 'unbefristet') return null;
+  if (art() === 'bis') return $('#bis').value ? new Date($('#bis').value) : null;
+  const z = +$('#dz').value || 0, e = $('#de').value, d = new Date(ab);
+  if (e === 'min') d.setMinutes(d.getMinutes() + z); else if (e === 'h') d.setHours(d.getHours() + z); else if (e === 'd') d.setDate(d.getDate() + z);
+  else if (e === 'w') d.setDate(d.getDate() + 7 * z); else if (e === 'm') d.setMonth(d.getMonth() + z); else d.setFullYear(d.getFullYear() + z);
+  return d;
+}
+function calc() { const e = ende(); $('#bisCalc').value = e ? e.toLocaleString('de-DE') : 'unbefristet'; }
+['#ab', '#dz', '#de', '#bis'].forEach(s => $(s).oninput = calc); calc();
+$('#go').onclick = async () => {
+  if (!priv) { $('#msg').innerHTML = '<span class="err">Zuerst den privaten Schlüssel laden (Schritt 1).</span>'; return; }
+  const ab = new Date($('#ab').value || Date.now()), bis = ende();
+  if (art() !== 'unbefristet' && (!bis || bis <= ab)) { $('#msg').innerHTML = '<span class="err">Ablauf muss nach dem Beginn liegen.</span>'; return; }
+  const g = $('#g').value.split(/[\s,;]+/).map(s => s.trim().toUpperCase()).filter(Boolean), n = Math.max(1, +$('#n').value || 1);
+  if (g.length > n) { $('#msg').innerHTML = `<span class="err">${g.length} Geräte, aber nur ${n} Nutzer – Nutzerzahl erhöhen oder Geräte streichen.</span>`; return; }
+  const d = { v: 1, id: $('#lid').value.trim() || 'L' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(), kunde: $('#kunde').value.trim(), n, ab: ab.getTime(), bis: bis ? bis.getTime() : null };
+  if (g.length) d.g = g; if ($('#hinweis').value.trim()) d.hinweis = $('#hinweis').value.trim();
+  const p = b64u(new TextEncoder().encode(JSON.stringify(d)));
+  const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(p));
+  const key = 'HSS1-' + p + '.' + b64u(sig);
+  $('#out').value = key; $('#msg').innerHTML = `<span class="ok">Erzeugt: ${d.id}</span> · gültig ${bis ? 'bis ' + bis.toLocaleString('de-DE') : 'unbefristet'}`;
+  const h = hist(); h.unshift({ t: Date.now(), kunde: d.kunde, id: d.id, n, ab: d.ab, bis: d.bis, g: g.length, key }); try { localStorage.setItem('hss-lz-hist', JSON.stringify(h)); } catch (e) {} show();
+};
+$('#copy').onclick = () => navigator.clipboard.writeText($('#out').value);
+$('#test').onclick = async () => {
+  const m = /^HSS1-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec($('#out').value.replace(/\s+/g, '')); if (!m || !privJwk) { $('#tmsg').textContent = 'kein Schlüssel'; return; }
+  const pub = await crypto.subtle.importKey('jwk', { kty: privJwk.kty, crv: privJwk.crv, x: privJwk.x, y: privJwk.y, ext: true }, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const ok = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, b64d(m[2]), new TextEncoder().encode(m[1]));
+  $('#tmsg').innerHTML = ok ? '<span class="ok">Signatur gültig</span> · ' + new TextDecoder().decode(b64d(m[1])) : '<span class="err">Signatur ungültig</span>';
+};
+const hist = () => { try { return JSON.parse(localStorage.getItem('hss-lz-hist') || '[]'); } catch (e) { return []; } };
+const fmt = t => t ? new Date(t).toLocaleString('de-DE') : 'unbefristet';
+function show() { $('#hist').innerHTML = hist().map(x => `<tr><td>${fmt(x.t)}</td><td>${(x.kunde || '').replace(/</g, '&lt;')}</td><td>${x.id}</td><td>${x.n}${x.g ? ` (${x.g} Geräte)` : ''}</td><td>${fmt(x.ab)} – ${fmt(x.bis)}</td><td class="k">${x.key}</td></tr>`).join(''); }
+show();
+$('#clr').onclick = () => { if (confirm('Liste der ausgestellten Lizenzen in diesem Browser leeren?')) { localStorage.removeItem('hss-lz-hist'); show(); } };
+$('#csv').onclick = () => { const rows = [['Erstellt', 'Kunde', 'Nr', 'Nutzer', 'Geräte', 'ab', 'bis', 'Schlüssel']].concat(hist().map(x => [fmt(x.t), x.kunde, x.id, x.n, x.g || '', fmt(x.ab), fmt(x.bis), x.key])); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + rows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\n')], { type: 'text/csv' })); a.download = 'HSS_Lizenzen.csv'; a.click(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Privater Lizenzschlüssel gehört nie ins Repository
+*PRIVAT*.jwk*
+*privat*.jwk*
+desktop/node_modules/
+desktop/dist/
+desktop/app/

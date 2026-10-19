@@ -457,6 +457,31 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 #stTour button{background:#144477;border-color:#2D7694;color:#fff}#stTour button:hover{background:#2D7694}
 #stTour .ctl{color:#fff;display:flex;gap:6px;align-items:center;font-size:12px}#stTour input[type=range]{accent-color:#fff;width:110px}
 @media (max-width:1100px){#stTour{width:calc(100% - 40px);min-width:0}#stroeme{width:260px}}
+.fq{width:100%;margin:2px 0 8px}
+.seklist{display:flex;flex-direction:column;gap:6px}
+.sek{border:1px solid #e1e6ea;border-radius:6px;background:#fff}
+.sekh{display:flex;align-items:center;gap:7px;padding:6px 8px;cursor:pointer;user-select:none}.sekh:hover{background:var(--soft)}
+.sekh i{width:12px;height:12px;border-radius:3px;flex:none}.sekh b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--navy)}.sekh .note{font-size:10.5px;white-space:nowrap}.sekh .mini{padding:1px 6px}.sekh input{margin:0}
+.sekh .sekt{width:12px;color:var(--muted)}.sekh .eye{min-width:26px}.sekh .eye.on{background:var(--navy);color:#fff}
+.sek .list{border-top:1px solid #e1e6ea;margin:0;border-radius:0 0 6px 6px}
+.li .fx{opacity:0;padding:0 6px}.li:hover .fx,.li.on .fx{opacity:1}
+.fa-via{display:flex;flex-direction:column;gap:2px;margin-top:4px;padding:5px 7px;background:#fff8e1;border-radius:4px}.fa-via span{font-size:11.5px;color:#7a5a00;font-weight:600}
+#fzBar{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;z-index:12;background:var(--panel);box-shadow:var(--shadow);border-radius:6px;padding:8px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;max-width:calc(100vw - 40px)}
+#fzBar b{color:var(--navy)}#fzBar .fzi{color:var(--muted);min-width:120px}#fzBar .fzh{flex-basis:100%;font-size:11px;color:var(--muted)}
+.sekt-fold{margin:10px 0 4px;border-top:1px solid #e1e6ea}
+.fold-h{display:flex;align-items:center;gap:6px;width:100%;background:transparent;border:0;padding:8px 2px 6px;text-align:left;font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+.fold-h:hover{color:var(--blue,#2D7694)}.fold-i{display:inline-block;width:12px;transition:transform .15s;color:var(--muted)}
+.sekt-fold.zu .fold-i{transform:rotate(-90deg)}.sekt-fold.zu .fold-b{display:none}
+/* ---------- Lizenz ---------- */
+#top .lzbadge{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:12px;font-size:11.5px;padding:3px 10px;margin-right:8px;cursor:pointer}
+#top .lzbadge.warn{border-color:#f2c94c;color:#f2c94c}#top .lzbadge.krit{background:#c0392b;border-color:#c0392b;color:#fff}
+#lzLock{position:fixed;inset:0;z-index:10000;background:rgba(10,34,60,.94);display:flex;align-items:center;justify-content:center;padding:16px}
+#lzLock .lzbox{background:#fff;border-radius:8px;max-width:520px;width:100%;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#lzLock .lzlogo{height:30px;background:#0A223C;padding:6px 10px;border-radius:4px}#lzLock h2{margin:12px 0 6px;color:#0A223C}
+#lzLock label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5a6573;margin:10px 0}
+#lzLock textarea{font-family:Consolas,monospace;font-size:12px;width:100%;resize:vertical}
+#lzLock .lzrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;font-size:12.5px}
+#lzLock .lzerr{color:#c0392b;font-weight:600}
 
 </style>
 <!-- =====================================================================
@@ -6701,7 +6726,32 @@ function buildNet(prj) {
     const id = `L:${L.id}@${L.stops[0]}`, n = nodes.get(id);
     const near = nearestIn(pathNodes.filter(p => nodes.get(p).kind === 'awt'), n.x, n.z, n.y); if (near && near.d < 30) addEdge(id, near.id, 'awt', {});
   }
-  return { nodes, adj, edges, lifts, places, placeNode, floorNodes, cache: new Map() };
+  /* 8. Festgelegte Wege einzelner Flüsse: „über Aufzug/Treppe X“ oder von Hand gezeichneter Pfad */
+  const fixed = new Map(), placeGf = new Map(places.map(p => [p.id, p.gf ?? 0]));
+  for (const f of prj.flows || []) {
+    if (!placeNode.has(f.von) || !placeNode.has(f.nach)) continue;
+    const key = f.von + '|' + f.nach;
+    if (Array.isArray(f.pfad) && f.pfad.length >= 2) {
+      const ids = [placeNode.get(f.von)], es = [];
+      f.pfad.forEach((q, i) => ids.push(addNode(`P:${f.id}:${i}`, q.x, q.y, q.z, { gf: q.gf ?? 0, pfad: f.id })));
+      ids.push(placeNode.get(f.nach));
+      for (let i = 0; i < ids.length - 1; i++) {
+        const A = nodes.get(ids[i]), B = nodes.get(ids[i + 1]), q = f.pfad[i - 1] ? f.pfad[i] : null;
+        const vert = i > 0 && i < ids.length - 2 && A.gf !== B.gf;
+        let type = i === 0 || i === ids.length - 2 ? 'anbindung' : 'flur', lift = null;
+        if (vert) {
+          const want = f.pfad[i].vertikal || f.pfad[i - 1]?.vertikal || {}, real = want.lift && lifts.find(L => L.id === want.lift);
+          type = (real ? real.role : want.typ) === 'treppe' ? 'treppe' : 'aufzug';
+          if (real) lift = real.id;
+          else { lift = `pv:${f.id}:${i}`; lifts.push({ id: lift, name: type === 'treppe' ? 'Treppenhaus (gezeichnet)' : 'Vertikalverbindung (gezeichnet)', role: type, cfg: { typ: 'lasten', kabinen: 1, sekProGeschoss: 5, tuerS: 12, kapazitaet: 1, freigabe: ['*'] }, stops: [A.gf, B.gf].sort((a, b) => a - b), x: A.x, z: A.z, obj: { name: 'gezeichnet' } }); }
+        } else if (i > 0 && i < ids.length - 2 && A.gf === 0 && !HSS.allParts(prj).some(pt => { const fl = HSS.localFloor(pt, 0, prj); return fl !== null && G.pointIn(HSS.toLocal(pt, [(A.x + B.x) / 2, (A.z + B.z) / 2]), HSS.partFootprintLocal(pt).outer); })) type = 'weg';
+        const len = type === 'treppe' ? Math.abs(B.y - A.y) * 2.2 + 6 : Math.abs(B.y - A.y) > 0.5 && type === 'aufzug' ? Math.abs(B.y - A.y) : Math.hypot(A.x - B.x, A.z - B.z);
+        es.push({ id: `pe:${f.id}:${i}`, a: ids[i], b: ids[i + 1], type, len, lift, pfad: f.id, gfa: A.gf, gfb: B.gf });
+      }
+      fixed.set(key, { pfad: f.id, nodes: ids, edges: es });
+    } else if (f.via) fixed.set(key, { via: f.via, gfA: placeGf.get(f.von), gfB: placeGf.get(f.nach) });
+  }
+  return { nodes, adj, edges, lifts, places, placeNode, floorNodes, fixed, cache: new Map() };
 }
 
 /* ---------- Routing ---------- */
@@ -6724,47 +6774,121 @@ HSS.edgeAllowed = (e, mittel, klasse, net) => {
 };
 class Heap { constructor() { this.a = []; } push(x) { const a = this.a; a.push(x); let i = a.length - 1; while (i) { const p = (i - 1) >> 1; if (a[p][0] <= a[i][0]) break; [a[p], a[i]] = [a[i], a[p]]; i = p; } } pop() { const a = this.a, top = a[0], last = a.pop(); if (a.length) { a[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < a.length && a[l][0] < a[m][0]) m = l; if (r < a.length && a[r][0] < a[m][0]) m = r; if (m === i) break; [a[m], a[i]] = [a[i], a[m]]; i = m; } } return top; } get size() { return this.a.length; } }
 
+// kürzester Weg zwischen zwei Knoten (Zeit); allow: Aufzug/Treppe, die unabhängig von Freigaben benutzt werden darf
+function dijk(net, s, t, mittel, klasse, allow, only) {
+  const M = HSS.MITTEL[mittel] || HSS.MITTEL.hand;
+  const dist = new Map([[s, 0]]), prev = new Map(), h = new Heap(); h.push([0, s]);
+  while (h.size) {
+    const [d, u] = h.pop(); if (u === t) break; if (d > (dist.get(u) ?? Infinity)) continue;
+    for (const e of net.adj.get(u) || []) {
+      if (only ? e.lift !== only : !(allow && e.lift === allow) && !HSS.edgeAllowed(e, mittel, klasse, net)) continue;
+      const v = e.a === u ? e.b : e.a;
+      let c = e.len / M.v / 60;
+      if (e.type === 'aufzug') { const L = net.lifts.find(l => l.id === e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
+      if (e.type === 'treppe') c = e.len / 0.6 / 60;
+      const nd = d + c;
+      if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, { u, e }); h.push([nd, v]); }
+    }
+  }
+  if (!dist.has(t)) return null;
+  const path = [t], es = []; let c = t; while (prev.has(c)) { const { u, e } = prev.get(c); es.unshift(e); path.unshift(u); c = u; }
+  return { path, es, time: dist.get(t) };
+}
+function assemble(net, path, es, time) {
+  const pts = path.map(id => { const n = net.nodes.get(id); return [n.x, n.y, n.z]; });
+  let len = 0; for (const e of es) len += e.len;
+  // Aufzugsfahrten zusammenfassen
+  const lifts = []; let cur = null;
+  es.forEach((e, i) => {
+    if (e.type === 'aufzug') { const a = net.nodes.get(path[i]).gf, b = net.nodes.get(path[i + 1]).gf; if (cur && cur.lift === e.lift && cur.idx === i - 1) { cur.to = b; cur.idx = i; } else { cur = { lift: e.lift, from: a, to: b, idx: i, startIdx: i }; lifts.push(cur); } }
+  });
+  const types = {}; for (const e of es) types[e.type] = (types[e.type] || 0) + e.len;
+  return { ok: true, len, timeMin: time, nodes: path, edges: es, lifts, pts, types };
+}
+const NO_ROUTE = () => ({ ok: false, len: 0, timeMin: 0, nodes: [], edges: [], lifts: [], pts: [] });
 HSS.route = (fromPlace, toPlace, mittel = 'hand', klasse = 'neutral') => {
   const net = HSS.net(), key = [fromPlace, toPlace, mittel, klasse].join('|');
   if (net.cache.has(key)) return net.cache.get(key);
   const M = HSS.MITTEL[mittel] || HSS.MITTEL.hand;
   const s = net.placeNode.get(fromPlace), t = net.placeNode.get(toPlace);
   let res = null;
-  if (s && t) {
+  const fx = net.fixed?.get(fromPlace + '|' + toPlace);
+  if (s && t && fx && fx.pfad) {
+    // gezeichneter Pfad: genau so, wie er gezeichnet wurde
+    let time = 0; for (const e of fx.edges) time += e.type === 'aufzug' ? (5 * Math.abs((e.gfb ?? 0) - (e.gfa ?? 0)) + 12) / 60 + LIFT_WAIT_EST / 2 : e.type === 'treppe' ? e.len / 0.6 / 60 : e.len / M.v / 60;
+    res = Object.assign(assemble(net, fx.nodes, fx.edges, time), { gezeichnet: true });
+  } else if (s && t && fx && fx.via) {
+    // über einen bestimmten Aufzug / ein bestimmtes Treppenhaus
+    const a = `L:${fx.via}@${fx.gfA}`, b = `L:${fx.via}@${fx.gfB}`;
+    const p1 = net.nodes.has(a) && dijk(net, s, a, mittel, klasse), p2 = p1 && net.nodes.has(b) && dijk(net, a, b, mittel, klasse, fx.via, fx.via), p3 = p2 && dijk(net, b, t, mittel, klasse);
+    if (p3) res = Object.assign(assemble(net, [...p1.path, ...p2.path.slice(1), ...p3.path.slice(1)], [...p1.es, ...p2.es, ...p3.es], p1.time + p2.time + p3.time), { via: fx.via });
+  }
+  if (!res && s && t) {
     if (M.direkt) {
       const A = net.nodes.get(s), B = net.nodes.get(t), len = Math.hypot(A.x - B.x, A.y - B.y, A.z - B.z) * 1.3;
       res = { ok: true, len, timeMin: len / M.v / 60 + 1, nodes: [s, t], edges: [], lifts: [], pts: [[A.x, A.y, A.z], [B.x, B.y, B.z]], direkt: true };
-    } else {
-      const dist = new Map([[s, 0]]), prev = new Map(), h = new Heap(); h.push([0, s]);
-      while (h.size) {
-        const [d, u] = h.pop(); if (u === t) break; if (d > (dist.get(u) ?? Infinity)) continue;
-        for (const e of net.adj.get(u) || []) {
-          if (!HSS.edgeAllowed(e, mittel, klasse, net)) continue;
-          const v = e.a === u ? e.b : e.a;
-          let c = e.len / M.v / 60;
-          if (e.type === 'aufzug') { const L = net.lifts.find(l => l.id === e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
-          if (e.type === 'treppe') c = e.len / 0.6 / 60;
-          const nd = d + c;
-          if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, { u, e }); h.push([nd, v]); }
-        }
-      }
-      if (dist.has(t)) {
-        const path = [t], es = []; let c = t; while (prev.has(c)) { const { u, e } = prev.get(c); es.unshift(e); path.unshift(u); c = u; }
-        const pts = path.map(id => { const n = net.nodes.get(id); return [n.x, n.y, n.z]; });
-        let len = 0; for (const e of es) len += e.len;
-        // Aufzugsfahrten zusammenfassen
-        const lifts = []; let cur = null;
-        es.forEach((e, i) => {
-          if (e.type === 'aufzug') { const a = net.nodes.get(path[i]).gf, b = net.nodes.get(path[i + 1]).gf; if (cur && cur.lift === e.lift && cur.idx === i - 1) { cur.to = b; cur.idx = i; } else { cur = { lift: e.lift, from: a, to: b, idx: i, startIdx: i }; lifts.push(cur); } }
-        });
-        const types = {}; for (const e of es) types[e.type] = (types[e.type] || 0) + e.len;
-        res = { ok: true, len, timeMin: dist.get(t), nodes: path, edges: es, lifts, pts, types };
-      }
-    }
+    } else { const r = dijk(net, s, t, mittel, klasse); if (r) res = assemble(net, r.path, r.es, r.time); }
   }
-  if (!res) res = { ok: false, len: 0, timeMin: 0, nodes: [], edges: [], lifts: [], pts: [] };
+  if (!res) res = NO_ROUTE();
   net.cache.set(key, res);
   return res;
+};
+
+})();
+(function () {
+'use strict';
+const HSS = window.HSS, G = HSS.geo;
+/* ---------- Darstellung: Routen begradigen ----------
+   Das Wegenetz verbindet Räume mit dem nächsten Flurknoten; dadurch entstehen in
+   der Darstellung kurze Stichwege („Überstände“) und schräge Anschlüsse. Für die
+   Anzeige werden Spitzen entfernt, gerade Stücke zusammengefasst und schräge
+   Abschnitte innerhalb von Gebäuden rechtwinklig (in der Gebäudeachse) geführt. */
+let frames = null, framesNet = null;
+const partFrames = () => {
+  const net = HSS.net(); if (frames && framesNet === net) return frames;
+  framesNet = net; frames = [];
+  for (const b of HSS.project().buildings) { if (b.umgebung) continue; for (const pt of b.parts) { const fp = HSS.partFootprint(pt).outer, bb = G.bbox(fp); const r = (pt.rot || 0) * Math.PI / 180; frames.push({ pt, fp, bb, eu: G.rot([1, 0], r), ev: G.rot([0, 1], r) }); } }
+  return frames;
+};
+const frameAt = (x, z) => { for (const F of partFrames()) { const b = F.bb; if (x < b.x0 || x > b.x1 || z < b.z0 || z > b.z1) continue; if (G.pointIn([x, z], F.fp)) return F; } return null; };
+HSS.cleanPts = (src) => {
+  let p = src.map(q => [q[0], q[1], q[2]]);
+  const same = (a, b) => Math.abs(a[1] - b[1]) < 0.3;
+  // doppelte Punkte
+  p = p.filter((q, i) => i === 0 || Math.hypot(q[0] - p[i - 1][0], q[1] - p[i - 1][1], q[2] - p[i - 1][2]) > 0.05);
+  // Spitzen (hin und zurück) und gerade Zwischenpunkte entfernen
+  for (let pass = 0; pass < 4; pass++) {
+    let ch = false;
+    for (let i = 1; i < p.length - 1; i++) {
+      const a = p[i - 1], b = p[i], c = p[i + 1]; if (!same(a, b) || !same(b, c)) continue;
+      const ux = b[0] - a[0], uz = b[2] - a[2], vx = c[0] - b[0], vz = c[2] - b[2], lu = Math.hypot(ux, uz), lv = Math.hypot(vx, vz);
+      if (lu < 0.05 || lv < 0.05) { p.splice(i, 1); i--; ch = true; continue; }
+      const cos = (ux * vx + uz * vz) / (lu * lv), cr = Math.abs(ux * vz - uz * vx) / (lu * lv);
+      if (cos < -0.5 || (cos > 0 && cr < 0.03)) { p.splice(i, 1); i--; ch = true; }
+    }
+    if (!ch) break;
+  }
+  // schräge Stücke im Gebäude rechtwinklig führen
+  const out = [p[0]];
+  for (let i = 1; i < p.length; i++) {
+    const a = out[out.length - 1], b = p[i];
+    if (same(a, b)) {
+      const F = frameAt((a[0] + b[0]) / 2, (a[2] + b[2]) / 2);
+      if (F) {
+        const { eu, ev } = F, dx = b[0] - a[0], dz = b[2] - a[2];
+        const du = dx * eu[0] + dz * eu[1], dv = dx * ev[0] + dz * ev[1]; // lokale Achsen
+        if (Math.abs(du) > 0.4 && Math.abs(dv) > 0.4) {
+          const prev = out.length > 1 ? out[out.length - 2] : null;
+          let uFirst = Math.abs(du) >= Math.abs(dv);
+          if (prev && same(prev, a)) { const px = a[0] - prev[0], pz = a[2] - prev[2], pu = px * eu[0] + pz * eu[1], pv = px * ev[0] + pz * ev[1]; if (Math.abs(pu) > 0.3 || Math.abs(pv) > 0.3) uFirst = Math.abs(pu) > Math.abs(pv); }
+          const c = uFirst ? [a[0] + du * eu[0], a[1], a[2] + du * eu[1]] : [a[0] + dv * ev[0], a[1], a[2] + dv * ev[1]];
+          out.push(c);
+        }
+      }
+    }
+    out.push(b);
+  }
+  return out;
 };
 })();
 
@@ -10945,11 +11069,29 @@ UI.setWS = (id) => {
   UI.renderPanel();
   HSS.emit('workspace', id);
 };
+/* Ausklappbare Abschnitte: jede Zwischenüberschrift (h3) eines Arbeitsbereichs wird
+   mit ihrem Inhalt zu einem auf-/zuklappbaren Abschnitt; der Zustand bleibt gespeichert. */
+UI.faltZu = (() => { try { return new Set(JSON.parse(localStorage.getItem('hss-zu') || '[]')); } catch (e) { return new Set(); } })();
+UI.falten = (root, ws) => {
+  for (const h of [...root.querySelectorAll('h3')]) {
+    if (h.dataset.nofold !== undefined || h.closest('.sekt-fold, dialog, .sek')) continue;
+    const par = h.parentNode, items = [];
+    for (let n = h.nextSibling; n && !(n.nodeType === 1 && /^H[23]$/.test(n.tagName)); n = n.nextSibling) items.push(n);
+    if (!items.some(n => n.nodeType === 1 || (n.textContent || '').trim())) continue;
+    const key = ws + '|' + h.textContent.replace(/\s*\(\d[\d.]*\)\s*$/, '').trim();
+    const box = document.createElement('div'); box.className = 'sekt-fold' + (UI.faltZu.has(key) ? ' zu' : '');
+    const kopf = document.createElement('button'); kopf.type = 'button'; kopf.className = 'fold-h'; kopf.innerHTML = '<span class="fold-i">▾</span>' + h.innerHTML; kopf.title = 'Abschnitt auf-/zuklappen';
+    const inh = document.createElement('div'); inh.className = 'fold-b';
+    par.insertBefore(box, h); box.append(kopf, inh); items.forEach(n => inh.appendChild(n)); h.remove();
+    kopf.onclick = () => { const zu = box.classList.toggle('zu'); if (zu) UI.faltZu.add(key); else UI.faltZu.delete(key); try { localStorage.setItem('hss-zu', JSON.stringify([...UI.faltZu])); } catch (e) { /* ohne Speicher */ } };
+  }
+};
 UI.renderPanel = () => {
   const w = UI.ws[UI.current]; if (!w) return;
   const body = $('#panelBody'); const sc = body.scrollTop;
   body.innerHTML = `<div class="ph"><h2>${w.name}</h2></div>` + (w.lead ? `<p class="lead">${w.lead}</p>` : '') + '<div id="wsBody"></div>';
   try { w.render($('#wsBody')); } catch (e) { console.error(e); $('#wsBody').innerHTML = '<div class="errbox">' + U.esc(e.message) + '</div>'; }
+  UI.falten($('#wsBody'), UI.current);
   body.scrollTop = sc;
 };
 UI.buildRail = () => {
@@ -11451,15 +11593,43 @@ W.fluesse = { name: 'Material-, Waren- & Personenflüsse', short: 'Flüsse', ste
 const FT = {};
 FT.fluesse = (el, prj) => {
   const mats = new Map(prj.materials.map(m => [m.id, m]));
-  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button id="fStd">Standardflüsse übernehmen …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button></div>
-  <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1))))} Ladungen/Tag</div>
-  <div class="list" style="max-height:none">${prj.flows.map(f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span></div>`; }).join('') || '<div class="li note">Noch keine Flüsse.</div>'}</div>
+  const SK = HSS.sektionen, gr = SK.gruppen(prj), q = (UI.flowQ || '').trim().toLowerCase();
+  UI.flowOpen = UI.flowOpen || new Set();
+  const selF = U.byId(prj.flows, UI.flowSel); if (selF) UI.flowOpen.add(SK.of(selF, prj).id);
+  const fahrten = f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1);
+  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
+  el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button class="primary" id="fDraw" title="Fluss im 3D-Bild mit geraden Abschnitten zeichnen, Höhenwechsel per Aufzug oder Treppe">✎ Fluss zeichnen</button></div>
+  <div class="actions" style="margin-top:4px"><button id="fStd">Standardflüsse …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button><button id="fSek" title="Eigene Sektion anlegen">+ Sektion</button></div>
+  <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse in ${gr.length} Sektionen · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(fahrten)))} Ladungen/Tag</div>
+  <input type="search" id="fQ" class="fq" placeholder="Flüsse suchen …" value="${U.esc(UI.flowQ || '')}">
+  <div class="seklist">${gr.map(g => {
+    const fl = q ? g.flows.filter(f => f.name.toLowerCase().includes(q)) : g.flows; if (q && !fl.length) return '';
+    const open = !!q || UI.flowOpen.has(g.s.id), akt = g.flows.filter(f => f.aktiv !== false).length, vis = SK.istSichtbar(g.s.id);
+    return `<div class="sek ${open ? 'open' : ''}" data-sek="${U.esc(g.s.id)}"><div class="sekh" data-st title="auf-/zuklappen"><span class="sekt">${open ? '▾' : '▸'}</span><i style="background:${U.esc(g.s.farbe)}"></i><b>${U.esc(g.s.name)}</b><span class="note">${fl.length}${q ? '/' + g.flows.length : ''} · ${U.fmt(U.sum(g.flows.filter(f => f.aktiv !== false).map(fahrten)))} F./Tag</span>
+      <button class="mini eye ${vis ? 'on' : ''}" data-sv title="${vis ? 'im 3D-Bild ausblenden' : 'im 3D-Bild einblenden'}">${vis ? '◉' : '○'}</button><input type="checkbox" data-sa ${akt === g.flows.length && akt ? 'checked' : ''} ${akt && akt < g.flows.length ? 'data-mixed="1"' : ''} title="alle Flüsse der Sektion aktiv (Simulation)"><button class="mini danger" data-sd title="Sektion mit allen Flüssen löschen">🗑</button></div>
+      ${open ? `<div class="list" style="max-height:none">${fl.map(row).join('') || '<div class="li note">Keine Flüsse – mit Assistent oder „✎ Fluss zeichnen“ anlegen und hier zuordnen.</div>'}</div>` : ''}</div>`;
+  }).join('') || '<div class="note">Noch keine Flüsse.</div>'}</div>
   <div id="fEdit"></div>`;
   $('#fStd', el).onclick = UI.templateDialog;
   $('#fWiz', el).onclick = () => HSS.flussAssistent.dialog();
-  $('#fNew', el).onclick = () => { const f = { id: U.uid('flow'), name: 'Neuer Fluss', material: prj.materials[0].id, von: '', nach: '', menge: 10, periode: 'tag', betriebstage: 7, fenster: [[8, 12]], transport: 't_hand', fahrzeitMin: null, aktiv: true }; HSS.change('Fluss anlegen', p => p.flows.push(f), { scope: 'none' }); UI.flowSel = f.id; UI.renderPanel(); };
+  $('#fDraw', el).onclick = () => HSS.flussZeichnen.start();
+  $('#fSek', el).onclick = async () => { const n = await UI.prompt('Neue Sektion', 'Eigene Sektion'); if (!n) return; let id; HSS.change('Sektion anlegen', p => (id = SK.neu(p, n, '#' + Math.floor(0x404040 + Math.random() * 0x9f9f9f).toString(16).padStart(6, '0'))), { scope: 'none' }); UI.flowOpen.add(id); UI.renderPanel(); };
+  const qi = $('#fQ', el); qi.oninput = U.debounce(() => { UI.flowQ = qi.value; UI.renderPanel(); const n = document.getElementById('fQ'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 250);
+  $$('.sek', el).forEach(box => {
+    const id = box.dataset.sek, g = gr.find(x => x.s.id === id);
+    $('[data-st]', box).onclick = e => { if (e.target.closest('[data-sv],[data-sa],[data-sd]')) return; if (UI.flowOpen.has(id)) UI.flowOpen.delete(id); else UI.flowOpen.add(id); UI.renderPanel(); };
+    const ca = $('[data-sa]', box); if (ca.dataset.mixed) ca.indeterminate = true;
+    ca.onchange = () => HSS.change(`Sektion ${g.s.name} ${ca.checked ? 'aktiv' : 'inaktiv'}`, p => { const ids = new Set(g.flows.map(f => f.id)); for (const f of p.flows) if (ids.has(f.id)) f.aktiv = ca.checked; }, { scope: 'none' });
+    $('[data-sv]', box).onclick = () => { SK.setSichtbar(id, !SK.istSichtbar(id)); UI.renderPanel(); };
+    $('[data-sd]', box).onclick = async () => {
+      if (!await UI.confirm('Sektion löschen', `Sektion „${g.s.name}“ mit ${g.flows.length} Flüssen löschen? (Rückgängig mit Strg+Z)`, 'Löschen')) return;
+      HSS.change('Sektion löschen', p => { const ids = new Set(g.flows.map(f => f.id)); p.flows = p.flows.filter(f => !ids.has(f.id)); if (p.stroeme) p.stroeme = p.stroeme.filter(s => !(s.id === id && s.eigen)); }, { scope: 'none' });
+      if (g.flows.some(f => f.id === UI.flowSel)) UI.flowSel = null; clearGhost(); UI.renderPanel();
+    };
+  });
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
-  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
+  $$('[data-fx]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const id = b.dataset.fx; HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== id)), { scope: 'none' }); if (UI.flowSel === id) { UI.flowSel = null; clearGhost(); } UI.renderPanel(); });
+  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
   setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
@@ -11471,12 +11641,17 @@ FT.fluesse = (el, prj) => {
    ${UI.fNum('Menge', 'menge', f.menge, { step: 1, unit: m?.einheit })}${UI.fSel('je', 'periode', f.periode, opt('tag', 'Tag', f.periode) + opt('woche', 'Woche', f.periode) + opt('monat', 'Monat', f.periode) + opt('jahr', 'Jahr', f.periode))}
    ${UI.fNum('Betriebstage/Woche', 'betriebstage', f.betriebstage, { min: 1, max: 7, step: 1 })}${UI.fSel('Transportmittel', 'transport', f.transport, prj.transports.map(x => opt(x.id, x.name, f.transport)).join(''))}
    <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="fWin" value="${fenster(f)}"></label>
-   ${UI.fNum('Fahrzeit hinterlegt', 'fahrzeitMin', f.fahrzeitMin, { unit: 'min', step: 1, ph: 'aus Wegenetz' })}</div>
+   ${UI.fNum('Fahrzeit hinterlegt', 'fahrzeitMin', f.fahrzeitMin, { unit: 'min', step: 1, ph: 'aus Wegenetz' })}
+   ${UI.fSel('Sektion', 'strom', HSS.sektionen.of(f, prj).id, HSS.sektionen.list(prj).map(x => opt(x.id, x.name, HSS.sektionen.of(f, prj).id)).join(''), { full: true })}
+   ${f.pfad ? '' : UI.fSel('Höhenwechsel über', 'via', f.via || '', HSS.flussAssistent.viaOpts(f.von, f.nach, f.via || ''), { full: true, t: 'ns' })}</div>
+   ${f.pfad ? `<div class="infobox">Gezeichneter Weg: ${f.pfad.length} Punkte${f.pfad.some((q, i) => i && q.gf !== f.pfad[i - 1].gf) ? ', mit Höhenwechsel' : ''}. Der Fluss folgt genau diesem Weg.<div class="actions" style="margin-top:6px"><button class="mini" id="fRedraw">neu zeichnen</button><button class="mini" id="fUnpfad">Weg aus dem Wegenetz</button></div></div>` : ''}
    <div class="${r.ok ? 'okbox' : 'errbox'}">${r.ok ? `Route: ${U.fmt(r.len)} m · ${U.dur(r.timeMin)} Fahrzeit · ${r.lifts.length} Aufzugsfahrt(en)${r.direkt ? ' · Rohrpost (Luftlinie)' : ''}` : 'Keine Route gefunden: Quelle/Ziel wählen, Wege und Eingänge prüfen; Aufzugsfreigaben (rein/unrein) und AWT-Anbindung beachten.'}</div>
    <div class="actions"><button id="fRoute">Route zeigen</button><button id="fDup">Duplizieren</button><button class="danger" id="fDel">Löschen</button></div>`;
   UI.bind($('.fe', ed), p => U.byId(p.flows, f.id), 'Fluss', 'none', () => setTimeout(() => { UI.renderPanel(); UI.showRoute(f.id); }, 0));
   $('#fWin', ed).onchange = e => HSS.change('Zeitfenster', p => (U.byId(p.flows, f.id).fenster = parseFenster(e.target.value)), { scope: 'none' });
   $('#fRoute', ed).onclick = () => UI.showRoute(f.id, true);
+  const rd = $('#fRedraw', ed); if (rd) rd.onclick = () => HSS.flussZeichnen.start({ flow: f.id });
+  const up = $('#fUnpfad', ed); if (up) up.onclick = () => { HSS.change('Gezeichneten Weg entfernen', p => { delete U.byId(p.flows, f.id).pfad; }, { scope: 'none' }); UI.renderPanel(); UI.showRoute(f.id); };
   $('#fDup', ed).onclick = () => { const n = U.clone(f); n.id = U.uid('flow'); n.name += ' (Kopie)'; HSS.change('Fluss duplizieren', p => p.flows.push(n), { scope: 'none' }); UI.flowSel = n.id; UI.renderPanel(); };
   $('#fDel', ed).onclick = () => { HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== f.id)), { scope: 'none' }); UI.flowSel = null; UI.renderPanel(); clearGhost(); };
 };
@@ -11484,14 +11659,14 @@ FT.fluesse = (el, prj) => {
 UI.showRoutes = (ids, focus) => {
   clearGhost(); const box = new THREE.Box3();
   for (const id of ids) { UI.showRoute(id, false, true); }
-  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); HSS.s3.focusBox(box, { k: 0.8 }); }
+  if (focus && HSS.s3.layers.ghost.children.length) { box.setFromObject(HSS.s3.layers.ghost); box.expandByScalar(18); HSS.s3.focusBox(box, { k: 0.8 }); }
 };
 UI.showRoute = (fid, focus, keep) => {
   if (!keep) clearGhost();
   const prj = HSS.project(), f = U.byId(prj.flows, fid); if (!f) return;
   const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
   const r = HSS.route(f.von, f.nach, t?.mittel, m?.reinheit); if (!r.ok) return;
-  const g = new THREE.BufferGeometry().setFromPoints(r.pts.map(p => new THREE.Vector3(p[0], p[1] + 0.6, p[2])));
+  const g = new THREE.BufferGeometry().setFromPoints(HSS.cleanPts(r.pts).map(p => new THREE.Vector3(p[0], p[1] + 0.6, p[2])));
   const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: m?.farbe || '#0A967A', depthTest: false, linewidth: 2 })); l.renderOrder = 30; HSS.s3.layers.ghost.add(l);
   for (const p of [r.pts[0], r.pts[r.pts.length - 1]]) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 12), new THREE.MeshBasicMaterial({ color: m?.farbe || '#0A967A', depthTest: false })); s.position.set(p[0], p[1] + 0.8, p[2]); s.renderOrder = 31; HSS.s3.layers.ghost.add(s); }
   if (focus) { const box = new THREE.Box3().setFromObject(l); HSS.s3.focusBox(box, { k: 0.8 }); }
@@ -14032,29 +14207,9 @@ const matCache = new Map();
 const solid = (c) => { const k = 's' + c; if (!matCache.has(k)) { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.05 }); m.userData.noToon = true; matCache.set(k, m); } return matCache.get(k); };
 const tubeMat = (id, c) => { if (!famMats.has(id)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.25, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; famMats.set(id, m); } return famMats.get(id); };
 
-/* ---------- Warenströme (Familien) ---------- */
-const FAM = [
-  ['speisen', 'Speisen', '#e07b39'], ['waesche', 'Wäsche', '#3b82c4'], ['sterilgut', 'Sterilgut', '#7b5cc4'], ['arznei', 'Arzneimittel', '#1f9d7a'],
-  ['lager', 'Verbrauchsgüter', '#a07a3c'], ['betten', 'Betten', '#d1a21f'], ['abfall', 'Abfall', '#6b6f76'], ['patient', 'Patiententransport', '#d94452'],
-  ['post', 'Post & Proben', '#16a3b8'], ['personen', 'Personen', '#7b5ea7']
-];
-const MAT2FAM = { m_speisen: 'speisen', m_geschirr: 'speisen', m_waesche_r: 'waesche', m_waesche_u: 'waesche', m_steril: 'sterilgut', m_instr_u: 'sterilgut', m_arznei: 'arznei', m_modul: 'lager', m_ware: 'lager',
-  m_betten: 'betten', m_betten_r: 'betten', m_abfall: 'abfall', m_entsorgung: 'abfall', m_patient: 'patient', m_proben: 'post', m_post: 'post', m_personal: 'personen', m_besucher: 'personen' };
-FB.familien = (prj = HSS.project()) => {
-  const list = (prj.stroeme || []).map(s => ({ id: s.id, name: s.name, farbe: s.farbe || FAM.find(x => x[0] === s.id || x[1] === s.name)?.[2] || '#2D7694', tour: s.tour || [] }));
-  for (const [id, name, farbe] of FAM) if (!list.some(x => x.id === id || x.name === name)) list.push({ id, name, farbe, tour: [] });
-  return list;
-};
-FB.stromOf = (f, prj, fams) => {
-  fams = fams || FB.familien(prj);
-  if (f.strom) { const s = fams.find(x => x.id === f.strom); if (s) return s; }
-  const pre = /^([^:]+):/.exec(f.name || '')?.[1]?.trim(); if (pre) { const s = fams.find(x => x.name === pre); if (s) return s; }
-  const k = MAT2FAM[f.material]; if (k) { const s = fams.find(x => x.id === k) || fams.find(x => x.name === FAM.find(y => y[0] === k)?.[1]); if (s) return s; }
-  const m = U.byId(prj.materials, f.material);
-  let s = fams.find(x => x.id === 'mat:' + f.material);
-  if (!s) { s = { id: 'mat:' + f.material, name: m?.name || 'Sonstige', farbe: m?.farbe || '#2D7694', tour: [] }; fams.push(s); }
-  return s;
-};
+/* ---------- Warenströme = Sektionen der Flüsse (js/sektionen.js) ---------- */
+FB.familien = (prj = HSS.project()) => HSS.sektionen.list(prj);
+FB.stromOf = (f, prj, fams) => HSS.sektionen.of(f, prj, fams || FB.familien(prj));
 const isPers = s => s.id === 'personen';
 
 /* ---------- Zeitprofil: Fahrten je Stunde aus den Zeitfenstern ---------- */
@@ -14075,7 +14230,7 @@ function collect() {
     if (!m) continue;
     const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
     const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
-    out.push({ f, m, t, r, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
+    out.push({ f, m, t, r, pts: HSS.cleanPts ? HSS.cleanPts(r.pts) : r.pts, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
   }
   return { all: out, fams };
 }
@@ -14121,10 +14276,10 @@ FB.build = () => {
   // Abschnitte je Strom und Richtung zusammenfassen
   const seg = new Map();
   for (const x of vis) {
-    const ids = x.r.nodes;
-    for (let i = 0; i < x.r.pts.length - 1; i++) {
-      const k = x.s.id + '|' + ids[i] + '>' + ids[i + 1];
-      const s = seg.get(k) || { s: x.s, a: x.r.pts[i], b: x.r.pts[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
+    const P = x.pts, key = q => q.map(v => Math.round(v * 2) / 2).join(',');
+    for (let i = 0; i < P.length - 1; i++) {
+      const k = x.s.id + '|' + key(P[i]) + '>' + key(P[i + 1]);
+      const s = seg.get(k) || { s: x.s, a: P[i], b: P[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
     }
     routes.push(x);
   }
@@ -14152,7 +14307,7 @@ FB.build = () => {
     if (tph < 0.05) continue;
     const n = FB.hour === null ? Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2))) : Math.min(3, Math.max(1, Math.round(tph / 2)));
     const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
-    const pts = offsetPts(x.r.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
+    const pts = offsetPts(x.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
     for (let i = 0; i < n; i++) {
       const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
       movers.push({ mesh, pl, strom: x.s.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
@@ -14162,6 +14317,7 @@ FB.build = () => {
   emphasis();
   FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing;
   panel(); achse(); HSS.perf?.invalidate(3);
+  if (HSS.ui?.current === 'fluesse' && !HSS.ui._fbRefresh) { HSS.ui._fbRefresh = setTimeout(() => { HSS.ui._fbRefresh = null; if (!document.activeElement?.closest?.('#panel')) HSS.ui.renderPanel(); }, 50); }
 };
 // Tour: nur der gezeigte Strom kräftig
 function emphasis() {
@@ -14449,7 +14605,7 @@ FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.persone
 const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
 HSS.on('changed', rebuild); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
 // Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
-HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) FB.set(true); });
+HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) { FB.set(true); HSS.ui.renderPanel(); } });
 // Simulations-Zeitleiste und Tagesachse nicht übereinander
 new MutationObserver(() => { if (FB.on) achse(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
@@ -14458,6 +14614,95 @@ new MutationObserver(() => { if (FB.on) achse(); }).observe(document.body, { att
   if (vb && !document.getElementById('vFlow')) { const b = document.createElement('button'); b.className = 'tgl vw-fluss'; b.id = 'vFlow'; b.title = 'Warenströme: alle Flüsse als farbige Bänder je Strom (Speisen, Wäsche, Sterilgut …), Tagesachse und Prozess-Tour'; b.textContent = 'Warenströme'; b.onclick = () => FB.toggle(); vb.before(b); }
   const sh = document.getElementById('vShell'); if (sh && !sh.querySelector('option[value="glas"]')) sh.insertAdjacentHTML('beforeend', '<option value="glas">gläsern</option>');
 })();
+})();
+
+</script>
+<script>
+/* =====================================================================
+   HSS · sektionen.js – Flüsse in Sektionen (Warenströme) gliedern
+   Jeder Fluss gehört zu einer Sektion: Speisen, Wäsche, Sterilgut,
+   Arzneimittel, Verbrauchsgüter, Betten, Abfall, Patiententransport,
+   Post & Proben, Personen – oder zu einer eigenen Sektion des Projekts
+   (prj.stroeme). Zuordnung: f.strom, sonst Namensanfang „Speisen: …“,
+   sonst Materialgruppe. Sektionen lassen sich im 3D-Bild ein- und
+   ausblenden, aktiv schalten und mitsamt ihren Flüssen löschen.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util;
+const SK = HSS.sektionen = {};
+SK.STANDARD = [
+  ['speisen', 'Speisen', '#e07b39'], ['waesche', 'Wäsche', '#3b82c4'], ['sterilgut', 'Sterilgut', '#7b5cc4'], ['arznei', 'Arzneimittel', '#1f9d7a'],
+  ['lager', 'Verbrauchsgüter', '#a07a3c'], ['betten', 'Betten', '#d1a21f'], ['abfall', 'Abfall', '#6b6f76'], ['patient', 'Patiententransport', '#d94452'],
+  ['post', 'Post & Proben', '#16a3b8'], ['personen', 'Personen', '#7b5ea7']
+];
+const MAT2SEK = { m_speisen: 'speisen', m_geschirr: 'speisen', m_waesche_r: 'waesche', m_waesche_u: 'waesche', m_steril: 'sterilgut', m_instr_u: 'sterilgut', m_arznei: 'arznei', m_modul: 'lager', m_ware: 'lager',
+  m_betten: 'betten', m_betten_r: 'betten', m_abfall: 'abfall', m_entsorgung: 'abfall', m_patient: 'patient', m_proben: 'post', m_post: 'post', m_personal: 'personen', m_besucher: 'personen' };
+// alle Sektionen: eigene/übernommene (prj.stroeme) zuerst, dann die Standard-Warenströme
+SK.list = (prj = HSS.project()) => {
+  const list = (prj.stroeme || []).map(s => ({ id: s.id, name: s.name, farbe: s.farbe || SK.STANDARD.find(x => x[0] === s.id || x[1] === s.name)?.[2] || '#2D7694', tour: s.tour || [], eigen: !!s.eigen }));
+  for (const [id, name, farbe] of SK.STANDARD) if (!list.some(x => x.id === id || x.name === name)) list.push({ id, name, farbe, tour: [] });
+  return list;
+};
+SK.of = (f, prj = HSS.project(), list = SK.list(prj)) => {
+  if (f.strom) { const s = list.find(x => x.id === f.strom); if (s) return s; }
+  const pre = /^([^:]+):/.exec(f.name || '')?.[1]?.trim(); if (pre) { const s = list.find(x => x.name === pre); if (s) return s; }
+  const k = MAT2SEK[f.material]; if (k) { const s = list.find(x => x.id === k) || list.find(x => x.name === SK.STANDARD.find(y => y[0] === k)?.[1]); if (s) return s; }
+  let s = list.find(x => x.id === 'mat:' + f.material);
+  if (!s) { const m = U.byId(prj.materials, f.material); s = { id: 'mat:' + f.material, name: m?.name || 'Sonstige', farbe: m?.farbe || '#2D7694', tour: [] }; list.push(s); }
+  return s;
+};
+// Sektionen mit ihren Flüssen (nur belegte und eigene)
+SK.gruppen = (prj = HSS.project()) => {
+  const list = SK.list(prj), by = new Map();
+  for (const f of prj.flows) { const s = SK.of(f, prj, list); if (!by.has(s.id)) by.set(s.id, { s, flows: [] }); by.get(s.id).flows.push(f); }
+  for (const s of list) if (s.eigen && !by.has(s.id)) by.set(s.id, { s, flows: [] });
+  return list.map(s => by.get(s.id)).filter(Boolean);
+};
+// neue eigene Sektion (im Änderungs-Callback aufrufen)
+SK.neu = (p, name, farbe) => {
+  p.stroeme = p.stroeme || [];
+  const id = 'sek_' + U.uid('s').slice(-6);
+  p.stroeme.push({ id, name, farbe: farbe || '#2D7694', tour: [], eigen: true });
+  return id;
+};
+
+/* ---------- Sichtbarkeit im 3D-Bild ----------
+   Mit Flussbild (Planungsmodell) steuern die Sektionen dessen Bänder; sonst
+   werden die Routen der eingeblendeten Sektionen als Linien gezeichnet. */
+SK.sichtbar = new Set();
+const FB = () => HSS.flussbild && HSS.flussbild.aus ? HSS.flussbild : null;
+SK.istSichtbar = id => FB() ? (FB().on && !FB().aus.has(id) && (id !== 'personen' || FB().personen)) : SK.sichtbar.has(id);
+SK.setSichtbar = (id, on) => {
+  const fb = FB();
+  if (fb) { if (on) { fb.aus.delete(id); if (id === 'personen') fb.personen = true; if (!fb.on) fb.set(true); else fb.build(); } else { fb.aus.add(id); fb.build(); } return; }
+  if (on) SK.sichtbar.add(id); else SK.sichtbar.delete(id);
+  SK.zeichnen();
+};
+let layer = null;
+SK.zeichnen = () => {
+  const { THREE } = window.THREEX, S3 = HSS.s3;
+  if (!layer) { layer = new THREE.Group(); layer.name = 'sektionen'; S3.scene.add(layer); }
+  while (layer.children.length) { const c = layer.children[0]; layer.remove(c); c.geometry?.dispose(); }
+  if (!SK.sichtbar.size) { HSS.perf?.invalidate(2); return; }
+  const prj = HSS.project(), list = SK.list(prj), by = new Map();
+  for (const f of prj.flows) {
+    if (f.aktiv === false) continue;
+    const s = SK.of(f, prj, list); if (!SK.sichtbar.has(s.id)) continue;
+    const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport);
+    const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m?.reinheit || 'neutral'); if (!r.ok) continue;
+    const pts = HSS.cleanPts(r.pts), arr = by.get(s.id) || []; by.set(s.id, arr);
+    for (let i = 0; i < pts.length - 1; i++) arr.push(pts[i][0], pts[i][1] + 0.7, pts[i][2], pts[i + 1][0], pts[i + 1][1] + 0.7, pts[i + 1][2]);
+  }
+  for (const [id, arr] of by) {
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
+    const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: list.find(x => x.id === id)?.farbe || '#2D7694', depthTest: false, transparent: true, opacity: 0.95 }));
+    l.renderOrder = 28; layer.add(l);
+  }
+  HSS.perf?.invalidate(2);
+};
+HSS.on('changed', U.debounce(() => { if (SK.sichtbar.size) SK.zeichnen(); }, 300));
+HSS.on('loaded', () => { SK.sichtbar.clear(); SK.zeichnen(); });
 })();
 
 </script>
@@ -14524,15 +14769,37 @@ const uebergabe = (p, bid, gf) => {
   return o.id;
 };
 
+/* ---------- Höhenwechsel: Aufzüge und Treppenhäuser, die beide Etagen bedienen ---------- */
+FA.vertikal = (gfA, gfB, bevorzugt = []) => {
+  const prj = HSS.project(), out = [];
+  for (const L of HSS.net().lifts) {
+    if (String(L.id).startsWith('pv:') || !L.stops.includes(gfA) || !L.stops.includes(gfB)) continue;
+    const P = L.obj?.host ? HSS.findPart(L.obj.host.part, prj) : null, b = P?.building;
+    out.push({ id: L.id, typ: L.role, bid: b?.id || '', label: `${L.role === 'treppe' ? 'Treppenhaus' : 'Aufzug'} · ${L.name}${b ? ` (${b.kurz || b.name})` : ''}`, rang: bevorzugt.indexOf(b?.id) < 0 ? 9 : bevorzugt.indexOf(b?.id) });
+  }
+  return out.sort((a, c) => a.rang - c.rang || a.label.localeCompare(c.label, 'de', { numeric: true }));
+};
+const viaHtml = (gfA, gfB, bids, sel, grp = ['im Startgebäude', 'im Zielgebäude']) => {
+  const L = FA.vertikal(gfA, gfB, bids), g = k => L.filter(x => x.rang === k);
+  return opt('', 'automatisch (schnellster zulässiger Weg)', sel) + [0, 1, 9].map(k => g(k).length ? `<optgroup label="${k === 9 ? 'andere Gebäude' : grp[k]}">${g(k).map(x => opt(x.id, x.label, sel)).join('')}</optgroup>` : '').join('');
+};
+FA.viaOpts = (von, nach, sel) => {
+  const pl = HSS.places(), A = pl.find(p => p.id === von), B = pl.find(p => p.id === nach);
+  if (!A || !B || (A.gf ?? 0) === (B.gf ?? 0)) return opt('', A && B ? 'kein Höhenwechsel' : '–', '') + (sel ? opt(sel, sel, sel) : '');
+  const bid = x => x.building || (x.part ? HSS.findPart(x.part)?.building.id : null);
+  return viaHtml(A.gf ?? 0, B.gf ?? 0, [bid(A), bid(B)], sel);
+};
+
 /* ---------- Dialog ---------- */
 FA.dialog = (vorgabe = {}) => {
   const UI = HSS.ui, $ = UI.$, prj = HSS.project(); HSS.ensureStammdaten(prj);
   const B = eigene(prj);
   if (!B.length) { UI.toast('Zuerst Gebäude anlegen – der Assistent verbindet Gebäude und Etagen.', 3500); return; }
   const neu = () => { const b = B[0]; const fl = FA.etagen(b); return { b: b.id, gf: fl.includes(0) ? 0 : fl[0], ort: '' }; };
-  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: 1, material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
+  const S = { stops: vorgabe.stops || [neu(), neu()], schritt: vorgabe.pfad ? 2 : 1, pfad: vorgabe.pfad || null, strom: vorgabe.strom || '', material: vorgabe.material || prj.materials[0]?.id, menge: 10, periode: 'tag', fenster: '07:00–09:00, 13:00–15:00', transport: (prj.transports.find(t => t.id === 't_hand') || prj.transports[0])?.id, name: '' };
   const mat = () => U.byId(prj.materials, S.material);
   const label = s => {
+    if (s.lbl) return s.lbl;
     if (s.b === EXT) { const p = HSS.places(prj).find(x => x.id === s.ort); return p ? p.name : 'Außen'; }
     const b = U.byId(prj.buildings, s.b); const pl = s.ort && HSS.places(prj).find(x => x.id === s.ort);
     return pl && pl.role !== 'uebergabe' ? pl.name : `${b?.kurz || b?.name || ''} ${HSS.floorName(s.gf)}`;
@@ -14549,6 +14816,7 @@ FA.dialog = (vorgabe = {}) => {
         <div class="fa-row"><select data-k="b" title="Gebäude">${B.map(x => opt(x.id, bName(x), s.b)).join('')}${opt(EXT, 'Außen / extern (Lieferant, Entsorger …)', s.b)}</select>
         ${s.b === EXT ? '' : `<select data-k="gf" title="Etage">${FA.etagen(b).map(g => opt(g, HSS.floorName(g), s.gf)).join('')}</select>`}</div>
         <select data-k="ort" title="Genauer Ort (optional)">${ortOpts}</select>
+        ${i > 0 && S.stops[i - 1].b !== EXT && s.b !== EXT && S.stops[i - 1].gf !== s.gf ? `<label class="fa-via"><span>↕ Höhenwechsel ${HSS.floorName(S.stops[i - 1].gf)} → ${HSS.floorName(s.gf)} über</span><select data-k="via">${viaHtml(S.stops[i - 1].gf, s.gf, [S.stops[i - 1].b, s.b], s.via || '', S.stops[i - 1].b === s.b ? ['in diesem Gebäude', 'in diesem Gebäude'] : ['im Startgebäude', 'im Zielgebäude'])}</select></label>` : ''}
       </div>
       ${i > 0 && i < n - 1 ? `<button class="mini" data-x="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>
       ${i < n - 1 ? `<div class="fa-add"><button class="mini" data-add="${i + 1}">+ Zwischenstopp</button></div>` : ''}`;
@@ -14570,21 +14838,24 @@ FA.dialog = (vorgabe = {}) => {
           <label class="f full"><span>Zeitfenster (z. B. 06:30–07:15, 11:15–12:00)</span><input type="text" id="faW" value="${U.esc(S.fenster)}"></label>
           <label class="f full"><span>Transportmittel</span><select id="faT">${prj.transports.map(x => opt(x.id, x.name, S.transport)).join('')}</select></label>
           <label class="f full"><span>Name</span><input type="text" id="faName" value="${U.esc(S.name)}"></label>
+          <label class="f full"><span>Sektion</span><select id="faS">${opt('', 'automatisch (nach Material)', S.strom)}${HSS.sektionen.list(prj).map(x => opt(x.id, x.name, S.strom)).join('')}</select></label>
         </div>
-        <p class="note">${S.stops.length - 1} Etappe(n) werden als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
+        <p class="note">${S.pfad ? 'Der Fluss folgt dem gezeichneten Weg' : `${S.stops.length - 1} Etappe(n) werden`} als Flüsse mit gleicher Menge angelegt (${m ? `${U.fmt(S.menge / (m.proLadung || 1), 1)} Ladungen` : ''} je ${S.periode === 'woche' ? 'Woche' : 'Tag'}). Alles bleibt in der Flussliste änderbar.</p>`;
       $('#faM', body).onchange = e => { const old = autoName(); S.material = e.target.value; if (S.name === old || !S.name) S.name = autoName(); render(d); };
       $('#faN', body).oninput = e => (S.menge = +e.target.value || 0);
       $('#faP', body).onchange = e => (S.periode = e.target.value);
       $('#faW', body).oninput = e => (S.fenster = e.target.value);
       $('#faT', body).onchange = e => (S.transport = e.target.value);
       $('#faName', body).oninput = e => (S.name = e.target.value);
-      $('#faBack', d).hidden = false; $('#faNext', d).textContent = '✓ Fluss anlegen';
+      $('#faS', body).onchange = e => (S.strom = e.target.value);
+      $('#faBack', d).hidden = !!S.pfad; $('#faNext', d).textContent = '✓ Fluss anlegen';
       return;
     }
     $$('[data-k]', body).forEach(sel => sel.onchange = () => {
       const i = +sel.closest('.fa-stop').dataset.i, s = S.stops[i], k = sel.dataset.k;
-      if (k === 'b') { s.b = sel.value; s.ort = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
-      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; }
+      if (k === 'b') { s.b = sel.value; s.ort = ''; s.via = ''; if (s.b !== EXT) { const fl = FA.etagen(U.byId(prj.buildings, s.b)); if (!fl.includes(s.gf)) s.gf = fl.includes(0) ? 0 : fl[0]; } else s.ort = FA.orte(EXT, 0, prj)[0]?.id || ''; }
+      else if (k === 'gf') { s.gf = +sel.value; s.ort = ''; s.via = ''; }
+      else if (k === 'via') s.via = sel.value;
       else s.ort = sel.value;
       S.name = ''; render(d);
     });
@@ -14622,6 +14893,9 @@ FA.anlegen = S => {
     const n = pid.length - 1;
     for (let i = 0; i < n; i++) {
       const f = { id: U.uid('flow'), name: n > 1 ? `${S.name} · Etappe ${i + 1}/${n}` : S.name, material: S.material, von: pid[i], nach: pid[i + 1], menge: S.menge, periode: S.periode, betriebstage: 7, fenster: fenster.length ? fenster : [[8, 12]], transport: S.transport, fahrzeitMin: null, aktiv: true, kette, etappe: i + 1, etappen: n, assistent: true };
+      if (S.stops[i + 1].via) f.via = S.stops[i + 1].via;
+      if (S.strom) f.strom = S.strom;
+      if (S.pfad) { f.pfad = U.clone(S.pfad); f.gezeichnet = true; }
       p.flows.push(f); ids.push(f.id);
     }
   });
@@ -14642,6 +14916,205 @@ FA.zeigen = ids => {
   else UI.toast(`${ids.length} Fluss/Flüsse angelegt · Weg ${U.fmt(len)} m · ${U.sum(res.map(x => x.r.lifts.length))} Aufzugsfahrt(en)`, 4500);
   return res;
 };
+})();
+
+</script>
+<script>
+/* =====================================================================
+   HSS · fluss-zeichnen.js – Fluss im 3D-Bild zeichnen
+   · Klick setzt Punkte; jeder Abschnitt ist gerade und rastet in der
+     Gebäudeachse rechtwinklig ein (Alt: freie Richtung, 45°-Raster).
+   · Jeder neue Abschnitt dockt am letzten Endpunkt an; der erste Punkt
+     dockt an Räume/Orte und an Endpunkte bereits gezeichneter Flüsse an.
+   · „↕ Vertikal“ (Taste V): an dieser Stelle senkrecht zu einer anderen
+     Etage – über einen vorhandenen Aufzug/ein Treppenhaus in der Nähe
+     oder als neue Verbindung (Aufzug oder Treppe) genau hier.
+   · Enter / Doppelklick / „✓ Fertig“: Endpunkt dockt an Raum/Ort an (sonst
+     Übergabepunkt), danach Menge, Zeitfenster und Transportmittel.
+   · Rücktaste: letzten Punkt zurück · Esc: abbrechen.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, G = HSS.geo;
+const FZ = HSS.flussZeichnen = { letzterEnde: null };
+const S3 = () => HSS.s3, V = () => HSS.view, UI = () => HSS.ui;
+const r1 = v => Math.round(v * 10) / 10;
+
+// Etagen-Höhe an einer Stelle (Bauteil unter dem Punkt, sonst Gelände/Schätzung)
+const partAt = (x, z, gf) => { const prj = HSS.project(); for (const b of prj.buildings) { if (b.umgebung) continue; for (const pt of b.parts) { const f = HSS.localFloor(pt, gf, prj); if (f === null) continue; const fp = HSS.partFootprintLocal(pt), l = HSS.toLocal(pt, [x, z]); if (G.pointIn(l, fp.outer) && !fp.holes.some(h => G.pointIn(l, h))) return { pt, f }; } } return null; };
+const yAt = (x, z, gf) => { const P = partAt(x, z, gf); if (P) return HSS.floorY(P.pt, P.f); return gf === 0 ? HSS.terrainH(x, z) : gf * 3.8; };
+const axes = (x, z) => { const P = partAt(x, z, V().floor ?? 0); const r = P ? (P.pt.rot || 0) * Math.PI / 180 : 0; return [G.rot([1, 0], r), G.rot([0, 1], r)]; };
+
+FZ.start = (opt = {}) => {
+  const prj = HSS.project();
+  if (!prj.buildings.some(b => !b.umgebung)) return UI().toast('Zuerst Gebäude anlegen.');
+  if (V().floor === null || V().floor === undefined) { S3().setFloor(0); UI().toast('Etage EG gewählt – andere Etage über die Etagenleiste links', 3000); }
+  const st = { pts: [], von: null, cur: null, flow: opt.flow || null };
+  FZ.st = st;
+  bar(true);
+  S3().select(null);
+  S3().setTool({
+    name: 'flusszeichnen',
+    move(ev) { st.cur = snap(ev, st, ev.altKey); preview(st); },
+    click(ev) {
+      const c = snap(ev, st, ev.altKey); if (!c) return;
+      if (!st.pts.length && c.place) st.von = c.place;
+      st.pts.push({ x: r1(c.x), y: c.y, z: r1(c.z), gf: c.gf });
+      if (!st.pts.length) return; preview(st); info(st);
+    },
+    dbl() { FZ.fertig(); },
+    key(ev) {
+      if (ev.key === 'Enter') { FZ.fertig(); return true; }
+      if (ev.key === 'Backspace') { ev.preventDefault(); FZ.zurueck(); return true; }
+      if (ev.key.toLowerCase() === 'v') { FZ.vertikal(); return true; }
+      return false;
+    },
+    cancel() { bar(false); ghost(); UI().hint(null); FZ.st = null; }
+  });
+  info(st);
+};
+
+/* ---------- Einrasten ---------- */
+function magnets(gf) {
+  const out = [];
+  for (const p of HSS.places()) if ((p.gf ?? 0) === gf) out.push({ x: p.x, z: p.z, y: p.y, place: p.id, name: p.name, r: p.kind === 'room' ? 2.5 : 3 });
+  for (const f of HSS.project().flows) if (f.pfad?.length) for (const q of [f.pfad[0], f.pfad[f.pfad.length - 1]]) if (q.gf === gf) out.push({ x: q.x, z: q.z, y: q.y, name: 'Endpunkt „' + f.name + '“', r: 2.5, ende: true });
+  if (FZ.letzterEnde && FZ.letzterEnde.gf === gf) out.push(Object.assign({ name: 'letzter Endpunkt', r: 4, ende: true }, FZ.letzterEnde));
+  return out;
+}
+function snap(ev, st, frei) {
+  const gp = S3().groundPoint(ev); if (!gp) return null;
+  const gf = V().floor ?? 0;
+  let x = gp.x, z = gp.z, hit = null;
+  const last = st.pts[st.pts.length - 1];
+  if (last) {
+    const [eu, ev2] = axes(last.x, last.z), dx = x - last.x, dz = z - last.z;
+    let du = dx * eu[0] + dz * eu[1], dv = dx * ev2[0] + dz * ev2[1];
+    if (!frei) { if (Math.abs(du) >= Math.abs(dv)) dv = 0; else du = 0; }
+    else { const a = Math.round(Math.atan2(dv, du) / (Math.PI / 4)) * (Math.PI / 4), L = Math.hypot(du, dv); du = Math.cos(a) * L; dv = Math.sin(a) * L; }
+    du = Math.round(du * 2) / 2; dv = Math.round(dv * 2) / 2;
+    x = last.x + du * eu[0] + dv * ev2[0]; z = last.z + du * eu[1] + dv * ev2[1];
+    // Andocken an Orte/Endpunkte entlang der gewählten Richtung
+    for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
+    if (hit) { const mx = hit.x - last.x, mz = hit.z - last.z, mu = mx * eu[0] + mz * eu[1], mv = mx * ev2[0] + mz * ev2[1]; if (frei || Math.abs(mu) < 0.6 || Math.abs(mv) < 0.6) { x = hit.x; z = hit.z; } else hit = null; }
+  } else {
+    for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r * 1.6 && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
+    if (hit) { x = hit.x; z = hit.z; }
+  }
+  return { x, z, y: yAt(x, z, gf), gf, place: hit?.place || null, name: hit?.name || null, ende: !!hit?.ende };
+}
+
+/* ---------- Vorschau ---------- */
+let gGroup = null;
+function ghost() { const L = S3().layers.ghost; while (L.children.length) L.remove(L.children[0]); gGroup = null; HSS.perf?.invalidate(2); }
+function preview(st) {
+  const { THREE } = window.THREEX; ghost();
+  const L = S3().layers.ghost, ex = V().explode || 0, Y = q => q.y + 0.7 + q.gf * ex;
+  const pts = st.pts.map(q => new THREE.Vector3(q.x, Y(q), q.z));
+  if (st.cur && st.pts.length) pts.push(new THREE.Vector3(st.cur.x, Y(st.cur), st.cur.z));
+  const mat = new THREE.MeshBasicMaterial({ color: '#0A967A', depthTest: false });
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], len = a.distanceTo(b); if (len < 0.05) continue;
+    const g = new THREE.CylinderGeometry(0.22, 0.22, len, 8, 1, true); g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize())); g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+    const m = new THREE.Mesh(g, i === pts.length - 2 && st.cur ? new THREE.MeshBasicMaterial({ color: '#2D7694', depthTest: false, transparent: true, opacity: 0.7 }) : mat); m.renderOrder = 40; L.add(m);
+  }
+  for (const [i, p] of pts.entries()) { const s = new THREE.Mesh(new THREE.SphereGeometry(i === 0 ? 0.7 : 0.45, 14, 10), new THREE.MeshBasicMaterial({ color: i === 0 ? '#0A967A' : '#144477', depthTest: false })); s.position.copy(p); s.renderOrder = 41; L.add(s); }
+  if (st.cur) { const c = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.1, 24), new THREE.MeshBasicMaterial({ color: st.cur.name ? '#f2994a' : '#2D7694', depthTest: false, side: THREE.DoubleSide })); c.rotation.x = -Math.PI / 2; c.position.set(st.cur.x, Y(st.cur) - 0.6, st.cur.z); c.renderOrder = 42; L.add(c); }
+  HSS.perf?.invalidate(2);
+  const last = st.pts[st.pts.length - 1];
+  if (st.cur) UI().hint(st.cur.name ? `Andocken: <b>${U.esc(st.cur.name)}</b>` : last ? `Abschnitt ${U.fmt(Math.hypot(st.cur.x - last.x, st.cur.z - last.z), 1)} m · ${HSS.floorName(st.cur.gf)} · Alt: freie Richtung` : `Startpunkt setzen (dockt an Räume, Orte und Endpunkte an) · ${HSS.floorName(st.cur.gf)}`);
+}
+function info(st) {
+  const el = document.getElementById('fzBar'); if (!el) return;
+  const n = st.pts.length, len = U.sum(st.pts.slice(1).map((q, i) => Math.hypot(q.x - st.pts[i].x, q.z - st.pts[i].z)));
+  el.querySelector('.fzi').innerHTML = n ? `${n} Punkte · ${U.fmt(len)} m${st.von ? ' · Start angedockt' : ''}` : 'Ersten Punkt setzen';
+  el.querySelector('[data-z]').disabled = !n; el.querySelector('[data-v]').disabled = !n; el.querySelector('[data-ok]').disabled = n < 2;
+}
+
+/* ---------- Werkzeugleiste ---------- */
+function bar(on) {
+  let el = document.getElementById('fzBar');
+  if (!on) { if (el) el.hidden = true; return; }
+  if (!el) {
+    el = document.createElement('div'); el.id = 'fzBar';
+    el.innerHTML = `<b>✎ Fluss zeichnen</b><span class="fzi"></span><button data-ld title="Am Endpunkt des zuletzt gezeichneten Flusses ansetzen">↳ am letzten Endpunkt</button><button data-v title="An dieser Stelle senkrecht zu einer anderen Etage (Taste V)">↕ Vertikal …</button><button data-z title="Letzten Punkt entfernen (Rücktaste)">↶</button><button class="primary" data-ok title="Fertig (Enter oder Doppelklick)">✓ Fertig</button><button data-x title="Abbrechen (Esc)">✕</button>
+      <div class="fzh">Klick = Punkt · gerade Abschnitte rasten rechtwinklig ein · Etage über die Etagenleiste wechseln oder ↕ Vertikal</div>`;
+    document.body.appendChild(el);
+    el.querySelector('[data-v]').onclick = () => FZ.vertikal();
+    el.querySelector('[data-z]').onclick = () => FZ.zurueck();
+    el.querySelector('[data-ok]').onclick = () => FZ.fertig();
+    el.querySelector('[data-x]').onclick = () => S3().setTool(null);
+    el.querySelector('[data-ld]').onclick = () => {
+      const e = FZ.letzterEnde, st = FZ.st; if (!e || !st) return UI().toast('Noch kein Fluss gezeichnet');
+      if (V().floor !== e.gf) S3().setFloor(e.gf);
+      st.pts = [{ x: e.x, y: e.y, z: e.z, gf: e.gf }]; st.von = e.place || null; preview(st); info(st);
+    };
+  }
+  el.hidden = false; el.querySelector('[data-ld]').hidden = !FZ.letzterEnde;
+}
+FZ.zurueck = () => { const st = FZ.st; if (!st || !st.pts.length) return; st.pts.pop(); if (!st.pts.length) st.von = null; const l = st.pts[st.pts.length - 1]; if (l && l.gf !== V().floor) S3().setFloor(l.gf); preview(st); info(st); };
+
+/* ---------- Vertikal ---------- */
+FZ.vertikal = () => {
+  const st = FZ.st; if (!st || !st.pts.length) return UI().toast('Erst einen Punkt setzen');
+  const last = st.pts[st.pts.length - 1], prj = HSS.project();
+  const floors = [...new Set(HSS.allParts(prj).filter(pt => !prj.buildings.find(b => b.parts.includes(pt))?.umgebung).flatMap(pt => HSS.partFloors(pt).map(f => HSS.globalFloor(pt, f, prj))))].sort((a, b) => a - b).filter(g => g !== last.gf);
+  const near = HSS.net().lifts.filter(L => !String(L.id).startsWith('pv:') && L.stops.includes(last.gf)).map(L => ({ L, d: Math.hypot(L.x - last.x, L.z - last.z) })).filter(x => x.d < 40).sort((a, b) => a.d - b.d).slice(0, 8);
+  const $ = UI().$;
+  UI().dialog(`<div class="dh"><h2>↕ Vertikal zu einer anderen Etage</h2><button class="x" data-close>×</button></div>
+    <p class="note">Von ${HSS.floorName(last.gf)} an der aktuellen Stelle senkrecht hoch oder runter. Mit einem vorhandenen Aufzug/Treppenhaus wird der Weg bis dorthin gerade ergänzt.</p>
+    <div class="fg"><label class="f full"><span>Ziel-Etage</span><select id="fvG">${floors.map(g => `<option value="${g}" ${g === last.gf + 1 ? 'selected' : ''}>${HSS.floorName(g)}</option>`).join('')}</select></label>
+    <label class="f full"><span>Verbindung</span><select id="fvL">${near.map(x => `<option value="${x.L.id}">${x.L.role === 'treppe' ? 'Treppenhaus' : 'Aufzug'} · ${U.esc(x.L.name)} – ${U.fmt(x.d)} m entfernt (hält ${x.L.stops.map(HSS.floorName).join(', ')})</option>`).join('')}<option value="neu:aufzug" ${near.length ? '' : 'selected'}>Neue Verbindung genau hier: Aufzug</option><option value="neu:treppe">Neue Verbindung genau hier: Treppenhaus</option></select></label></div>
+    <div id="fvW"></div><div class="actions"><button class="primary" id="fvOk">Vertikal anlegen</button><button data-close>Abbrechen</button></div>`, d => {
+    const chk = () => { const g = +$('#fvG', d).value, v = $('#fvL', d).value, L = near.find(x => x.L.id === v)?.L; $('#fvW', d).innerHTML = L && !L.stops.includes(g) ? `<div class="warnbox">${U.esc(L.name)} hält nicht in ${HSS.floorName(g)} – andere Verbindung oder neue Verbindung wählen.</div>` : ''; $('#fvOk', d).disabled = !!(L && !L.stops.includes(g)); };
+    $('#fvG', d).onchange = chk; $('#fvL', d).onchange = chk; chk();
+    $('#fvOk', d).onclick = () => {
+      const g = +$('#fvG', d).value, v = $('#fvL', d).value; d.close();
+      let x = last.x, z = last.z, vert;
+      if (v.startsWith('neu:')) vert = { typ: v.slice(4) };
+      else {
+        const L = near.find(q => q.L.id === v).L; vert = { lift: L.id, typ: L.role };
+        // gerade bis zum Aufzug (rechtwinklig in der Gebäudeachse)
+        const [eu, ev] = axes(last.x, last.z), dx = L.x - last.x, dz = L.z - last.z, du = dx * eu[0] + dz * eu[1], dv = dx * ev[0] + dz * ev[1];
+        if (Math.abs(du) > 0.3 && Math.abs(dv) > 0.3) { const cx = last.x + du * eu[0], cz = last.z + du * eu[1]; st.pts.push({ x: r1(cx), y: yAt(cx, cz, last.gf), z: r1(cz), gf: last.gf }); }
+        x = L.x; z = L.z;
+        if (Math.hypot(x - last.x, z - last.z) > 0.3) st.pts.push({ x: r1(x), y: yAt(x, z, last.gf), z: r1(z), gf: last.gf });
+      }
+      st.pts[st.pts.length - 1].vertikal = vert;
+      st.pts.push({ x: r1(x), y: yAt(x, z, g), z: r1(z), gf: g, vertikal: vert });
+      S3().setFloor(g); preview(st); info(st);
+      UI().toast(`Vertikal nach ${HSS.floorName(g)} (${vert.typ === 'treppe' ? 'Treppenhaus' : 'Aufzug'}) – auf ${HSS.floorName(g)} weiterzeichnen`, 3500);
+    };
+  });
+};
+
+/* ---------- Fertig ---------- */
+FZ.fertig = () => {
+  const st = FZ.st; if (!st || st.pts.length < 2) return UI().toast('Mindestens zwei Punkte setzen');
+  const prj = HSS.project(), end = st.pts[st.pts.length - 1];
+  const hitEnd = magnets(end.gf).filter(m => m.place).map(m => Object.assign({ d: Math.hypot(m.x - end.x, m.z - end.z) }, m)).filter(m => m.d < m.r + 0.5).sort((a, b) => a.d - b.d)[0];
+  const pfad = st.pts.map(q => { const o = { x: q.x, y: q.y, z: q.z, gf: q.gf }; if (q.vertikal) o.vertikal = q.vertikal; return o; });
+  S3().setTool(null);
+  const redraw = st.flow && U.byId(prj.flows, st.flow);
+  let von = st.von, nach = hitEnd?.place || null;
+  // Start/Ziel ohne Raum: Übergabepunkt an der gezeichneten Stelle
+  if (!von || !nach) HSS.change('Übergabepunkte für gezeichneten Fluss', p => { if (!von) von = punkt(p, st.pts[0]); if (!nach) nach = punkt(p, end); }, { scope: 'objects' });
+  FZ.letzterEnde = { x: end.x, y: end.y, z: end.z, gf: end.gf, place: nach };
+  if (redraw) {
+    HSS.change('Fluss neu gezeichnet', p => { const f = U.byId(p.flows, st.flow); f.pfad = pfad; f.von = von; f.nach = nach; delete f.via; }, { scope: 'none' });
+    UI().flowSel = st.flow; UI().renderPanel(); UI().showRoute(st.flow, true); return;
+  }
+  const pl = HSS.places(), lbl = id => (pl.find(p => p.id === id)?.name || '').replace(/^Übergabepunkt /, '');
+  HSS.flussAssistent.dialog({ pfad, stops: [{ b: '__ext', ort: von, lbl: lbl(von) }, { b: '__ext', ort: nach, lbl: lbl(nach) }] });
+};
+function punkt(p, q) {
+  const P = partAt(q.x, q.z, q.gf), b = P && p.buildings.find(x => x.parts.includes(P.pt));
+  const name = `Übergabepunkt ${b ? (b.kurz || b.name) + ' ' : ''}${HSS.floorName(q.gf)}`;
+  const o = { id: U.uid('obj'), lib: 'log.uebergabepunkt', rot: 0, name, role: 'uebergabe', place: true, assistent: true };
+  if (P) { const l = HSS.toLocal(P.pt, [q.x, q.z]); Object.assign(o, { host: { part: P.pt.id, floor: P.f }, x: r1(l[0]), z: r1(l[1]) }); }
+  else Object.assign(o, { x: q.x, z: q.z });
+  p.objects.push(o); return o.id;
+}
 })();
 
 </script>
@@ -14835,6 +15308,131 @@ A.boot = () => {
 </script>
 <script>
 /* =====================================================================
+   HSS · lizenz.js – Lizenzschlüssel prüfen (Desktop-Version)
+   Ein Lizenzschlüssel enthält Kunde, Lizenznummer, Beginn, Ablauf (auf die
+   Minute genau), Anzahl Nutzer und optional die freigeschalteten Geräte.
+   Er ist mit dem privaten Schlüssel von UNITY signiert (ECDSA P-256); die
+   Suite enthält nur den öffentlichen Schlüssel und kann Schlüssel prüfen,
+   aber keine erzeugen. Erzeugt werden Schlüssel mit tools/lizenz-generator.html.
+   Pflicht ist die Lizenz in der Desktop-Version (Exe) – in exportierten
+   HTML-Ansichten nicht.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util;
+const LZ = HSS.lizenz = { aktuell: null };
+const OEFFENTLICH = { kty: 'EC', crv: 'P-256', x: 'Cu5Gbn4QB9hKHbwOy07M2lyrwzoLdzQZUgFWXwf35-o', y: 'wQUkjgKdzuX18r973mlhjw3H1ElkP9x0dQ4OD64E0eo' };
+const KEY = 'hss-lizenz', ZEIT = 'hss-lz-t';
+const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ohne Speicher */ } } };
+
+LZ.pflicht = () => !window.HSS_VIEWER && !!(window.HSS_DESKTOP || window.HSS_LIZENZ_PFLICHT || ls.get('hss-lizenz-test'));
+// Geräte-ID: in der Desktop-Version aus dem Rechner abgeleitet, sonst je Browser
+LZ.geraet = () => {
+  if (window.HSS_DESKTOP?.geraet) return window.HSS_DESKTOP.geraet;
+  let g = ls.get('hss-geraet');
+  if (!g) { const a = new Uint8Array(8); crypto.getRandomValues(a); g = [...a].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase().match(/.{4}/g).join('-'); ls.set('hss-geraet', g); }
+  return g;
+};
+const b64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+let pubKey = null;
+const pub = async () => pubKey || (pubKey = await crypto.subtle.importKey('jwk', Object.assign({ ext: true }, OEFFENTLICH), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']));
+
+// Schlüssel prüfen → { ok, grund, d (Daten), rest (ms) }
+LZ.pruefen = async (text) => {
+  const t = String(text || '').replace(/\s+/g, '');
+  const m = /^HSS1-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec(t);
+  if (!m) return { ok: false, grund: 'Das ist kein gültiger Lizenzschlüssel (Format HSS1-…).' };
+  let d;
+  try {
+    const okSig = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, await pub(), b64u(m[2]), new TextEncoder().encode(m[1]));
+    if (!okSig) return { ok: false, grund: 'Der Lizenzschlüssel ist nicht echt oder wurde verändert.' };
+    d = JSON.parse(new TextDecoder().decode(b64u(m[1])));
+  } catch (e) { return { ok: false, grund: 'Der Lizenzschlüssel ist beschädigt (' + e.message + ').' }; }
+  const jetzt = Date.now(), zuletzt = +(ls.get(ZEIT) || 0);
+  if (zuletzt && jetzt < zuletzt - 3600e3) return { ok: false, d, grund: 'Die Systemzeit liegt vor der zuletzt genutzten Zeit. Bitte Datum und Uhrzeit des Rechners prüfen.' };
+  if (d.ab && jetzt < d.ab) return { ok: false, d, grund: `Die Lizenz gilt erst ab ${new Date(d.ab).toLocaleString('de-DE')}.` };
+  if (d.bis && jetzt > d.bis) return { ok: false, d, abgelaufen: true, grund: `Die Lizenz ist am ${new Date(d.bis).toLocaleString('de-DE')} abgelaufen.` };
+  if (Array.isArray(d.g) && d.g.length && !d.g.includes(LZ.geraet())) return { ok: false, d, grund: `Dieses Gerät (${LZ.geraet()}) ist für den Schlüssel nicht freigeschaltet. Bitte die Geräte-ID an UNITY senden.` };
+  return { ok: true, d, rest: d.bis ? d.bis - jetzt : Infinity };
+};
+const restText = ms => {
+  if (ms === Infinity) return 'unbefristet';
+  const min = Math.floor(ms / 60e3), h = Math.floor(min / 60), t = Math.floor(h / 24);
+  return t >= 1 ? `${t} ${t === 1 ? 'Tag' : 'Tage'}` : h >= 1 ? `${h} Std. ${min % 60} Min.` : min < 1 ? 'unter 1 Min.' : `${min} Min.`;
+};
+LZ.restText = restText;
+
+/* ---------- Kopfzeile: Restlaufzeit ---------- */
+function badge() {
+  let b = document.getElementById('lzBadge');
+  if (!LZ.aktuell) { if (b) b.hidden = true; return; }
+  if (!b) { b = document.createElement('button'); b.id = 'lzBadge'; b.className = 'lzbadge'; b.onclick = () => LZ.info(); const s = document.getElementById('saveState'); s ? s.before(b) : document.getElementById('top')?.appendChild(b); }
+  const rest = LZ.aktuell.d.bis ? LZ.aktuell.d.bis - Date.now() : Infinity;
+  b.hidden = false; b.textContent = `Lizenz: noch ${restText(rest)}`;
+  b.title = `${LZ.aktuell.d.kunde || ''} · ${LZ.aktuell.d.n || 1} Nutzer · gültig bis ${LZ.aktuell.d.bis ? new Date(LZ.aktuell.d.bis).toLocaleString('de-DE') : 'unbefristet'}`;
+  b.classList.toggle('warn', rest < 14 * 864e5); b.classList.toggle('krit', rest < 3 * 864e5);
+}
+
+/* ---------- Sperre / Aktivierung ---------- */
+// Während der Sperre keine anderen Dialoge (Startbildschirm o. Ä.) darüber legen; danach nachholen
+let wartend = null;
+function dialogeAnhalten(an) {
+  const UI = HSS.ui; if (!UI) return;
+  if (an) { if (!UI._dialogLz) { UI._dialogLz = UI.dialog; UI.dialog = (...a) => { wartend = a; }; } const d = document.getElementById('dlg'); if (d?.open) d.close(); }
+  else if (UI._dialogLz) { UI.dialog = UI._dialogLz; delete UI._dialogLz; if (wartend) { const a = wartend; wartend = null; UI.dialog(...a); } }
+}
+function sperre(meldung) {
+  dialogeAnhalten(true);
+  let o = document.getElementById('lzLock');
+  if (!o) { o = document.createElement('div'); o.id = 'lzLock'; document.body.appendChild(o); }
+  o.hidden = false;
+  o.innerHTML = `<div class="lzbox"><img src="${document.querySelector('#top img')?.src || ''}" alt="UNITY" class="lzlogo"><h2>Healthcare Simulation Suite – Lizenz</h2>
+    <p>${meldung ? `<span class="lzerr">${U.esc(meldung)}</span>` : 'Bitte den Lizenzschlüssel eingeben, den Sie von UNITY erhalten haben.'}</p>
+    <label>Lizenzschlüssel<textarea id="lzKey" rows="4" spellcheck="false" placeholder="HSS1-…"></textarea></label>
+    <div class="lzrow"><span>Geräte-ID: <b id="lzDev">${U.esc(LZ.geraet())}</b></span><button id="lzCopy" title="Geräte-ID kopieren">kopieren</button></div>
+    <div class="lzrow"><span id="lzMsg"></span><button class="primary" id="lzGo">Aktivieren</button></div>
+    <p class="note">Ihre Projekte bleiben auf diesem Rechner gespeichert und sind nach der Aktivierung wieder verfügbar.</p></div>`;
+  o.querySelector('#lzCopy').onclick = () => navigator.clipboard?.writeText(LZ.geraet());
+  o.querySelector('#lzGo').onclick = async () => {
+    const r = await LZ.pruefen(o.querySelector('#lzKey').value);
+    if (!r.ok) { o.querySelector('#lzMsg').innerHTML = `<span class="lzerr">${U.esc(r.grund)}</span>`; return; }
+    ls.set(KEY, o.querySelector('#lzKey').value.replace(/\s+/g, '')); LZ.aktuell = r; ls.set(ZEIT, String(Date.now()));
+    o.hidden = true; dialogeAnhalten(false); badge(); HSS.ui?.toast(`Lizenz aktiviert: ${r.d.kunde || ''} · noch ${restText(r.rest)}`, 4000);
+  };
+}
+LZ.start = async () => {
+  if (!LZ.pflicht()) return true;
+  const k = ls.get(KEY);
+  const r = k ? await LZ.pruefen(k) : { ok: false, grund: '' };
+  if (!r.ok) { sperre(r.grund); return false; }
+  LZ.aktuell = r; ls.set(ZEIT, String(Math.max(Date.now(), +(ls.get(ZEIT) || 0)))); badge();
+  if (r.rest < 14 * 864e5) setTimeout(() => HSS.ui?.toast(`Hinweis: Die Lizenz läuft in ${restText(r.rest)} ab.`, 6000), 1500);
+  return true;
+};
+// laufend prüfen: Anzeige aktualisieren, bei Ablauf sperren
+setInterval(async () => {
+  if (!LZ.aktuell) return;
+  ls.set(ZEIT, String(Math.max(Date.now(), +(ls.get(ZEIT) || 0))));
+  if (LZ.aktuell.d.bis && Date.now() > LZ.aktuell.d.bis) { LZ.aktuell = null; badge(); sperre('Die Lizenz ist abgelaufen. Bitte einen neuen Lizenzschlüssel eingeben.'); return; }
+  badge();
+}, 30e3);
+LZ.info = () => {
+  const r = LZ.aktuell; if (!r) return;
+  const d = r.d, UI = HSS.ui;
+  UI.dialog(`<div class="dh"><h2>Lizenz</h2><button class="x" data-close>×</button></div>
+    <table class="t"><tr><td>Kunde</td><td><b>${U.esc(d.kunde || '–')}</b></td></tr><tr><td>Lizenz-Nr.</td><td>${U.esc(d.id || '–')}</td></tr>
+    <tr><td>Nutzer</td><td>${d.n || 1}</td></tr><tr><td>Gültig ab</td><td>${d.ab ? new Date(d.ab).toLocaleString('de-DE') : '–'}</td></tr>
+    <tr><td>Gültig bis</td><td><b>${d.bis ? new Date(d.bis).toLocaleString('de-DE') : 'unbefristet'}</b> (noch ${restText(d.bis ? d.bis - Date.now() : Infinity)})</td></tr>
+    <tr><td>Geräte-ID</td><td>${U.esc(LZ.geraet())}${Array.isArray(d.g) && d.g.length ? ` · freigeschaltet: ${d.g.length} Gerät(e)` : ''}</td></tr>${d.hinweis ? `<tr><td>Hinweis</td><td>${U.esc(d.hinweis)}</td></tr>` : ''}</table>
+    <div class="actions"><button id="lzNeu">Anderen Schlüssel eingeben …</button><button class="primary" data-close>OK</button></div>`, dl => {
+    dl.querySelector('#lzNeu').onclick = () => { dl.close(); sperre(''); const o = document.getElementById('lzLock'); const x = document.createElement('button'); x.textContent = 'Abbrechen'; x.onclick = () => { o.hidden = true; dialogeAnhalten(false); }; o.querySelector('#lzGo').before(x); };
+  });
+};
+})();
+
+</script>
+<script>
+/* =====================================================================
    HSS · app.js – Start, Kopfzeile, Projekt öffnen/speichern, Hilfe
    ===================================================================== */
 (function () {
@@ -14875,6 +15473,7 @@ function boot() {
   refreshHeader(); UI.refreshViewbar();
   $('#loading').hidden = true;
   HSS.booted = true;
+  HSS.lizenz?.start();
   const fehlt = ['gelaende', 'gebaeude', 'innen', 'bibliothek', 'station', 'fluesse', 'simulation', 'analyse'].filter(k => !UI.ws[k]);
   if (fehlt.length || HSS.loadErrors.length) {
     UI.dialog(`<div class="dh"><h2>Teile der Oberfläche wurden nicht geladen</h2><button class="x" data-close>×</button></div>

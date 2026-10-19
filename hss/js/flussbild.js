@@ -25,29 +25,9 @@ const matCache = new Map();
 const solid = (c) => { const k = 's' + c; if (!matCache.has(k)) { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.05 }); m.userData.noToon = true; matCache.set(k, m); } return matCache.get(k); };
 const tubeMat = (id, c) => { if (!famMats.has(id)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.25, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; famMats.set(id, m); } return famMats.get(id); };
 
-/* ---------- Warenströme (Familien) ---------- */
-const FAM = [
-  ['speisen', 'Speisen', '#e07b39'], ['waesche', 'Wäsche', '#3b82c4'], ['sterilgut', 'Sterilgut', '#7b5cc4'], ['arznei', 'Arzneimittel', '#1f9d7a'],
-  ['lager', 'Verbrauchsgüter', '#a07a3c'], ['betten', 'Betten', '#d1a21f'], ['abfall', 'Abfall', '#6b6f76'], ['patient', 'Patiententransport', '#d94452'],
-  ['post', 'Post & Proben', '#16a3b8'], ['personen', 'Personen', '#7b5ea7']
-];
-const MAT2FAM = { m_speisen: 'speisen', m_geschirr: 'speisen', m_waesche_r: 'waesche', m_waesche_u: 'waesche', m_steril: 'sterilgut', m_instr_u: 'sterilgut', m_arznei: 'arznei', m_modul: 'lager', m_ware: 'lager',
-  m_betten: 'betten', m_betten_r: 'betten', m_abfall: 'abfall', m_entsorgung: 'abfall', m_patient: 'patient', m_proben: 'post', m_post: 'post', m_personal: 'personen', m_besucher: 'personen' };
-FB.familien = (prj = HSS.project()) => {
-  const list = (prj.stroeme || []).map(s => ({ id: s.id, name: s.name, farbe: s.farbe || FAM.find(x => x[0] === s.id || x[1] === s.name)?.[2] || '#2D7694', tour: s.tour || [] }));
-  for (const [id, name, farbe] of FAM) if (!list.some(x => x.id === id || x.name === name)) list.push({ id, name, farbe, tour: [] });
-  return list;
-};
-FB.stromOf = (f, prj, fams) => {
-  fams = fams || FB.familien(prj);
-  if (f.strom) { const s = fams.find(x => x.id === f.strom); if (s) return s; }
-  const pre = /^([^:]+):/.exec(f.name || '')?.[1]?.trim(); if (pre) { const s = fams.find(x => x.name === pre); if (s) return s; }
-  const k = MAT2FAM[f.material]; if (k) { const s = fams.find(x => x.id === k) || fams.find(x => x.name === FAM.find(y => y[0] === k)?.[1]); if (s) return s; }
-  const m = U.byId(prj.materials, f.material);
-  let s = fams.find(x => x.id === 'mat:' + f.material);
-  if (!s) { s = { id: 'mat:' + f.material, name: m?.name || 'Sonstige', farbe: m?.farbe || '#2D7694', tour: [] }; fams.push(s); }
-  return s;
-};
+/* ---------- Warenströme = Sektionen der Flüsse (js/sektionen.js) ---------- */
+FB.familien = (prj = HSS.project()) => HSS.sektionen.list(prj);
+FB.stromOf = (f, prj, fams) => HSS.sektionen.of(f, prj, fams || FB.familien(prj));
 const isPers = s => s.id === 'personen';
 
 /* ---------- Zeitprofil: Fahrten je Stunde aus den Zeitfenstern ---------- */
@@ -68,7 +48,7 @@ function collect() {
     if (!m) continue;
     const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
     const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
-    out.push({ f, m, t, r, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
+    out.push({ f, m, t, r, pts: HSS.cleanPts ? HSS.cleanPts(r.pts) : r.pts, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
   }
   return { all: out, fams };
 }
@@ -114,10 +94,10 @@ FB.build = () => {
   // Abschnitte je Strom und Richtung zusammenfassen
   const seg = new Map();
   for (const x of vis) {
-    const ids = x.r.nodes;
-    for (let i = 0; i < x.r.pts.length - 1; i++) {
-      const k = x.s.id + '|' + ids[i] + '>' + ids[i + 1];
-      const s = seg.get(k) || { s: x.s, a: x.r.pts[i], b: x.r.pts[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
+    const P = x.pts, key = q => q.map(v => Math.round(v * 2) / 2).join(',');
+    for (let i = 0; i < P.length - 1; i++) {
+      const k = x.s.id + '|' + key(P[i]) + '>' + key(P[i + 1]);
+      const s = seg.get(k) || { s: x.s, a: P[i], b: P[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
     }
     routes.push(x);
   }
@@ -145,7 +125,7 @@ FB.build = () => {
     if (tph < 0.05) continue;
     const n = FB.hour === null ? Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2))) : Math.min(3, Math.max(1, Math.round(tph / 2)));
     const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
-    const pts = offsetPts(x.r.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
+    const pts = offsetPts(x.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
     for (let i = 0; i < n; i++) {
       const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
       movers.push({ mesh, pl, strom: x.s.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
@@ -155,6 +135,7 @@ FB.build = () => {
   emphasis();
   FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing;
   panel(); achse(); HSS.perf?.invalidate(3);
+  if (HSS.ui?.current === 'fluesse' && !HSS.ui._fbRefresh) { HSS.ui._fbRefresh = setTimeout(() => { HSS.ui._fbRefresh = null; if (!document.activeElement?.closest?.('#panel')) HSS.ui.renderPanel(); }, 50); }
 };
 // Tour: nur der gezeigte Strom kräftig
 function emphasis() {
@@ -442,7 +423,7 @@ FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.persone
 const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
 HSS.on('changed', rebuild); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
 // Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
-HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) FB.set(true); });
+HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) { FB.set(true); HSS.ui.renderPanel(); } });
 // Simulations-Zeitleiste und Tagesachse nicht übereinander
 new MutationObserver(() => { if (FB.on) achse(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
