@@ -23,7 +23,7 @@ try { FB.zoom = +(localStorage.getItem('hss-tourZoom') || 2.2) || 2.2; } catch (
 const UP = new THREE.Vector3(0, 1, 0);
 const matCache = new Map();
 const solid = (c) => { const k = 's' + c; if (!matCache.has(k)) { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.05 }); m.userData.noToon = true; matCache.set(k, m); } return matCache.get(k); };
-const tubeMat = (id, c) => { if (!famMats.has(id)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.25, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; famMats.set(id, m); } return famMats.get(id); };
+const tubeMat = (id, c) => { if (!famMats.has(id)) { const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: FB.dick ? 0.55 : 0.15, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 }); m.userData.noToon = true; famMats.set(id, m); } return famMats.get(id); };
 
 /* ---------- Warenströme = Sektionen der Flüsse (js/sektionen.js) ---------- */
 FB.familien = (prj = HSS.project()) => HSS.sektionen.list(prj);
@@ -39,7 +39,22 @@ function profil(f) {
 }
 
 /* ---------- Routen aller Flüsse ---------- */
+let cache = null, ver = 0;
+HSS.on('changed', () => { ver++; }); HSS.on('loaded', () => { ver++; });
+const routenBereit = () => !!cache && cache.net === HSS.net() && cache.ver === ver;
+// Routen schrittweise berechnen (höchstens ~30 ms am Stück), damit die Oberfläche nicht einfriert
+FB.vorbereiten = () => new Promise(res => {
+  const prj = HSS.project(), fl = prj.flows.filter(f => f.aktiv !== false); let i = 0;
+  const step = () => {
+    const t0 = performance.now();
+    while (i < fl.length && performance.now() - t0 < 30) { const f = fl[i++], m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport); if (m) HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); }
+    const el = document.getElementById('stroeme'); if (el && !el.hidden) { const n = el.querySelector('.sn'); if (n) n.textContent = `Routen werden berechnet … ${Math.round(i / Math.max(1, fl.length) * 100)} %`; }
+    if (i < fl.length) setTimeout(step, 0); else res();
+  };
+  step();
+});
 function collect() {
+  const net0 = HSS.net(); if (cache && cache.net === net0 && cache.ver === ver) return cache.res;
   const prj = HSS.project(); HSS.ensureStammdaten?.(prj);
   const fams = FB.familien(prj), out = [];
   for (const f of prj.flows) {
@@ -50,7 +65,7 @@ function collect() {
     const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
     out.push({ f, m, t, r, pts: HSS.routeAnzeige(r), s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
   }
-  return { all: out, fams };
+  const res = { all: out, fams }; cache = { net: net0, ver, res }; return res;
 }
 FB.stats = () => {
   const { all, fams } = collect(), by = new Map();
@@ -85,15 +100,20 @@ const HOEHE = { lkw: 2.2, transporter: 1.9, awt: 0.7 };
 
 FB.build = () => {
   if (!layer) { layer = new THREE.Group(); layer.name = 'flows'; S3.scene.add(layer); S3.layers.flows = layer; }
+  // Routen noch nicht berechnet: im Hintergrund rechnen, bisheriges Bild so lange stehen lassen
+  if (FB.on && !routenBereit()) { if (!FB._prep) { FB._prep = true; FB.vorbereiten().then(() => { FB._prep = false; collect(); FB.build(); }); } return; }
   while (layer.children.length) layer.remove(layer.children[0]);
-  movers = []; routes = [];
+  movers = []; routes = []; inst = {};
   if (!FB.on) { panel(); achse(); HSS.perf?.invalidate(2); return; }
   const { all, fams } = collect();
   const used = fams.filter(s => all.some(x => x.s === s));
   const laneOf = new Map(used.map((s, i) => [s.id, (i - (used.length - 1) / 2) * 0.95]));
   const vis = all.filter(x => aktiv(x.s));
   const maxTrips = Math.max(1, ...vis.map(x => x.trips));
-  const rad = trips => 0.3 + 0.55 * Math.sqrt(trips / maxTrips);
+  // normal schlank; während der Simulation (Abspielen, Stunde gewählt, Tour, Tagesablauf) kräftig und leuchtend
+  FB.dick = !!(FB.playing || FB.hour !== null || FB.tour || HSS.player?.playing);
+  const rad = trips => FB.dick ? 0.3 + 0.55 * Math.sqrt(trips / maxTrips) : 0.13 + 0.27 * Math.sqrt(trips / maxTrips);
+  for (const m of famMats.values()) m.emissiveIntensity = FB.dick ? 0.55 : 0.15;
   // Abschnitte je Strom und Richtung zusammenfassen
   const seg = new Map();
   for (const x of vis) {
@@ -132,10 +152,20 @@ FB.build = () => {
     const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
     if (!x.pts.some(q => FB.gfSichtbar(q[3]))) continue;
     const pts = offsetPts(x.pts.map(exY), lane, 0); const pl = poly(pts); pl.gf = x.pts.map(q => q[3]); if (pl.L < 4) continue;
+    const k = art(x);
     for (let i = 0; i < n; i++) {
-      const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
-      movers.push({ mesh, pl, strom: x.s.id, flow: x.f.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 11 : x.mittel === 'awt' ? 4 : 5, lift: h });
+      const mv = { pl, strom: x.s.id, flow: x.f.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 11 : x.mittel === 'awt' ? 4 : 5, lift: h };
+      if (k === 'lkw') { mv.mesh = moverMesh(x); layer.add(mv.mesh); } else { mv.k = k; mv.farbe = x.s.farbe || x.m.farbe || '#2D7694'; }
+      movers.push(mv);
     }
+  }
+  // Wagen, Betten und Personen als Instanzen: ein Zeichenaufruf je Art statt Hunderter
+  inst = {};
+  for (const k of ['wagen', 'bett', 'person']) {
+    const list = movers.filter(m => m.k === k); if (!list.length) continue;
+    const im = new THREE.InstancedMesh(INST_GEO[k], INST_MAT, list.length); im.frustumCulled = false; im.raycast = () => {};
+    const c = new THREE.Color(); list.forEach((m, i) => { m.idx = i; m.im = im; im.setColorAt(i, c.set(m.farbe)); });
+    im.instanceColor.needsUpdate = true; layer.add(im); inst[k] = im;
   }
   if (FB.tour) tourGeo();
   emphasis(); hilite(); if (FB.sel && !U.byId(HSS.project().flows, FB.sel)) FB.sel = null; karte2();
@@ -146,7 +176,7 @@ FB.build = () => {
 // Tour: nur der gezeigte Strom kräftig
 function emphasis() {
   for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom && !FB.tour.flows ? 0.95 : 0.07) : FB.sel ? 0.18 : 0.92; m.depthWrite = m.opacity > 0.5; }
-  for (const mv of movers) { mv.aus = !!((FB.tour && (FB.tour.flows ? !FB.tour.flows.has(mv.flow) : mv.strom !== FB.tour.strom)) || (FB.sel && mv.flow !== FB.sel)); mv.mesh.visible = !mv.aus; }
+  for (const mv of movers) { mv.aus = !!((FB.tour && (FB.tour.flows ? !FB.tour.flows.has(mv.flow) : mv.strom !== FB.tour.strom)) || (FB.sel && mv.flow !== FB.sel)); if (mv.mesh) mv.mesh.visible = !mv.aus; else if (mv.aus && mv.im) { _o.scale.setScalar(0); _o.updateMatrix(); mv.im.setMatrixAt(mv.idx, _o.matrix); mv.im.instanceMatrix.needsUpdate = true; } }
   HSS.perf?.invalidate(2);
 }
 
@@ -165,6 +195,11 @@ function truck() {
   return g;
 }
 const capsGeo = new THREE.CapsuleGeometry(0.28, 1.0, 4, 8);
+let inst = {};
+const art = x => x.mittel === 'lkw' || x.mittel === 'transporter' ? 'lkw' : x.m.reinheit === 'person' ? 'person' : (x.m.reinheit === 'patient' || x.mittel === 'bett' || x.s.id === 'betten') ? 'bett' : 'wagen';
+const INST_GEO = { wagen: new THREE.BoxGeometry(1.4, 1.1, 1.3).translate(0, 0.75, 0), bett: new THREE.BoxGeometry(2.3, 0.7, 1.1).translate(0, 0.7, 0), person: new THREE.CapsuleGeometry(0.3, 1.0, 4, 8).translate(0, 0.85, 0) };
+const INST_MAT = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.6, metalness: 0.05 }); INST_MAT.userData.noToon = true;
+const _o = new THREE.Object3D();
 function moverMesh(x) {
   if (x.mittel === 'lkw' || x.mittel === 'transporter') { const t = truck(); if (x.mittel === 'transporter') t.scale.setScalar(0.7); return t; }
   const c = x.s.farbe || x.m.farbe || '#2D7694';
@@ -192,10 +227,12 @@ HSS.on('frame', dt => {
     if (mv.aus) continue;
     const s = ((T * mv.speed / mv.pl.L) + mv.phase) % 1;
     at(mv.pl, s * mv.pl.L, _p); const gi = at.i ?? 1; at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
-    mv.mesh.visible = FB.gfSichtbar(mv.pl.gf[gi]) || FB.gfSichtbar(mv.pl.gf[gi - 1]);
-    mv.mesh.position.copy(_p);
-    const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.mesh.rotation.y = -Math.atan2(dz, dx);
+    const vis = FB.gfSichtbar(mv.pl.gf[gi]) || FB.gfSichtbar(mv.pl.gf[gi - 1]);
+    const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.rot = -Math.atan2(dz, dx);
+    if (mv.mesh) { mv.mesh.visible = vis; mv.mesh.position.copy(_p); mv.mesh.rotation.y = mv.rot || 0; }
+    else { _o.position.copy(_p); _o.rotation.set(0, mv.rot || 0, 0); _o.scale.setScalar(vis ? 1 : 0); _o.updateMatrix(); mv.im.setMatrixAt(mv.idx, _o.matrix); }
   }
+  for (const im of Object.values(inst)) im.instanceMatrix.needsUpdate = true;
 });
 
 /* ---------- Panel „Warenströme“ ---------- */
@@ -379,6 +416,7 @@ FB.stopTour = () => {
   FB.tour = null; hilite(); tourG.visible = false; S3.controls.enabled = true; const pe = document.getElementById('tourPos'); if (pe) pe.hidden = true;
   const c = document.getElementById('stTour'); if (c) c.hidden = true;
   emphasis(); FB.animating = (FB.move && movers.length > 0) || FB.playing;
+  if (FB.on) setTimeout(() => FB.build(), 0);
 };
 function karte() {
   let c = document.getElementById('stTour');
@@ -429,7 +467,7 @@ function updateTour(dt) {
   const c = document.getElementById('stTour'); if (c) c.querySelector('.bar i').style.width = `${(t.s / (t.pl.L || 1)) * 100}%`;
   HSS.perf?.invalidate(1);
 }
-window.addEventListener('keydown', e => { if (e.key === 'Escape' && FB.tour && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) FB.stopTour(); });
+window.addEventListener('keydown', e => { if (e.key !== 'Escape' || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) return; if (FB.tour) FB.stopTour(); else if (FB.sel) FB.waehle(null); });
 let wheelOn = false;
 const wheel = () => { if (wheelOn || !S3.renderer) return; wheelOn = true; S3.renderer.domElement.addEventListener('wheel', ev => { if (!FB.tour) return; ev.preventDefault(); ev.stopImmediatePropagation(); setZoom(FB.zoom * (ev.deltaY > 0 ? 1.12 : 1 / 1.12)); }, { passive: false, capture: true }); };
 
@@ -478,10 +516,20 @@ FB.waehle = (fid) => { FB.sel = fid; emphasis(); hilite(); karte2(); };
   const vp = document.getElementById('viewport'); if (!vp) return;
   let dn = null;
   vp.addEventListener('pointerdown', e => { dn = e.button === 0 ? [e.clientX, e.clientY] : null; }, true);
+  // Überfahren: Flussname und Menge als Hinweis
+  let tT = 0;
+  vp.addEventListener('pointermove', e => {
+    if (!FB.on || FB.tour || S3.tool || e.buttons || e.target !== S3.renderer.domElement) { S3._tipFluss = false; return; }
+    const now = performance.now(); if (now - tT < 120) return; tT = now;
+    const f = FB.pick(e), tip = HSS.ui?.tipEl; S3._tipFluss = !!f; if (!f || !tip) return;
+    const prj = HSS.project(), m = U.byId(prj.materials, f.material), sk = FB.stromOf(f, prj);
+    tip.innerHTML = `<b style="color:${U.esc(sk.farbe)}">●</b> <b>${U.esc(f.name)}</b><div class="s">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · anklicken für Stationen</div>`;
+    tip.hidden = false; tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 12) + 'px'; S3.renderer.domElement.style.cursor = 'pointer';
+  }, true);
   vp.addEventListener('pointerup', e => {
     if (!FB.on || FB.tour || S3.tool || !dn || Math.hypot(e.clientX - dn[0], e.clientY - dn[1]) > 5 || e.target !== S3.renderer.domElement) return;
     const f = FB.pick(e);
-    if (f) { e.stopPropagation(); FB.waehle(f.id); }
+    if (f) { S3._klickVerbraucht = true; FB.waehle(f.id); }
     else if (FB.sel) FB.waehle(null);
   }, true);
 })();
@@ -573,12 +621,14 @@ FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.persone
 // Projekt- oder Netzänderungen: neu aufbauen (verzögert)
 const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
 HSS.on('changed', rebuild);
+HSS.on('simplay', () => { if (FB.on) FB.build(); });
 let lastView = '';
 HSS.on('view', () => { const k = V.floor + '|' + V.explode; if (k !== lastView) { lastView = k; if (FB.on) FB.build(); } }); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
 // Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
 HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) { FB.set(true); HSS.ui.renderPanel(); } });
 // Simulations-Zeitleiste und Tagesachse nicht übereinander
-new MutationObserver(() => { if (FB.on) achse(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+let tlAn = document.body.classList.contains('timeline');
+new MutationObserver(() => { const a = document.body.classList.contains('timeline'); if (a !== tlAn) { tlAn = a; if (FB.on) achse(); } }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 (() => {
   const vb = document.getElementById('vM2');

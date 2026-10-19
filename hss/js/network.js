@@ -55,7 +55,12 @@ HSS.objWorld = (o, prj = HSS.project()) => {
 /* ---------- Netzaufbau ---------- */
 let NET = null;
 HSS.invalidateNet = () => { NET = null; };
-HSS.on('changed', () => { NET = null; });
+// Änderungen nur an Flüssen/Material/Fuhrpark: Netz behalten, nur festgelegte Wege nachziehen
+const NUR_FLUSS = /^(Fluss|Material|Sektion|Zeitfenster|Gezeichneten|Fuhrpark|Transport|Standardflüsse|Regel|Fahrzeug|Kapazität|Betrieb)/;
+HSS.on('changed', e => {
+  if (NET && e && e.scope === 'none' && NUR_FLUSS.test(e.label || '')) { const alt = NET.fixedSig; fixedRoutes(NET, HSS.project()); if (NET.fixedSig !== alt) NET.cache.clear(); return; }
+  NET = null;
+});
 
 HSS.net = () => NET || (NET = buildNet(HSS.project()));
 // Haltegeschosse eines Aufzugs/Treppenhauses ohne das ganze Wegenetz zu berechnen (für die Darstellung)
@@ -70,7 +75,44 @@ HSS.liftStops = (o, prj = HSS.project()) => {
   return { stops: stops.sort((a, b) => a - b), x: wpos[0], z: wpos[1] };
 };
 
+/* Festgelegte Wege (gezeichnet / über Aufzug) – auch ohne Neuaufbau des ganzen Netzes aktualisierbar */
+function fixedRoutes(net, prj) {
+  /* 8. Festgelegte Wege einzelner Flüsse: „über Aufzug/Treppe X“ oder von Hand gezeichneter Pfad */
+  for (const id of [...net.nodes.keys()]) if (net.nodes.get(id).pfad) { net.nodes.delete(id); net.adj.delete(id); }
+  net.lifts = net.lifts.filter(L => !String(L.id).startsWith('pv:'));
+  const nodes = net.nodes, lifts = net.lifts, placeNode = net.placeNode, places = net.places, parts = net.ownParts;
+  const addNode = (id, x, y, z, info = {}) => { if (!nodes.has(id)) { nodes.set(id, Object.assign({ id, x, y, z }, info)); net.adj.set(id, []); } return id; };
+  const fixed = new Map(), placeGf = new Map(places.map(p => [p.id, p.gf ?? 0])), sig = [];
+  for (const f of prj.flows || []) {
+    if (!placeNode.has(f.von) || !placeNode.has(f.nach)) continue;
+    const key = f.von + '|' + f.nach;
+    if (f.pfad || f.via) sig.push(key + ':' + (f.via || '') + ':' + JSON.stringify(f.pfad || ''));
+    if (Array.isArray(f.pfad) && f.pfad.length >= 2) {
+      const ids = [placeNode.get(f.von)], es = [];
+      f.pfad.forEach((q, i) => ids.push(addNode(`P:${f.id}:${i}`, q.x, q.y, q.z, { gf: q.gf ?? 0, pfad: f.id })));
+      ids.push(placeNode.get(f.nach));
+      for (let i = 0; i < ids.length - 1; i++) {
+        const A = nodes.get(ids[i]), B = nodes.get(ids[i + 1]), q = f.pfad[i - 1] ? f.pfad[i] : null;
+        const vert = i > 0 && i < ids.length - 2 && A.gf !== B.gf;
+        let type = i === 0 || i === ids.length - 2 ? 'anbindung' : 'flur', lift = null;
+        if (vert) {
+          const want = f.pfad[i].vertikal || f.pfad[i - 1]?.vertikal || {}, real = want.lift && lifts.find(L => L.id === want.lift);
+          type = (real ? real.role : want.typ) === 'treppe' ? 'treppe' : 'aufzug';
+          if (real) lift = real.id;
+          else { lift = `pv:${f.id}:${i}`; lifts.push({ id: lift, name: type === 'treppe' ? 'Treppenhaus (gezeichnet)' : 'Vertikalverbindung (gezeichnet)', role: type, cfg: { typ: 'lasten', kabinen: 1, sekProGeschoss: 5, tuerS: 12, kapazitaet: 1, freigabe: ['*'] }, stops: [A.gf, B.gf].sort((a, b) => a - b), x: A.x, z: A.z, obj: { name: 'gezeichnet' } }); }
+        } else if (i > 0 && i < ids.length - 2 && A.gf === 0 && !parts.some(pt => { const fl = HSS.localFloor(pt, 0, prj); return fl !== null && G.pointIn(HSS.toLocal(pt, [(A.x + B.x) / 2, (A.z + B.z) / 2]), HSS.partFootprintLocal(pt).outer); })) type = 'weg';
+        const len = type === 'treppe' ? Math.abs(B.y - A.y) * 2.2 + 6 : Math.abs(B.y - A.y) > 0.5 && type === 'aufzug' ? Math.abs(B.y - A.y) : Math.hypot(A.x - B.x, A.z - B.z);
+        es.push({ id: `pe:${f.id}:${i}`, a: ids[i], b: ids[i + 1], type, len, lift, pfad: f.id, gfa: A.gf, gfb: B.gf });
+      }
+      fixed.set(key, { pfad: f.id, nodes: ids, edges: es });
+    } else if (f.via) fixed.set(key, { via: f.via, gfA: placeGf.get(f.von), gfB: placeGf.get(f.nach) });
+  }
+  net.fixed = fixed; net.fixedSig = sig.join('#');
+}
 function buildNet(prj) {
+  // Umgebungsgebäude (OpenStreetMap) gehören nicht ins Wegenetz – das spart bei großen Standorten Sekunden
+  const own = prj.buildings.filter(b => !b.umgebung);
+  const fpCache = new Map(), FP = pt => { let f = fpCache.get(pt.id); if (!f) { const o = HSS.partFootprint(pt).outer; f = { o, bb: G.bbox(o) }; fpCache.set(pt.id, f); } return f; };
   const nodes = new Map(), adj = new Map(), edges = [];
   const addNode = (id, x, y, z, info = {}) => { if (!nodes.has(id)) { nodes.set(id, Object.assign({ id, x, y, z }, info)); adj.set(id, []); } return id; };
   const addEdge = (a, b, type, info = {}) => {
@@ -99,11 +141,14 @@ function buildNet(prj) {
     }
   }
   // Wegeverknüpfung: nahe Knoten verschiedener Wege verbinden (Kreuzungen, Einmündungen)
+  const grid = new Map(), gk = (x, z) => Math.floor(x / 8) + '|' + Math.floor(z / 8);
+  for (const id of pathNodes) { const n = nodes.get(id), k = gk(n.x, n.z); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(id); }
+  const nahe = n => { const gx = Math.floor(n.x / 8), gz = Math.floor(n.z / 8), out = []; for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) { const c = grid.get((gx + dx) + '|' + (gz + dz)); if (c) out.push(...c); } return out; };
   for (let i = 0; i < pathNodes.length; i++) {
     const A = nodes.get(pathNodes[i]);
     let best = null, bd = 7.5;
-    for (let j = 0; j < pathNodes.length; j++) {
-      const B = nodes.get(pathNodes[j]); if (B.path === A.path) continue;
+    for (const bid of nahe(A)) {
+      const B = nodes.get(bid); if (B.path === A.path) continue;
       const d = Math.hypot(A.x - B.x, A.z - B.z); if (d < bd && Math.abs(A.y - B.y) < 1.2) { bd = d; best = B.id; }
     }
     if (best) { const B = nodes.get(best); const t = (A.kind === 'awt' || B.kind === 'awt') ? (A.kind === B.kind ? 'awt' : null) : (['tunnel'].includes(A.kind) || ['tunnel'].includes(B.kind)) ? 'tunnel' : (A.kind === 'strasse' || B.kind === 'strasse') ? (A.kind === B.kind ? 'strasse' : 'zufahrt') : A.kind; if (t) addEdge(A.id, best, t, {}); }
@@ -130,7 +175,7 @@ function buildNet(prj) {
   }
 
   /* 2. Geschossnetze je Bauteil */
-  for (const b of prj.buildings) for (const pt of b.parts) {
+  for (const b of own) for (const pt of b.parts) {
     const fp = HSS.partFootprintLocal(pt), bb = G.bbox(fp.outer), area = HSS.partArea(pt);
     const inside = (x, z) => G.pointIn([x, z], fp.outer) && !fp.holes.some(h => G.pointIn([x, z], h));
     for (const f of HSS.partFloors(pt)) {
@@ -175,8 +220,8 @@ function buildNet(prj) {
   }
 
   /* 3. Eingänge: Geschosse auf Höhe eines Weges mit dem nächsten Wegknoten verbinden */
-  for (const b of prj.buildings) for (const pt of b.parts) {
-    const outer = HSS.partFootprint(pt).outer;
+  for (const b of own) for (const pt of b.parts) {
+    const outer = FP(pt).o;
     for (const f of HSS.partFloors(pt)) {
       const ids = floorNodes.get(pt.id + '|' + f); if (!ids?.length) continue;
       const y = HSS.floorY(pt, f, prj);
@@ -202,10 +247,11 @@ function buildNet(prj) {
   }
 
   /* 4. Benachbarte Bauteile auf gleicher Ebene verbinden */
-  const parts = HSS.allParts(prj);
+  const parts = own.flatMap(b => b.parts);
   for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) {
-    const A = parts[i], B = parts[j];
-    const fa = HSS.partFootprint(A).outer, fb = HSS.partFootprint(B).outer;
+    const A = parts[i], B = parts[j], FA = FP(A), FB = FP(B);
+    if (FA.bb.x0 > FB.bb.x1 + 2 || FB.bb.x0 > FA.bb.x1 + 2 || FA.bb.z0 > FB.bb.z1 + 2 || FB.bb.z0 > FA.bb.z1 + 2) continue;
+    const fa = FA.o, fb = FB.o;
     let bd = Infinity, pa = null, pb = null;
     for (const p of fa) for (let k = 0; k < fb.length; k++) { const c = G.closestOnSeg(p, fb[k], fb[(k + 1) % fb.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = p; pb = c.pt; } }
     for (const p of fb) for (let k = 0; k < fa.length; k++) { const c = G.closestOnSeg(p, fa[k], fa[(k + 1) % fa.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = c.pt; pb = p; } }
@@ -281,41 +327,19 @@ function buildNet(prj) {
     const id = `L:${L.id}@${L.stops[0]}`, n = nodes.get(id);
     const near = nearestIn(pathNodes.filter(p => nodes.get(p).kind === 'awt'), n.x, n.z, n.y); if (near && near.d < 30) addEdge(id, near.id, 'awt', {});
   }
-  /* 8. Festgelegte Wege einzelner Flüsse: „über Aufzug/Treppe X“ oder von Hand gezeichneter Pfad */
-  const fixed = new Map(), placeGf = new Map(places.map(p => [p.id, p.gf ?? 0]));
-  for (const f of prj.flows || []) {
-    if (!placeNode.has(f.von) || !placeNode.has(f.nach)) continue;
-    const key = f.von + '|' + f.nach;
-    if (Array.isArray(f.pfad) && f.pfad.length >= 2) {
-      const ids = [placeNode.get(f.von)], es = [];
-      f.pfad.forEach((q, i) => ids.push(addNode(`P:${f.id}:${i}`, q.x, q.y, q.z, { gf: q.gf ?? 0, pfad: f.id })));
-      ids.push(placeNode.get(f.nach));
-      for (let i = 0; i < ids.length - 1; i++) {
-        const A = nodes.get(ids[i]), B = nodes.get(ids[i + 1]), q = f.pfad[i - 1] ? f.pfad[i] : null;
-        const vert = i > 0 && i < ids.length - 2 && A.gf !== B.gf;
-        let type = i === 0 || i === ids.length - 2 ? 'anbindung' : 'flur', lift = null;
-        if (vert) {
-          const want = f.pfad[i].vertikal || f.pfad[i - 1]?.vertikal || {}, real = want.lift && lifts.find(L => L.id === want.lift);
-          type = (real ? real.role : want.typ) === 'treppe' ? 'treppe' : 'aufzug';
-          if (real) lift = real.id;
-          else { lift = `pv:${f.id}:${i}`; lifts.push({ id: lift, name: type === 'treppe' ? 'Treppenhaus (gezeichnet)' : 'Vertikalverbindung (gezeichnet)', role: type, cfg: { typ: 'lasten', kabinen: 1, sekProGeschoss: 5, tuerS: 12, kapazitaet: 1, freigabe: ['*'] }, stops: [A.gf, B.gf].sort((a, b) => a - b), x: A.x, z: A.z, obj: { name: 'gezeichnet' } }); }
-        } else if (i > 0 && i < ids.length - 2 && A.gf === 0 && !HSS.allParts(prj).some(pt => { const fl = HSS.localFloor(pt, 0, prj); return fl !== null && G.pointIn(HSS.toLocal(pt, [(A.x + B.x) / 2, (A.z + B.z) / 2]), HSS.partFootprintLocal(pt).outer); })) type = 'weg';
-        const len = type === 'treppe' ? Math.abs(B.y - A.y) * 2.2 + 6 : Math.abs(B.y - A.y) > 0.5 && type === 'aufzug' ? Math.abs(B.y - A.y) : Math.hypot(A.x - B.x, A.z - B.z);
-        es.push({ id: `pe:${f.id}:${i}`, a: ids[i], b: ids[i + 1], type, len, lift, pfad: f.id, gfa: A.gf, gfb: B.gf });
-      }
-      fixed.set(key, { pfad: f.id, nodes: ids, edges: es });
-    } else if (f.via) fixed.set(key, { via: f.via, gfA: placeGf.get(f.von), gfB: placeGf.get(f.nach) });
-  }
-  return { nodes, adj, edges, lifts, places, placeNode, floorNodes, fixed, cache: new Map() };
+  const net = { nodes, adj, edges, lifts, places, placeNode, floorNodes, ownParts: parts, cache: new Map() };
+  fixedRoutes(net, prj);
+  return net;
 }
 
 /* ---------- Routing ---------- */
 // mittel: Schlüssel aus HSS.MITTEL; klasse: 'rein' | 'unrein' | 'person' | 'patient' | 'neutral'
+const liftOf = (net, id) => { if (!net.liftMap || net.liftMap._n !== net.lifts) { net.liftMap = new Map(net.lifts.map(l => [l.id, l])); net.liftMap._n = net.lifts; } return net.liftMap.get(id); };
 HSS.edgeAllowed = (e, mittel, klasse, net) => {
   const M = HSS.MITTEL[mittel] || HSS.MITTEL.hand;
   if (!M.kanten.includes(e.type)) return false;
   if (e.type === 'aufzug') {
-    const L = net.lifts.find(l => l.id === e.lift); if (!L) return false;
+    const L = liftOf(net, e.lift); if (!L) return false;
     const fr = L.cfg.freigabe || ['*'];
     if (M.liftTyp && !M.liftTyp.includes(L.cfg.typ)) return false;
     if (mittel === 'awt') return L.cfg.typ === 'awt';
@@ -339,7 +363,7 @@ function dijk(net, s, t, mittel, klasse, allow, only) {
       if (only ? e.lift !== only : !(allow && e.lift === allow) && !HSS.edgeAllowed(e, mittel, klasse, net)) continue;
       const v = e.a === u ? e.b : e.a;
       let c = e.len / M.v / 60;
-      if (e.type === 'aufzug') { const L = net.lifts.find(l => l.id === e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
+      if (e.type === 'aufzug') { const L = liftOf(net, e.lift); c = (L.cfg.sekProGeschoss / 60) + (L.cfg.tuerS / 60) + LIFT_WAIT_EST / 2; }
       if (e.type === 'treppe') c = e.len / 0.6 / 60;
       const nd = d + c;
       if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, { u, e }); h.push([nd, v]); }

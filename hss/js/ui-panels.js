@@ -227,7 +227,6 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     <div class="fg tf">${UI.fNum('Neigung', 'tilt.pct', t.tilt?.pct ?? 0, { unit: '%', step: 0.5 })}${UI.fNum('Gefällerichtung', 'tilt.dir', t.tilt?.dir ?? 0, { unit: '°', step: 15 })}${UI.fNum('Geländegröße', 'size', t.size, { unit: 'm', step: 50, min: 200 })}${UI.fCol('Farbe', 'color', t.color)}</div>
     <div class="row"><button id="gHill">+ Geländepunkt (Kuppe/Mulde/Plateau)</button></div>
     ${t.hills.length ? `<div class="list" style="margin-top:6px">${t.hills.map((h, i) => `<div class="li" data-hill="${i}"><span class="t">${h.plateau ? 'Plateau' : h.h >= 0 ? 'Kuppe' : 'Mulde'} ${U.fmt(h.h, 1)} m · r ${U.fmt(h.r)} m</span></div>`).join('')}</div>` : ''}
-    <h3>Externe Orte</h3><p class="note">Lieferanten, externe Wäscherei oder Entsorger als Start/Ziel für LKW-Touren.</p><button id="gExt">+ Externen Ort setzen</button>
     <h3>Vorhandene Wege (${prj.paths.length})</h3><div class="list">${prj.paths.map(p => `<div class="li" data-sel="path:${p.id}"><span class="sw" style="background:${HSS.WEGARTEN[p.kind]?.color}"></span><span class="t">${U.esc(p.name)}</span><span class="s">${U.fmt(HSS.pathStats(p).len)} m</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>
     <h3>Flächen (${prj.areas.length})</h3><div class="list">${prj.areas.map(a => `<div class="li" data-sel="area:${a.id}"><span class="t">${HSS.FLAECHEN[a.kind]}</span><span class="s">${U.fmt(a.w * a.d)} m²${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' St.' : ''}</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
     $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gOsm', el).onclick = () => HSS.osm.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
@@ -235,7 +234,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     $$('[data-area]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.area); HSS.manip?.dragFrom(b, () => T.placeArea(b.dataset.area)); });
     $$('[data-cat]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.cat; UI.setWS('bibliothek'); });
     UI.bind($('.tf', el), prj => prj.terrain, 'Gelände', 'all');
-    $('#gHill', el).onclick = T.hill; $('#gExt', el).onclick = T.externalPlace;
+    $('#gHill', el).onclick = T.hill;
     $$('[data-hill]', el).forEach(li => li.onclick = () => HSS.s3.select({ kind: 'hill', idx: +li.dataset.hill, id: 'hill' + li.dataset.hill }, { focus: true }));
     selLinks(el);
   } };
@@ -599,13 +598,9 @@ FT.regeln = (el, prj) => {
 FT.orte = (el, prj) => {
   const pl = HSS.places();
   el.innerHTML = `<p class="note">Orte sind Räume (mit Raumart/Rolle) und Objekte mit Logistik-Rolle. Rollen weisen Sie im Inspektor zu; Standardflüsse finden ihre Quellen und Ziele darüber.</p>
-  <h3>Zentrale Rollen</h3><table class="t">${Object.entries(HSS.ROLLEN).map(([k, n]) => { const found = pl.filter(p => p.role === k); return `<tr><td>${found.length ? '<span class="amp g"></span>' : '<span class="amp y"></span>'}${U.esc(n)}</td><td class="note">${found.map(p => `<a href="#" data-go="${p.id}">${U.esc(p.name)}</a>`).join('<br>') || 'nicht zugewiesen'}</td></tr>`; }).join('')}</table>
-  <h3>Externe Orte (${prj.places.length})</h3>${prj.places.map((p, i) => `<div class="box ex" data-i="${i}"><div class="fg"><label class="f full"><span>Name</span><input type="text" data-k="name" value="${U.esc(p.name)}"></label><label class="f"><span>Entfernung (Anfahrt) [km]</span><input type="number" data-k="anfahrtM" value="${(p.anfahrtM || 0) / 1000}" step="0.5"></label><label class="f"><span>&nbsp;</span><button class="mini danger" data-xd="${i}">entfernen</button></label></div></div>`).join('')}
-  <button id="oExt">+ Externen Ort setzen</button>`;
+  <h3>Zentrale Orte</h3><table class="t">${Object.entries(HSS.ROLLEN).map(([k, n]) => { const found = pl.filter(p => p.role === k); return `<tr><td>${found.length ? '<span class="amp g"></span>' : '<span class="amp y"></span>'}${U.esc(n)}</td><td class="note">${found.map(p => `<a href="#" data-go="${p.id}">${U.esc(p.name)}</a>`).join('<br>') || 'nicht zugewiesen'}</td></tr>`; }).join('')}</table>
+`;
   $$('[data-go]', el).forEach(a => a.onclick = e => { e.preventDefault(); const p = pl.find(x => x.id === a.dataset.go); if (p.kind === 'room') { HSS.s3.setFloor(p.gf); HSS.s3.select({ kind: 'room', id: p.id, part: p.part, floor: p.floor }, { focus: true }); } else if (p.kind === 'object') { if (p.part) HSS.s3.setFloor(p.gf); HSS.s3.select({ kind: 'object', id: p.id }, { focus: true }); } });
-  $$('.ex [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('.ex').dataset.i, k = i.dataset.k; const v = k === 'anfahrtM' ? +i.value * 1000 : i.value; HSS.change('Externer Ort', p => (p.places[idx][k] = v), { scope: 'none' }); });
-  $$('[data-xd]', el).forEach(b => b.onclick = () => { HSS.change('Externer Ort entfernen', p => p.places.splice(+b.dataset.xd, 1), { scope: 'none' }); UI.renderPanel(); });
-  $('#oExt', el).onclick = T.externalPlace;
 };
 
 /* Rechenschritte und Quellen */

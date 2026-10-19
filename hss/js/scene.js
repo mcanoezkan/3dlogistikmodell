@@ -115,17 +115,21 @@ S3.rebuild = (scope = 'all') => {
   const prj = HSS.project(), L = S3.layers;
   if (scope === 'objects') { buildObjects(); collectPickables(); S3.showSelection(); HSS.emit('rebuilt'); return; }
   S3.groups.clear();
+  // Umgebung (OpenStreetMap-Bebauung, Straßen, Flächen) reduzieren: alle / nur nah am Campus / aus
+  const umg = V.umgebung || 'alle'; let nah = null;
+  if (umg === 'nah') { let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity; for (const b of prj.buildings) if (!b.umgebung) for (const pt of b.parts) { x0 = Math.min(x0, pt.x); x1 = Math.max(x1, pt.x); z0 = Math.min(z0, pt.z); z1 = Math.max(z1, pt.z); } nah = isFinite(x0) ? [x0 - 140, z0 - 140, x1 + 140, z1 + 140] : null; }
+  const zeig = (u, x, z) => !u || umg === 'alle' || (umg === 'nah' && (!nah || (x >= nah[0] && x <= nah[2] && z >= nah[1] && z <= nah[3])));
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
-  const tkey = JSON.stringify(prj.terrain) + '|' + V.explode + '|' + (V.floor !== null && V.floor < 0 ? 'ug' : 'og') + '|' + V.shell;
+  const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor !== null && V.floor < 0 ? 'ug' : 'og') + '|' + V.shell;
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
   if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
-    clear(L.paths); for (const p of prj.paths) { const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
+    clear(L.paths); for (const p of prj.paths) { if (!zeig(p.umgebung, p.points[0]?.[0], p.points[0]?.[1])) continue; const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
     // Bepflanzte Flächen hängen von den Gebäuden ab (keine Bäume in Gebäuden)
     let bs = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) bs += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.shape === 'poly' ? (pt.poly || []).length : pt.shape) + ';';
     const bkey = '|b' + U.hash(bs), TREES = { park: 1, gruen: 1, wald: 1, wohngebiet: 1, friedhof: 1 };
-    clear(L.areas); for (const a of prj.areas) { const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    clear(L.areas); for (const a of prj.areas) { if (!zeig(a.umgebung, a.x, a.z)) continue; const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
@@ -139,6 +143,7 @@ S3.rebuild = (scope = 'all') => {
   // Zwischenspeicher je Element und Ansicht (Etagenwechsel hin und zurück ohne Neuaufbau)
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of b.parts) {
+    if (!zeig(b.umgebung, pt.x, pt.z)) continue;
     const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
@@ -460,6 +465,7 @@ function bindPointer(dom) {
     if (!downAt || ev.button !== 0) return;
     const moved = Math.hypot(ev.clientX - downAt.x, ev.clientY - downAt.y) > 5; downAt = null;
     if (moved || S3.tc.dragging || S3.fpvActive) return;
+    if (S3._klickVerbraucht) { S3._klickVerbraucht = false; return; }
     if (S3.tool?.click) { S3.tool.click(ev); return; }
     // Wegpunkt-Griffe zuerst
     const hp = S3.ray(ev).intersectObjects(S3.layers.sel.children.filter(c => c.isMesh), false)[0];
@@ -481,6 +487,7 @@ function bindPointer(dom) {
   });
 }
 function hover(ev) {
+  if (S3._tipFluss) return;
   if (S3.fpvActive || S3.tc.dragging || HSS.manip?.dragging) { if (HSS.ui?.tipEl) HSS.ui.tipEl.hidden = true; return; }
   const tip = HSS.ui?.tipEl; if (!tip) return;
   if (S3._hovT && performance.now() - S3._hovT < 60) return; S3._hovT = performance.now();

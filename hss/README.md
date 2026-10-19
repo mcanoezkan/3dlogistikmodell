@@ -45,6 +45,10 @@ Neuer Standard-Darstellungsstil im Look der Recycling-Halle: klar, hell und sche
 | Fluss abfahren | „▶ Fluss abfahren“ (Fluss-Karte oder ▶ in der Flussliste): Kamerafahrt entlang des Flusses durch alle Stationen mit Haltekarten und „Aktuelle Position“, Pause/Weiter/Beenden |
 | Schräg zeichnen | „✎ Fluss zeichnen“: Winkel 90° / 45° / frei (Taste W); gezeichnete Wege werden genau so dargestellt |
 | Material übersichtlich | Reiter „Material“ als Liste mit Farbe, Reinheit, Ladeeinheit und Zahl der Flüsse – ein Klick öffnet die Felder |
+| Wände einzeln bearbeiten | Fläche/Raum ohne Wände: im Inspektor „▦ Wände anlegen“ – danach ist jede Wand einzeln wählbar, lässt sich ziehen (angrenzende Wände gehen mit) und bekommt Türen, Bettentüren oder Öffnungen ohne Türblatt (Knopf oder „⌖ per Klick auf die Wand“, Lage und Breite änderbar) |
+| Flüssiger | Wegenetz ohne Umgebungsgebäude (Bielefeld: 0,35 s statt 1,8 s), Flussänderungen bauen das Netz nicht mehr neu, Routen werden im Hintergrund berechnet (keine eingefrorene Oberfläche), Transporte als Instanzen (halb so viele Zeichenaufrufe). Neu: „Umgebung: alle / nur nah / aus“ und Leistung „maximal flüssig“ (ohne Schatten und Verkehr, niedrige Auflösung, Umgebung nur nah) |
+| Bänder | Normal schlank, beim Simulieren (Abspielen, Stunde gewählt, Tour, Tagesablauf) kräftig und leuchtend; Überfahren zeigt Flussname und Menge |
+| Zeichnen auf einer Ebene | Ein gezeichneter Fluss bleibt auf der Ebene des letzten Punkts – auch durch Wände hindurch und unabhängig von der Etagenleiste –, bis „↕ Vertikal“ gewählt wird |
 | Projektdateien | Startbildschirm: Demo, Neues Projekt, Projekt öffnen. Projektdateien (`*.hss.json`) einfach vom Desktop ins Fenster ziehen. Standortmodelle liegen als Dateien in [`projekte/`](../projekte) |
 | Eine Datei | `python3 tools/build_einzeldatei.py` erzeugt `Healthcare_Simulation_Suite.html` – per Doppelklick offline nutzbar |
 
