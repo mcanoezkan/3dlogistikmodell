@@ -343,11 +343,29 @@ UI.setWS = (id) => {
   UI.renderPanel();
   HSS.emit('workspace', id);
 };
+/* Ausklappbare Abschnitte: jede Zwischenüberschrift (h3) eines Arbeitsbereichs wird
+   mit ihrem Inhalt zu einem auf-/zuklappbaren Abschnitt; der Zustand bleibt gespeichert. */
+UI.faltZu = (() => { try { return new Set(JSON.parse(localStorage.getItem('hss-zu') || '[]')); } catch (e) { return new Set(); } })();
+UI.falten = (root, ws) => {
+  for (const h of [...root.querySelectorAll('h3')]) {
+    if (h.dataset.nofold !== undefined || h.closest('.sekt-fold, dialog, .sek')) continue;
+    const par = h.parentNode, items = [];
+    for (let n = h.nextSibling; n && !(n.nodeType === 1 && /^H[23]$/.test(n.tagName)); n = n.nextSibling) items.push(n);
+    if (!items.some(n => n.nodeType === 1 || (n.textContent || '').trim())) continue;
+    const key = ws + '|' + h.textContent.replace(/\s*\(\d[\d.]*\)\s*$/, '').trim();
+    const box = document.createElement('div'); box.className = 'sekt-fold' + (UI.faltZu.has(key) ? ' zu' : '');
+    const kopf = document.createElement('button'); kopf.type = 'button'; kopf.className = 'fold-h'; kopf.innerHTML = '<span class="fold-i">▾</span>' + h.innerHTML; kopf.title = 'Abschnitt auf-/zuklappen';
+    const inh = document.createElement('div'); inh.className = 'fold-b';
+    par.insertBefore(box, h); box.append(kopf, inh); items.forEach(n => inh.appendChild(n)); h.remove();
+    kopf.onclick = () => { const zu = box.classList.toggle('zu'); if (zu) UI.faltZu.add(key); else UI.faltZu.delete(key); try { localStorage.setItem('hss-zu', JSON.stringify([...UI.faltZu])); } catch (e) { /* ohne Speicher */ } };
+  }
+};
 UI.renderPanel = () => {
   const w = UI.ws[UI.current]; if (!w) return;
   const body = $('#panelBody'); const sc = body.scrollTop;
   body.innerHTML = `<div class="ph"><h2>${w.name}</h2></div>` + (w.lead ? `<p class="lead">${w.lead}</p>` : '') + '<div id="wsBody"></div>';
   try { w.render($('#wsBody')); } catch (e) { console.error(e); $('#wsBody').innerHTML = '<div class="errbox">' + U.esc(e.message) + '</div>'; }
+  UI.falten($('#wsBody'), UI.current);
   body.scrollTop = sc;
 };
 UI.buildRail = () => {
