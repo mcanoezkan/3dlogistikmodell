@@ -14,7 +14,8 @@
 (function () {
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo;
-const FZ = HSS.flussZeichnen = { letzterEnde: null };
+const FZ = HSS.flussZeichnen = { letzterEnde: null, winkel: 90 };
+try { FZ.winkel = +(localStorage.getItem('hss-fz-winkel') || 90); } catch (e) { /* ohne Speicher */ }
 const S3 = () => HSS.s3, V = () => HSS.view, UI = () => HSS.ui;
 const r1 = v => Math.round(v * 10) / 10;
 
@@ -45,6 +46,7 @@ FZ.start = (opt = {}) => {
       if (ev.key === 'Enter') { FZ.fertig(); return true; }
       if (ev.key === 'Backspace') { ev.preventDefault(); FZ.zurueck(); return true; }
       if (ev.key.toLowerCase() === 'v') { FZ.vertikal(); return true; }
+      if (ev.key.toLowerCase() === 'w') { FZ.setWinkel(FZ.winkel === 90 ? 45 : FZ.winkel === 45 ? 0 : 90); return true; }
       return false;
     },
     cancel() { bar(false); ghost(); UI().hint(null); FZ.st = null; }
@@ -68,13 +70,13 @@ function snap(ev, st, frei) {
   if (last) {
     const [eu, ev2] = axes(last.x, last.z), dx = x - last.x, dz = z - last.z;
     let du = dx * eu[0] + dz * eu[1], dv = dx * ev2[0] + dz * ev2[1];
-    if (!frei) { if (Math.abs(du) >= Math.abs(dv)) dv = 0; else du = 0; }
-    else { const a = Math.round(Math.atan2(dv, du) / (Math.PI / 4)) * (Math.PI / 4), L = Math.hypot(du, dv); du = Math.cos(a) * L; dv = Math.sin(a) * L; }
-    du = Math.round(du * 2) / 2; dv = Math.round(dv * 2) / 2;
+    const w = frei ? 0 : FZ.winkel;
+    if (w === 90) { if (Math.abs(du) >= Math.abs(dv)) dv = 0; else du = 0; du = Math.round(du * 2) / 2; dv = Math.round(dv * 2) / 2; }
+    else if (w === 45) { const a = Math.round(Math.atan2(dv, du) / (Math.PI / 4)) * (Math.PI / 4), L = Math.round(Math.hypot(du, dv) * 2) / 2; du = Math.cos(a) * L; dv = Math.sin(a) * L; }
     x = last.x + du * eu[0] + dv * ev2[0]; z = last.z + du * eu[1] + dv * ev2[1];
     // Andocken an Orte/Endpunkte entlang der gewählten Richtung
     for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
-    if (hit) { const mx = hit.x - last.x, mz = hit.z - last.z, mu = mx * eu[0] + mz * eu[1], mv = mx * ev2[0] + mz * ev2[1]; if (frei || Math.abs(mu) < 0.6 || Math.abs(mv) < 0.6) { x = hit.x; z = hit.z; } else hit = null; }
+    if (hit) { const mx = hit.x - last.x, mz = hit.z - last.z, mu = mx * eu[0] + mz * eu[1], mv = mx * ev2[0] + mz * ev2[1]; if (FZ.winkel !== 90 || frei || Math.abs(mu) < 0.6 || Math.abs(mv) < 0.6) { x = hit.x; z = hit.z; } else hit = null; }
   } else {
     for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r * 1.6 && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
     if (hit) { x = hit.x; z = hit.z; }
@@ -100,7 +102,7 @@ function preview(st) {
   if (st.cur) { const c = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.1, 24), new THREE.MeshBasicMaterial({ color: st.cur.name ? '#f2994a' : '#2D7694', depthTest: false, side: THREE.DoubleSide })); c.rotation.x = -Math.PI / 2; c.position.set(st.cur.x, Y(st.cur) - 0.6, st.cur.z); c.renderOrder = 42; L.add(c); }
   HSS.perf?.invalidate(2);
   const last = st.pts[st.pts.length - 1];
-  if (st.cur) UI().hint(st.cur.name ? `Andocken: <b>${U.esc(st.cur.name)}</b>` : last ? `Abschnitt ${U.fmt(Math.hypot(st.cur.x - last.x, st.cur.z - last.z), 1)} m · ${HSS.floorName(st.cur.gf)} · Alt: freie Richtung` : `Startpunkt setzen (dockt an Räume, Orte und Endpunkte an) · ${HSS.floorName(st.cur.gf)}`);
+  if (st.cur) UI().hint(st.cur.name ? `Andocken: <b>${U.esc(st.cur.name)}</b>` : last ? `Abschnitt ${U.fmt(Math.hypot(st.cur.x - last.x, st.cur.z - last.z), 1)} m · ${HSS.floorName(st.cur.gf)} · ${FZ.winkel === 90 ? 'rechtwinklig' : FZ.winkel === 45 ? '45°-Raster' : 'freie Richtung'} (Taste W wechselt, Alt: frei)` : `Startpunkt setzen (dockt an Räume, Orte und Endpunkte an) · ${HSS.floorName(st.cur.gf)}`);
 }
 function info(st) {
   const el = document.getElementById('fzBar'); if (!el) return;
@@ -115,10 +117,11 @@ function bar(on) {
   if (!on) { if (el) el.hidden = true; return; }
   if (!el) {
     el = document.createElement('div'); el.id = 'fzBar';
-    el.innerHTML = `<b>✎ Fluss zeichnen</b><span class="fzi"></span><button data-ld title="Am Endpunkt des zuletzt gezeichneten Flusses ansetzen">↳ am letzten Endpunkt</button><button data-v title="An dieser Stelle senkrecht zu einer anderen Etage (Taste V)">↕ Vertikal …</button><button data-z title="Letzten Punkt entfernen (Rücktaste)">↶</button><button class="primary" data-ok title="Fertig (Enter oder Doppelklick)">✓ Fertig</button><button data-x title="Abbrechen (Esc)">✕</button>
-      <div class="fzh">Klick = Punkt · gerade Abschnitte rasten rechtwinklig ein · Etage über die Etagenleiste wechseln oder ↕ Vertikal</div>`;
+    el.innerHTML = `<b>✎ Fluss zeichnen</b><span class="fzi"></span><button data-ld title="Am Endpunkt des zuletzt gezeichneten Flusses ansetzen">↳ am letzten Endpunkt</button><span class="seg fzw">${[[90, '90°'], [45, '45°'], [0, 'frei']].map(([w, t]) => `<button data-w="${w}" title="${w === 90 ? 'nur rechtwinklig' : w === 45 ? 'auch schräg im 45°-Raster' : 'beliebige schräge Linien'}">${t}</button>`).join('')}</span><button data-v title="An dieser Stelle senkrecht zu einer anderen Etage (Taste V)">↕ Vertikal …</button><button data-z title="Letzten Punkt entfernen (Rücktaste)">↶</button><button class="primary" data-ok title="Fertig (Enter oder Doppelklick)">✓ Fertig</button><button data-x title="Abbrechen (Esc)">✕</button>
+      <div class="fzh">Klick = Punkt · Winkel 90° / 45° / frei (Taste W) · Etage über die Etagenleiste wechseln oder ↕ Vertikal</div>`;
     document.body.appendChild(el);
     el.querySelector('[data-v]').onclick = () => FZ.vertikal();
+    el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => FZ.setWinkel(+b.dataset.w));
     el.querySelector('[data-z]').onclick = () => FZ.zurueck();
     el.querySelector('[data-ok]').onclick = () => FZ.fertig();
     el.querySelector('[data-x]').onclick = () => S3().setTool(null);
@@ -129,7 +132,9 @@ function bar(on) {
     };
   }
   el.hidden = false; el.querySelector('[data-ld]').hidden = !FZ.letzterEnde;
+  el.querySelectorAll('[data-w]').forEach(b => b.classList.toggle('on', +b.dataset.w === FZ.winkel));
 }
+FZ.setWinkel = w => { FZ.winkel = w; try { localStorage.setItem('hss-fz-winkel', w); } catch (e) { /* ohne Speicher */ } document.querySelectorAll('#fzBar [data-w]').forEach(b => b.classList.toggle('on', +b.dataset.w === w)); HSS.ui.toast(w === 90 ? 'Rechtwinklig zeichnen' : w === 45 ? 'Schräg im 45°-Raster zeichnen' : 'Freie schräge Linien', 1500); };
 FZ.zurueck = () => { const st = FZ.st; if (!st || !st.pts.length) return; st.pts.pop(); if (!st.pts.length) st.von = null; const l = st.pts[st.pts.length - 1]; if (l && l.gf !== V().floor) S3().setFloor(l.gf); preview(st); info(st); };
 
 /* ---------- Vertikal ---------- */

@@ -1,5 +1,5 @@
 /* =====================================================================
-   HSS · flussbild.js – Warenströme als kräftige Bänder (Planungsmodell)
+   HSS · flussbild.js – Warenströme als kräftige Bänder
    Alle aktiven Flüsse werden über das Wegenetz geroutet und je Wegabschnitt
    und Warenstrom (Speisen, Wäsche, Sterilgut, Arzneimittel, Verbrauchsgüter,
    Betten, Abfall, Patiententransport, Post & Proben …) zusammengefasst: ein
@@ -16,7 +16,7 @@
 const HSS = window.HSS, U = HSS.util;
 const { THREE, mergeGeometries } = window.THREEX;
 const S3 = HSS.s3, V = HSS.view;
-const FB = HSS.flussbild = HSS.stroeme = { on: false, move: true, routes: true, aus: new Set(), animating: false, personen: false, hour: null, playing: false, tour: null, zoom: 2.2, tempo: 1 };
+const FB = HSS.flussbild = HSS.stroeme = { on: false, move: true, routes: true, aus: new Set(), animating: false, personen: false, hour: null, playing: false, tour: null, zoom: 2.2, tempo: 1, etagen: new Set(), folge: true, sel: null };
 let layer = null, movers = [], routes = [], shell0 = null, famMats = new Map();
 try { FB.zoom = +(localStorage.getItem('hss-tourZoom') || 2.2) || 2.2; } catch (e) { /* ohne Speicher */ }
 
@@ -48,7 +48,7 @@ function collect() {
     if (!m) continue;
     const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
     const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
-    out.push({ f, m, t, r, pts: HSS.cleanPts ? HSS.cleanPts(r.pts) : r.pts, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
+    out.push({ f, m, t, r, pts: HSS.routeAnzeige(r), s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
   }
   return { all: out, fams };
 }
@@ -58,6 +58,9 @@ FB.stats = () => {
   return { all, fams, rows: fams.map(s => by.get(s.id)).filter(Boolean) };
 };
 const aktiv = s => !FB.aus.has(s.id) && (!isPers(s) || FB.personen);
+// Etagen: der Etagenleiste folgen (eine Etage gewählt) oder eigene Auswahl
+FB.gfSichtbar = g => { if (FB.folge && V.floor !== null && V.floor !== undefined) return g === V.floor; return !FB.etagen.size || FB.etagen.has(g); };
+const exY = q => [q[0], q[1] + (q[3] || 0) * (V.explode || 0), q[2], q[3]];
 
 /* ---------- Geometrie ---------- */
 const _d = new THREE.Vector3(), _q = new THREE.Quaternion();
@@ -90,12 +93,14 @@ FB.build = () => {
   const laneOf = new Map(used.map((s, i) => [s.id, (i - (used.length - 1) / 2) * 0.95]));
   const vis = all.filter(x => aktiv(x.s));
   const maxTrips = Math.max(1, ...vis.map(x => x.trips));
-  const rad = trips => 0.16 + 0.5 * Math.sqrt(trips / maxTrips);
+  const rad = trips => 0.3 + 0.55 * Math.sqrt(trips / maxTrips);
   // Abschnitte je Strom und Richtung zusammenfassen
   const seg = new Map();
   for (const x of vis) {
-    const P = x.pts, key = q => q.map(v => Math.round(v * 2) / 2).join(',');
+    const P = x.pts.map(exY), key = q => q.slice(0, 3).map(v => Math.round(v * 2) / 2).join(',');
     for (let i = 0; i < P.length - 1; i++) {
+      if (!FB.gfSichtbar(P[i][3]) && !FB.gfSichtbar(P[i + 1][3])) continue;
+      if (P[i][3] !== P[i + 1][3] && Math.abs(P[i][1] - P[i + 1][1]) < 0.5 && !(FB.gfSichtbar(P[i][3]) && FB.gfSichtbar(P[i + 1][3]))) continue;
       const k = x.s.id + '|' + key(P[i]) + '>' + key(P[i + 1]);
       const s = seg.get(k) || { s: x.s, a: P[i], b: P[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
     }
@@ -125,22 +130,23 @@ FB.build = () => {
     if (tph < 0.05) continue;
     const n = FB.hour === null ? Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2))) : Math.min(3, Math.max(1, Math.round(tph / 2)));
     const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
-    const pts = offsetPts(x.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
+    if (!x.pts.some(q => FB.gfSichtbar(q[3]))) continue;
+    const pts = offsetPts(x.pts.map(exY), lane, 0); const pl = poly(pts); pl.gf = x.pts.map(q => q[3]); if (pl.L < 4) continue;
     for (let i = 0; i < n; i++) {
       const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
-      movers.push({ mesh, pl, strom: x.s.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
+      movers.push({ mesh, pl, strom: x.s.id, flow: x.f.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 11 : x.mittel === 'awt' ? 4 : 5, lift: h });
     }
   }
   if (FB.tour) tourGeo();
-  emphasis();
+  emphasis(); hilite(); if (FB.sel && !U.byId(HSS.project().flows, FB.sel)) FB.sel = null; karte2();
   FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing;
   panel(); achse(); HSS.perf?.invalidate(3);
   if (HSS.ui?.current === 'fluesse' && !HSS.ui._fbRefresh) { HSS.ui._fbRefresh = setTimeout(() => { HSS.ui._fbRefresh = null; if (!document.activeElement?.closest?.('#panel')) HSS.ui.renderPanel(); }, 50); }
 };
 // Tour: nur der gezeigte Strom kräftig
 function emphasis() {
-  for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom ? 0.95 : 0.07) : 0.92; m.depthWrite = m.opacity > 0.5; }
-  for (const mv of movers) mv.mesh.visible = !FB.tour || mv.strom === FB.tour.strom;
+  for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom && !FB.tour.flows ? 0.95 : 0.07) : FB.sel ? 0.18 : 0.92; m.depthWrite = m.opacity > 0.5; }
+  for (const mv of movers) { mv.aus = !!((FB.tour && (FB.tour.flows ? !FB.tour.flows.has(mv.flow) : mv.strom !== FB.tour.strom)) || (FB.sel && mv.flow !== FB.sel)); mv.mesh.visible = !mv.aus; }
   HSS.perf?.invalidate(2);
 }
 
@@ -149,7 +155,7 @@ function poly(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.p
 function at(pl, s, out) {
   if (s <= 0) return out.copy(pl.pts[0]); if (s >= pl.L) return out.copy(pl.pts[pl.pts.length - 1]);
   let lo = 1, hi = pl.cum.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (pl.cum[mid] < s) lo = mid + 1; else hi = mid; }
-  const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
+  at.i = lo; const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
 }
 const box = (w, h, d, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); return o; };
 function truck() {
@@ -183,9 +189,10 @@ HSS.on('frame', dt => {
   if (!FB.animating || !layer?.visible) return;
   T += dt;
   for (const mv of movers) {
-    if (!mv.mesh.visible) continue;
+    if (mv.aus) continue;
     const s = ((T * mv.speed / mv.pl.L) + mv.phase) % 1;
-    at(mv.pl, s * mv.pl.L, _p); at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
+    at(mv.pl, s * mv.pl.L, _p); const gi = at.i ?? 1; at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
+    mv.mesh.visible = FB.gfSichtbar(mv.pl.gf[gi]) || FB.gfSichtbar(mv.pl.gf[gi - 1]);
     mv.mesh.position.copy(_p);
     const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.mesh.rotation.y = -Math.atan2(dz, dx);
   }
@@ -205,6 +212,9 @@ function panel() {
     <div class="sl">${rows.map(r => `<label class="si ${aktiv(r.s) ? '' : 'dim'}"><input type="checkbox" data-s="${U.esc(r.s.id)}" ${aktiv(r.s) ? 'checked' : ''}><i style="background:${U.esc(r.s.farbe)}"></i><span>${U.esc(r.s.name)}</span><small>${U.fmt(r.trips)} · ${U.fmt(r.km, 1)} km</small></label>`).join('') || '<div class="note" style="padding:6px 8px">Noch keine Flüsse – im Arbeitsbereich „Flüsse“ mit dem Fluss-Assistenten anlegen oder Standardflüsse übernehmen.</div>'}</div>
     <label class="chk"><input type="checkbox" data-sr ${FB.routes ? 'checked' : ''}> Routen anzeigen</label>
     <label class="chk"><input type="checkbox" data-sm ${FB.move ? 'checked' : ''}> Transporte animieren</label>
+    <div class="sh2">Etagen</div>
+    <label class="chk"><input type="checkbox" data-sf ${FB.folge ? 'checked' : ''}> der Etagenleiste folgen (eine Etage gewählt → nur deren Flüsse)</label>
+    <div class="etchips">${[...new Set(all.flatMap(x => x.pts.map(q => q[3])))].filter(g => g !== undefined).sort((a, b) => b - a).map(g => `<button class="mini ${FB.etagen.has(g) ? 'on' : ''}" data-et="${g}">${HSS.floorName(g)}</button>`).join('')}<button class="mini ${FB.etagen.size ? '' : 'on'}" data-et="">alle</button></div>
     ${rows.length ? `<div class="sh2">Prozess-Tour</div>
     <div class="row"><select data-ts>${rows.filter(r => !isPers(r.s)).map(r => opt(r.s.id, r.s.name, tourSel)).join('')}</select><button class="primary" data-tgo>▶ Start</button></div>
     <label class="ctl">Tempo <input type="range" data-tt min="0.5" max="4" step="0.25" value="${FB.tempo}"></label>
@@ -216,6 +226,8 @@ function panel() {
   el.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const id = c.dataset.s; if (id === 'personen' && c.checked) FB.personen = true; if (c.checked) FB.aus.delete(id); else FB.aus.add(id); FB.build(); });
   el.querySelector('[data-sr]').onchange = e => { FB.routes = e.target.checked; FB.build(); };
   el.querySelector('[data-sm]').onchange = e => { FB.move = e.target.checked; FB.build(); };
+  el.querySelector('[data-sf]').onchange = e => { FB.folge = e.target.checked; FB.build(); };
+  el.querySelectorAll('[data-et]').forEach(b => b.onclick = () => { const v = b.dataset.et; if (v === '') FB.etagen.clear(); else { const g = +v; if (FB.etagen.has(g)) FB.etagen.delete(g); else FB.etagen.add(g); } FB.build(); });
   const ts = el.querySelector('[data-ts]'); if (ts) { ts.onchange = () => (FB._tourSel = ts.value); el.querySelector('[data-tgo]').onclick = () => FB.startTour(ts.value); el.querySelector('[data-tt]').oninput = e => (FB.tempo = +e.target.value); }
   el.querySelectorAll('.tourZoomIn').forEach(i => i.oninput = () => setZoom(+i.value));
 }
@@ -312,9 +324,22 @@ function stationen(sid) {
   const cnt = {}; for (const x of mine) cnt[x.mittel] = (cnt[x.mittel] || 0) + x.trips; const mittel = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0], rein = mine[0].m.reinheit || 'neutral';
   return { s, st, mittel, rein, PL };
 }
-FB.startTour = sid => {
+// Stationen eines einzelnen Flusses (mit allen Etappen derselben Kette)
+function stationenFluss(fid) {
+  const prj = HSS.project(), f0 = U.byId(prj.flows, fid); if (!f0) return null;
+  const kette = f0.kette ? prj.flows.filter(f => f.kette === f0.kette).sort((a, b) => (a.etappe || 0) - (b.etappe || 0)) : [f0];
+  const PL = new Map(HSS.places(prj).map(p => [p.id, p])), m = U.byId(prj.materials, f0.material), t = U.byId(prj.transports, f0.transport);
+  const nm = id => PL.get(id)?.name || id, menge = `${U.fmt(HSS.flowPerDay(f0), 1)} ${m?.einheit || ''}/Tag`;
+  const st = [{ place: kette[0].von, titel: nm(kette[0].von).split(' · ').pop(), text: `${nm(kette[0].von)} – Start: ${menge} ${m?.name ? '(' + m.name + ')' : ''}, ${t?.name || ''}.` }];
+  kette.forEach((f, i) => st.push({ place: f.nach, titel: nm(f.nach).split(' · ').pop(), text: `${nm(f.nach)} – ${i === kette.length - 1 ? 'Ziel' : 'Zwischenstopp ' + (i + 1)}${f.fenster?.length ? ' · Zeitfenster ' + f.fenster.map(([a, b]) => U.hhmm(a * 60) + '–' + U.hhmm(b * 60)).join(', ') : ''}.` }));
+  return { s: FB.stromOf(f0, prj), st, mittel: t?.mittel || 'hand', rein: m?.reinheit || 'neutral', PL, flows: new Set(kette.map(f => f.id)), name: f0.name.replace(/ · Etappe \d+\/\d+$/, '') };
+}
+FB.startFlussTour = fid => FB.startTour(null, { flow: fid });
+FB.startTour = (sid, opt = {}) => {
   FB.stopTour();
-  const D = stationen(sid); if (!D) { HSS.ui.toast('Für diesen Strom gibt es keine Flüsse mit Route.', 3000); return; }
+  if (!FB.on) FB.set(true);
+  const D = opt.flow ? stationenFluss(opt.flow) : stationen(sid); if (!D) { HSS.ui.toast('Für diesen Strom gibt es keine Flüsse mit Route.', 3000); return; }
+  sid = D.s.id;
   if (FB.aus.has(sid)) { FB.aus.delete(sid); }
   const net = HSS.net(), pts = [], stops = [];
   const push = (p, y = 1.2) => pts.push(new THREE.Vector3(p[0], p[1] + y, p[2]));
@@ -340,7 +365,7 @@ FB.startTour = sid => {
   stops.sort((a, b) => a.i - b.i);
   const pl = poly(pts);
   stops.forEach(s => (s.s = pl.cum[Math.min(s.i, pl.cum.length - 1)]));
-  FB.tour = { strom: sid, name: D.s.name, farbe: D.s.farbe, pl, stops, next: 0, s: 0, pause: 0, paused: false, done: false, look: S3.controls.target.clone(), dir: new THREE.Vector3(1, 0, 0) };
+  FB.tour = { strom: sid, flows: D.flows || null, name: D.name || D.s.name, farbe: D.s.farbe, pl, stops, next: 0, s: 0, pause: 0, paused: false, done: false, look: S3.controls.target.clone(), dir: new THREE.Vector3(1, 0, 0) };
   if (!tourG.parent) S3.scene.add(tourG);
   tourG.visible = true; S3.controls.enabled = false; wheel();
   if (V.floor !== null && V.floor !== undefined) S3.setFloor(null);
@@ -351,7 +376,7 @@ FB.startTour = sid => {
 function tourGeo() { /* Route der Tour ist unabhängig vom Flussbild – nichts neu zu bauen */ }
 FB.stopTour = () => {
   if (!FB.tour) return;
-  FB.tour = null; tourG.visible = false; S3.controls.enabled = true;
+  FB.tour = null; hilite(); tourG.visible = false; S3.controls.enabled = true; const pe = document.getElementById('tourPos'); if (pe) pe.hidden = true;
   const c = document.getElementById('stTour'); if (c) c.hidden = true;
   emphasis(); FB.animating = (FB.move && movers.length > 0) || FB.playing;
 };
@@ -398,6 +423,9 @@ function updateTour(dt) {
   S3.camera.lookAt(t.look); S3.controls.target.copy(t.look);
   tMark.position.copy(p); tRing.position.copy(p); tPole.position.copy(p).add(new THREE.Vector3(0, 4.2 + 0.4 * Math.sin(performance.now() / 300), 0));
   tRing.scale.setScalar(1 + 0.25 * Math.sin(performance.now() / 250));
+  let pe = document.getElementById('tourPos'); if (!pe) { pe = document.createElement('div'); pe.id = 'tourPos'; pe.innerHTML = '<span>Aktuelle Position</span><svg viewBox="0 0 26 22"><path d="M0 0h26L13 22z" fill="#0A967A"/></svg>'; document.body.appendChild(pe); }
+  const sp = p.clone().add(new THREE.Vector3(0, 3, 0)).project(S3.camera), rc = S3.renderer.domElement.getBoundingClientRect();
+  pe.hidden = sp.z > 1; pe.style.left = (rc.left + (sp.x + 1) / 2 * rc.width) + 'px'; pe.style.top = (rc.top + (1 - sp.y) / 2 * rc.height) + 'px';
   const c = document.getElementById('stTour'); if (c) c.querySelector('.bar i').style.width = `${(t.s / (t.pl.L || 1)) * 100}%`;
   HSS.perf?.invalidate(1);
 }
@@ -405,9 +433,132 @@ window.addEventListener('keydown', e => { if (e.key === 'Escape' && FB.tour && !
 let wheelOn = false;
 const wheel = () => { if (wheelOn || !S3.renderer) return; wheelOn = true; S3.renderer.domElement.addEventListener('wheel', ev => { if (!FB.tour) return; ev.preventDefault(); ev.stopImmediatePropagation(); setZoom(FB.zoom * (ev.deltaY > 0 ? 1.12 : 1 / 1.12)); }, { passive: false, capture: true }); };
 
+/* ---------- Hervorhebung eines Flusses (angeklickt oder auf Tour) ---------- */
+let hl = null;
+function hilite() {
+  if (!layer) return;
+  if (hl) { layer.remove(hl); hl = null; }
+  const ids = FB.tour?.flows ? [...FB.tour.flows] : FB.sel ? [FB.sel] : [];
+  if (!ids.length) return;
+  const prj = HSS.project(); hl = new THREE.Group(); hl.renderOrder = 9;
+  for (const id of ids) {
+    const f = U.byId(prj.flows, id); if (!f) continue;
+    const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport), sk = FB.stromOf(f, prj);
+    const pts = HSS.routeAnzeige(HSS.route(f.von, f.nach, t?.mittel || 'hand', m?.reinheit || 'neutral')).map(exY).map(q => new THREE.Vector3(q[0], q[1] + 1.2, q[2]));
+    const gi = [], go = [];
+    for (let i = 0; i < pts.length - 1; i++) { const c = cyl(pts[i], pts[i + 1], 0.55), o = cyl(pts[i], pts[i + 1], 0.8); if (c) gi.push(c, ball(pts[i + 1], 0.55)); if (o) go.push(o); }
+    if (!gi.length) continue;
+    const mi = new THREE.Mesh(mergeGeometries(gi.map(g => g.index ? g.toNonIndexed() : g), false), new THREE.MeshBasicMaterial({ color: sk.farbe, depthTest: false }));
+    const mo = new THREE.Mesh(mergeGeometries(go.map(g => g.index ? g.toNonIndexed() : g), false), new THREE.MeshBasicMaterial({ color: '#ffffff', depthTest: false, transparent: true, opacity: 0.85 }));
+    mo.renderOrder = 30; mi.renderOrder = 31; hl.add(mo, mi);
+    for (const [q, c] of [[pts[0], '#0A967A'], [pts[pts.length - 1], '#c0392b']]) { const k = new THREE.Mesh(new THREE.SphereGeometry(1.3, 16, 12), new THREE.MeshBasicMaterial({ color: c, depthTest: false })); k.position.copy(q); k.renderOrder = 32; hl.add(k); }
+  }
+  layer.add(hl); HSS.perf?.invalidate(2);
+}
+
+/* ---------- Fluss im 3D-Bild anklicken ---------- */
+FB.pick = (ev) => {
+  const rc = S3.renderer.domElement.getBoundingClientRect(), mx = ev.clientX - rc.left, my = ev.clientY - rc.top;
+  const v = new THREE.Vector3(), scr = q => { v.set(q[0], q[1] + 1.2, q[2]).project(S3.camera); return v.z > 1 ? null : [(v.x + 1) / 2 * rc.width, (1 - v.y) / 2 * rc.height]; };
+  let best = null;
+  for (const x of routes) {
+    const P = x.pts.map(exY);
+    for (let i = 0; i < P.length - 1; i++) {
+      if (!FB.gfSichtbar(P[i][3]) && !FB.gfSichtbar(P[i + 1][3])) continue;
+      const a = scr(P[i]), b = scr(P[i + 1]); if (!a || !b) continue;
+      const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy || 1, t = U.clamp(((mx - a[0]) * dx + (my - a[1]) * dy) / L2, 0, 1);
+      const d = Math.hypot(a[0] + dx * t - mx, a[1] + dy * t - my);
+      if (d < 9 && (!best || d < best.d)) best = { d, f: x.f };
+    }
+  }
+  return best?.f || null;
+};
+FB.waehle = (fid) => { FB.sel = fid; emphasis(); hilite(); karte2(); };
+(() => {
+  const vp = document.getElementById('viewport'); if (!vp) return;
+  let dn = null;
+  vp.addEventListener('pointerdown', e => { dn = e.button === 0 ? [e.clientX, e.clientY] : null; }, true);
+  vp.addEventListener('pointerup', e => {
+    if (!FB.on || FB.tour || S3.tool || !dn || Math.hypot(e.clientX - dn[0], e.clientY - dn[1]) > 5 || e.target !== S3.renderer.domElement) return;
+    const f = FB.pick(e);
+    if (f) { e.stopPropagation(); FB.waehle(f.id); }
+    else if (FB.sel) FB.waehle(null);
+  }, true);
+})();
+
+/* ---------- Fluss-Karte: Stationen, Zwischenstopps, abfahren ---------- */
+const kette = (prj, f) => f.kette ? prj.flows.filter(x => x.kette === f.kette).sort((a, b) => (a.etappe || 0) - (b.etappe || 0)) : [f];
+function karte2() {
+  let el = document.getElementById('flKarte');
+  const prj = HSS.project(), f = FB.sel && U.byId(prj.flows, FB.sel);
+  if (!f) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement('div'); el.id = 'flKarte'; el.className = 'vw-fluss'; document.body.appendChild(el); }
+  const K = kette(prj, f), PL = new Map(HSS.places(prj).map(p => [p.id, p])), net = HSS.net();
+  const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport), sk = FB.stromOf(f, prj);
+  const nm = id => U.esc(PL.get(id)?.name || id);
+  let len = 0, min = 0, lifts = 0;
+  const legs = K.map(x => { const mm = U.byId(prj.materials, x.material), tt = U.byId(prj.transports, x.transport), r = HSS.route(x.von, x.nach, tt?.mittel || 'hand', mm?.reinheit || 'neutral'); len += r.len || 0; min += r.timeMin || 0; lifts += r.lifts.length; return { x, r }; });
+  const info = r => { const o = []; for (const L of r.lifts) { const N = net.lifts.find(q => q.id === L.lift); o.push(`↕ ${U.esc(N?.name || 'Aufzug')}: ${HSS.floorName(L.from)} → ${HSS.floorName(L.to)}`); } const out = U.sum(r.edges.filter(e => ['strasse', 'zufahrt', 'weg', 'gehweg'].includes(e.type)).map(e => e.len)); if (out > 15) o.push(`☁ ${U.fmt(out)} m im Freien`); if (r.gezeichnet) o.push('✎ gezeichneter Weg'); if (r.via) o.push('über festgelegten Aufzug/Treppe'); if (!r.ok) o.push('<span class="err">keine Route</span>'); return o.join('<br>'); };
+  el.hidden = false;
+  el.innerHTML = `<div class="fkh"><i style="background:${U.esc(sk.farbe)}"></i><b>${U.esc(f.name.replace(/ · Etappe \d+\/\d+$/, ''))}</b><button class="mini x" data-fx title="Schließen">×</button></div>
+    <div class="note">${U.esc(sk.name)} · ${U.esc(m?.name || '')} · ${U.esc(t?.name.split(' (')[0] || '')}</div>
+    <div class="fkst"><span><b>${U.fmt(HSS.flowPerDay(f), 1)}</b> ${U.esc(m?.einheit || '')}/Tag</span><span><b>${U.fmt(len)}</b> m</span><span><b>${U.dur ? U.dur(min) : U.fmt(min, 1) + ' min'}</b></span><span><b>${lifts}</b> Aufzug</span></div>
+    <div class="fkl">
+      <div class="fks start"><i>A</i><div><b>${nm(K[0].von)}</b><div class="note">Start</div></div></div>
+      ${legs.map(({ x, r }, i) => `<div class="fkleg"><div class="note">${info(r) || '→'}</div><button class="mini" data-add="${i}" title="Zwischenstopp in diesem Abschnitt einfügen">+ Zwischenstopp</button><div class="fkform" data-form="${i}" hidden></div></div>
+      <div class="fks ${i === K.length - 1 ? 'ziel' : 'zw'}"><i>${i === K.length - 1 ? 'B' : i + 1}</i><div><b>${nm(x.nach)}</b><div class="note">${i === K.length - 1 ? 'Ziel' : 'Zwischenstopp ' + (i + 1)}</div></div>${i < K.length - 1 ? `<button class="mini" data-rm="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>`).join('')}
+    </div>
+    <div class="actions"><button class="primary" data-tour>▶ Fluss abfahren</button><button data-edit>Bearbeiten</button></div>`;
+  el.querySelector('[data-fx]').onclick = () => FB.waehle(null);
+  el.querySelector('[data-tour]').onclick = () => { const id = f.id; FB.waehle(null); FB.startFlussTour(id); };
+  el.querySelector('[data-edit]').onclick = () => { HSS.ui.flowTab = 'fluesse'; HSS.ui.flowSel = f.id; if (HSS.ui.current !== 'fluesse') HSS.ui.setWS('fluesse'); else HSS.ui.renderPanel(); document.body.classList.remove('nopanel'); };
+  el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => FB.stoppEntfernen(f.id, +b.dataset.rm));
+  el.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.add, box = el.querySelector(`[data-form="${i}"]`), FA = HSS.flussAssistent, B = FA.eigene(prj);
+    if (!box.hidden) { box.hidden = true; return; }
+    const st = { b: B[0].id, gf: FA.etagen(B[0]).includes(0) ? 0 : FA.etagen(B[0])[0], ort: '' };
+    const draw = () => {
+      const bb = U.byId(prj.buildings, st.b), orte = FA.orte(st.b, st.gf, prj).filter(p => p.role !== 'uebergabe');
+      box.innerHTML = `<select data-k="b">${B.map(x => `<option value="${x.id}" ${x.id === st.b ? 'selected' : ''}>${U.esc((x.kurz ? x.kurz + ' – ' : '') + x.name)}</option>`).join('')}</select>
+        <div class="row"><select data-k="gf">${FA.etagen(bb).map(g => `<option value="${g}" ${g === st.gf ? 'selected' : ''}>${HSS.floorName(g)}</option>`).join('')}</select>
+        <select data-k="ort"><option value="">Übergabepunkt auf der Etage</option>${orte.map(p => `<option value="${p.id}" ${p.id === st.ort ? 'selected' : ''}>${U.esc(p.name.split(' · ').slice(1).join(' · '))}</option>`).join('')}</select></div>
+        <button class="primary mini" data-ok>Zwischenstopp einfügen</button>`;
+      box.querySelectorAll('[data-k]').forEach(s2 => s2.onchange = () => { const k = s2.dataset.k; if (k === 'b') { st.b = s2.value; const fl = FA.etagen(U.byId(prj.buildings, st.b)); st.gf = fl.includes(0) ? 0 : fl[0]; st.ort = ''; } else if (k === 'gf') { st.gf = +s2.value; st.ort = ''; } else st.ort = s2.value; draw(); });
+      box.querySelector('[data-ok]').onclick = () => FB.zwischenstopp(f.id, i, st);
+    };
+    box.hidden = false; draw();
+  });
+}
+// Zwischenstopp einfügen: Abschnitt i (X → Y) wird zu X → P und P → Y
+FB.zwischenstopp = (fid, i, st) => {
+  let wieder = null;
+  HSS.change('Zwischenstopp einfügen', p => {
+    const f = U.byId(p.flows, fid), K = kette(p, f), leg = K[i]; if (!leg) return;
+    const P = st.ort || HSS.flussAssistent.uebergabe(p, st.b, st.gf); if (!P) return;
+    const k = f.kette || U.uid('kette'), base = f.name.replace(/ · Etappe \d+\/\d+$/, '');
+    const n = U.clone(leg); n.id = U.uid('flow'); n.von = P; n.nach = leg.nach; leg.nach = P;
+    for (const x of [leg, n]) { delete x.pfad; delete x.via; }
+    const neu = K.slice(0, i + 1).concat([n], K.slice(i + 1)); p.flows.splice(p.flows.indexOf(leg) + 1, 0, n);
+    neu.forEach((x, j) => { x.kette = k; x.etappe = j + 1; x.etappen = neu.length; x.name = `${base} · Etappe ${j + 1}/${neu.length}`; });
+    wieder = neu[0].id;
+  }, { scope: 'objects' });
+  if (wieder) { FB.sel = wieder; setTimeout(() => { FB.build(); FB.waehle(wieder); HSS.ui?.toast('Zwischenstopp eingefügt', 2500); }, 450); }
+};
+FB.stoppEntfernen = (fid, i) => {
+  let wieder = null;
+  HSS.change('Zwischenstopp entfernen', p => {
+    const f = U.byId(p.flows, fid), K = kette(p, f), a = K[i], b = K[i + 1]; if (!a || !b) return;
+    a.nach = b.nach; delete a.pfad; delete a.via; p.flows = p.flows.filter(x => x.id !== b.id);
+    const neu = K.filter(x => x.id !== b.id), base = f.name.replace(/ · Etappe \d+\/\d+$/, '');
+    neu.forEach((x, j) => { x.etappe = j + 1; x.etappen = neu.length; x.name = neu.length > 1 ? `${base} · Etappe ${j + 1}/${neu.length}` : base; });
+    wieder = neu[0].id;
+  }, { scope: 'none' });
+  if (wieder) setTimeout(() => { FB.build(); FB.waehle(wieder); }, 450);
+};
+
 /* ---------- Ein/Aus, Ansicht speichern ---------- */
 FB.set = (on) => {
-  if (!on) { FB.stopTour(); FB.playing = false; }
+  if (!on) { FB.stopTour(); FB.playing = false; FB.sel = null; karte2(); }
   FB.on = on; document.body.classList.toggle('flussbild', on);
   const b = document.getElementById('vFlow'); if (b) b.classList.toggle('on', on);
   // Gebäude gläsern, damit die Ströme im Haus zu sehen sind
@@ -417,11 +568,13 @@ FB.set = (on) => {
   FB.build();
 };
 FB.toggle = () => FB.set(!FB.on);
-FB.state = () => FB.on ? { aus: [...FB.aus], personen: FB.personen, routes: FB.routes, move: FB.move, hour: FB.hour } : null;
-FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.personen = !!st.personen; FB.routes = st.routes !== false; FB.move = st.move !== false; FB.hour = st.hour ?? null; if (FB.on) FB.build(); else FB.set(true); };
+FB.state = () => FB.on ? { aus: [...FB.aus], personen: FB.personen, routes: FB.routes, move: FB.move, hour: FB.hour, etagen: [...FB.etagen], folge: FB.folge } : null;
+FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.personen = !!st.personen; FB.routes = st.routes !== false; FB.move = st.move !== false; FB.hour = st.hour ?? null; FB.etagen = new Set(st.etagen || []); FB.folge = st.folge !== false; if (FB.on) FB.build(); else FB.set(true); };
 // Projekt- oder Netzänderungen: neu aufbauen (verzögert)
 const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
-HSS.on('changed', rebuild); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
+HSS.on('changed', rebuild);
+let lastView = '';
+HSS.on('view', () => { const k = V.floor + '|' + V.explode; if (k !== lastView) { lastView = k; if (FB.on) FB.build(); } }); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
 // Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
 HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) { FB.set(true); HSS.ui.renderPanel(); } });
 // Simulations-Zeitleiste und Tagesachse nicht übereinander

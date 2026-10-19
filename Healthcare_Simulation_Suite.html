@@ -482,6 +482,52 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 #lzLock textarea{font-family:Consolas,monospace;font-size:12px;width:100%;resize:vertical}
 #lzLock .lzrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;font-size:12.5px}
 #lzLock .lzerr{color:#c0392b;font-weight:600}
+/* ---------- Warenströme ---------- */
+#stroeme{position:fixed;right:12px;top:calc(var(--topH) + 96px);z-index:8;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);width:310px;max-height:calc(100vh - var(--topH) - 96px - 12px);overflow:auto;font-size:12.5px;padding:10px 12px}
+body.stachse #stroeme{max-height:calc(100vh - var(--topH) - 96px - 214px)}
+body.insp #stroeme{right:calc(var(--inspW) + 24px)}
+#stroeme .sh{display:flex;align-items:center;gap:6px}#stroeme .sh b{flex:1;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;font-size:12px}#stroeme .sh .x{border:0;background:transparent;font-size:16px;padding:0 4px}
+#stroeme .sn{margin:2px 0 6px;font-size:11px}
+#stroeme .sl{display:flex;flex-direction:column;margin-bottom:6px}
+#stroeme .si{display:flex;align-items:center;gap:8px;padding:5px 2px;cursor:pointer;border-radius:4px}#stroeme .si:hover{background:var(--soft)}#stroeme .si.dim span{color:var(--muted)}
+#stroeme .si i{width:12px;height:12px;border-radius:3px;flex:none}#stroeme .si span{flex:1}#stroeme .si small{color:var(--muted);font-size:11px;white-space:nowrap}#stroeme .si input{margin:0}
+#stroeme .chk{display:flex;gap:8px;align-items:center;padding:3px 0}
+#stroeme .sh2{margin:12px 0 6px;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;font-size:12px;font-weight:700}
+#stroeme .row{display:flex;gap:6px}#stroeme .row select{flex:1}
+#stroeme .ctl{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px}#stroeme .ctl input{flex:1}
+#stroeme .note{font-size:11px;margin-top:6px}
+#stAchse{position:fixed;left:calc(var(--railW) + var(--panelW) + 12px);right:12px;bottom:12px;height:142px;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);padding:8px 12px 6px;z-index:8;display:flex;flex-direction:column}
+#stAchse .ah{display:flex;align-items:center;gap:10px;font-size:12px}#stAchse .ah b{color:var(--navy)}#stAchse .ai{color:var(--muted)}#stAchse .ah .sp{flex:1}#stAchse .ah button.on{background:var(--navy);color:#fff}
+#stAchse canvas{flex:1 1 0;min-height:0;width:100%;cursor:pointer}
+body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #navHelp{bottom:164px}
+#stTour{position:fixed;left:50%;bottom:170px;transform:translateX(-50%);width:min(560px,calc(100% - 760px));min-width:360px;background:rgba(10,34,60,.96);color:#fff;border-radius:4px;padding:12px 16px;z-index:10;box-shadow:var(--shadow)}
+#stTour .tk{font-size:11px;color:#BDC6D1;text-transform:uppercase;letter-spacing:.05em}
+#stTour h3{color:#fff;font-size:16px;margin:4px 0}#stTour p{margin:0 0 10px;color:#fff;font-size:13px;line-height:1.45}
+#stTour .bar{height:3px;background:#144477;border-radius:2px;margin-bottom:10px}#stTour .bar i{display:block;height:100%;background:#0A967A;border-radius:2px;width:0}
+#stTour .row{display:flex;align-items:center;gap:8px}#stTour .sp{flex:1}
+#stTour button{background:#144477;border-color:#2D7694;color:#fff}#stTour button:hover{background:#2D7694}
+#stTour .ctl{color:#fff;display:flex;gap:6px;align-items:center;font-size:12px}#stTour input[type=range]{accent-color:#fff;width:110px}
+@media (max-width:1100px){#stTour{width:calc(100% - 40px);min-width:0}#stroeme{width:260px}}
+#stroeme .etchips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px}#stroeme .etchips .on{background:var(--navy);color:#fff}
+#flKarte{position:fixed;left:calc(var(--railW) + var(--panelW) + 70px);top:calc(var(--topH) + 96px);z-index:9;width:330px;max-height:calc(100vh - var(--topH) - 280px);overflow:auto;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);padding:10px 12px;font-size:12.5px}
+#flKarte .fkh{display:flex;gap:8px;align-items:center}#flKarte .fkh i{width:14px;height:14px;border-radius:3px;flex:none}#flKarte .fkh b{flex:1;color:var(--navy);font-size:13px}#flKarte .x{border:0;background:transparent;font-size:16px}
+#flKarte .fkst{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:8px 0;text-align:center;font-size:11px;color:var(--muted)}#flKarte .fkst span{background:#f3f5f7;border-radius:4px;padding:4px 2px}#flKarte .fkst b{display:block;color:var(--navy);font-size:13px}
+#flKarte .fks{display:flex;gap:8px;align-items:flex-start;padding:4px 0}#flKarte .fks>div{flex:1}#flKarte .fks i{width:22px;height:22px;border-radius:50%;background:#d4a514;color:#fff;font-style:normal;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex:none}
+#flKarte .fks.start i{background:#0A967A}#flKarte .fks.ziel i{background:#c0392b}
+#flKarte .fkleg{margin-left:10px;border-left:2px dashed #c3c9d0;padding:4px 0 4px 18px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+#flKarte .fkform{display:flex;flex-direction:column;gap:4px;width:100%;background:#fff8e1;padding:6px;border-radius:4px}#flKarte .fkform select{width:100%}#flKarte .fkform .row{display:flex;gap:4px}
+#flKarte .err{color:#c0392b}
+#tourPos{position:fixed;z-index:9;pointer-events:none;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%)}
+#tourPos span{background:#0A223C;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;white-space:nowrap}#tourPos svg{width:26px;height:22px;margin-top:-1px}
+.mlist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.mrow{border:1px solid #e1e6ea;border-radius:6px;background:#fff}.mrow.open{border-color:var(--accent)}
+.mrow .mh{display:flex;align-items:center;gap:8px;padding:7px 9px;cursor:pointer;flex-wrap:wrap}.mrow .mh:hover{background:var(--soft)}
+.mrow .mh b{flex:1;min-width:120px;font-size:12.5px;color:var(--navy)}.mrow .mh .note{flex-basis:100%;font-size:11px;padding-left:22px}.mrow .mh .mi{color:var(--muted)}
+.mrow .sw{width:14px;height:14px;border-radius:3px;flex:none}
+.mrow .mb{padding:4px 10px 10px;border-top:1px solid #e1e6ea}.mrow .mb .chk.full{grid-column:1/-1}
+#fzBar .fzw{display:inline-flex}#fzBar .fzw button{padding:4px 8px}#fzBar .fzw button.on{background:var(--navy);color:#fff}
+.mrow .mh .note{order:5}
+#flKarte{top:calc(var(--topH) + 150px)}
 
 </style>
 <!-- =====================================================================
@@ -6891,6 +6937,37 @@ HSS.cleanPts = (src) => {
   return out;
 };
 })();
+(function () {
+'use strict';
+const HSS = window.HSS;
+/* Anzeige-Punkte einer Route: begradigt (ohne Stichwege), aber mit allen Netzknoten, die auf
+   den geraden Stücken liegen – so teilen sich Flüsse auf demselben Flur dieselben Abschnitte und
+   können zu einem dicken Band zusammengefasst werden. Ergebnis: [[x, y, z, gf], …] */
+HSS.routeAnzeige = (r) => {
+  if (!r || !r.ok || !r.pts?.length) return [];
+  const net = HSS.net(), raw = r.pts.map((p, i) => { const n = net.nodes.get(r.nodes[i]); return [p[0], p[1], p[2], n?.gf]; });
+  // Etage für Knoten ohne Angabe (Orte, Wege) aus Nachbarn ergänzen
+  for (let i = 0; i < raw.length; i++) if (raw[i][3] === undefined) { const nb = raw.slice(Math.max(0, i - 3), i + 4).find(q => q[3] !== undefined && Math.abs(q[1] - raw[i][1]) < 1.5); raw[i][3] = nb ? nb[3] : 0; }
+  if (r.gezeichnet) return raw; // gezeichnete Wege genau so zeigen, wie sie gezeichnet wurden (auch schräg)
+  const cl = HSS.cleanPts(raw);
+  const gfAt = (x, y, z) => { let b = null; for (const q of raw) { const d = Math.abs(q[0] - x) + Math.abs(q[2] - z) + Math.abs(q[1] - y) * 3; if (!b || d < b.d) b = { d, g: q[3] }; } return b ? b.g : 0; };
+  const out = [];
+  for (let i = 0; i < cl.length; i++) {
+    const a = cl[i]; out.push([a[0], a[1], a[2], gfAt(a[0], a[1], a[2])]);
+    const b = cl[i + 1]; if (!b || Math.abs(a[1] - b[1]) > 0.3) continue;
+    const dx = b[0] - a[0], dz = b[2] - a[2], L2 = dx * dx + dz * dz; if (L2 < 1) continue;
+    const mid = [];
+    for (const q of raw) {
+      if (Math.abs(q[1] - a[1]) > 0.3) continue;
+      const t = ((q[0] - a[0]) * dx + (q[2] - a[2]) * dz) / L2; if (t <= 0.02 || t >= 0.98) continue;
+      const px = a[0] + dx * t, pz = a[2] + dz * t; if (Math.hypot(q[0] - px, q[2] - pz) > 0.25) continue;
+      mid.push([t, px, pz]);
+    }
+    mid.sort((u, v) => u[0] - v[0]).forEach(([, x, z]) => { const l = out[out.length - 1]; if (Math.hypot(l[0] - x, l[2] - z) > 0.3) out.push([x, a[1], z, out[out.length - 1][3]]); });
+  }
+  return out;
+};
+})();
 
 </script>
 <script>
@@ -11597,7 +11674,7 @@ FT.fluesse = (el, prj) => {
   UI.flowOpen = UI.flowOpen || new Set();
   const selF = U.byId(prj.flows, UI.flowSel); if (selF) UI.flowOpen.add(SK.of(selF, prj).id);
   const fahrten = f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1);
-  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
+  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini fx" data-fp="${f.id}" title="Fluss abfahren (Kamerafahrt durch die Stationen)">▶</button><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
   el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button class="primary" id="fDraw" title="Fluss im 3D-Bild mit geraden Abschnitten zeichnen, Höhenwechsel per Aufzug oder Treppe">✎ Fluss zeichnen</button></div>
   <div class="actions" style="margin-top:4px"><button id="fStd">Standardflüsse …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button><button id="fSek" title="Eigene Sektion anlegen">+ Sektion</button></div>
   <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse in ${gr.length} Sektionen · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(fahrten)))} Ladungen/Tag</div>
@@ -11629,7 +11706,8 @@ FT.fluesse = (el, prj) => {
   });
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
   $$('[data-fx]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const id = b.dataset.fx; HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== id)), { scope: 'none' }); if (UI.flowSel === id) { UI.flowSel = null; clearGhost(); } UI.renderPanel(); });
-  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
+  $$('[data-fp]', el).forEach(b => b.onclick = e => { e.stopPropagation(); HSS.flussbild?.startFlussTour(b.dataset.fp); });
+  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx || e.target.dataset.fp) return; UI.flowSel = li.dataset.f; UI.renderPanel(); if (HSS.flussbild?.on) { clearGhost(); HSS.flussbild.waehle(UI.flowSel); } else UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
   setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
@@ -11692,13 +11770,28 @@ UI.templateDialog = () => {
   });
 };
 FT.material = (el, prj) => {
-  el.innerHTML = `<p class="note">Materialgruppen bestimmen Reinheit, Ladeeinheit und Lade-/Entladezeiten. <b>Rein und unrein werden nie gemeinsam gefahren</b>; gleiche Reinheit vom selben Startort wird – wenn das Transportmittel bündelt – zu Touren zusammengefasst.</p>
-  <table class="t mt"><tr><th></th><th>Name</th><th>Reinheit</th><th class="n">je Ladung</th><th class="n">Laden</th><th class="n">Entl.</th><th>Bündeln</th></tr>
-  ${prj.materials.map((m, i) => `<tr data-i="${i}"><td><input type="color" data-k="farbe" value="${m.farbe}"></td><td><input type="text" data-k="name" value="${U.esc(m.name)}"><input type="text" data-k="einheit" value="${U.esc(m.einheit)}" title="Einheit" style="margin-top:2px;font-size:10.5px"></td><td><select data-k="reinheit">${Object.keys(HSS.REINHEIT).map(r => opt(r, r, m.reinheit)).join('')}</select></td><td><input type="number" data-k="proLadung" value="${m.proLadung}" style="width:52px"></td><td><input type="number" data-k="ladeMin" value="${m.ladeMin}" style="width:42px"></td><td><input type="number" data-k="entladeMin" value="${m.entladeMin}" style="width:42px"></td><td><input type="checkbox" data-k="buendelbar" ${m.buendelbar !== false ? 'checked' : ''}></td></tr>`).join('')}</table>
+  // Übersicht als Liste; ein Klick öffnet die Felder der Materialgruppe
+  const used = new Map(); for (const f of prj.flows) used.set(f.material, (used.get(f.material) || 0) + 1);
+  const RH = { rein: 'rein', unrein: 'unrein', neutral: 'neutral', person: 'Person', patient: 'Patient' };
+  el.innerHTML = `<p class="note">Materialgruppen bestimmen Reinheit, Ladeeinheit und Lade-/Entladezeiten. <b>Rein und unrein werden nie gemeinsam gefahren</b>; gleiche Reinheit vom selben Startort wird – wenn das Transportmittel bündelt – zu Touren zusammengefasst. Zum Bearbeiten eine Gruppe anklicken.</p>
+  <div class="mlist">${prj.materials.map((m, i) => `<div class="mrow ${UI.matOpen === m.id ? 'open' : ''}" data-i="${i}">
+    <div class="mh" data-mo><span class="sw" style="background:${m.farbe}"></span><b>${U.esc(m.name)}</b><span class="pill ${m.reinheit}">${RH[m.reinheit] || m.reinheit}</span><span class="note">${U.fmt(m.proLadung)} ${U.esc(m.einheit || '')}/Ladung · ${used.get(m.id) || 0} Flüsse</span><span class="mi">${UI.matOpen === m.id ? '▾' : '▸'}</span></div>
+    ${UI.matOpen === m.id ? `<div class="fg mb">
+      <label class="f full"><span>Name</span><input type="text" data-k="name" value="${U.esc(m.name)}"></label>
+      <label class="f"><span>Farbe</span><input type="color" data-k="farbe" value="${m.farbe}"></label>
+      <label class="f"><span>Reinheit</span><select data-k="reinheit">${Object.keys(HSS.REINHEIT).map(r => opt(r, RH[r] || r, m.reinheit)).join('')}</select></label>
+      <label class="f"><span>Einheit</span><input type="text" data-k="einheit" value="${U.esc(m.einheit || '')}"></label>
+      <label class="f"><span>je Ladung</span><input type="number" data-k="proLadung" value="${m.proLadung}" min="1"></label>
+      <label class="f"><span>Laden [min]</span><input type="number" data-k="ladeMin" value="${m.ladeMin}" min="0" step="0.5"></label>
+      <label class="f"><span>Entladen [min]</span><input type="number" data-k="entladeMin" value="${m.entladeMin}" min="0" step="0.5"></label>
+      <label class="chk full"><input type="checkbox" data-k="buendelbar" ${m.buendelbar !== false ? 'checked' : ''}> mit anderen Ladungen gleicher Reinheit bündeln</label>
+      ${used.get(m.id) ? '' : '<button class="mini danger" data-mdel>Gruppe löschen</button>'}</div>` : ''}</div>`).join('')}</div>
   <div class="actions"><button id="mAdd">+ Materialgruppe</button><button id="mReset">Standardwerte</button></div>`;
-  $$('.mt [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('tr').dataset.i, k = i.dataset.k; let v = i.type === 'checkbox' ? i.checked : i.type === 'number' ? +i.value : i.value; HSS.change('Material', p => (p.materials[idx][k] = v), { scope: 'none' }); });
-  $('#mAdd', el).onclick = () => { HSS.change('Material', p => p.materials.push({ id: U.uid('m'), name: 'Neue Gruppe', reinheit: 'rein', farbe: '#2D7694', einheit: 'Einheiten', proLadung: 1, ladeMin: 2, entladeMin: 2, buendelbar: true }), { scope: 'none' }); UI.renderPanel(); };
-  $('#mReset', el).onclick = () => { HSS.change('Material zurücksetzen', p => (p.materials = HSS.defaultMaterials()), { scope: 'none' }); UI.renderPanel(); };
+  $$('[data-mo]', el).forEach(h => h.onclick = () => { const m = prj.materials[+h.closest('.mrow').dataset.i]; UI.matOpen = UI.matOpen === m.id ? null : m.id; UI.renderPanel(); });
+  $$('.mrow [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('.mrow').dataset.i, k = i.dataset.k; let v = i.type === 'checkbox' ? i.checked : i.type === 'number' ? +i.value : i.value; HSS.change('Material', p => (p.materials[idx][k] = v), { scope: 'none' }); if (k !== 'farbe') UI.renderPanel(); });
+  $$('[data-mdel]', el).forEach(b => b.onclick = () => { const idx = +b.closest('.mrow').dataset.i; HSS.change('Material löschen', p => p.materials.splice(idx, 1), { scope: 'none' }); UI.matOpen = null; UI.renderPanel(); });
+  $('#mAdd', el).onclick = () => { const id = U.uid('m'); HSS.change('Material', p => p.materials.push({ id, name: 'Neue Gruppe', reinheit: 'rein', farbe: '#2D7694', einheit: 'Einheiten', proLadung: 1, ladeMin: 2, entladeMin: 2, buendelbar: true }), { scope: 'none' }); UI.matOpen = id; UI.renderPanel(); };
+  $('#mReset', el).onclick = async () => { if (!await UI.confirm('Standardwerte', 'Alle Materialgruppen auf die Standardwerte zurücksetzen?', 'Zurücksetzen')) return; HSS.change('Material zurücksetzen', p => (p.materials = HSS.defaultMaterials()), { scope: 'none' }); UI.renderPanel(); };
 };
 FT.fuhrpark = (el, prj) => {
   el.innerHTML = `<p class="note"><b>Anzahl leer</b> = die Simulation ermittelt den Bedarf. Mit Anzahl wird zusätzlich geprüft, ob es zu Wartezeiten kommt. Kapazität = Wagen/Behälter je Fahrt.</p>
@@ -14181,7 +14274,7 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 </script>
 <script>
 /* =====================================================================
-   HSS · flussbild.js – Warenströme als kräftige Bänder (Planungsmodell)
+   HSS · flussbild.js – Warenströme als kräftige Bänder
    Alle aktiven Flüsse werden über das Wegenetz geroutet und je Wegabschnitt
    und Warenstrom (Speisen, Wäsche, Sterilgut, Arzneimittel, Verbrauchsgüter,
    Betten, Abfall, Patiententransport, Post & Proben …) zusammengefasst: ein
@@ -14198,7 +14291,7 @@ HSS.on?.('rebuilt', () => { zoneLabels(); legend(); });
 const HSS = window.HSS, U = HSS.util;
 const { THREE, mergeGeometries } = window.THREEX;
 const S3 = HSS.s3, V = HSS.view;
-const FB = HSS.flussbild = HSS.stroeme = { on: false, move: true, routes: true, aus: new Set(), animating: false, personen: false, hour: null, playing: false, tour: null, zoom: 2.2, tempo: 1 };
+const FB = HSS.flussbild = HSS.stroeme = { on: false, move: true, routes: true, aus: new Set(), animating: false, personen: false, hour: null, playing: false, tour: null, zoom: 2.2, tempo: 1, etagen: new Set(), folge: true, sel: null };
 let layer = null, movers = [], routes = [], shell0 = null, famMats = new Map();
 try { FB.zoom = +(localStorage.getItem('hss-tourZoom') || 2.2) || 2.2; } catch (e) { /* ohne Speicher */ }
 
@@ -14230,7 +14323,7 @@ function collect() {
     if (!m) continue;
     const r = HSS.route(f.von, f.nach, t?.mittel || 'hand', m.reinheit || 'neutral'); if (!r.ok || r.pts.length < 2) continue;
     const perDay = HSS.flowPerDay(f), trips = perDay / Math.max(1, m.proLadung || 1);
-    out.push({ f, m, t, r, pts: HSS.cleanPts ? HSS.cleanPts(r.pts) : r.pts, s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
+    out.push({ f, m, t, r, pts: HSS.routeAnzeige(r), s: FB.stromOf(f, prj, fams), perDay, trips, prof: profil(f), mittel: t?.mittel || 'hand' });
   }
   return { all: out, fams };
 }
@@ -14240,6 +14333,9 @@ FB.stats = () => {
   return { all, fams, rows: fams.map(s => by.get(s.id)).filter(Boolean) };
 };
 const aktiv = s => !FB.aus.has(s.id) && (!isPers(s) || FB.personen);
+// Etagen: der Etagenleiste folgen (eine Etage gewählt) oder eigene Auswahl
+FB.gfSichtbar = g => { if (FB.folge && V.floor !== null && V.floor !== undefined) return g === V.floor; return !FB.etagen.size || FB.etagen.has(g); };
+const exY = q => [q[0], q[1] + (q[3] || 0) * (V.explode || 0), q[2], q[3]];
 
 /* ---------- Geometrie ---------- */
 const _d = new THREE.Vector3(), _q = new THREE.Quaternion();
@@ -14272,12 +14368,14 @@ FB.build = () => {
   const laneOf = new Map(used.map((s, i) => [s.id, (i - (used.length - 1) / 2) * 0.95]));
   const vis = all.filter(x => aktiv(x.s));
   const maxTrips = Math.max(1, ...vis.map(x => x.trips));
-  const rad = trips => 0.16 + 0.5 * Math.sqrt(trips / maxTrips);
+  const rad = trips => 0.3 + 0.55 * Math.sqrt(trips / maxTrips);
   // Abschnitte je Strom und Richtung zusammenfassen
   const seg = new Map();
   for (const x of vis) {
-    const P = x.pts, key = q => q.map(v => Math.round(v * 2) / 2).join(',');
+    const P = x.pts.map(exY), key = q => q.slice(0, 3).map(v => Math.round(v * 2) / 2).join(',');
     for (let i = 0; i < P.length - 1; i++) {
+      if (!FB.gfSichtbar(P[i][3]) && !FB.gfSichtbar(P[i + 1][3])) continue;
+      if (P[i][3] !== P[i + 1][3] && Math.abs(P[i][1] - P[i + 1][1]) < 0.5 && !(FB.gfSichtbar(P[i][3]) && FB.gfSichtbar(P[i + 1][3]))) continue;
       const k = x.s.id + '|' + key(P[i]) + '>' + key(P[i + 1]);
       const s = seg.get(k) || { s: x.s, a: P[i], b: P[i + 1], trips: 0, mittel: x.mittel }; s.trips += Math.max(0.2, x.trips); seg.set(k, s);
     }
@@ -14307,22 +14405,23 @@ FB.build = () => {
     if (tph < 0.05) continue;
     const n = FB.hour === null ? Math.min(3, Math.max(1, Math.round(Math.sqrt(x.trips) / 2))) : Math.min(3, Math.max(1, Math.round(tph / 2)));
     const lane = laneOf.get(x.s.id), h = (HOEHE[x.mittel] || 1.1);
-    const pts = offsetPts(x.pts, lane, 0); const pl = poly(pts); if (pl.L < 4) continue;
+    if (!x.pts.some(q => FB.gfSichtbar(q[3]))) continue;
+    const pts = offsetPts(x.pts.map(exY), lane, 0); const pl = poly(pts); pl.gf = x.pts.map(q => q[3]); if (pl.L < 4) continue;
     for (let i = 0; i < n; i++) {
       const mesh = moverMesh(x); mesh.userData.strom = x.s.id; layer.add(mesh);
-      movers.push({ mesh, pl, strom: x.s.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 9 : x.mittel === 'awt' ? 2.5 : 1.6, lift: h });
+      movers.push({ mesh, pl, strom: x.s.id, flow: x.f.id, phase: (i / n + Math.random() * 0.15) % 1, speed: x.mittel === 'lkw' || x.mittel === 'transporter' ? 11 : x.mittel === 'awt' ? 4 : 5, lift: h });
     }
   }
   if (FB.tour) tourGeo();
-  emphasis();
+  emphasis(); hilite(); if (FB.sel && !U.byId(HSS.project().flows, FB.sel)) FB.sel = null; karte2();
   FB.animating = (FB.move && movers.length > 0) || !!FB.tour || FB.playing;
   panel(); achse(); HSS.perf?.invalidate(3);
   if (HSS.ui?.current === 'fluesse' && !HSS.ui._fbRefresh) { HSS.ui._fbRefresh = setTimeout(() => { HSS.ui._fbRefresh = null; if (!document.activeElement?.closest?.('#panel')) HSS.ui.renderPanel(); }, 50); }
 };
 // Tour: nur der gezeigte Strom kräftig
 function emphasis() {
-  for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom ? 0.95 : 0.07) : 0.92; m.depthWrite = m.opacity > 0.5; }
-  for (const mv of movers) mv.mesh.visible = !FB.tour || mv.strom === FB.tour.strom;
+  for (const [id, m] of famMats) { m.opacity = FB.tour ? (id === FB.tour.strom && !FB.tour.flows ? 0.95 : 0.07) : FB.sel ? 0.18 : 0.92; m.depthWrite = m.opacity > 0.5; }
+  for (const mv of movers) { mv.aus = !!((FB.tour && (FB.tour.flows ? !FB.tour.flows.has(mv.flow) : mv.strom !== FB.tour.strom)) || (FB.sel && mv.flow !== FB.sel)); mv.mesh.visible = !mv.aus; }
   HSS.perf?.invalidate(2);
 }
 
@@ -14331,7 +14430,7 @@ function poly(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.p
 function at(pl, s, out) {
   if (s <= 0) return out.copy(pl.pts[0]); if (s >= pl.L) return out.copy(pl.pts[pl.pts.length - 1]);
   let lo = 1, hi = pl.cum.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (pl.cum[mid] < s) lo = mid + 1; else hi = mid; }
-  const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
+  at.i = lo; const t = (s - pl.cum[lo - 1]) / ((pl.cum[lo] - pl.cum[lo - 1]) || 1); return out.copy(pl.pts[lo - 1]).lerp(pl.pts[lo], t);
 }
 const box = (w, h, d, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); return o; };
 function truck() {
@@ -14365,9 +14464,10 @@ HSS.on('frame', dt => {
   if (!FB.animating || !layer?.visible) return;
   T += dt;
   for (const mv of movers) {
-    if (!mv.mesh.visible) continue;
+    if (mv.aus) continue;
     const s = ((T * mv.speed / mv.pl.L) + mv.phase) % 1;
-    at(mv.pl, s * mv.pl.L, _p); at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
+    at(mv.pl, s * mv.pl.L, _p); const gi = at.i ?? 1; at(mv.pl, Math.min(mv.pl.L, s * mv.pl.L + 1), _n);
+    mv.mesh.visible = FB.gfSichtbar(mv.pl.gf[gi]) || FB.gfSichtbar(mv.pl.gf[gi - 1]);
     mv.mesh.position.copy(_p);
     const dx = _n.x - _p.x, dz = _n.z - _p.z; if (dx * dx + dz * dz > 1e-5) mv.mesh.rotation.y = -Math.atan2(dz, dx);
   }
@@ -14387,6 +14487,9 @@ function panel() {
     <div class="sl">${rows.map(r => `<label class="si ${aktiv(r.s) ? '' : 'dim'}"><input type="checkbox" data-s="${U.esc(r.s.id)}" ${aktiv(r.s) ? 'checked' : ''}><i style="background:${U.esc(r.s.farbe)}"></i><span>${U.esc(r.s.name)}</span><small>${U.fmt(r.trips)} · ${U.fmt(r.km, 1)} km</small></label>`).join('') || '<div class="note" style="padding:6px 8px">Noch keine Flüsse – im Arbeitsbereich „Flüsse“ mit dem Fluss-Assistenten anlegen oder Standardflüsse übernehmen.</div>'}</div>
     <label class="chk"><input type="checkbox" data-sr ${FB.routes ? 'checked' : ''}> Routen anzeigen</label>
     <label class="chk"><input type="checkbox" data-sm ${FB.move ? 'checked' : ''}> Transporte animieren</label>
+    <div class="sh2">Etagen</div>
+    <label class="chk"><input type="checkbox" data-sf ${FB.folge ? 'checked' : ''}> der Etagenleiste folgen (eine Etage gewählt → nur deren Flüsse)</label>
+    <div class="etchips">${[...new Set(all.flatMap(x => x.pts.map(q => q[3])))].filter(g => g !== undefined).sort((a, b) => b - a).map(g => `<button class="mini ${FB.etagen.has(g) ? 'on' : ''}" data-et="${g}">${HSS.floorName(g)}</button>`).join('')}<button class="mini ${FB.etagen.size ? '' : 'on'}" data-et="">alle</button></div>
     ${rows.length ? `<div class="sh2">Prozess-Tour</div>
     <div class="row"><select data-ts>${rows.filter(r => !isPers(r.s)).map(r => opt(r.s.id, r.s.name, tourSel)).join('')}</select><button class="primary" data-tgo>▶ Start</button></div>
     <label class="ctl">Tempo <input type="range" data-tt min="0.5" max="4" step="0.25" value="${FB.tempo}"></label>
@@ -14398,6 +14501,8 @@ function panel() {
   el.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const id = c.dataset.s; if (id === 'personen' && c.checked) FB.personen = true; if (c.checked) FB.aus.delete(id); else FB.aus.add(id); FB.build(); });
   el.querySelector('[data-sr]').onchange = e => { FB.routes = e.target.checked; FB.build(); };
   el.querySelector('[data-sm]').onchange = e => { FB.move = e.target.checked; FB.build(); };
+  el.querySelector('[data-sf]').onchange = e => { FB.folge = e.target.checked; FB.build(); };
+  el.querySelectorAll('[data-et]').forEach(b => b.onclick = () => { const v = b.dataset.et; if (v === '') FB.etagen.clear(); else { const g = +v; if (FB.etagen.has(g)) FB.etagen.delete(g); else FB.etagen.add(g); } FB.build(); });
   const ts = el.querySelector('[data-ts]'); if (ts) { ts.onchange = () => (FB._tourSel = ts.value); el.querySelector('[data-tgo]').onclick = () => FB.startTour(ts.value); el.querySelector('[data-tt]').oninput = e => (FB.tempo = +e.target.value); }
   el.querySelectorAll('.tourZoomIn').forEach(i => i.oninput = () => setZoom(+i.value));
 }
@@ -14494,9 +14599,22 @@ function stationen(sid) {
   const cnt = {}; for (const x of mine) cnt[x.mittel] = (cnt[x.mittel] || 0) + x.trips; const mittel = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0], rein = mine[0].m.reinheit || 'neutral';
   return { s, st, mittel, rein, PL };
 }
-FB.startTour = sid => {
+// Stationen eines einzelnen Flusses (mit allen Etappen derselben Kette)
+function stationenFluss(fid) {
+  const prj = HSS.project(), f0 = U.byId(prj.flows, fid); if (!f0) return null;
+  const kette = f0.kette ? prj.flows.filter(f => f.kette === f0.kette).sort((a, b) => (a.etappe || 0) - (b.etappe || 0)) : [f0];
+  const PL = new Map(HSS.places(prj).map(p => [p.id, p])), m = U.byId(prj.materials, f0.material), t = U.byId(prj.transports, f0.transport);
+  const nm = id => PL.get(id)?.name || id, menge = `${U.fmt(HSS.flowPerDay(f0), 1)} ${m?.einheit || ''}/Tag`;
+  const st = [{ place: kette[0].von, titel: nm(kette[0].von).split(' · ').pop(), text: `${nm(kette[0].von)} – Start: ${menge} ${m?.name ? '(' + m.name + ')' : ''}, ${t?.name || ''}.` }];
+  kette.forEach((f, i) => st.push({ place: f.nach, titel: nm(f.nach).split(' · ').pop(), text: `${nm(f.nach)} – ${i === kette.length - 1 ? 'Ziel' : 'Zwischenstopp ' + (i + 1)}${f.fenster?.length ? ' · Zeitfenster ' + f.fenster.map(([a, b]) => U.hhmm(a * 60) + '–' + U.hhmm(b * 60)).join(', ') : ''}.` }));
+  return { s: FB.stromOf(f0, prj), st, mittel: t?.mittel || 'hand', rein: m?.reinheit || 'neutral', PL, flows: new Set(kette.map(f => f.id)), name: f0.name.replace(/ · Etappe \d+\/\d+$/, '') };
+}
+FB.startFlussTour = fid => FB.startTour(null, { flow: fid });
+FB.startTour = (sid, opt = {}) => {
   FB.stopTour();
-  const D = stationen(sid); if (!D) { HSS.ui.toast('Für diesen Strom gibt es keine Flüsse mit Route.', 3000); return; }
+  if (!FB.on) FB.set(true);
+  const D = opt.flow ? stationenFluss(opt.flow) : stationen(sid); if (!D) { HSS.ui.toast('Für diesen Strom gibt es keine Flüsse mit Route.', 3000); return; }
+  sid = D.s.id;
   if (FB.aus.has(sid)) { FB.aus.delete(sid); }
   const net = HSS.net(), pts = [], stops = [];
   const push = (p, y = 1.2) => pts.push(new THREE.Vector3(p[0], p[1] + y, p[2]));
@@ -14522,7 +14640,7 @@ FB.startTour = sid => {
   stops.sort((a, b) => a.i - b.i);
   const pl = poly(pts);
   stops.forEach(s => (s.s = pl.cum[Math.min(s.i, pl.cum.length - 1)]));
-  FB.tour = { strom: sid, name: D.s.name, farbe: D.s.farbe, pl, stops, next: 0, s: 0, pause: 0, paused: false, done: false, look: S3.controls.target.clone(), dir: new THREE.Vector3(1, 0, 0) };
+  FB.tour = { strom: sid, flows: D.flows || null, name: D.name || D.s.name, farbe: D.s.farbe, pl, stops, next: 0, s: 0, pause: 0, paused: false, done: false, look: S3.controls.target.clone(), dir: new THREE.Vector3(1, 0, 0) };
   if (!tourG.parent) S3.scene.add(tourG);
   tourG.visible = true; S3.controls.enabled = false; wheel();
   if (V.floor !== null && V.floor !== undefined) S3.setFloor(null);
@@ -14533,7 +14651,7 @@ FB.startTour = sid => {
 function tourGeo() { /* Route der Tour ist unabhängig vom Flussbild – nichts neu zu bauen */ }
 FB.stopTour = () => {
   if (!FB.tour) return;
-  FB.tour = null; tourG.visible = false; S3.controls.enabled = true;
+  FB.tour = null; hilite(); tourG.visible = false; S3.controls.enabled = true; const pe = document.getElementById('tourPos'); if (pe) pe.hidden = true;
   const c = document.getElementById('stTour'); if (c) c.hidden = true;
   emphasis(); FB.animating = (FB.move && movers.length > 0) || FB.playing;
 };
@@ -14580,6 +14698,9 @@ function updateTour(dt) {
   S3.camera.lookAt(t.look); S3.controls.target.copy(t.look);
   tMark.position.copy(p); tRing.position.copy(p); tPole.position.copy(p).add(new THREE.Vector3(0, 4.2 + 0.4 * Math.sin(performance.now() / 300), 0));
   tRing.scale.setScalar(1 + 0.25 * Math.sin(performance.now() / 250));
+  let pe = document.getElementById('tourPos'); if (!pe) { pe = document.createElement('div'); pe.id = 'tourPos'; pe.innerHTML = '<span>Aktuelle Position</span><svg viewBox="0 0 26 22"><path d="M0 0h26L13 22z" fill="#0A967A"/></svg>'; document.body.appendChild(pe); }
+  const sp = p.clone().add(new THREE.Vector3(0, 3, 0)).project(S3.camera), rc = S3.renderer.domElement.getBoundingClientRect();
+  pe.hidden = sp.z > 1; pe.style.left = (rc.left + (sp.x + 1) / 2 * rc.width) + 'px'; pe.style.top = (rc.top + (1 - sp.y) / 2 * rc.height) + 'px';
   const c = document.getElementById('stTour'); if (c) c.querySelector('.bar i').style.width = `${(t.s / (t.pl.L || 1)) * 100}%`;
   HSS.perf?.invalidate(1);
 }
@@ -14587,9 +14708,132 @@ window.addEventListener('keydown', e => { if (e.key === 'Escape' && FB.tour && !
 let wheelOn = false;
 const wheel = () => { if (wheelOn || !S3.renderer) return; wheelOn = true; S3.renderer.domElement.addEventListener('wheel', ev => { if (!FB.tour) return; ev.preventDefault(); ev.stopImmediatePropagation(); setZoom(FB.zoom * (ev.deltaY > 0 ? 1.12 : 1 / 1.12)); }, { passive: false, capture: true }); };
 
+/* ---------- Hervorhebung eines Flusses (angeklickt oder auf Tour) ---------- */
+let hl = null;
+function hilite() {
+  if (!layer) return;
+  if (hl) { layer.remove(hl); hl = null; }
+  const ids = FB.tour?.flows ? [...FB.tour.flows] : FB.sel ? [FB.sel] : [];
+  if (!ids.length) return;
+  const prj = HSS.project(); hl = new THREE.Group(); hl.renderOrder = 9;
+  for (const id of ids) {
+    const f = U.byId(prj.flows, id); if (!f) continue;
+    const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport), sk = FB.stromOf(f, prj);
+    const pts = HSS.routeAnzeige(HSS.route(f.von, f.nach, t?.mittel || 'hand', m?.reinheit || 'neutral')).map(exY).map(q => new THREE.Vector3(q[0], q[1] + 1.2, q[2]));
+    const gi = [], go = [];
+    for (let i = 0; i < pts.length - 1; i++) { const c = cyl(pts[i], pts[i + 1], 0.55), o = cyl(pts[i], pts[i + 1], 0.8); if (c) gi.push(c, ball(pts[i + 1], 0.55)); if (o) go.push(o); }
+    if (!gi.length) continue;
+    const mi = new THREE.Mesh(mergeGeometries(gi.map(g => g.index ? g.toNonIndexed() : g), false), new THREE.MeshBasicMaterial({ color: sk.farbe, depthTest: false }));
+    const mo = new THREE.Mesh(mergeGeometries(go.map(g => g.index ? g.toNonIndexed() : g), false), new THREE.MeshBasicMaterial({ color: '#ffffff', depthTest: false, transparent: true, opacity: 0.85 }));
+    mo.renderOrder = 30; mi.renderOrder = 31; hl.add(mo, mi);
+    for (const [q, c] of [[pts[0], '#0A967A'], [pts[pts.length - 1], '#c0392b']]) { const k = new THREE.Mesh(new THREE.SphereGeometry(1.3, 16, 12), new THREE.MeshBasicMaterial({ color: c, depthTest: false })); k.position.copy(q); k.renderOrder = 32; hl.add(k); }
+  }
+  layer.add(hl); HSS.perf?.invalidate(2);
+}
+
+/* ---------- Fluss im 3D-Bild anklicken ---------- */
+FB.pick = (ev) => {
+  const rc = S3.renderer.domElement.getBoundingClientRect(), mx = ev.clientX - rc.left, my = ev.clientY - rc.top;
+  const v = new THREE.Vector3(), scr = q => { v.set(q[0], q[1] + 1.2, q[2]).project(S3.camera); return v.z > 1 ? null : [(v.x + 1) / 2 * rc.width, (1 - v.y) / 2 * rc.height]; };
+  let best = null;
+  for (const x of routes) {
+    const P = x.pts.map(exY);
+    for (let i = 0; i < P.length - 1; i++) {
+      if (!FB.gfSichtbar(P[i][3]) && !FB.gfSichtbar(P[i + 1][3])) continue;
+      const a = scr(P[i]), b = scr(P[i + 1]); if (!a || !b) continue;
+      const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy || 1, t = U.clamp(((mx - a[0]) * dx + (my - a[1]) * dy) / L2, 0, 1);
+      const d = Math.hypot(a[0] + dx * t - mx, a[1] + dy * t - my);
+      if (d < 9 && (!best || d < best.d)) best = { d, f: x.f };
+    }
+  }
+  return best?.f || null;
+};
+FB.waehle = (fid) => { FB.sel = fid; emphasis(); hilite(); karte2(); };
+(() => {
+  const vp = document.getElementById('viewport'); if (!vp) return;
+  let dn = null;
+  vp.addEventListener('pointerdown', e => { dn = e.button === 0 ? [e.clientX, e.clientY] : null; }, true);
+  vp.addEventListener('pointerup', e => {
+    if (!FB.on || FB.tour || S3.tool || !dn || Math.hypot(e.clientX - dn[0], e.clientY - dn[1]) > 5 || e.target !== S3.renderer.domElement) return;
+    const f = FB.pick(e);
+    if (f) { e.stopPropagation(); FB.waehle(f.id); }
+    else if (FB.sel) FB.waehle(null);
+  }, true);
+})();
+
+/* ---------- Fluss-Karte: Stationen, Zwischenstopps, abfahren ---------- */
+const kette = (prj, f) => f.kette ? prj.flows.filter(x => x.kette === f.kette).sort((a, b) => (a.etappe || 0) - (b.etappe || 0)) : [f];
+function karte2() {
+  let el = document.getElementById('flKarte');
+  const prj = HSS.project(), f = FB.sel && U.byId(prj.flows, FB.sel);
+  if (!f) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement('div'); el.id = 'flKarte'; el.className = 'vw-fluss'; document.body.appendChild(el); }
+  const K = kette(prj, f), PL = new Map(HSS.places(prj).map(p => [p.id, p])), net = HSS.net();
+  const m = U.byId(prj.materials, f.material), t = U.byId(prj.transports, f.transport), sk = FB.stromOf(f, prj);
+  const nm = id => U.esc(PL.get(id)?.name || id);
+  let len = 0, min = 0, lifts = 0;
+  const legs = K.map(x => { const mm = U.byId(prj.materials, x.material), tt = U.byId(prj.transports, x.transport), r = HSS.route(x.von, x.nach, tt?.mittel || 'hand', mm?.reinheit || 'neutral'); len += r.len || 0; min += r.timeMin || 0; lifts += r.lifts.length; return { x, r }; });
+  const info = r => { const o = []; for (const L of r.lifts) { const N = net.lifts.find(q => q.id === L.lift); o.push(`↕ ${U.esc(N?.name || 'Aufzug')}: ${HSS.floorName(L.from)} → ${HSS.floorName(L.to)}`); } const out = U.sum(r.edges.filter(e => ['strasse', 'zufahrt', 'weg', 'gehweg'].includes(e.type)).map(e => e.len)); if (out > 15) o.push(`☁ ${U.fmt(out)} m im Freien`); if (r.gezeichnet) o.push('✎ gezeichneter Weg'); if (r.via) o.push('über festgelegten Aufzug/Treppe'); if (!r.ok) o.push('<span class="err">keine Route</span>'); return o.join('<br>'); };
+  el.hidden = false;
+  el.innerHTML = `<div class="fkh"><i style="background:${U.esc(sk.farbe)}"></i><b>${U.esc(f.name.replace(/ · Etappe \d+\/\d+$/, ''))}</b><button class="mini x" data-fx title="Schließen">×</button></div>
+    <div class="note">${U.esc(sk.name)} · ${U.esc(m?.name || '')} · ${U.esc(t?.name.split(' (')[0] || '')}</div>
+    <div class="fkst"><span><b>${U.fmt(HSS.flowPerDay(f), 1)}</b> ${U.esc(m?.einheit || '')}/Tag</span><span><b>${U.fmt(len)}</b> m</span><span><b>${U.dur ? U.dur(min) : U.fmt(min, 1) + ' min'}</b></span><span><b>${lifts}</b> Aufzug</span></div>
+    <div class="fkl">
+      <div class="fks start"><i>A</i><div><b>${nm(K[0].von)}</b><div class="note">Start</div></div></div>
+      ${legs.map(({ x, r }, i) => `<div class="fkleg"><div class="note">${info(r) || '→'}</div><button class="mini" data-add="${i}" title="Zwischenstopp in diesem Abschnitt einfügen">+ Zwischenstopp</button><div class="fkform" data-form="${i}" hidden></div></div>
+      <div class="fks ${i === K.length - 1 ? 'ziel' : 'zw'}"><i>${i === K.length - 1 ? 'B' : i + 1}</i><div><b>${nm(x.nach)}</b><div class="note">${i === K.length - 1 ? 'Ziel' : 'Zwischenstopp ' + (i + 1)}</div></div>${i < K.length - 1 ? `<button class="mini" data-rm="${i}" title="Zwischenstopp entfernen">×</button>` : ''}</div>`).join('')}
+    </div>
+    <div class="actions"><button class="primary" data-tour>▶ Fluss abfahren</button><button data-edit>Bearbeiten</button></div>`;
+  el.querySelector('[data-fx]').onclick = () => FB.waehle(null);
+  el.querySelector('[data-tour]').onclick = () => { const id = f.id; FB.waehle(null); FB.startFlussTour(id); };
+  el.querySelector('[data-edit]').onclick = () => { HSS.ui.flowTab = 'fluesse'; HSS.ui.flowSel = f.id; if (HSS.ui.current !== 'fluesse') HSS.ui.setWS('fluesse'); else HSS.ui.renderPanel(); document.body.classList.remove('nopanel'); };
+  el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => FB.stoppEntfernen(f.id, +b.dataset.rm));
+  el.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.add, box = el.querySelector(`[data-form="${i}"]`), FA = HSS.flussAssistent, B = FA.eigene(prj);
+    if (!box.hidden) { box.hidden = true; return; }
+    const st = { b: B[0].id, gf: FA.etagen(B[0]).includes(0) ? 0 : FA.etagen(B[0])[0], ort: '' };
+    const draw = () => {
+      const bb = U.byId(prj.buildings, st.b), orte = FA.orte(st.b, st.gf, prj).filter(p => p.role !== 'uebergabe');
+      box.innerHTML = `<select data-k="b">${B.map(x => `<option value="${x.id}" ${x.id === st.b ? 'selected' : ''}>${U.esc((x.kurz ? x.kurz + ' – ' : '') + x.name)}</option>`).join('')}</select>
+        <div class="row"><select data-k="gf">${FA.etagen(bb).map(g => `<option value="${g}" ${g === st.gf ? 'selected' : ''}>${HSS.floorName(g)}</option>`).join('')}</select>
+        <select data-k="ort"><option value="">Übergabepunkt auf der Etage</option>${orte.map(p => `<option value="${p.id}" ${p.id === st.ort ? 'selected' : ''}>${U.esc(p.name.split(' · ').slice(1).join(' · '))}</option>`).join('')}</select></div>
+        <button class="primary mini" data-ok>Zwischenstopp einfügen</button>`;
+      box.querySelectorAll('[data-k]').forEach(s2 => s2.onchange = () => { const k = s2.dataset.k; if (k === 'b') { st.b = s2.value; const fl = FA.etagen(U.byId(prj.buildings, st.b)); st.gf = fl.includes(0) ? 0 : fl[0]; st.ort = ''; } else if (k === 'gf') { st.gf = +s2.value; st.ort = ''; } else st.ort = s2.value; draw(); });
+      box.querySelector('[data-ok]').onclick = () => FB.zwischenstopp(f.id, i, st);
+    };
+    box.hidden = false; draw();
+  });
+}
+// Zwischenstopp einfügen: Abschnitt i (X → Y) wird zu X → P und P → Y
+FB.zwischenstopp = (fid, i, st) => {
+  let wieder = null;
+  HSS.change('Zwischenstopp einfügen', p => {
+    const f = U.byId(p.flows, fid), K = kette(p, f), leg = K[i]; if (!leg) return;
+    const P = st.ort || HSS.flussAssistent.uebergabe(p, st.b, st.gf); if (!P) return;
+    const k = f.kette || U.uid('kette'), base = f.name.replace(/ · Etappe \d+\/\d+$/, '');
+    const n = U.clone(leg); n.id = U.uid('flow'); n.von = P; n.nach = leg.nach; leg.nach = P;
+    for (const x of [leg, n]) { delete x.pfad; delete x.via; }
+    const neu = K.slice(0, i + 1).concat([n], K.slice(i + 1)); p.flows.splice(p.flows.indexOf(leg) + 1, 0, n);
+    neu.forEach((x, j) => { x.kette = k; x.etappe = j + 1; x.etappen = neu.length; x.name = `${base} · Etappe ${j + 1}/${neu.length}`; });
+    wieder = neu[0].id;
+  }, { scope: 'objects' });
+  if (wieder) { FB.sel = wieder; setTimeout(() => { FB.build(); FB.waehle(wieder); HSS.ui?.toast('Zwischenstopp eingefügt', 2500); }, 450); }
+};
+FB.stoppEntfernen = (fid, i) => {
+  let wieder = null;
+  HSS.change('Zwischenstopp entfernen', p => {
+    const f = U.byId(p.flows, fid), K = kette(p, f), a = K[i], b = K[i + 1]; if (!a || !b) return;
+    a.nach = b.nach; delete a.pfad; delete a.via; p.flows = p.flows.filter(x => x.id !== b.id);
+    const neu = K.filter(x => x.id !== b.id), base = f.name.replace(/ · Etappe \d+\/\d+$/, '');
+    neu.forEach((x, j) => { x.etappe = j + 1; x.etappen = neu.length; x.name = neu.length > 1 ? `${base} · Etappe ${j + 1}/${neu.length}` : base; });
+    wieder = neu[0].id;
+  }, { scope: 'none' });
+  if (wieder) setTimeout(() => { FB.build(); FB.waehle(wieder); }, 450);
+};
+
 /* ---------- Ein/Aus, Ansicht speichern ---------- */
 FB.set = (on) => {
-  if (!on) { FB.stopTour(); FB.playing = false; }
+  if (!on) { FB.stopTour(); FB.playing = false; FB.sel = null; karte2(); }
   FB.on = on; document.body.classList.toggle('flussbild', on);
   const b = document.getElementById('vFlow'); if (b) b.classList.toggle('on', on);
   // Gebäude gläsern, damit die Ströme im Haus zu sehen sind
@@ -14599,11 +14843,13 @@ FB.set = (on) => {
   FB.build();
 };
 FB.toggle = () => FB.set(!FB.on);
-FB.state = () => FB.on ? { aus: [...FB.aus], personen: FB.personen, routes: FB.routes, move: FB.move, hour: FB.hour } : null;
-FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.personen = !!st.personen; FB.routes = st.routes !== false; FB.move = st.move !== false; FB.hour = st.hour ?? null; if (FB.on) FB.build(); else FB.set(true); };
+FB.state = () => FB.on ? { aus: [...FB.aus], personen: FB.personen, routes: FB.routes, move: FB.move, hour: FB.hour, etagen: [...FB.etagen], folge: FB.folge } : null;
+FB.restore = st => { if (!st) return; FB.aus = new Set(st.aus || []); FB.personen = !!st.personen; FB.routes = st.routes !== false; FB.move = st.move !== false; FB.hour = st.hour ?? null; FB.etagen = new Set(st.etagen || []); FB.folge = st.folge !== false; if (FB.on) FB.build(); else FB.set(true); };
 // Projekt- oder Netzänderungen: neu aufbauen (verzögert)
 const rebuild = U.debounce(() => { if (FB.on) FB.build(); }, 400);
-HSS.on('changed', rebuild); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
+HSS.on('changed', rebuild);
+let lastView = '';
+HSS.on('view', () => { const k = V.floor + '|' + V.explode; if (k !== lastView) { lastView = k; if (FB.on) FB.build(); } }); HSS.on('loaded', () => { FB.stopTour(); FB.playing = false; FB.hour = null; if (FB.on) setTimeout(FB.build, 50); });
 // Arbeitsbereich „Flüsse“: Warenströme automatisch zeigen
 HSS.on('workspace', ws => { if (ws === 'fluesse' && !FB.on && HSS.project().flows.length && !HSS.state.viewer) { FB.set(true); HSS.ui.renderPanel(); } });
 // Simulations-Zeitleiste und Tagesachse nicht übereinander
@@ -14768,6 +15014,9 @@ const uebergabe = (p, bid, gf) => {
   p.objects.push(o);
   return o.id;
 };
+
+FA.uebergabe = uebergabe;
+FA.eigene = eigene;
 
 /* ---------- Höhenwechsel: Aufzüge und Treppenhäuser, die beide Etagen bedienen ---------- */
 FA.vertikal = (gfA, gfB, bevorzugt = []) => {
@@ -14936,7 +15185,8 @@ FA.zeigen = ids => {
 (function () {
 'use strict';
 const HSS = window.HSS, U = HSS.util, G = HSS.geo;
-const FZ = HSS.flussZeichnen = { letzterEnde: null };
+const FZ = HSS.flussZeichnen = { letzterEnde: null, winkel: 90 };
+try { FZ.winkel = +(localStorage.getItem('hss-fz-winkel') || 90); } catch (e) { /* ohne Speicher */ }
 const S3 = () => HSS.s3, V = () => HSS.view, UI = () => HSS.ui;
 const r1 = v => Math.round(v * 10) / 10;
 
@@ -14967,6 +15217,7 @@ FZ.start = (opt = {}) => {
       if (ev.key === 'Enter') { FZ.fertig(); return true; }
       if (ev.key === 'Backspace') { ev.preventDefault(); FZ.zurueck(); return true; }
       if (ev.key.toLowerCase() === 'v') { FZ.vertikal(); return true; }
+      if (ev.key.toLowerCase() === 'w') { FZ.setWinkel(FZ.winkel === 90 ? 45 : FZ.winkel === 45 ? 0 : 90); return true; }
       return false;
     },
     cancel() { bar(false); ghost(); UI().hint(null); FZ.st = null; }
@@ -14990,13 +15241,13 @@ function snap(ev, st, frei) {
   if (last) {
     const [eu, ev2] = axes(last.x, last.z), dx = x - last.x, dz = z - last.z;
     let du = dx * eu[0] + dz * eu[1], dv = dx * ev2[0] + dz * ev2[1];
-    if (!frei) { if (Math.abs(du) >= Math.abs(dv)) dv = 0; else du = 0; }
-    else { const a = Math.round(Math.atan2(dv, du) / (Math.PI / 4)) * (Math.PI / 4), L = Math.hypot(du, dv); du = Math.cos(a) * L; dv = Math.sin(a) * L; }
-    du = Math.round(du * 2) / 2; dv = Math.round(dv * 2) / 2;
+    const w = frei ? 0 : FZ.winkel;
+    if (w === 90) { if (Math.abs(du) >= Math.abs(dv)) dv = 0; else du = 0; du = Math.round(du * 2) / 2; dv = Math.round(dv * 2) / 2; }
+    else if (w === 45) { const a = Math.round(Math.atan2(dv, du) / (Math.PI / 4)) * (Math.PI / 4), L = Math.round(Math.hypot(du, dv) * 2) / 2; du = Math.cos(a) * L; dv = Math.sin(a) * L; }
     x = last.x + du * eu[0] + dv * ev2[0]; z = last.z + du * eu[1] + dv * ev2[1];
     // Andocken an Orte/Endpunkte entlang der gewählten Richtung
     for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
-    if (hit) { const mx = hit.x - last.x, mz = hit.z - last.z, mu = mx * eu[0] + mz * eu[1], mv = mx * ev2[0] + mz * ev2[1]; if (frei || Math.abs(mu) < 0.6 || Math.abs(mv) < 0.6) { x = hit.x; z = hit.z; } else hit = null; }
+    if (hit) { const mx = hit.x - last.x, mz = hit.z - last.z, mu = mx * eu[0] + mz * eu[1], mv = mx * ev2[0] + mz * ev2[1]; if (FZ.winkel !== 90 || frei || Math.abs(mu) < 0.6 || Math.abs(mv) < 0.6) { x = hit.x; z = hit.z; } else hit = null; }
   } else {
     for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r * 1.6 && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
     if (hit) { x = hit.x; z = hit.z; }
@@ -15022,7 +15273,7 @@ function preview(st) {
   if (st.cur) { const c = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.1, 24), new THREE.MeshBasicMaterial({ color: st.cur.name ? '#f2994a' : '#2D7694', depthTest: false, side: THREE.DoubleSide })); c.rotation.x = -Math.PI / 2; c.position.set(st.cur.x, Y(st.cur) - 0.6, st.cur.z); c.renderOrder = 42; L.add(c); }
   HSS.perf?.invalidate(2);
   const last = st.pts[st.pts.length - 1];
-  if (st.cur) UI().hint(st.cur.name ? `Andocken: <b>${U.esc(st.cur.name)}</b>` : last ? `Abschnitt ${U.fmt(Math.hypot(st.cur.x - last.x, st.cur.z - last.z), 1)} m · ${HSS.floorName(st.cur.gf)} · Alt: freie Richtung` : `Startpunkt setzen (dockt an Räume, Orte und Endpunkte an) · ${HSS.floorName(st.cur.gf)}`);
+  if (st.cur) UI().hint(st.cur.name ? `Andocken: <b>${U.esc(st.cur.name)}</b>` : last ? `Abschnitt ${U.fmt(Math.hypot(st.cur.x - last.x, st.cur.z - last.z), 1)} m · ${HSS.floorName(st.cur.gf)} · ${FZ.winkel === 90 ? 'rechtwinklig' : FZ.winkel === 45 ? '45°-Raster' : 'freie Richtung'} (Taste W wechselt, Alt: frei)` : `Startpunkt setzen (dockt an Räume, Orte und Endpunkte an) · ${HSS.floorName(st.cur.gf)}`);
 }
 function info(st) {
   const el = document.getElementById('fzBar'); if (!el) return;
@@ -15037,10 +15288,11 @@ function bar(on) {
   if (!on) { if (el) el.hidden = true; return; }
   if (!el) {
     el = document.createElement('div'); el.id = 'fzBar';
-    el.innerHTML = `<b>✎ Fluss zeichnen</b><span class="fzi"></span><button data-ld title="Am Endpunkt des zuletzt gezeichneten Flusses ansetzen">↳ am letzten Endpunkt</button><button data-v title="An dieser Stelle senkrecht zu einer anderen Etage (Taste V)">↕ Vertikal …</button><button data-z title="Letzten Punkt entfernen (Rücktaste)">↶</button><button class="primary" data-ok title="Fertig (Enter oder Doppelklick)">✓ Fertig</button><button data-x title="Abbrechen (Esc)">✕</button>
-      <div class="fzh">Klick = Punkt · gerade Abschnitte rasten rechtwinklig ein · Etage über die Etagenleiste wechseln oder ↕ Vertikal</div>`;
+    el.innerHTML = `<b>✎ Fluss zeichnen</b><span class="fzi"></span><button data-ld title="Am Endpunkt des zuletzt gezeichneten Flusses ansetzen">↳ am letzten Endpunkt</button><span class="seg fzw">${[[90, '90°'], [45, '45°'], [0, 'frei']].map(([w, t]) => `<button data-w="${w}" title="${w === 90 ? 'nur rechtwinklig' : w === 45 ? 'auch schräg im 45°-Raster' : 'beliebige schräge Linien'}">${t}</button>`).join('')}</span><button data-v title="An dieser Stelle senkrecht zu einer anderen Etage (Taste V)">↕ Vertikal …</button><button data-z title="Letzten Punkt entfernen (Rücktaste)">↶</button><button class="primary" data-ok title="Fertig (Enter oder Doppelklick)">✓ Fertig</button><button data-x title="Abbrechen (Esc)">✕</button>
+      <div class="fzh">Klick = Punkt · Winkel 90° / 45° / frei (Taste W) · Etage über die Etagenleiste wechseln oder ↕ Vertikal</div>`;
     document.body.appendChild(el);
     el.querySelector('[data-v]').onclick = () => FZ.vertikal();
+    el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => FZ.setWinkel(+b.dataset.w));
     el.querySelector('[data-z]').onclick = () => FZ.zurueck();
     el.querySelector('[data-ok]').onclick = () => FZ.fertig();
     el.querySelector('[data-x]').onclick = () => S3().setTool(null);
@@ -15051,7 +15303,9 @@ function bar(on) {
     };
   }
   el.hidden = false; el.querySelector('[data-ld]').hidden = !FZ.letzterEnde;
+  el.querySelectorAll('[data-w]').forEach(b => b.classList.toggle('on', +b.dataset.w === FZ.winkel));
 }
+FZ.setWinkel = w => { FZ.winkel = w; try { localStorage.setItem('hss-fz-winkel', w); } catch (e) { /* ohne Speicher */ } document.querySelectorAll('#fzBar [data-w]').forEach(b => b.classList.toggle('on', +b.dataset.w === w)); HSS.ui.toast(w === 90 ? 'Rechtwinklig zeichnen' : w === 45 ? 'Schräg im 45°-Raster zeichnen' : 'Freie schräge Linien', 1500); };
 FZ.zurueck = () => { const st = FZ.st; if (!st || !st.pts.length) return; st.pts.pop(); if (!st.pts.length) st.von = null; const l = st.pts[st.pts.length - 1]; if (l && l.gf !== V().floor) S3().setFloor(l.gf); preview(st); info(st); };
 
 /* ---------- Vertikal ---------- */
