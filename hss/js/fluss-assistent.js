@@ -60,6 +60,9 @@ const uebergabe = (p, bid, gf) => {
   return o.id;
 };
 
+FA.uebergabe = uebergabe;
+FA.eigene = eigene;
+
 /* ---------- Höhenwechsel: Aufzüge und Treppenhäuser, die beide Etagen bedienen ---------- */
 FA.vertikal = (gfA, gfB, bevorzugt = []) => {
   const prj = HSS.project(), out = [];

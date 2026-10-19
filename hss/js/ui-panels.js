@@ -451,7 +451,7 @@ FT.fluesse = (el, prj) => {
   UI.flowOpen = UI.flowOpen || new Set();
   const selF = U.byId(prj.flows, UI.flowSel); if (selF) UI.flowOpen.add(SK.of(selF, prj).id);
   const fahrten = f => HSS.flowPerDay(f) / (mats.get(f.material)?.proLadung || 1);
-  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
+  const row = f => { const m = mats.get(f.material); const t = U.byId(prj.transports, f.transport); return `<div class="li ${UI.flowSel === f.id ? 'on' : ''}" data-f="${f.id}"><input type="checkbox" data-fa="${f.id}" ${f.aktiv !== false ? 'checked' : ''} title="aktiv"><span class="sw" style="background:${m?.farbe || '#999'}"></span><span class="t" title="${U.esc(f.name)}">${U.esc(f.name)}${f.pfad ? ' <span class="pill">gezeichnet</span>' : f.via ? ' <span class="pill">über …</span>' : ''}<br><span class="note">${U.fmt(HSS.flowPerDay(f), 1)} ${U.esc(m?.einheit || '')}/Tag · ${U.esc(t?.name.split(' (')[0] || '')} · ${fenster(f)}</span></span><span class="pill ${m?.reinheit}">${m?.reinheit || ''}</span><button class="mini fx" data-fp="${f.id}" title="Fluss abfahren (Kamerafahrt durch die Stationen)">▶</button><button class="mini danger fx" data-fx="${f.id}" title="Fluss löschen">×</button></div>`; };
   el.innerHTML = `<div class="actions" style="margin-top:0"><button class="primary" id="fWiz" title="Gebäude und Etage für Start, Zwischenstopps und Ziel wählen – dann Menge angeben">＋ Fluss-Assistent</button><button class="primary" id="fDraw" title="Fluss im 3D-Bild mit geraden Abschnitten zeichnen, Höhenwechsel per Aufzug oder Treppe">✎ Fluss zeichnen</button></div>
   <div class="actions" style="margin-top:4px"><button id="fStd">Standardflüsse …</button><button id="fNew" title="Leeren Fluss anlegen und im Formular ausfüllen">+ leer</button><button id="fSek" title="Eigene Sektion anlegen">+ Sektion</button></div>
   <div class="note" style="margin:6px 0">${prj.flows.length} Flüsse in ${gr.length} Sektionen · ${U.fmt(U.sum(prj.flows.filter(f => f.aktiv !== false).map(fahrten)))} Ladungen/Tag</div>
@@ -483,7 +483,8 @@ FT.fluesse = (el, prj) => {
   });
   $$('[data-fa]', el).forEach(c => c.onclick = e => { e.stopPropagation(); HSS.change('Fluss aktiv', p => (U.byId(p.flows, c.dataset.fa).aktiv = c.checked), { scope: 'none' }); });
   $$('[data-fx]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const id = b.dataset.fx; HSS.change('Fluss löschen', p => (p.flows = p.flows.filter(x => x.id !== id)), { scope: 'none' }); if (UI.flowSel === id) { UI.flowSel = null; clearGhost(); } UI.renderPanel(); });
-  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx) return; UI.flowSel = li.dataset.f; UI.renderPanel(); UI.showRoute(UI.flowSel); });
+  $$('[data-fp]', el).forEach(b => b.onclick = e => { e.stopPropagation(); HSS.flussbild?.startFlussTour(b.dataset.fp); });
+  $$('[data-f]', el).forEach(li => li.onclick = e => { if (e.target.dataset.fa || e.target.dataset.fx || e.target.dataset.fp) return; UI.flowSel = li.dataset.f; UI.renderPanel(); if (HSS.flussbild?.on) { clearGhost(); HSS.flussbild.waehle(UI.flowSel); } else UI.showRoute(UI.flowSel); });
   const f = U.byId(prj.flows, UI.flowSel); if (!f) return;
   setTimeout(() => el.querySelector('.li.on')?.scrollIntoView({ block: 'nearest' }), 0);
   const m = mats.get(f.material), t = U.byId(prj.transports, f.transport);
@@ -546,13 +547,28 @@ UI.templateDialog = () => {
   });
 };
 FT.material = (el, prj) => {
-  el.innerHTML = `<p class="note">Materialgruppen bestimmen Reinheit, Ladeeinheit und Lade-/Entladezeiten. <b>Rein und unrein werden nie gemeinsam gefahren</b>; gleiche Reinheit vom selben Startort wird – wenn das Transportmittel bündelt – zu Touren zusammengefasst.</p>
-  <table class="t mt"><tr><th></th><th>Name</th><th>Reinheit</th><th class="n">je Ladung</th><th class="n">Laden</th><th class="n">Entl.</th><th>Bündeln</th></tr>
-  ${prj.materials.map((m, i) => `<tr data-i="${i}"><td><input type="color" data-k="farbe" value="${m.farbe}"></td><td><input type="text" data-k="name" value="${U.esc(m.name)}"><input type="text" data-k="einheit" value="${U.esc(m.einheit)}" title="Einheit" style="margin-top:2px;font-size:10.5px"></td><td><select data-k="reinheit">${Object.keys(HSS.REINHEIT).map(r => opt(r, r, m.reinheit)).join('')}</select></td><td><input type="number" data-k="proLadung" value="${m.proLadung}" style="width:52px"></td><td><input type="number" data-k="ladeMin" value="${m.ladeMin}" style="width:42px"></td><td><input type="number" data-k="entladeMin" value="${m.entladeMin}" style="width:42px"></td><td><input type="checkbox" data-k="buendelbar" ${m.buendelbar !== false ? 'checked' : ''}></td></tr>`).join('')}</table>
+  // Übersicht als Liste; ein Klick öffnet die Felder der Materialgruppe
+  const used = new Map(); for (const f of prj.flows) used.set(f.material, (used.get(f.material) || 0) + 1);
+  const RH = { rein: 'rein', unrein: 'unrein', neutral: 'neutral', person: 'Person', patient: 'Patient' };
+  el.innerHTML = `<p class="note">Materialgruppen bestimmen Reinheit, Ladeeinheit und Lade-/Entladezeiten. <b>Rein und unrein werden nie gemeinsam gefahren</b>; gleiche Reinheit vom selben Startort wird – wenn das Transportmittel bündelt – zu Touren zusammengefasst. Zum Bearbeiten eine Gruppe anklicken.</p>
+  <div class="mlist">${prj.materials.map((m, i) => `<div class="mrow ${UI.matOpen === m.id ? 'open' : ''}" data-i="${i}">
+    <div class="mh" data-mo><span class="sw" style="background:${m.farbe}"></span><b>${U.esc(m.name)}</b><span class="pill ${m.reinheit}">${RH[m.reinheit] || m.reinheit}</span><span class="note">${U.fmt(m.proLadung)} ${U.esc(m.einheit || '')}/Ladung · ${used.get(m.id) || 0} Flüsse</span><span class="mi">${UI.matOpen === m.id ? '▾' : '▸'}</span></div>
+    ${UI.matOpen === m.id ? `<div class="fg mb">
+      <label class="f full"><span>Name</span><input type="text" data-k="name" value="${U.esc(m.name)}"></label>
+      <label class="f"><span>Farbe</span><input type="color" data-k="farbe" value="${m.farbe}"></label>
+      <label class="f"><span>Reinheit</span><select data-k="reinheit">${Object.keys(HSS.REINHEIT).map(r => opt(r, RH[r] || r, m.reinheit)).join('')}</select></label>
+      <label class="f"><span>Einheit</span><input type="text" data-k="einheit" value="${U.esc(m.einheit || '')}"></label>
+      <label class="f"><span>je Ladung</span><input type="number" data-k="proLadung" value="${m.proLadung}" min="1"></label>
+      <label class="f"><span>Laden [min]</span><input type="number" data-k="ladeMin" value="${m.ladeMin}" min="0" step="0.5"></label>
+      <label class="f"><span>Entladen [min]</span><input type="number" data-k="entladeMin" value="${m.entladeMin}" min="0" step="0.5"></label>
+      <label class="chk full"><input type="checkbox" data-k="buendelbar" ${m.buendelbar !== false ? 'checked' : ''}> mit anderen Ladungen gleicher Reinheit bündeln</label>
+      ${used.get(m.id) ? '' : '<button class="mini danger" data-mdel>Gruppe löschen</button>'}</div>` : ''}</div>`).join('')}</div>
   <div class="actions"><button id="mAdd">+ Materialgruppe</button><button id="mReset">Standardwerte</button></div>`;
-  $$('.mt [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('tr').dataset.i, k = i.dataset.k; let v = i.type === 'checkbox' ? i.checked : i.type === 'number' ? +i.value : i.value; HSS.change('Material', p => (p.materials[idx][k] = v), { scope: 'none' }); });
-  $('#mAdd', el).onclick = () => { HSS.change('Material', p => p.materials.push({ id: U.uid('m'), name: 'Neue Gruppe', reinheit: 'rein', farbe: '#2D7694', einheit: 'Einheiten', proLadung: 1, ladeMin: 2, entladeMin: 2, buendelbar: true }), { scope: 'none' }); UI.renderPanel(); };
-  $('#mReset', el).onclick = () => { HSS.change('Material zurücksetzen', p => (p.materials = HSS.defaultMaterials()), { scope: 'none' }); UI.renderPanel(); };
+  $$('[data-mo]', el).forEach(h => h.onclick = () => { const m = prj.materials[+h.closest('.mrow').dataset.i]; UI.matOpen = UI.matOpen === m.id ? null : m.id; UI.renderPanel(); });
+  $$('.mrow [data-k]', el).forEach(i => i.onchange = () => { const idx = +i.closest('.mrow').dataset.i, k = i.dataset.k; let v = i.type === 'checkbox' ? i.checked : i.type === 'number' ? +i.value : i.value; HSS.change('Material', p => (p.materials[idx][k] = v), { scope: 'none' }); if (k !== 'farbe') UI.renderPanel(); });
+  $$('[data-mdel]', el).forEach(b => b.onclick = () => { const idx = +b.closest('.mrow').dataset.i; HSS.change('Material löschen', p => p.materials.splice(idx, 1), { scope: 'none' }); UI.matOpen = null; UI.renderPanel(); });
+  $('#mAdd', el).onclick = () => { const id = U.uid('m'); HSS.change('Material', p => p.materials.push({ id, name: 'Neue Gruppe', reinheit: 'rein', farbe: '#2D7694', einheit: 'Einheiten', proLadung: 1, ladeMin: 2, entladeMin: 2, buendelbar: true }), { scope: 'none' }); UI.matOpen = id; UI.renderPanel(); };
+  $('#mReset', el).onclick = async () => { if (!await UI.confirm('Standardwerte', 'Alle Materialgruppen auf die Standardwerte zurücksetzen?', 'Zurücksetzen')) return; HSS.change('Material zurücksetzen', p => (p.materials = HSS.defaultMaterials()), { scope: 'none' }); UI.renderPanel(); };
 };
 FT.fuhrpark = (el, prj) => {
   el.innerHTML = `<p class="note"><b>Anzahl leer</b> = die Simulation ermittelt den Bedarf. Mit Anzahl wird zusätzlich geprüft, ob es zu Wartezeiten kommt. Kapazität = Wagen/Behälter je Fahrt.</p>

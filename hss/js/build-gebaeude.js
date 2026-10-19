@@ -129,12 +129,13 @@ HSS.buildPart = (pt, building, view = {}) => {
   const grp = new THREE.Group(); grp.userData = { kind: 'part', id: pt.id, building: building.id };
   const fp = HSS.partFootprint(pt), outer = fp.outer, holes = fp.holes;
   const fc = Object.assign({ type: 'band', color: '#e9ecef', accent: '#144477', glass: '#6f8fa8' }, pt.facade);
-  const transparent = view.shell === 'transparent';
+  const transparent = view.shell === 'transparent' || view.shell === 'glas';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
   const wallBase = fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
-  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide })) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
+  const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase + view.shell, () => new THREE.MeshStandardMaterial({ color: view.shell === 'glas' ? '#dfe7ee' : wallBase, transparent: true, opacity: view.shell === 'glas' ? 0.14 : 0.18, depthWrite: false, side: THREE.DoubleSide })) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
-  const slabMat = LM('#d5d8dc'), roofMat = LM(pt.roof?.type === 'gruen' ? '#7fa36a' : (pt.roof?.color || '#9aa3ad'));
+  const glasHull = view.shell === 'glas', tMat = (key, c, o) => HSS.library.shared(key + c + o, () => new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }));
+  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : (pt.roof?.color || '#9aa3ad'));
   const floors = HSS.partFloors(pt);
   const ex = view.explode || 0;
   const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];

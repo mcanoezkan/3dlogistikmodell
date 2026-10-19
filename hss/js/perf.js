@@ -29,6 +29,7 @@ function wantsContinuous() {
   if (HSS.player?.playing) return 'sim';
   if (HSS.player?.agents?.size && S3.layers.agents.visible) return 'sim';
   if (P.trafficAnim && HSS.traffic.agents.length && S3.layers.traffic.visible) return 'traffic';
+  if (HSS.flussbild?.animating && S3.layers.flows?.visible) return 'traffic';
   if (P.anim > 0) return 'anim';
   return null;
 }

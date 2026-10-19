@@ -446,3 +446,34 @@ HSS.cleanPts = (src) => {
   return out;
 };
 })();
+(function () {
+'use strict';
+const HSS = window.HSS;
+/* Anzeige-Punkte einer Route: begradigt (ohne Stichwege), aber mit allen Netzknoten, die auf
+   den geraden Stücken liegen – so teilen sich Flüsse auf demselben Flur dieselben Abschnitte und
+   können zu einem dicken Band zusammengefasst werden. Ergebnis: [[x, y, z, gf], …] */
+HSS.routeAnzeige = (r) => {
+  if (!r || !r.ok || !r.pts?.length) return [];
+  const net = HSS.net(), raw = r.pts.map((p, i) => { const n = net.nodes.get(r.nodes[i]); return [p[0], p[1], p[2], n?.gf]; });
+  // Etage für Knoten ohne Angabe (Orte, Wege) aus Nachbarn ergänzen
+  for (let i = 0; i < raw.length; i++) if (raw[i][3] === undefined) { const nb = raw.slice(Math.max(0, i - 3), i + 4).find(q => q[3] !== undefined && Math.abs(q[1] - raw[i][1]) < 1.5); raw[i][3] = nb ? nb[3] : 0; }
+  if (r.gezeichnet) return raw; // gezeichnete Wege genau so zeigen, wie sie gezeichnet wurden (auch schräg)
+  const cl = HSS.cleanPts(raw);
+  const gfAt = (x, y, z) => { let b = null; for (const q of raw) { const d = Math.abs(q[0] - x) + Math.abs(q[2] - z) + Math.abs(q[1] - y) * 3; if (!b || d < b.d) b = { d, g: q[3] }; } return b ? b.g : 0; };
+  const out = [];
+  for (let i = 0; i < cl.length; i++) {
+    const a = cl[i]; out.push([a[0], a[1], a[2], gfAt(a[0], a[1], a[2])]);
+    const b = cl[i + 1]; if (!b || Math.abs(a[1] - b[1]) > 0.3) continue;
+    const dx = b[0] - a[0], dz = b[2] - a[2], L2 = dx * dx + dz * dz; if (L2 < 1) continue;
+    const mid = [];
+    for (const q of raw) {
+      if (Math.abs(q[1] - a[1]) > 0.3) continue;
+      const t = ((q[0] - a[0]) * dx + (q[2] - a[2]) * dz) / L2; if (t <= 0.02 || t >= 0.98) continue;
+      const px = a[0] + dx * t, pz = a[2] + dz * t; if (Math.hypot(q[0] - px, q[2] - pz) > 0.25) continue;
+      mid.push([t, px, pz]);
+    }
+    mid.sort((u, v) => u[0] - v[0]).forEach(([, x, z]) => { const l = out[out.length - 1]; if (Math.hypot(l[0] - x, l[2] - z) > 0.3) out.push([x, a[1], z, out[out.length - 1][3]]); });
+  }
+  return out;
+};
+})();
