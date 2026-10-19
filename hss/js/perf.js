@@ -320,7 +320,7 @@ P.init = () => {
   S3.controls.addEventListener('change', () => P.invalidate(1));
   S3.tc.addEventListener('change', () => P.invalidate(1));
   let q = null; try { q = localStorage.getItem('hss-qualitaet'); } catch (e) { /* */ }
-  if (q !== null && q !== 'auto') { P.qLocked = true; P.setQuality(+q); }
+  if (q !== null && q !== 'auto') { P.qLocked = true; P.setQuality(q === 'fl' ? 0 : +q); }
   else P.setQuality((window.devicePixelRatio || 1) > 1.3 ? 2 : 1);
   // Sonne/Tageszeit ändert Schatten
   const setSun0 = S3.setSun; S3.setSun = h => { setSun0(h); P.shadows(); };
@@ -332,7 +332,12 @@ P.bindUI = () => {
   const q = document.getElementById('vQ'), t = document.getElementById('vTraffic'); if (!q || !t) return;
   let v = 'auto'; try { v = localStorage.getItem('hss-qualitaet') || 'auto'; } catch (e) { /* */ }
   q.value = v;
-  q.onchange = () => { try { localStorage.setItem('hss-qualitaet', q.value); } catch (e) { /* */ } if (q.value === 'auto') { P.qLocked = false; P.setQuality(P.qIndex); } else { P.qLocked = true; P.setQuality(+q.value); } };
+  // maximal flüssig: niedrige Auflösung, keine Schatten, kein Verkehr, Umgebung nur nah
+  const fluessig = on => { S3.sun.castShadow = !on; P.shadows(); if (on) { P.qLocked = true; P.setQuality(0); if (P.trafficAnim) { P.setTraffic(false); t.classList.remove('on'); S3.layers.traffic.visible = false; } if ((HSS.view.umgebung || 'alle') === 'alle') { HSS.view.umgebung = 'nah'; const u = document.getElementById('vUmg'); if (u) u.value = 'nah'; } S3.rebuild('all'); } };
+  if (v === 'fl') setTimeout(() => fluessig(true), 0);
+  const u = document.getElementById('vUmg');
+  if (u) { let uv = 'alle'; try { uv = localStorage.getItem('hss-umgebung') || 'alle'; } catch (e) { /* */ } HSS.view.umgebung = uv; u.value = uv; u.onchange = () => { HSS.view.umgebung = u.value; try { localStorage.setItem('hss-umgebung', u.value); } catch (e) { /* */ } S3.rebuild('all'); }; }
+  q.onchange = () => { try { localStorage.setItem('hss-qualitaet', q.value); } catch (e) { /* */ } if (q.value === 'fl') { fluessig(true); return; } fluessig(false); if (q.value === 'auto') { P.qLocked = false; P.setQuality(P.qIndex); } else { P.qLocked = true; P.setQuality(+q.value); } };
   HSS.on('quality', i => { if (q.value === 'auto') q.title = 'automatisch – derzeit „' + Q[i].name + '“'; });
   t.classList.toggle('on', P.trafficAnim);
   t.onclick = () => { P.setTraffic(!P.trafficAnim); t.classList.toggle('on', P.trafficAnim); S3.layers.traffic.visible = P.trafficAnim; P.invalidate(); };

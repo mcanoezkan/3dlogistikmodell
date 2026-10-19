@@ -104,6 +104,7 @@ UI.inspector = () => {
 };
 const head = (kicker, title, extra = '') => `<div class="ih"><div><div class="kicker">${kicker}</div><h2>${U.esc(title)}</h2>${extra}</div><button class="x" title="Auswahl aufheben (Esc)">×</button></div>`;
 const INSP = {}, INSP_BIND = {};
+UI.INSP = INSP; UI.INSP_BIND = INSP_BIND;
 const partOpts = (sel, excl, allowNone = true) => (allowNone ? opt('', '– keins –', sel) : '') + HSS.project().buildings.flatMap(b => b.parts.filter(p => p.id !== excl).map(p => opt(p.id, `${b.kurz || b.name} · ${p.name}`, sel))).join('');
 const floorOpts = (pt, sel) => HSS.partFloors(pt).map(f => opt(f, HSS.floorName(HSS.globalFloor(pt, f)), sel)).join('');
 

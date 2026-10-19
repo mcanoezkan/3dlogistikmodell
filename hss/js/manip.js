@@ -190,7 +190,7 @@ function onDown(ev) {
   const hd = pickHandle(ev);
   if (hd) { start(ev, hd.userData, sel); ev.stopImmediatePropagation(); return; }
   const h = S3.pick(ev);
-  if (sameSel(h, sel) && ['part', 'area', 'object', 'path', 'room', 'bridge'].includes(sel.kind) && sel.kind !== 'bridge') { D = { armed: true, op: 'move', sel: U.clone(sel), x0: ev.clientX, y0: ev.clientY, p0: h.point.clone(), ev0: ev }; S3.controls.enabled = false; }
+  if (sameSel(h, sel) && ['part', 'area', 'object', 'path', 'room', 'bridge', 'wall'].includes(sel.kind) && sel.kind !== 'bridge') { D = { armed: true, op: 'move', sel: U.clone(sel), x0: ev.clientX, y0: ev.clientY, p0: h.point.clone(), ev0: ev }; S3.controls.enabled = false; }
 }
 function start(ev, hd, sel) {
   D = Object.assign({ armed: false, sel: U.clone(sel), x0: ev.clientX, y0: ev.clientY }, hd);
@@ -225,6 +225,9 @@ function begin(ev) {
     const P = HSS.findPart(sel.part), r = HSS.interior(sel.part, sel.floor).rooms.find(x => x.id === sel.id);
     D.part = P.part; D.r0 = U.clone(r); D.y = r.zone && r.zf ? zoneTop(P.part, sel.floor) : roomY(P.part, sel.floor); D.lim = null;
     if (D.op === 'move') D.p0 = planeHit(D.ev0 || ev, D.y) || D.p0;
+  } else if (sel.kind === 'wall') {
+    const P = HSS.findPart(sel.part), I = HSS.interior(sel.part, sel.floor), w = I.walls.find(x => x.id === sel.id);
+    D.part = P.part; D.w0 = U.clone(w); D.y = roomY(P.part, sel.floor); D.p0 = planeHit(D.ev0 || ev, D.y) || D.p0;
   } else if (sel.kind === 'bridge') {
     const br = U.byId(p.bridges, sel.id); D.br0 = U.clone(br); const e = HSS.bridgeEnds(br); D.y = D.end === 'a' ? e.ya : e.yb;
   }
@@ -241,6 +244,7 @@ function onMove(ev) {
   else if (sel.kind === 'object') dragObject(hit, fine, ev);
   else if (sel.kind === 'path') dragPath(hit, fine, ev);
   else if (sel.kind === 'room') dragRoom(hit, fine);
+  else if (sel.kind === 'wall') dragWall(hit, fine);
   else if (sel.kind === 'bridge') dragBridge(hit);
   HSS.perf?.invalidate(2);
 }
@@ -390,6 +394,24 @@ function dragPath(hit, fine, ev) {
 const D_label = op => ({ move: 'Weg verschieben', point: 'Wegpunkt verschieben', rot: 'Weg drehen', width: 'Wegbreite' }[op] || 'Weg ändern');
 
 /* Raum */
+// Einzelne Wand senkrecht zu sich verschieben; Wände mit gemeinsamem Endpunkt gehen mit
+function dragWall(hit, fine) {
+  const w0 = D.w0, pt = D.part, sel = D.sel, len = G.dist(w0.a, w0.b); if (len < 0.05) return;
+  const nx = -(w0.b[1] - w0.a[1]) / len, nz = (w0.b[0] - w0.a[0]) / len;
+  const l = HSS.toLocal(pt, [hit.x, hit.z]), l0 = HSS.toLocal(pt, [D.p0.x, D.p0.z]), st = fine ? 0.05 : 0.25;
+  const off = Math.round(((l[0] - l0[0]) * nx + (l[1] - l0[1]) * nz) / st) * st;
+  const a = [w0.a[0] + nx * off, w0.a[1] + nz * off], b = [w0.b[0] + nx * off, w0.b[1] + nz * off];
+  clearGhost();
+  const y = D.y + 0.3, pts = [a, b].map(q => { const w = HSS.toWorld(pt, q); return new THREE.Vector3(w[0], y, w[1]); });
+  const g = new THREE.BufferGeometry().setFromPoints(pts); const ln = new THREE.Line(g, new THREE.LineBasicMaterial({ color: '#d9531e', depthTest: false })); ln.renderOrder = 41; ghost().add(ln);
+  hint(`Wand um <b>${fmt(off, 2)} m</b> verschieben · Umschalt: 5-cm-Schritte`);
+  D.commit = () => { if (!off) return; HSS.change('Wand verschieben', p => {
+    const I = HSS.interior(sel.part, sel.floor, false, p), w = I.walls.find(x => x.id === sel.id); if (!w) return;
+    const near = (q, r) => Math.hypot(q[0] - r[0], q[1] - r[1]) < 0.05;
+    for (const o of I.walls) { if (o.id === w.id) continue; for (const k of ['a', 'b']) { if (near(o[k], w0.a)) o[k] = a.slice(); else if (near(o[k], w0.b)) o[k] = b.slice(); } }
+    w.a = a; w.b = b;
+  }); };
+}
 function dragRoom(hit, fine) {
   if (D.r0.zone && D.r0.zf && HSS.zoneUV) return dragZone(hit, fine);
   const r0 = D.r0, pt = D.part, sel = D.sel, n = U.clone(r0);

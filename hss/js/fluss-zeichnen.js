@@ -63,8 +63,12 @@ function magnets(gf) {
   return out;
 }
 function snap(ev, st, frei) {
-  const gp = S3().groundPoint(ev); if (!gp) return null;
-  const gf = V().floor ?? 0;
+  // Solange nicht „Vertikal“ gewählt wird, bleibt der Fluss auf der Ebene des letzten Punkts (auch durch Wände hindurch)
+  const lp = st.pts[st.pts.length - 1];
+  let gp;
+  if (lp) { const ex = (V().explode || 0) * lp.gf, hit = new (window.THREEX.THREE.Vector3)(); if (!S3().ray(ev).ray.intersectPlane(new (window.THREEX.THREE.Plane)(new (window.THREEX.THREE.Vector3)(0, 1, 0), -(lp.y + ex)), hit)) return null; gp = { x: hit.x, z: hit.z }; }
+  else { gp = S3().groundPoint(ev); if (!gp) return null; }
+  const gf = lp ? lp.gf : (V().floor ?? 0);
   let x = gp.x, z = gp.z, hit = null;
   const last = st.pts[st.pts.length - 1];
   if (last) {
@@ -81,7 +85,7 @@ function snap(ev, st, frei) {
     for (const m of magnets(gf)) { const d = Math.hypot(m.x - x, m.z - z); if (d < m.r * 1.6 && (!hit || d < hit.d)) hit = Object.assign({ d }, m); }
     if (hit) { x = hit.x; z = hit.z; }
   }
-  return { x, z, y: yAt(x, z, gf), gf, place: hit?.place || null, name: hit?.name || null, ende: !!hit?.ende };
+  return { x, z, y: lp ? lp.y : yAt(x, z, gf), gf, place: hit?.place || null, name: hit?.name || null, ende: !!hit?.ende };
 }
 
 /* ---------- Vorschau ---------- */

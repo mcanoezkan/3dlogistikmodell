@@ -54,8 +54,9 @@
   <label class="ctl" title="Geschosse auseinanderziehen">Explosion <input type="range" id="vExplode" min="0" max="12" step="0.5" value="0"></label>
   <label class="ctl" title="Sonnenstand / Nacht">Uhrzeit <input type="range" id="vSun" min="4" max="23.5" step="0.25" value="14"><span id="vSunL">14:00</span></label>
   <label class="ctl" title="Wege ein- und ausblenden (nur Darstellung – Routen und Simulation nutzen weiterhin alle Wege)">Wege <select id="vWege"><option value="alle">alle</option><option value="ohneGehweg">ohne Gehwege</option><option value="strassen">nur Straßen</option><option value="aus">ausgeblendet</option></select></label>
+  <label class="ctl" title="Umgebungsbebauung, Straßen und Flächen aus OpenStreetMap: weniger anzeigen macht die Darstellung flüssiger">Umgebung <select id="vUmg"><option value="alle">alle</option><option value="nah">nur nah</option><option value="aus">aus</option></select></label>
   <label class="ctl">Netz <select id="vNet"><option value="aus">aus</option><option value="netz">Wegenetz</option><option value="heat">Auslastung</option></select></label>
-  <label class="ctl" title="Darstellungsqualität: „automatisch“ passt die Auflösung an den Rechner an">Leistung <select id="vQ"><option value="auto">automatisch</option><option value="0">sparsam</option><option value="1">mittel</option><option value="2">hoch</option><option value="3">sehr hoch</option></select></label>
+  <label class="ctl" title="Darstellungsqualität: „automatisch“ passt die Auflösung an den Rechner an">Leistung <select id="vQ"><option value="auto">automatisch</option><option value="fl">maximal flüssig</option><option value="0">sparsam</option><option value="1">mittel</option><option value="2">hoch</option><option value="3">sehr hoch</option></select></label>
   <button class="tgl on" id="vTraffic" title="Fahrende Autos und Busse anzeigen (aus = ruhiger, spart Rechenleistung)">Verkehr</button>
   <button class="tgl on" id="vLabels" title="Beschriftungen">Beschriftung</button>
   <button class="tgl on" id="vGrid" title="Planungsraster (außen 10 m, in Etagen 1 m)">Raster</button>
@@ -119,6 +120,7 @@
 <script src="js/krankenhaus.js?v=20261019"></script>
 <script src="js/osm.js?v=20261019"></script>
 <script src="js/flaechenplan.js?v=20261019"></script>
+<script src="js/waende.js?v=20261019"></script>
 <script src="js/flussbild.js?v=20261019"></script>
 <script src="js/sektionen.js?v=20261019"></script>
 <script src="js/fluss-assistent.js?v=20261019"></script>
