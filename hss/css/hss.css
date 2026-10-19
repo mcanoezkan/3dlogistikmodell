@@ -435,3 +435,13 @@ body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-s
 .fold-h{display:flex;align-items:center;gap:6px;width:100%;background:transparent;border:0;padding:8px 2px 6px;text-align:left;font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
 .fold-h:hover{color:var(--blue,#2D7694)}.fold-i{display:inline-block;width:12px;transition:transform .15s;color:var(--muted)}
 .sekt-fold.zu .fold-i{transform:rotate(-90deg)}.sekt-fold.zu .fold-b{display:none}
+/* ---------- Lizenz ---------- */
+#top .lzbadge{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:12px;font-size:11.5px;padding:3px 10px;margin-right:8px;cursor:pointer}
+#top .lzbadge.warn{border-color:#f2c94c;color:#f2c94c}#top .lzbadge.krit{background:#c0392b;border-color:#c0392b;color:#fff}
+#lzLock{position:fixed;inset:0;z-index:10000;background:rgba(10,34,60,.94);display:flex;align-items:center;justify-content:center;padding:16px}
+#lzLock .lzbox{background:#fff;border-radius:8px;max-width:520px;width:100%;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#lzLock .lzlogo{height:30px;background:#0A223C;padding:6px 10px;border-radius:4px}#lzLock h2{margin:12px 0 6px;color:#0A223C}
+#lzLock label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5a6573;margin:10px 0}
+#lzLock textarea{font-family:Consolas,monospace;font-size:12px;width:100%;resize:vertical}
+#lzLock .lzrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;font-size:12.5px}
+#lzLock .lzerr{color:#c0392b;font-weight:600}

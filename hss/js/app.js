@@ -39,6 +39,7 @@ function boot() {
   refreshHeader(); UI.refreshViewbar();
   $('#loading').hidden = true;
   HSS.booted = true;
+  HSS.lizenz?.start();
   const fehlt = ['gelaende', 'gebaeude', 'innen', 'bibliothek', 'station', 'fluesse', 'simulation', 'analyse'].filter(k => !UI.ws[k]);
   if (fehlt.length || HSS.loadErrors.length) {
     UI.dialog(`<div class="dh"><h2>Teile der Oberfläche wurden nicht geladen</h2><button class="x" data-close>×</button></div>

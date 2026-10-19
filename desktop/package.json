@@ -1,0 +1,28 @@
+{
+  "name": "healthcare-simulation-suite",
+  "productName": "Healthcare Simulation Suite",
+  "version": "1.0.0",
+  "description": "UNITY Healthcare Simulation Suite – Desktop-Version mit Lizenzschlüssel",
+  "author": "UNITY Consulting & Innovation",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "app": "python3 ../tools/build_einzeldatei.py && node vorbereiten.js",
+    "start": "npm run app && electron .",
+    "exe": "npm run app && electron-builder --win portable --x64",
+    "setup": "npm run app && electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "de.unity.hss",
+    "productName": "Healthcare Simulation Suite",
+    "files": ["main.js", "preload.js", "app/**"],
+    "directories": { "output": "dist" },
+    "win": { "icon": "icon.png", "signAndEditExecutable": false },
+    "portable": { "artifactName": "Healthcare_Simulation_Suite_${version}.exe" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "artifactName": "Healthcare_Simulation_Suite_Setup_${version}.exe" }
+  }
+}

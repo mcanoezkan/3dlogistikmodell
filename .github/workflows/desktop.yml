@@ -1,0 +1,20 @@
+# Baut die Desktop-Version (portable Exe und Installer) auf Windows – manuell starten unter „Actions“
+name: Desktop-Exe
+on: workflow_dispatch
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci || npm install
+        working-directory: desktop
+      - run: npm run app && npx electron-builder --win portable nsis --x64
+        working-directory: desktop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Healthcare_Simulation_Suite_Windows
+          path: desktop/dist/*.exe
