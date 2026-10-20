@@ -5,7 +5,7 @@
 'use strict';
 const HSS = window.HSS, U = HSS.util, UI = HSS.ui, $ = UI.$, $$ = UI.$$, opt = UI.opt;
 const W = UI.ws;
-const AMP = u => (u >= 1 ? '#B60028' : u >= 0.8 ? '#FFC300' : u >= 0.6 ? '#f0a35e' : '#0A967A');
+const AMP = u => { const S = HSS.richtwerte().schwelle; return u >= S.hoch ? '#B60028' : u >= S.mittel ? '#FFC300' : u >= S.niedrig ? '#f0a35e' : '#0A967A'; };
 
 /* ---------- Diagramme ---------- */
 const canvasFit = (cv) => { const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; cv.width = Math.max(10, r.width * dpr); cv.height = Math.max(10, r.height * dpr); const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); return { c, w: r.width, h: r.height }; };
@@ -104,12 +104,16 @@ AT.hotspots = (el, sim) => {
   const hourSel = UI.hotHour ?? '';
   const list = sim.hotspots.filter(h => hourSel === '' || (h.hours || [h.h]).includes(+hourSel));
   const byH = new Array(24).fill(0); for (const h of sim.hotspots) for (const hh of h.hours || [h.h]) byH[hh] += h.sev === 'hoch' ? 3 : h.sev === 'mittel' ? 2 : 1;
-  el.innerHTML = `<p class="note">Ein Hotspot entsteht, wenn ein Abschnitt in einer Stunde ≥ 60 % seiner Richtkapazität erreicht (Flur 60, Tunnel 70, Weg 60 Fahrten/h; Aufzug: Belegungszeit je Kabine) oder Wartezeiten auftreten. Gezählt in Wageneinheiten: Person 0,05 · Wagen/AWT 1 · Bett 1,5 · Routenzug 2. <span class="ann" title="Kapazitäten sind Richtwerte und je Projekt anzupassen">Richtwerte</span></p>
-  <canvas class="chart" id="hChart" style="height:90px"></canvas><div class="legend"><span><i style="background:#B60028"></i>≥ 100 % hoch</span><span><i style="background:#FFC300"></i>≥ 80 % mittel</span><span><i style="background:#0A967A"></i>≥ 60 % niedrig</span></div>
+  const RW = HSS.richtwerte(), pc = v => U.fmt(v * 100) + ' %', heat = UI.netMode === 'heat';
+  el.innerHTML = `<p class="note">Ein Hotspot entsteht, wenn ein Abschnitt in einer Stunde ≥ ${pc(RW.schwelle.niedrig)} seiner Richtkapazität erreicht (Flur ${RW.kap.flur}, Tunnel ${RW.kap.tunnel}, Weg ${RW.kap.weg} Fahrten/h; Aufzug: Belegungszeit je Kabine) oder Wartezeiten auftreten (Aufzug ≥ ${U.fmt(RW.liftWarte, 1)} min). Gezählt in Wageneinheiten: Person ${U.fmt(RW.pcu.person, 2)} · Wagen/AWT ${U.fmt(RW.pcu.hand, 1)} · Bett ${U.fmt(RW.pcu.bett, 1)} · Routenzug ${U.fmt(RW.pcu.schlepper, 1)}.${HSS.project().richtwerte ? ' <span class="ann">projektspezifisch</span>' : ''}</p>
+  <div class="actions" style="margin-top:0"><button id="hRw" title="Kapazitäten, Wageneinheiten und Schwellen für dieses Projekt anpassen">⚙ Richtwerte anpassen …</button><button id="hHeat" class="${heat ? 'primary' : ''}" title="Auslastung (Wege farbig, Aufzüge als Säulen) im 3D-Bild ein- oder ausblenden">${heat ? '✕ Heatmap ausblenden' : 'Heatmap einblenden'}</button></div>
+  <canvas class="chart" id="hChart" style="height:90px"></canvas><div class="legend"><span><i style="background:#B60028"></i>≥ ${pc(RW.schwelle.hoch)} hoch</span><span><i style="background:#FFC300"></i>≥ ${pc(RW.schwelle.mittel)} mittel</span><span><i style="background:#0A967A"></i>≥ ${pc(RW.schwelle.niedrig)} niedrig</span></div>
   <label class="ctl note">Uhrzeit <select id="hH">${opt('', 'ganzer Tag', hourSel)}${Array.from({ length: 24 }, (_, i) => opt(i, U.hhmm(i * 60) + '–' + U.hhmm(i * 60 + 60), hourSel)).join('')}</select></label>
   <div class="list" style="max-height:none;margin-top:6px">${list.map((h, i) => `<div class="li" data-h="${sim.hotspots.indexOf(h)}"><span class="sev ${h.sev}">${h.sev}</span><span class="t" style="white-space:normal">${U.esc(h.typ)}: ${U.esc(h.name)}<br><span class="note">${UI.hourRange(h.hours || [h.h])} · Spitze ${U.hhmm(h.h * 60)}: ${U.pct(h.util || 0)}${h.wait ? ' · Ø Warten ' + U.fmt(h.wait, 1) + ' min' : ''}</span></span></div>`).join('') || '<div class="li note">Keine Engpässe in diesem Zeitraum.</div>'}</div>
   <div class="infobox">Maßnahmen-Ideen: Zeitfenster entzerren (Flüsse), Touren bündeln (Fuhrpark), zusätzliche Aufzugskabine oder Freigabe für weitere Aufzüge, AWT für Ver-/Entsorgung, getrennte Rein-/Unrein-Aufzüge.</div>`;
   UI.barChart($('#hChart', el), [{ v: byH, colorFn: v => v >= 6 ? '#B60028' : v >= 3 ? '#FFC300' : '#0A967A' }], {});
+  $('#hRw', el).onclick = () => UI.richtwerteDialog();
+  $('#hHeat', el).onclick = () => { if (UI.netMode === 'heat') UI.heatAus(); else { UI.netMode = 'heat'; $('#vNet').value = 'heat'; HSS.drawNet('heat', UI.heatHour ?? null); UI.heatChip(); } UI.renderPanel(); };
   $('#hH', el).onchange = e => { UI.hotHour = e.target.value; UI.renderPanel(); if (e.target.value !== '') { UI.netMode = 'heat'; $('#vNet').value = 'heat'; UI.heatHour = +e.target.value; HSS.drawNet('heat', UI.heatHour); HSS.player.setTime(UI.heatHour * 60 + 30); } };
   $$('[data-h]', el).forEach(li => li.onclick = () => {
     const h = sim.hotspots[+li.dataset.h]; HSS.player.setTime(h.h * 60 + 30); UI.netMode = 'heat'; $('#vNet').value = 'heat'; UI.heatHour = h.h; HSS.drawNet('heat', h.h);
@@ -154,5 +158,64 @@ UI.exportCsv = (sim, prj) => {
   for (const l of sim.lifts) l.util.forEach((u, h) => rows.push(['Aufzug', l.name, h, (u * 100).toFixed(0) + '%', '']));
   for (const f of prj.flows) { const r = sim.flows[f.id]; if (r) rows.push(['Fluss', f.name, '', r.trips, `${Math.round(r.routeLen)} m`]); }
   U.download('hss-bericht.csv', '﻿' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n'), 'text/csv');
+};
+})();
+
+(function () {
+const HSS = window.HSS, U = HSS.util, UI = HSS.ui, $ = UI.$;
+/* Heatmap (Auslastung) ausblenden – auch über den Hinweis im 3D-Bild */
+UI.heatAus = () => {
+  UI.netMode = 'aus'; const n = $('#vNet'); if (n) n.value = 'aus';
+  const th = $('#tHeat'); if (th) th.checked = false;
+  HSS.drawNet('aus'); UI.heatChip();
+};
+UI.heatChip = () => {
+  let c = document.getElementById('heatChip');
+  if (!c) { c = document.createElement('div'); c.id = 'heatChip'; c.className = 'vw-fluss'; document.body.appendChild(c); }
+  const on = UI.netMode === 'heat';
+  c.hidden = !on; if (!on) return;
+  c.innerHTML = `<span><b>Auslastung</b> sichtbar${UI.heatHour !== null && UI.heatHour !== undefined ? ' · ' + U.hhmm(UI.heatHour * 60) + ' Uhr' : ' · Tagesspitze'}</span><i style="background:#0A967A"></i><i style="background:#f0a35e"></i><i style="background:#FFC300"></i><i style="background:#B60028"></i><button title="Heatmap und Aufzugssäulen ausblenden (Esc)">✕ ausblenden</button>`;
+  c.querySelector('button').onclick = () => { UI.heatAus(); if (UI.current === 'analyse') UI.renderPanel(); };
+};
+// jede Heatmap-Anzeige meldet sich mit dem Hinweis; Esc blendet aus
+const dn = HSS.drawNet;
+HSS.drawNet = (mode, hour) => { const r = dn(mode, hour); setTimeout(UI.heatChip, 0); return r; };
+window.addEventListener('keydown', e => { if (e.key === 'Escape' && UI.netMode === 'heat' && !HSS.s3.tool && !HSS.state.selection && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) { UI.heatAus(); if (UI.current === 'analyse') UI.renderPanel(); } });
+
+/* Richtwerte anpassen (je Projekt) */
+const KAP_N = { flur: 'Flur', tunnel: 'Versorgungstunnel', weg: 'Campusweg', gehweg: 'Gehweg', strasse: 'Straße', zufahrt: 'Zufahrt', eingang: 'Eingang', bruecke: 'Brücke', awt: 'AWT-Trasse' };
+const PCU_N = { person: 'Person', hand: 'Wagen (Handtransport)', bett: 'Bett', schlepper: 'Routenzug', awt: 'AWT-Behälter', lkw: 'LKW', rohrpost: 'Rohrpost' };
+UI.richtwerteDialog = () => {
+  const RW = HSS.richtwerte(), D = HSS.RICHTWERTE_STANDARD();
+  const num = (k, v, d, step, unit) => `<label class="f"><span>${k}</span><input type="number" data-rw="${k}" value="${v}" step="${step}" min="0"${v !== d ? ' style="border-color:#2D7694;background:#eef6fb"' : ''}>${unit ? `<small class="note">${unit} · Standard ${String(d).replace('.', ',')}</small>` : ''}</label>`;
+  UI.dialog(`<div class="dh"><h2>Richtwerte für Kapazität und Hotspots</h2><button class="x" data-close>×</button></div>
+    <p class="note">Gilt für dieses Projekt und wird mit dem Projekt gespeichert. Danach die Simulation neu rechnen.</p>
+    <h4>Richtkapazität je Abschnitt [Wageneinheiten je Stunde]</h4>
+    <div class="fg rw" data-g="kap">${Object.keys(D.kap).map(k => num(KAP_N[k] || k, RW.kap[k], D.kap[k], 5, 'WE/h').replace(`data-rw="${KAP_N[k] || k}"`, `data-rw="${k}"`)).join('')}</div>
+    <h4>Wageneinheiten je Transportmittel</h4>
+    <div class="fg rw" data-g="pcu">${Object.keys(D.pcu).map(k => num(PCU_N[k] || k, RW.pcu[k], D.pcu[k], 0.05, 'WE').replace(`data-rw="${PCU_N[k] || k}"`, `data-rw="${k}"`)).join('')}</div>
+    <h4>Schwellen für Hotspots [% der Richtkapazität]</h4>
+    <div class="fg rw" data-g="schwelle">${['niedrig', 'mittel', 'hoch'].map(k => num('ab ' + k, Math.round(RW.schwelle[k] * 100), Math.round(D.schwelle[k] * 100), 5, '%').replace(`data-rw="ab ${k}"`, `data-rw="${k}"`)).join('')}</div>
+    <h4>Wartezeiten [min]</h4>
+    <div class="fg rw" data-g="warte">${num('Aufzug: Hotspot ab', RW.liftWarte, D.liftWarte, 0.5, 'min').replace('data-rw="Aufzug: Hotspot ab"', 'data-rw="liftWarte"')}${num('Aufzug: hoch ab', RW.liftWarteHoch, D.liftWarteHoch, 0.5, 'min').replace('data-rw="Aufzug: hoch ab"', 'data-rw="liftWarteHoch"')}${num('Fuhrpark: Hotspot ab', RW.fuhrparkWarte, D.fuhrparkWarte, 1, 'min').replace('data-rw="Fuhrpark: Hotspot ab"', 'data-rw="fuhrparkWarte"')}</div>
+    <div class="actions"><button class="primary" id="rwOk">Übernehmen und neu simulieren</button><button id="rwStd">Standardwerte</button><button data-close>Abbrechen</button></div>`, d => {
+    const lesen = () => {
+      const r = { kap: {}, pcu: {}, schwelle: {} };
+      d.querySelectorAll('[data-g="kap"] [data-rw]').forEach(i => (r.kap[i.dataset.rw] = Math.max(1, +i.value || 0)));
+      d.querySelectorAll('[data-g="pcu"] [data-rw]').forEach(i => (r.pcu[i.dataset.rw] = Math.max(0, +i.value || 0)));
+      d.querySelectorAll('[data-g="schwelle"] [data-rw]').forEach(i => (r.schwelle[i.dataset.rw] = Math.max(0.05, (+i.value || 0) / 100)));
+      d.querySelectorAll('[data-g="warte"] [data-rw]').forEach(i => (r[i.dataset.rw] = Math.max(0, +i.value || 0)));
+      if (!(r.schwelle.niedrig <= r.schwelle.mittel && r.schwelle.mittel <= r.schwelle.hoch)) return null;
+      return r;
+    };
+    const anwenden = r => {
+      HSS.change('Richtwerte', p => { if (r) p.richtwerte = r; else delete p.richtwerte; }, { scope: 'none' });
+      d.close();
+      if (HSS.state.sim) { UI.toast('Simulation wird mit den neuen Richtwerten gerechnet …', 1500); setTimeout(() => { HSS.runSimulation(); UI.timeline?.draw?.(); if (UI.netMode === 'heat') HSS.drawNet('heat', UI.heatHour ?? null); UI.renderPanel(); }, 40); }
+      else UI.renderPanel();
+    };
+    d.querySelector('#rwOk').onclick = () => { const r = lesen(); if (!r) return UI.toast('Schwellen müssen aufsteigen: niedrig ≤ mittel ≤ hoch', 3500); anwenden(r); };
+    d.querySelector('#rwStd').onclick = () => anwenden(null);
+  });
 };
 })();
