@@ -56,7 +56,7 @@ HSS.objWorld = (o, prj = HSS.project()) => {
 let NET = null;
 HSS.invalidateNet = () => { NET = null; };
 // Änderungen nur an Flüssen/Material/Fuhrpark: Netz behalten, nur festgelegte Wege nachziehen
-const NUR_FLUSS = /^(Fluss|Material|Sektion|Zeitfenster|Gezeichneten|Fuhrpark|Transport|Standardflüsse|Regel|Fahrzeug|Kapazität|Betrieb)/;
+const NUR_FLUSS = /^(Richtwerte|Fluss|Material|Sektion|Zeitfenster|Gezeichneten|Fuhrpark|Transport|Standardflüsse|Regel|Fahrzeug|Kapazität|Betrieb)/;
 HSS.on('changed', e => {
   if (NET && e && e.scope === 'none' && NUR_FLUSS.test(e.label || '')) { const alt = NET.fixedSig; fixedRoutes(NET, HSS.project()); if (NET.fixedSig !== alt) NET.cache.clear(); return; }
   NET = null;

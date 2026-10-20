@@ -10,6 +10,17 @@ const HSS = window.HSS, U = HSS.util;
 /* ---------- Stammdaten-Vorschläge ---------- */
 HSS.REINHEIT = { rein: { name: 'rein', color: '#0A967A' }, unrein: { name: 'unrein', color: '#891F5E' }, neutral: { name: 'neutral', color: '#2D7694' }, person: { name: 'Person', color: '#7b5ea7' }, patient: { name: 'Patient', color: '#d9531e' } };
 HSS.KAPAZITAET_H = { flur: 60, tunnel: 70, weg: 60, gehweg: 120, strasse: 150, zufahrt: 40, eingang: 60, bruecke: 50, awt: 30 };
+/* Richtwerte für Kapazitäten und Hotspots – je Projekt anpassbar (prj.richtwerte), sonst Standard */
+HSS.RICHTWERTE_STANDARD = () => ({
+  kap: Object.assign({}, HSS.KAPAZITAET_H),
+  pcu: { person: 0.05, hand: 1, bett: 1.5, schlepper: 2, awt: 1, lkw: 1, rohrpost: 0 },
+  schwelle: { niedrig: 0.6, mittel: 0.8, hoch: 1.0 },
+  liftWarte: 1.5, liftWarteHoch: 3, fuhrparkWarte: 5
+});
+HSS.richtwerte = (prj = HSS.project()) => {
+  const d = HSS.RICHTWERTE_STANDARD(), r = prj.richtwerte || {};
+  return { kap: Object.assign(d.kap, r.kap), pcu: Object.assign(d.pcu, r.pcu), schwelle: Object.assign(d.schwelle, r.schwelle), liftWarte: r.liftWarte ?? d.liftWarte, liftWarteHoch: r.liftWarteHoch ?? d.liftWarteHoch, fuhrparkWarte: r.fuhrparkWarte ?? d.fuhrparkWarte };
+};
 HSS.ROLLEN = {
   apotheke: 'Apotheke', kueche: 'Zentralküche / Speisenversorgung', zentrallager: 'Zentrallager', zsva: 'ZSVA / AEMP', waescherei: 'Wäscheversorgung (Wäschelager/Wäscherei)', abfall: 'Abfallsammelstelle',
   labor: 'Zentrallabor', op: 'OP-Bereich', radiologie: 'Radiologie / Funktionsdiagnostik', bettenzentrale: 'Bettenzentrale', rampe: 'Warenannahme / Rampe', haupteingang: 'Haupteingang / Foyer',
@@ -114,6 +125,7 @@ class Resource {
 HSS.simulate = (opts = {}) => {
   const prj = HSS.project();
   HSS.ensureStammdaten(prj);
+  const RW = HSS.richtwerte(prj), KAP = RW.kap, SW = RW.schwelle;
   const net = HSS.net();
   const unlimited = !!opts.unlimited;
   const mats = new Map(prj.materials.map(m => [m.id, m])), pools = new Map(prj.transports.map(t => [t.id, t]));
@@ -138,9 +150,9 @@ HSS.simulate = (opts = {}) => {
   const trips = [], edgeUse = new Map(), liftStats = new Map(), washStats = new Map();
   const hourOf = t => U.clamp(Math.floor(t / 60) % 24, 0, 23);
   // Wageneinheiten: Personen belasten Flure kaum, Betten und Routenzüge stärker
-  const PCU = { person: 0.05, hand: 1, bett: 1.5, schlepper: 2, awt: 1, lkw: 1, rohrpost: 0 };
+  const PCU = RW.pcu;
   const useEdge = (e, t, klasse, mittel) => {
-    const cap = HSS.KAPAZITAET_H[e.type]; if (!cap) return; const w = PCU[mittel] ?? 1; if (!w) return;
+    const cap = KAP[e.type]; if (!cap) return; const w = PCU[mittel] ?? 1; if (!w) return;
     let u = edgeUse.get(e.id); if (!u) edgeUse.set(e.id, u = { e, h: new Array(24).fill(0), cls: Array.from({ length: 24 }, () => new Set()) });
     const h = hourOf(t); u.h[h] += w; if (w >= 1) u.cls[h].add(klasse);
   };
@@ -330,11 +342,11 @@ HSS.simulate = (opts = {}) => {
     else if (e.bridge) { const b = U.byId(prj.bridges, e.bridge); key = 'B:' + e.bridge; name = b?.name || 'Brücke'; }
     else if (A.part !== undefined) { const P = HSS.findPart(A.part, prj); key = 'F:' + A.part + ':' + A.floor; name = P ? `${P.building.kurz || P.building.name} · ${P.part.name} · ${HSS.floorName(HSS.globalFloor(P.part, A.floor, prj))} · Flur` : 'Flur'; }
     else { key = 'X:' + e.type; name = ({ awt: 'AWT-Anbindung der Stationen', eingang: 'Gebäudeeingänge', zugang: 'Aufzugsvorplätze' })[e.type] || e.type; }
-    let s = sections.get(key); if (!s) sections.set(key, s = { key, name, type: e.type, cap: HSS.KAPAZITAET_H[e.type], h: new Array(24).fill(0), mixed: new Array(24).fill(false), edges: [] });
+    let s = sections.get(key); if (!s) sections.set(key, s = { key, name, type: e.type, cap: KAP[e.type], h: new Array(24).fill(0), mixed: new Array(24).fill(false), edges: [] });
     s.edges.push(e.id); for (let h = 0; h < 24; h++) { s.h[h] = Math.max(s.h[h], u.h[h]); if (u.cls[h].has('rein') && u.cls[h].has('unrein')) s.mixed[h] = true; }
   }
   res.sections = [...sections.values()].map(s => Object.assign(s, { util: s.h.map(v => v / s.cap), peak: Math.max(...s.h) / s.cap, peakH: s.h.indexOf(Math.max(...s.h)) }));
-  res.edgeUse = [...edgeUse.values()].map(u => ({ id: u.e.id, util: u.h.map(v => v / HSS.KAPAZITAET_H[u.e.type]) }));
+  res.edgeUse = [...edgeUse.values()].map(u => ({ id: u.e.id, util: u.h.map(v => v / KAP[u.e.type]) }));
   for (const [id, w] of washStats) { const pl = HSS.places(prj).find(p => p.id === id); res.wash.push({ id, name: pl?.name || 'Waschanlage', util: w.busy.map(b => b / 60), n: w.n, waitAvg: w.n ? w.wait / w.n : 0 }); }
   // Flüsse
   for (const f of prj.flows) {
@@ -343,17 +355,17 @@ HSS.simulate = (opts = {}) => {
     res.flows[f.id] = { trips: my.length, routeLen: r.len, routeMin: r.timeMin, ok: r.ok, lifts: r.lifts.length, dauerAvg: my.length ? U.sum(my.map(x => x.end - x.start)) / my.length : 0 };
   }
   // Hotspots
-  const sev = u => (u >= 1 ? 'hoch' : u >= 0.8 ? 'mittel' : 'niedrig');
+  const sev = u => (u >= SW.hoch ? 'hoch' : u >= SW.mittel ? 'mittel' : 'niedrig');
   for (const L of res.lifts) {
-    L.util.forEach((u, h) => { if (u >= 0.6 || L.wait[h] >= 1.5) res.hotspots.push({ typ: 'Aufzug', ref: { kind: 'object', id: L.id }, name: L.name, h, util: u, wait: L.wait[h], sev: sev(Math.max(u, L.wait[h] >= 3 ? 1 : L.wait[h] >= 1.5 ? 0.8 : 0)) }); });
+    L.util.forEach((u, h) => { if (u >= SW.niedrig || L.wait[h] >= RW.liftWarte) res.hotspots.push({ typ: 'Aufzug', ref: { kind: 'object', id: L.id }, name: L.name, h, util: u, wait: L.wait[h], sev: sev(Math.max(u, L.wait[h] >= RW.liftWarteHoch ? SW.hoch : L.wait[h] >= RW.liftWarte ? SW.mittel : 0)) }); });
     L.mixed.forEach((m, h) => { if (m) res.hotspots.push({ typ: 'Hygiene', ref: { kind: 'object', id: L.id }, name: L.name + ' – rein und unrein in derselben Stunde', h, util: L.util[h], sev: 'mittel', hygiene: true }); });
   }
   for (const s of res.sections) {
-    s.util.forEach((u, h) => { if (u >= 0.6) res.hotspots.push({ typ: s.type === 'flur' ? 'Flur' : s.type === 'bruecke' ? 'Brücke' : 'Weg', ref: s.key.startsWith('P:') ? { kind: 'path', id: s.key.slice(2) } : s.key.startsWith('B:') ? { kind: 'bridge', id: s.key.slice(2) } : null, name: s.name, h, util: u, sev: sev(u), section: s.key }); });
+    s.util.forEach((u, h) => { if (u >= SW.niedrig) res.hotspots.push({ typ: s.type === 'flur' ? 'Flur' : s.type === 'bruecke' ? 'Brücke' : 'Weg', ref: s.key.startsWith('P:') ? { kind: 'path', id: s.key.slice(2) } : s.key.startsWith('B:') ? { kind: 'bridge', id: s.key.slice(2) } : null, name: s.name, h, util: u, sev: sev(u), section: s.key }); });
     s.mixed.forEach((m, h) => { if (m && (s.type === 'flur' || s.type === 'bruecke')) res.hotspots.push({ typ: 'Hygiene', name: s.name + ' – Kreuzung rein/unrein', h, util: s.util[h], sev: 'niedrig', hygiene: true, section: s.key }); });
   }
-  for (const w of res.wash) w.util.forEach((u, h) => { if (u >= 0.6) res.hotspots.push({ typ: 'Waschanlage', name: w.name, h, util: u, sev: sev(u), ref: { kind: 'object', id: w.id } }); });
-  for (const p of Object.values(res.pools)) if (!p.keinFuhrpark && p.anzahl && p.waitVehMax > 5) res.hotspots.push({ typ: 'Fuhrpark', name: `${p.name}: Wartezeit auf Fahrzeug bis ${U.fmt(p.waitVehMax, 0)} min`, h: Math.floor(p.peakAt / 60), util: p.peak / p.anzahl, sev: p.waitVehMax > 15 ? 'hoch' : 'mittel' });
+  for (const w of res.wash) w.util.forEach((u, h) => { if (u >= SW.niedrig) res.hotspots.push({ typ: 'Waschanlage', name: w.name, h, util: u, sev: sev(u), ref: { kind: 'object', id: w.id } }); });
+  for (const p of Object.values(res.pools)) if (!p.keinFuhrpark && p.anzahl && p.waitVehMax > RW.fuhrparkWarte) res.hotspots.push({ typ: 'Fuhrpark', name: `${p.name}: Wartezeit auf Fahrzeug bis ${U.fmt(p.waitVehMax, 0)} min`, h: Math.floor(p.peakAt / 60), util: p.peak / p.anzahl, sev: p.waitVehMax > 15 ? 'hoch' : 'mittel' });
   // je Hotspot nur die Stunde mit dem höchsten Wert behalten, aber Zeitraum angeben
   const merged = new Map();
   for (const h of res.hotspots) { const k = h.typ + '|' + h.name; const m = merged.get(k); if (!m) merged.set(k, Object.assign({ hours: [h.h] }, h)); else { m.hours.push(h.h); if ((h.util || 0) > (m.util || 0)) Object.assign(m, h, { hours: m.hours }); } }
