@@ -45,9 +45,14 @@ let layer = null;
 const handles = [];
 function addHandle(kind, pos, data = {}) {
   const sp = new THREE.Sprite(iconMat(kind)); sp.position.copy(pos);
-  const s = ICONS[kind].small ? 0.026 : 0.036; sp.scale.set(s, s, 1); sp.renderOrder = 40;
-  sp.userData = Object.assign({ handle: kind }, data); layer.add(sp); handles.push(sp); return sp;
+  const s = ICONS[kind].small ? 0.026 : 0.036; sp.renderOrder = 40;
+  sp.userData = Object.assign({ handle: kind, s }, data); groesse(sp); layer.add(sp); handles.push(sp); return sp;
 }
+// Bildschirmgröße unabhängig vom Kamerawinkel halten (2D-Plan arbeitet mit sehr kleinem Blickwinkel)
+const fovK = () => Math.tan(THREE.MathUtils.degToRad((S3.camera?.fov || 45) / 2)) / Math.tan(THREE.MathUtils.degToRad(22.5));
+function groesse(sp) { const s = sp.userData.s * fovK(); sp.scale.set(s, s, 1); }
+let fov0 = null;
+HSS.on('frame', () => { const f = S3.camera?.fov; if (f === fov0) return; fov0 = f; for (const h of handles) groesse(h); HSS.perf?.invalidate(1); });
 function clearHandles() { for (const h of handles) layer.remove(h); handles.length = 0; while (layer.children.length) layer.remove(layer.children[0]); }
 const guideMat = new THREE.LineDashedMaterial({ color: '#0A967A', dashSize: 1, gapSize: 0.6, depthTest: false, transparent: true });
 function addLine(pts) { const g = new THREE.BufferGeometry().setFromPoints(pts); const l = new THREE.Line(g, guideMat); l.computeLineDistances(); l.renderOrder = 39; layer.add(l); return l; }

@@ -156,6 +156,9 @@ P2.palette = () => {
   let el = $('#plan2dBar');
   if (!el) { el = document.createElement('div'); el.id = 'plan2dBar'; document.body.appendChild(el); }
   el.hidden = !P2.on; if (!P2.on) return;
+  // unter die Ansichtsleiste setzen (sie bricht bei schmalem Fenster in mehrere Zeilen um)
+  const lage = () => { const vb = document.getElementById('viewbar'); if (vb && !el.hidden) el.style.top = (vb.getBoundingClientRect().bottom + 8) + 'px'; };
+  lage(); if (!P2._lage) { P2._lage = true; window.addEventListener('resize', () => { const b = $('#plan2dBar'); if (b && !b.hidden) { const vb = document.getElementById('viewbar'); b.style.top = (vb.getBoundingClientRect().bottom + 8) + 'px'; } }); }
   el.innerHTML = `<b>2D-Plan</b>
     <button data-t="rect" title="Gebäude als Rechteck aufziehen">▭ Rechteck</button>
     <button data-t="rect3" title="Gedrehtes Rechteck: Kante, dann Tiefe">◇ gedreht</button>

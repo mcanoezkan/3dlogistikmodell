@@ -30,7 +30,7 @@ const opt = (v, l, sel) => `<option value="${U.esc(v)}" ${String(v) === String(s
 UI.opt = opt;
 UI.opts = (obj, sel) => Object.entries(obj).map(([k, v]) => opt(k, typeof v === 'string' ? v : v.name, sel)).join('');
 // Formularfelder: data-b = Pfad im Zielobjekt, data-t = Typ (n, s, b, c)
-UI.fNum = (label, path, val, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}${o.unit ? ' [' + o.unit + ']' : ''}</span><input type="number" data-b="${path}" data-t="n" value="${val ?? ''}" ${o.min !== undefined ? 'min="' + o.min + '"' : ''} ${o.max !== undefined ? 'max="' + o.max + '"' : ''} step="${o.step ?? 'any'}" ${o.ph ? 'placeholder="' + o.ph + '"' : ''}></label>`;
+UI.fNum = (label, path, val, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}${o.unit ? ' [' + o.unit + ']' : ''}</span><input type="number" data-b="${path}" data-t="n" value="${typeof val === 'number' ? Math.round(val * 1000) / 1000 : (val ?? '')}" ${o.min !== undefined ? 'min="' + o.min + '"' : ''} ${o.max !== undefined ? 'max="' + o.max + '"' : ''} step="${o.step ?? 'any'}" ${o.ph ? 'placeholder="' + o.ph + '"' : ''}></label>`;
 UI.fTxt = (label, path, val, o = {}) => `<label class="f ${o.full !== false ? 'full' : ''}"><span>${label}</span><input type="text" data-b="${path}" data-t="s" value="${U.esc(val ?? '')}" ${o.ph ? 'placeholder="' + U.esc(o.ph) + '"' : ''}></label>`;
 UI.fSel = (label, path, val, options, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}</span><select data-b="${path}" data-t="${o.t || 's'}">${options}</select></label>`;
 UI.fCol = (label, path, val) => `<label class="f"><span>${label}</span><input type="color" data-b="${path}" data-t="s" value="${val || '#cccccc'}"></label>`;

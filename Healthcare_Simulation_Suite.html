@@ -531,6 +531,8 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 #heatChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH) + 150px);z-index:9;background:var(--panel);box-shadow:var(--shadow);border-radius:16px;padding:5px 6px 5px 12px;display:flex;align-items:center;gap:6px;font-size:12px}
 #heatChip i{width:12px;height:8px;border-radius:2px}#heatChip button{border-radius:12px;padding:3px 10px;margin-left:6px}
 .rw{grid-template-columns:repeat(3,1fr)}.rw .f small{font-size:10.5px}
+#plan2dBar{flex-wrap:wrap;max-width:calc(100vw - var(--railW) - var(--panelW) - 48px)}
+body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(--inspW) - 60px)}
 
 </style>
 <!-- =====================================================================
@@ -10885,7 +10887,7 @@ const opt = (v, l, sel) => `<option value="${U.esc(v)}" ${String(v) === String(s
 UI.opt = opt;
 UI.opts = (obj, sel) => Object.entries(obj).map(([k, v]) => opt(k, typeof v === 'string' ? v : v.name, sel)).join('');
 // Formularfelder: data-b = Pfad im Zielobjekt, data-t = Typ (n, s, b, c)
-UI.fNum = (label, path, val, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}${o.unit ? ' [' + o.unit + ']' : ''}</span><input type="number" data-b="${path}" data-t="n" value="${val ?? ''}" ${o.min !== undefined ? 'min="' + o.min + '"' : ''} ${o.max !== undefined ? 'max="' + o.max + '"' : ''} step="${o.step ?? 'any'}" ${o.ph ? 'placeholder="' + o.ph + '"' : ''}></label>`;
+UI.fNum = (label, path, val, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}${o.unit ? ' [' + o.unit + ']' : ''}</span><input type="number" data-b="${path}" data-t="n" value="${typeof val === 'number' ? Math.round(val * 1000) / 1000 : (val ?? '')}" ${o.min !== undefined ? 'min="' + o.min + '"' : ''} ${o.max !== undefined ? 'max="' + o.max + '"' : ''} step="${o.step ?? 'any'}" ${o.ph ? 'placeholder="' + o.ph + '"' : ''}></label>`;
 UI.fTxt = (label, path, val, o = {}) => `<label class="f ${o.full !== false ? 'full' : ''}"><span>${label}</span><input type="text" data-b="${path}" data-t="s" value="${U.esc(val ?? '')}" ${o.ph ? 'placeholder="' + U.esc(o.ph) + '"' : ''}></label>`;
 UI.fSel = (label, path, val, options, o = {}) => `<label class="f ${o.full ? 'full' : ''}"><span>${label}</span><select data-b="${path}" data-t="${o.t || 's'}">${options}</select></label>`;
 UI.fCol = (label, path, val) => `<label class="f"><span>${label}</span><input type="color" data-b="${path}" data-t="s" value="${val || '#cccccc'}"></label>`;
@@ -11941,9 +11943,14 @@ let layer = null;
 const handles = [];
 function addHandle(kind, pos, data = {}) {
   const sp = new THREE.Sprite(iconMat(kind)); sp.position.copy(pos);
-  const s = ICONS[kind].small ? 0.026 : 0.036; sp.scale.set(s, s, 1); sp.renderOrder = 40;
-  sp.userData = Object.assign({ handle: kind }, data); layer.add(sp); handles.push(sp); return sp;
+  const s = ICONS[kind].small ? 0.026 : 0.036; sp.renderOrder = 40;
+  sp.userData = Object.assign({ handle: kind, s }, data); groesse(sp); layer.add(sp); handles.push(sp); return sp;
 }
+// Bildschirmgröße unabhängig vom Kamerawinkel halten (2D-Plan arbeitet mit sehr kleinem Blickwinkel)
+const fovK = () => Math.tan(THREE.MathUtils.degToRad((S3.camera?.fov || 45) / 2)) / Math.tan(THREE.MathUtils.degToRad(22.5));
+function groesse(sp) { const s = sp.userData.s * fovK(); sp.scale.set(s, s, 1); }
+let fov0 = null;
+HSS.on('frame', () => { const f = S3.camera?.fov; if (f === fov0) return; fov0 = f; for (const h of handles) groesse(h); HSS.perf?.invalidate(1); });
 function clearHandles() { for (const h of handles) layer.remove(h); handles.length = 0; while (layer.children.length) layer.remove(layer.children[0]); }
 const guideMat = new THREE.LineDashedMaterial({ color: '#0A967A', dashSize: 1, gapSize: 0.6, depthTest: false, transparent: true });
 function addLine(pts) { const g = new THREE.BufferGeometry().setFromPoints(pts); const l = new THREE.Line(g, guideMat); l.computeLineDistances(); l.renderOrder = 39; layer.add(l); return l; }
@@ -12681,6 +12688,9 @@ P2.palette = () => {
   let el = $('#plan2dBar');
   if (!el) { el = document.createElement('div'); el.id = 'plan2dBar'; document.body.appendChild(el); }
   el.hidden = !P2.on; if (!P2.on) return;
+  // unter die Ansichtsleiste setzen (sie bricht bei schmalem Fenster in mehrere Zeilen um)
+  const lage = () => { const vb = document.getElementById('viewbar'); if (vb && !el.hidden) el.style.top = (vb.getBoundingClientRect().bottom + 8) + 'px'; };
+  lage(); if (!P2._lage) { P2._lage = true; window.addEventListener('resize', () => { const b = $('#plan2dBar'); if (b && !b.hidden) { const vb = document.getElementById('viewbar'); b.style.top = (vb.getBoundingClientRect().bottom + 8) + 'px'; } }); }
   el.innerHTML = `<b>2D-Plan</b>
     <button data-t="rect" title="Gebäude als Rechteck aufziehen">▭ Rechteck</button>
     <button data-t="rect3" title="Gedrehtes Rechteck: Kante, dann Tiefe">◇ gedreht</button>

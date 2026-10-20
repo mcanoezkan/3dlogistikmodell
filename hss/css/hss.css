@@ -523,3 +523,5 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 #heatChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH) + 150px);z-index:9;background:var(--panel);box-shadow:var(--shadow);border-radius:16px;padding:5px 6px 5px 12px;display:flex;align-items:center;gap:6px;font-size:12px}
 #heatChip i{width:12px;height:8px;border-radius:2px}#heatChip button{border-radius:12px;padding:3px 10px;margin-left:6px}
 .rw{grid-template-columns:repeat(3,1fr)}.rw .f small{font-size:10.5px}
+#plan2dBar{flex-wrap:wrap;max-width:calc(100vw - var(--railW) - var(--panelW) - 48px)}
+body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(--inspW) - 60px)}
