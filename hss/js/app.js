@@ -103,10 +103,12 @@ function welcome() {
    <div class="tiles start3">
     <button class="tile big" id="wDemo"><span class="ic">▶</span><b>Demo</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
     <button class="tile big" id="wNew"><span class="ic">＋</span><b>Neues Projekt</b><small>Leeres Gelände – Gebäude, Wege und Stationen selbst planen</small></button>
+    <button class="tile big" id="wOsm"><span class="ic">🏥</span><b>Krankenhaus aus OpenStreetMap</b><small>Klinikum suchen (DE/AT/CH) – Gebäude, Geschosse und Umgebung werden angelegt</small></button>
     <button class="tile big drop" id="wOpen"><span class="ic">⇩</span><b>Projekt öffnen</b><small>Projektdatei (.hss.json) <b>hierher ziehen</b> oder klicken</small></button></div>
    ${recent.length ? `<h3>Zuletzt bearbeitet</h3><div class="list">${recent.slice(0, 5).map(p => `<div class="li" data-open="${p.id}"><span class="t">${U.esc(p.name)}</span><span class="s">${new Date(p.modified).toLocaleString('de-DE')}</span></div>`).join('')}</div>` : ''}`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };
+    $('#wOsm', d).onclick = () => { d.close(); HSS.load(HSS.newProject('Neues Krankenhausprojekt')); UI.setWS('gelaende'); setTimeout(() => HSS.osm.dialog(), 200); };
     const wo = $('#wOpen', d); wo.onclick = () => { d.close(); $('#fOpen').click(); };
     wo.ondragover = e => { e.preventDefault(); wo.classList.add('over'); }; wo.ondragleave = () => wo.classList.remove('over');
     wo.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.close(); HSS.openFiles([...e.dataTransfer.files]); };
