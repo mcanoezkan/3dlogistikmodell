@@ -496,3 +496,10 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 .rw{grid-template-columns:repeat(3,1fr)}.rw .f small{font-size:10.5px}
 #plan2dBar{flex-wrap:wrap;max-width:calc(100vw - var(--railW) - var(--panelW) - 48px)}
 body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(--inspW) - 60px)}
+.osmac-w{position:relative}
+.osmac{position:absolute;left:0;right:0;top:100%;z-index:30;background:#fff;border:1px solid #c9d1d9;border-radius:0 0 6px 6px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
+.osmac .oi{display:flex;gap:8px;align-items:flex-start;padding:6px 9px;cursor:pointer;font-size:12.5px}.osmac .oi:hover,.osmac .oi.on{background:#eef6fb}
+.osmac .oi .ic{flex:none}.osmac .oi b{display:block;color:var(--navy);font-weight:600}.osmac .oi small{color:var(--muted);font-size:11px}
+.osmwahl{margin:10px 0;padding:10px;background:#f3f5f7;border-radius:6px}.osmtiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}.osmtiles .tile.empf{border-color:var(--ok,#0A967A)}
+@media (max-width:640px){.osmtiles{grid-template-columns:1fr}}
+.tiles.start3{grid-template-columns:repeat(2,1fr)!important}

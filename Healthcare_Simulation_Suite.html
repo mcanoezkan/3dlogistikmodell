@@ -504,6 +504,13 @@ body.stachse #hint,body.stachse #zoomCtl,body.stachse #compass,body.stachse #nav
 .rw{grid-template-columns:repeat(3,1fr)}.rw .f small{font-size:10.5px}
 #plan2dBar{flex-wrap:wrap;max-width:calc(100vw - var(--railW) - var(--panelW) - 48px)}
 body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(--inspW) - 60px)}
+.osmac-w{position:relative}
+.osmac{position:absolute;left:0;right:0;top:100%;z-index:30;background:#fff;border:1px solid #c9d1d9;border-radius:0 0 6px 6px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
+.osmac .oi{display:flex;gap:8px;align-items:flex-start;padding:6px 9px;cursor:pointer;font-size:12.5px}.osmac .oi:hover,.osmac .oi.on{background:#eef6fb}
+.osmac .oi .ic{flex:none}.osmac .oi b{display:block;color:var(--navy);font-weight:600}.osmac .oi small{color:var(--muted);font-size:11px}
+.osmwahl{margin:10px 0;padding:10px;background:#f3f5f7;border-radius:6px}.osmtiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}.osmtiles .tile.empf{border-color:var(--ok,#0A967A)}
+@media (max-width:640px){.osmtiles{grid-template-columns:1fr}}
+.tiles.start3{grid-template-columns:repeat(2,1fr)!important}
 
 </style>
 <!-- =====================================================================
@@ -13592,7 +13599,11 @@ UI.khGebaeude = async () => {
    Gewerbegebiete, Parks, Friedhöfe, Sportplätze, Wasser, Parkplätze), Gebäude der
    Umgebung als schlichte graue Baukörper und die Grenze des Klinikgeländes (Zaun).
    Die Abfrage läuft direkt aus dem Browser (Internetverbindung nötig).
-   Adresse suchen über Nominatim. Daten: © OpenStreetMap-Mitwirkende, ODbL 1.0
+   Adresssuche über Photon (Vorschläge beim Tippen, Deutschland/Österreich/Schweiz),
+   ersatzweise Nominatim. Wahlweise wird das Krankenhaus selbst mit übernommen:
+   alle Gebäude des Klinikgeländes als bearbeitbare Modellgebäude (Geschosse aus
+   building:levels bzw. Höhe), Klinikgelände als Grenze, Hubschrauberlandeplatz.
+   Daten: © OpenStreetMap-Mitwirkende, ODbL 1.0
    ===================================================================== */
 (function () {
 'use strict';
@@ -13622,7 +13633,7 @@ const FLAECHE = (t) => {
 };
 const LAGE = { wohngebiet: 0, gewerbe: 0, acker: 1, wiese: 1, wald: 2, park: 2, friedhof: 2, sport: 3, parkplatz: 4, wasser: 5 };
 
-O.query = (geo, radius) => {
+O.query = (geo, radius, kh) => {
   const dLat = radius / 110574, dLon = radius / (111320 * Math.cos(U.rad(geo.lat)));
   const bb = `${geo.lat - dLat},${geo.lon - dLon},${geo.lat + dLat},${geo.lon + dLon}`;
   return `[out:json][timeout:90];(
@@ -13633,7 +13644,8 @@ O.query = (geo, radius) => {
     way["waterway"~"^(river|stream|canal|ditch)$"](${bb});
     way["railway"~"^(rail|tram|light_rail)$"](${bb});
     way["amenity"~"^(hospital|parking|grave_yard)$"](${bb}); relation["amenity"="hospital"](${bb});
-    way["building"](${bb});
+    way["building"](${bb});${kh ? `
+    relation["building"](${bb}); node["aeroway"="helipad"](${bb}); way["aeroway"="helipad"](${bb});` : ''}
   );out geom;`;
 };
 O.fetch = async (q, onTry) => {
@@ -13648,10 +13660,23 @@ O.fetch = async (q, onTry) => {
   }
   throw new Error('OpenStreetMap (Overpass) nicht erreichbar: ' + (last?.message || last) + '. Internetverbindung prüfen oder später erneut versuchen.');
 };
+// Deutschland, Österreich, Schweiz (DACH)
+const DACH = ['DE', 'AT', 'CH'], DACH_BBOX = '5.8,45.7,17.3,55.1';
 O.geocode = async (q) => {
-  const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=de&q=' + encodeURIComponent(q), { headers: { 'Accept-Language': 'de' } });
+  const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=8&countrycodes=de,at,ch&q=' + encodeURIComponent(q), { headers: { 'Accept-Language': 'de' } });
   if (!r.ok) throw new Error('Adresssuche nicht erreichbar (HTTP ' + r.status + ')');
-  return (await r.json()).map(x => ({ name: x.display_name, lat: +x.lat, lon: +x.lon }));
+  return (await r.json()).map(x => ({ name: x.display_name, sub: '', lat: +x.lat, lon: +x.lon, osm: { type: x.osm_type, id: x.osm_id }, hospital: x.type === 'hospital' }));
+};
+// Vorschläge beim Tippen (Photon, OSM-basiert, für Suchvorschläge gedacht)
+O.suche = async (q, signal) => {
+  const r = await fetch(`https://photon.komoot.io/api/?lang=de&limit=10&bbox=${DACH_BBOX}&q=${encodeURIComponent(q)}`, { signal });
+  if (!r.ok) throw new Error('Adresssuche nicht erreichbar (HTTP ' + r.status + ')');
+  const typ = { N: 'node', W: 'way', R: 'relation' };
+  return (await r.json()).features.filter(f => DACH.includes(f.properties.countrycode)).map(f => {
+    const p = f.properties, str = [p.street && (p.street + (p.housenumber ? ' ' + p.housenumber : '')), [p.postcode, p.city || p.town || p.village].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    const land = { DE: 'Deutschland', AT: 'Österreich', CH: 'Schweiz' }[p.countrycode];
+    return { name: p.name || str || p.city || '', sub: [p.name ? str : '', p.state, land].filter(Boolean).join(' · '), lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0], osm: { type: typ[p.osm_type], id: p.osm_id }, hospital: p.osm_value === 'hospital' || p.osm_value === 'clinic', extent: p.extent };
+  });
 };
 
 function hull(pts) {
@@ -13661,6 +13686,59 @@ function hull(pts) {
   for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
   up.pop(); lo.pop(); return lo.concat(up);
 }
+/* ---------- Krankenhaus aus OSM ---------- */
+const ringLL = el => el.type === 'relation' ? (el.members || []).filter(m => m.role === 'outer' && m.geometry).map(m => m.geometry) : (el.geometry ? [el.geometry] : []);
+const inLL = (pt, ring) => G.pointIn([pt.lon, pt.lat], ring.map(g => [g.lon, g.lat]));
+// Klinikgelände finden: gewählter OSM-Eintrag, sonst Gelände am Punkt, sonst das nächste in 400 m
+O.klinik = (data, geo, wahl) => {
+  const els = (data.elements || []).filter(e => (e.tags || {}).amenity === 'hospital' && ringLL(e).length);
+  let k = wahl?.osm && els.find(e => e.type === wahl.osm.type && e.id === wahl.osm.id);
+  if (!k) k = els.find(e => ringLL(e).some(r => inLL(geo, r)));
+  if (!k) { let best = null; for (const e of els) for (const r of ringLL(e)) { const c = r.reduce((a, g) => [a[0] + g.lat / r.length, a[1] + g.lon / r.length], [0, 0]); const d = Math.hypot((c[0] - geo.lat) * 110574, (c[1] - geo.lon) * 111320 * Math.cos(U.rad(geo.lat))); if (d < 400 && (!best || d < best.d)) best = { d, e }; } k = best?.e; }
+  if (!k) return null;
+  const rs = ringLL(k), all = rs.flat(), c = all.reduce((a, g) => [a[0] + g.lat / all.length, a[1] + g.lon / all.length], [0, 0]);
+  return { el: k, rings: rs, name: k.tags.name || 'Krankenhaus', lat: c[0], lon: c[1] };
+};
+const FARBEN = ['#144477', '#0A967A', '#d9531e', '#7b5ea7', '#2D7694', '#b9770e', '#891F5E', '#1f9d7a', '#5a6573', '#c0392b', '#16a3b8', '#a07a3c'];
+O.krankenhaus = (prj, data, geo, K, opt) => {
+  const T = O.proj(geo), stat = { gebaeude: 0, geschosse: 0, ausgelassen: 0, heli: 0 };
+  if (opt.ersetzen) { prj.buildings = prj.buildings.filter(b => !String(b.id).startsWith('osmk_')); prj.paths = prj.paths.filter(p => !String(p.id).startsWith('osmk_')); }
+  const camp = K.rings.map(r => r.map(g => T(g.lat, g.lon)));
+  const inCamp = p => camp.some(r => G.pointIn(p, r) || r.some((q, i) => G.dist(p, G.closestOnSeg(p, q, r[(i + 1) % r.length]).pt) < 3));
+  const own = prj.buildings.filter(b => !b.umgebung).flatMap(b => b.parts).map(pt => HSS.partFootprint(pt).outer);
+  const heli = (data.elements || []).filter(e => (e.tags || {}).aeroway === 'helipad').map(e => e.lat !== undefined ? T(e.lat, e.lon) : (() => { const r = (e.geometry || []).map(g => T(g.lat, g.lon)); return r.length ? [U.sum(r.map(q => q[0])) / r.length, U.sum(r.map(q => q[1])) / r.length] : null; })()).filter(Boolean);
+  let n = 0;
+  const ringsOf = el => el.type === 'relation' ? (el.members || []).filter(m => m.role === 'outer' && m.geometry).map(m => m.geometry.map(g => T(g.lat, g.lon))) : [(el.geometry || []).map(g => T(g.lat, g.lon))];
+  const kandidaten = (data.elements || []).filter(e => (e.tags || {}).building && !['roof', 'carport', 'ruins'].includes(e.tags.building) && (e.type === 'way' || e.type === 'relation'));
+  for (const el of kandidaten) for (const [ri, r0] of ringsOf(el).entries()) {
+    const t = el.tags; let r = r0.slice(); if (r.length > 2 && G.dist(r[0], r[r.length - 1]) < 0.2) r.pop(); if (r.length < 3) continue;
+    const area = Math.abs(G.area(r)); if (area < 25) continue;
+    const bb = G.bbox(r); if (!inCamp([bb.cx, bb.cz])) continue;
+    if (own.some(o => G.pointIn([bb.cx, bb.cz], o))) { stat.ausgelassen++; continue; }
+    n++;
+    const park = t.building === 'parking' || t.parking === 'multi-storey' || t.amenity === 'parking';
+    const lvl = +t['building:levels'] || (t.height ? Math.round(parseFloat(t.height) / (park ? 3 : 3.8)) : 0) || (t.building === 'hospital' ? 4 : park ? 3 : 2);
+    const ug = +t['building:levels:underground'] || (t.building === 'hospital' && area > 800 ? 1 : 0);
+    const loc = G.ccw(r.map(p => [r1(p[0] - bb.cx), r1(p[1] - bb.cz)])), lb = G.bbox(loc);
+    const nm0 = t.name || t['building:name'] || '', ref = /^(?:Haus|Gebäude|Geb\.|Bau|Block|Trakt)\s+([A-Z0-9]{1,4})\b/i.exec(nm0)?.[1];
+    const kurz = String(t.ref || t['building:ref'] || ref || t['addr:housename'] || n).slice(0, 6);
+    const name = t.name || t['building:name'] || (t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : `Gebäude ${kurz}`);
+    const hasHeli = heli.some(h => G.pointIn(h, r));
+    const b = Object.assign(HSS.defaults.building(), { id: `osmk_${el.id}${ri ? '_' + ri : ''}`, name, kurz, color: FARBEN[(n - 1) % FARBEN.length],
+      info: `${K.name} · aus OpenStreetMap (way/relation ${el.id}) · ${t['building:levels'] ? 'Geschosse laut OSM' : t.height ? 'Geschosse aus der Höhe geschätzt' : 'Geschosse angenommen'}${ug ? ` · ${ug} UG ${t['building:levels:underground'] ? 'laut OSM' : 'angenommen'}` : ''}` });
+    b.parts.push(Object.assign(HSS.defaults.part(), { id: `osmk_p${el.id}${ri ? '_' + ri : ''}`, name, shape: 'poly', poly: loc, x: r1(bb.cx), z: r1(bb.cz), w: r1(lb.w), d: r1(lb.d), rot: 0,
+      floors: U.clamp(lvl, 1, 40), floorHeight: park ? 3.0 : 3.8, basements: U.clamp(ug, 0, 4), basementHeight: 3.8, use: park ? 'parkhaus' : '',
+      facade: park ? { type: 'parkhaus', color: '#d9dee3', accent: '#5a6573', glass: '#8aa0b2', axis: 2.5, windowRatio: 0.5 } : { type: 'band', color: '#eef0ee', accent: FARBEN[(n - 1) % FARBEN.length], glass: '#7fa4bd', axis: 1.35, windowRatio: 0.5 },
+      roof: { type: 'flach', parapet: 0.8, plant: area > 600 && !park, color: '#a7b0ba', helipad: hasHeli } }));
+    prj.buildings.push(b); stat.gebaeude++; stat.geschosse += lvl + ug; if (hasHeli) stat.heli++;
+  }
+  // Klinikgelände als Grenze
+  if (opt.grenze) for (const [i, r] of camp.entries()) if (r.length >= 4) prj.paths.push(Object.assign(HSS.defaults.path('grenze'), { id: `osmk_g${K.el.id}_${i}`, name: 'Grundstücksgrenze ' + K.name, points: r, width: 0.35, smooth: false, noNet: true }));
+  if (!prj.buildings.some(b => !b.umgebung && !String(b.id).startsWith('osmk_')) && (/^(Neues|Unbenannt)/i.test(prj.meta.name || '') || !prj.meta.name)) prj.meta.name = K.name;
+  prj.meta.notes = (prj.meta.notes || '') + `\nKrankenhaus „${K.name}“ aus OpenStreetMap übernommen: ${stat.gebaeude} Gebäude (Geschosse aus building:levels bzw. Höhe, sonst angenommen).`;
+  return stat;
+};
+
 /* OSM-Antwort ins Projekt übernehmen */
 O.apply = (prj, data, geo, opt) => {
   const T = O.proj(geo), stat = { strassen: 0, wege: 0, flaechen: 0, gebaeude: 0, grenze: 0 };
@@ -13759,40 +13837,91 @@ O.apply = (prj, data, geo, opt) => {
 };
 
 /* Dialog */
-O.dialog = () => {
+O.dialog = (vorgabe = {}) => {
   const prj = HSS.project(), std = (HSS.STANDORTE || []).find(x => x.id === prj.meta.standort?.id)?.geo;
   const g = prj.meta.geo?.lat ? prj.meta.geo : (std || prj.meta.geo || {});
+  let wahl = null;
   UI.dialog(`<div class="dh"><h2>Umgebung aus OpenStreetMap laden</h2><button class="x" data-close>×</button></div>
-    <p class="note">Lädt Straßen, Wege, Felder, Wiesen, Wälder, Gewässer, Gebäude der Nachbarschaft und die Grenze des Klinikgeländes rund um den Standort – so sieht man, wo Autos fahren, wie weit geplant werden kann und was das Gelände umgibt. Benötigt eine Internetverbindung.</p>
-    <div class="fg"><label class="f full"><span>Adresse suchen</span><input type="text" id="oQ" placeholder="z. B. Rübenacher Straße 170, Koblenz" value="${U.esc(g.adresse && !/^[a-z]+$/.test(g.adresse) ? g.adresse : '')}"></label></div>
-    <div class="row"><button id="oSearch">Suchen</button><span class="note" id="oRes"></span></div>
+    <p class="note">Lädt Straßen, Wege, Felder, Wiesen, Wälder, Gewässer und Gebäude der Nachbarschaft rund um den Standort – auf Wunsch auch das <b>Krankenhaus selbst</b> als bearbeitbare Modellgebäude. Deutschland, Österreich und Schweiz. Benötigt eine Internetverbindung.</p>
+    <div class="fg"><label class="f full osmac-w"><span>Adresse oder Krankenhaus suchen</span><input type="text" id="oQ" autocomplete="off" placeholder="z. B. Klinikum Bielefeld Mitte · AKH Wien · Universitätsspital Zürich" value="${U.esc(vorgabe.q || (g.adresse && !/^[a-z]+$/.test(g.adresse) ? g.adresse : ''))}"><div class="osmac" id="oAc" hidden></div></label></div>
+    <div class="note" id="oRes"></div>
     <div class="fg"><label class="f"><span>Breite (lat) des Modellursprungs</span><input type="number" id="oLat" step="0.00001" value="${g.lat ?? ''}"></label><label class="f"><span>Länge (lon)</span><input type="number" id="oLon" step="0.00001" value="${g.lon ?? ''}"></label>
     <label class="f"><span>Nordwinkel des Modells [°]</span><input type="number" id="oN" step="0.1" value="${g.nord ?? 0}"></label><label class="f"><span>Radius [m]</span><input type="number" id="oR" step="50" min="150" max="2000" value="600"></label></div>
     <div class="row" style="flex-wrap:wrap;gap:10px"><label class="chk"><input type="checkbox" id="oW" checked> Straßen, Wege, Bahn, Bäche</label><label class="chk"><input type="checkbox" id="oF" checked> Flächen (Acker, Wiese, Wald, Wasser …)</label><label class="chk"><input type="checkbox" id="oB" checked> Gebäude der Umgebung</label><label class="chk"><input type="checkbox" id="oG" checked> Grenze des Klinikgeländes</label><label class="chk"><input type="checkbox" id="oV" checked> Verkehr animieren</label><label class="chk"><input type="checkbox" id="oE" checked> frühere OSM-Umgebung ersetzen</label><label class="chk" title="Auf dem Klinikgelände und über den Gebäuden des Modells werden keine OSM-Gebäude, -Flächen und -Wege übernommen – dort gilt das Modell"><input type="checkbox" id="oC" checked> Klinikgelände wie im Modell (OSM nur außen herum)</label></div>
+    <div id="oWahl" class="osmwahl" hidden></div>
     <div class="note" id="oSt"></div>
-    <div class="actions"><button data-close>Abbrechen</button><button class="primary" id="oGo">Umgebung laden</button></div>
-    <p class="note">Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Der Modellursprung (0/0) liegt an der angegebenen Koordinate.</p>`, d => {
-    $('#oSearch', d).onclick = async () => {
-      const q = $('#oQ', d).value.trim(); if (!q) return; $('#oRes', d).textContent = 'suche …';
-      try { const r = await O.geocode(q); if (!r.length) { $('#oRes', d).textContent = 'nichts gefunden'; return; } $('#oLat', d).value = r[0].lat.toFixed(6); $('#oLon', d).value = r[0].lon.toFixed(6); $('#oRes', d).textContent = r[0].name.slice(0, 90); }
-      catch (e) { $('#oRes', d).textContent = e.message; }
+    <div class="actions"><button data-close>Abbrechen</button><button class="primary" id="oGo">Umgebung laden …</button></div>
+    <p class="note">Daten © OpenStreetMap-Mitwirkende (ODbL 1.0) · Suche: Photon (komoot) / Nominatim. Der Modellursprung (0/0) liegt an der angegebenen Koordinate – mit Krankenhaus in der Mitte des Klinikgeländes.</p>`, d => {
+    const q = $('#oQ', d), ac = $('#oAc', d), res = $('#oRes', d);
+    let ctl = null, liste = [], aktiv = -1;
+    const waehlen = x => {
+      wahl = x; ac.hidden = true; q.value = x.name + (x.sub ? ', ' + x.sub.split(' · ')[0] : '');
+      $('#oLat', d).value = x.lat.toFixed(6); $('#oLon', d).value = x.lon.toFixed(6);
+      if (x.extent) { const [w, n, e, s2] = x.extent, dia = Math.hypot((n - s2) * 110574, (e - w) * 111320 * Math.cos(U.rad(x.lat))); $('#oR', d).value = U.clamp(Math.round((dia / 2 + 350) / 50) * 50, 300, 1500); }
+      res.innerHTML = `${x.hospital ? '🏥 <b>Krankenhaus</b> gewählt: ' : 'Gewählt: '}${U.esc(x.name)}${x.sub ? ' · ' + U.esc(x.sub) : ''}`;
     };
-    $('#oGo', d).onclick = async () => {
-      const geo = { lat: +$('#oLat', d).value, lon: +$('#oLon', d).value, nord: +$('#oN', d).value || 0 };
-      if (!geo.lat || !geo.lon) return UI.toast('Bitte Koordinaten angeben oder Adresse suchen');
+    const zeigen = () => {
+      ac.hidden = !liste.length;
+      ac.innerHTML = liste.map((x, i) => `<div class="oi ${i === aktiv ? 'on' : ''}" data-i="${i}"><span class="ic">${x.hospital ? '🏥' : '📍'}</span><div><b>${U.esc(x.name)}</b><small>${U.esc(x.sub)}</small></div></div>`).join('');
+      ac.querySelectorAll('[data-i]').forEach(el => el.onmousedown = e => { e.preventDefault(); waehlen(liste[+el.dataset.i]); });
+    };
+    const suchen = U.debounce(async () => {
+      const t = q.value.trim(); if (t.length < 3) { liste = []; zeigen(); return; }
+      ctl?.abort(); ctl = new AbortController();
+      try { liste = await O.suche(t, ctl.signal); aktiv = -1; zeigen(); if (!liste.length) res.textContent = 'keine Treffer in Deutschland, Österreich oder der Schweiz'; else res.textContent = ''; }
+      catch (e) { if (e.name !== 'AbortError') { try { liste = await O.geocode(t); aktiv = -1; zeigen(); } catch (e2) { res.textContent = e2.message; } } }
+    }, 300);
+    q.oninput = () => { wahl = null; suchen(); };
+    q.onkeydown = e => {
+      if (e.key === 'ArrowDown' && liste.length) { e.preventDefault(); aktiv = (aktiv + 1) % liste.length; zeigen(); }
+      else if (e.key === 'ArrowUp' && liste.length) { e.preventDefault(); aktiv = (aktiv - 1 + liste.length) % liste.length; zeigen(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (liste[aktiv >= 0 ? aktiv : 0]) waehlen(liste[aktiv >= 0 ? aktiv : 0]); }
+      else if (e.key === 'Escape' && !ac.hidden) { e.preventDefault(); e.stopPropagation(); ac.hidden = true; }
+    };
+    q.onblur = () => setTimeout(() => (ac.hidden = true), 150);
+    q.onfocus = () => { if (liste.length) ac.hidden = false; };
+    // Schritt 2: nur Umgebung oder Umgebung mit Krankenhaus
+    $('#oGo', d).onclick = () => {
+      const lat = +$('#oLat', d).value, lon = +$('#oLon', d).value;
+      if (!lat || !lon) return UI.toast('Bitte Adresse oder Krankenhaus suchen oder Koordinaten angeben');
+      const eigene = HSS.project().buildings.filter(b => !b.umgebung && !String(b.id).startsWith('osmk_')).length;
+      const w = $('#oWahl', d); w.hidden = false;
+      w.innerHTML = `<b>Was soll geladen werden?</b><div class="osmtiles">
+        <button class="tile big" data-m="u"><span class="ic">🗺</span><b>Nur Umgebung</b><small>Straßen, Flächen und Nachbargebäude rund um ${eigene ? 'die vorhandenen Modellgebäude' : 'den Standort'}</small></button>
+        <button class="tile big ${!eigene ? 'empf' : ''}" data-m="k"><span class="ic">🏥</span><b>Umgebung mit Krankenhaus</b><small>Alle Gebäude des Klinikgeländes${wahl?.hospital ? ` („${U.esc(wahl.name)}“)` : ''} als bearbeitbare Modellgebäude mit Geschossen aus OSM, Grenze des Geländes, Hubschrauberlandeplatz${eigene ? ` · ${eigene} vorhandene Gebäude bleiben, Überschneidungen werden übersprungen` : ''}</small></button></div>`;
+      w.querySelectorAll('[data-m]').forEach(b => b.onclick = () => laden(b.dataset.m === 'k'));
+      w.scrollIntoView({ block: 'nearest' });
+    };
+    const laden = async (mitKh) => {
+      let geo = { lat: +$('#oLat', d).value, lon: +$('#oLon', d).value, nord: +$('#oN', d).value || 0 };
       const radius = U.clamp(+$('#oR', d).value || 600, 150, 2000);
       const opt = { radius, wege: $('#oW', d).checked, flaechen: $('#oF', d).checked, gebaeude: $('#oB', d).checked, grenze: $('#oG', d).checked, verkehr: $('#oV', d).checked, ersetzen: $('#oE', d).checked, campus: $('#oC', d).checked };
-      const st = $('#oSt', d); $('#oGo', d).disabled = true; st.textContent = 'Lade Daten aus OpenStreetMap …';
+      const st = $('#oSt', d); d.querySelectorAll('#oWahl button, #oGo').forEach(b => (b.disabled = true)); st.textContent = 'Lade Daten aus OpenStreetMap …';
       try {
-        const data = await O.fetch(O.query(geo, radius), url => { st.textContent = 'Lade Daten von ' + new URL(url).host + ' …'; });
+        const data = await O.fetch(O.query(geo, radius, mitKh), url => { st.textContent = 'Lade Daten von ' + new URL(url).host + ' …'; });
+        let K = null;
+        if (mitKh) {
+          K = O.klinik(data, geo, wahl);
+          if (!K) throw new Error('An dieser Stelle wurde kein Klinikgelände (amenity=hospital) gefunden. Bitte das Krankenhaus in der Suche auswählen oder „Nur Umgebung“ laden.');
+          // Modellursprung in die Mitte des Klinikgeländes, sofern das Projekt noch keine eigenen Gebäude hat
+          if (!HSS.project().buildings.some(b => !b.umgebung && !String(b.id).startsWith('osmk_'))) geo = { lat: +K.lat.toFixed(6), lon: +K.lon.toFixed(6), nord: geo.nord };
+        }
         st.textContent = `${(data.elements || []).length} Elemente empfangen – werden übernommen …`;
-        let stat;
+        let stat, ks = null;
         HSS.manip?.mark();
-        HSS.change('Umgebung aus OpenStreetMap', p => { p.meta.geo = Object.assign(p.meta.geo || {}, geo); stat = O.apply(p, data, geo, opt); });
-        d.close(); HSS.s3.home();
-        UI.toast(`Umgebung geladen: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.grenze ? ', Grundstücksgrenze' : ''}${stat.ausgelassen ? ` · ${stat.ausgelassen} Objekte auf dem Klinikgelände ausgelassen` : ''}`, 5000);
-      } catch (e) { st.innerHTML = `<span class="warnbox" style="display:block">${U.esc(e.message)}</span>`; $('#oGo', d).disabled = false; }
+        HSS.change(mitKh ? 'Krankenhaus und Umgebung aus OpenStreetMap' : 'Umgebung aus OpenStreetMap', p => {
+          p.meta.geo = Object.assign(p.meta.geo || {}, geo, { adresse: wahl ? wahl.name : p.meta.geo?.adresse });
+          if (K) ks = O.krankenhaus(p, data, geo, K, opt);
+          stat = O.apply(p, data, geo, opt);
+        });
+        d.close();
+        if (ks?.gebaeude) { const T = window.THREEX.THREE, box = new T.Box3(); for (const b of HSS.project().buildings) if (String(b.id).startsWith('osmk_')) for (const pt of b.parts) for (const q of HSS.partFootprint(pt).outer) { box.expandByPoint(new T.Vector3(q[0], 0, q[1])); box.expandByPoint(new T.Vector3(q[0], HSS.partTopY(pt), q[1])); } setTimeout(() => HSS.s3.focusBox(box, { k: 1.0 }), 300); }
+        else HSS.s3.home();
+        UI.toast(`${ks ? `🏥 ${K.name}: ${ks.gebaeude} Gebäude übernommen${ks.heli ? ', Hubschrauberlandeplatz' : ''}${ks.ausgelassen ? `, ${ks.ausgelassen} überschneiden vorhandene Gebäude (übersprungen)` : ''} · ` : ''}Umgebung: ${stat.strassen} Straßen, ${stat.wege} Wege, ${stat.flaechen} Flächen, ${stat.gebaeude} Gebäude${stat.ausgelassen ? ` · ${stat.ausgelassen} Objekte auf dem Klinikgelände ausgelassen` : ''}`, 7000);
+        if (ks) setTimeout(() => UI.toast('Tipp: Gebäude anklicken, um Name, Kürzel und Geschosse zu prüfen – OSM kennt nicht immer alle Geschosse.', 6000), 7200);
+      } catch (e) { st.innerHTML = `<span class="warnbox" style="display:block">${U.esc(e.message)}</span>`; d.querySelectorAll('#oWahl button, #oGo').forEach(b => (b.disabled = false)); }
     };
+    if (vorgabe.q) suchen();
   });
 };
 })();
@@ -15972,10 +16101,12 @@ function welcome() {
    <div class="tiles start3">
     <button class="tile big" id="wDemo"><span class="ic">▶</span><b>Demo</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
     <button class="tile big" id="wNew"><span class="ic">＋</span><b>Neues Projekt</b><small>Leeres Gelände – Gebäude, Wege und Stationen selbst planen</small></button>
+    <button class="tile big" id="wOsm"><span class="ic">🏥</span><b>Krankenhaus aus OpenStreetMap</b><small>Klinikum suchen (DE/AT/CH) – Gebäude, Geschosse und Umgebung werden angelegt</small></button>
     <button class="tile big drop" id="wOpen"><span class="ic">⇩</span><b>Projekt öffnen</b><small>Projektdatei (.hss.json) <b>hierher ziehen</b> oder klicken</small></button></div>
    ${recent.length ? `<h3>Zuletzt bearbeitet</h3><div class="list">${recent.slice(0, 5).map(p => `<div class="li" data-open="${p.id}"><span class="t">${U.esc(p.name)}</span><span class="s">${new Date(p.modified).toLocaleString('de-DE')}</span></div>`).join('')}</div>` : ''}`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };
+    $('#wOsm', d).onclick = () => { d.close(); HSS.load(HSS.newProject('Neues Krankenhausprojekt')); UI.setWS('gelaende'); setTimeout(() => HSS.osm.dialog(), 200); };
     const wo = $('#wOpen', d); wo.onclick = () => { d.close(); $('#fOpen').click(); };
     wo.ondragover = e => { e.preventDefault(); wo.classList.add('over'); }; wo.ondragleave = () => wo.classList.remove('over');
     wo.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.close(); HSS.openFiles([...e.dataTransfer.files]); };
