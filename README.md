@@ -50,3 +50,27 @@ Fehlende Knoten, unbekannte Bereiche und nicht routbare Relationen zeigt die Dat
 - Das Modellraster ist um 22,3° gegen Nord gedreht, damit die Gebäudeachsen parallel zur Eduard-Windthorst-Straße liegen. Der Nordpfeil im Modell zeigt die tatsächliche Nordrichtung.
 - Geschosszahlen, Innenwege, Aufzüge, Treppenhäuser, Lage der meisten Funktionsbereiche, Mengen und Zeiten sind Annahmen. Eine vollständige Liste steht in der App unter „Annahmen“.
 - Die Soll-Variante dient der Veranschaulichung und ist keine Planung.
+
+## Healthcare Simulation Suite (Ordner `suite/`)
+
+| Datei | Inhalt |
+|---|---|
+| `suite/Healthcare_Simulation_Suite.html` | Suite als Einzeldatei (Stand „mit U2-Korrektur“) mit den Erweiterungen unten |
+| `suite/Klinikum_Bielefeld-Mitte.hss.json` | Projekt Bielefeld-Mitte (Bestand mit NIZ, U2, Bunker, EG Hauptgebäude), in der Suite über „Öffnen“ laden |
+| `suite/quellen/` | Grundlagen: Bestandsplan HGMI Ebene E Teil 1 (PDF) und Fotos der NIZ-Vorfahrt |
+
+Erweiterungen der Suite:
+
+- **Gebäude ausblenden** (Ansichtsleiste, auch in der exportierten HTML-Ansicht): Beim ersten Klick die Gebäude wählen, danach blendet jeder Klick sie aus und wieder ein. ⚙ ändert die Auswahl. Auswahl und Zustand werden im Projekt (`settings.gebAus`) gespeichert und beim Export übernommen. Nur Darstellung, Wegenetz und Simulation rechnen mit allen Gebäuden.
+- **Flächen**: Erhöhung `hoehe` (Verkehrsinsel, Mauer) und Art „Sperrfläche“ mit Schraffur (`markWinkel`).
+- **Grundstücksgrenze** ohne Zaun (`zaun: false`), z. B. an offenen Vorfahrten.
+- **Bibliothek**: Zeichen 250 mit Zusatzzeichen, Zeichen 206, Hinweistafel, Einfahrtssäule.
+
+Änderungen am Projekt:
+
+- **Hauptgebäude Ebene E (Teil 1)** nach Bestandsplan HGMI E (ART, 10.08.2023): rund 1.900 Wandsegmente und 188 Räume mit Raumnummer (HGMI-E.…). Georeferenz über die Rundkerne 1–4, die mit den Kernen der Ebene U2 auf wenige Zentimeter übereinstimmen.
+- **Aufzüge 1–11** lagerichtig nach Plan (1–5 Bettenaufzüge am Kern 5, 6/7 Kleinaufzüge, 8/9 Bettenaufzüge an der Halle, 10/11 am Kern 4) und Treppenhaus Kern 5. Haltestellen (U1–12) und Nutzung sind Annahmen.
+- Die angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in laut Plan anders belegten Räumen und liegen jetzt im Breitfuß Ost (Lage weiter angenommen). Die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.
+- **NIZ-Vorfahrt** nach Fotos und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg, Pflaster-Vorfahrt zum Kurzzeitparkplatz, Asphalt-Rettungszufahrt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern, Böschungen, Sperrfläche, Zeichen 250 und 206, Hinweistafeln, Fahnenmasten, Mastleuchten.
+
+Zwei Warenströme (Zentrallager ↔ Technik Haus 8, Technik Haus 8 → Abfall) sind nicht routbar, weil Haus 8 im Projekt nicht mehr enthalten ist. Das war schon vor diesen Änderungen so.
