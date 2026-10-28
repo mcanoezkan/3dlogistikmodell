@@ -420,6 +420,10 @@ body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
 body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.vw-no-rundgang #tourCard,body.viewer.vw-no-rundgang .vw-tour{display:none!important}
 body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
 body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
+#viewbar .gaw{display:inline-flex}#viewbar .gaw button+button{margin-left:-1px;padding:5px 7px}
+.galist{max-height:48vh;overflow:auto;border:1px solid var(--line);padding:2px 10px 8px;margin:8px 0}
+.galist h4{margin:10px 0 4px}.galist .chk{margin:3px 0;align-items:flex-start}.galist .hk{display:inline-block;min-width:24px;text-align:center;color:#fff;font-size:11px;padding:1px 4px;border-radius:2px;margin-top:1px}
+.galist .sub{color:var(--muted);font-size:11px}
 .axopt{display:grid;gap:6px}.axopt .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px}.axopt small{font-size:11.5px}
 .fa-dlg{width:min(640px,96vw)}
 .fa-steps{display:flex;gap:6px;margin:0 0 10px}.fa-steps span{flex:1;font-size:12px;padding:6px 8px;border-radius:4px;background:#eef1f4;color:var(--muted)}.fa-steps span.on{background:var(--navy,#0A223C);color:#fff;font-weight:600}
@@ -597,6 +601,7 @@ body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(-
   <button class="tgl on" id="vLabels" title="Beschriftungen">Beschriftung</button>
   <button class="tgl on" id="vGrid" title="Planungsraster (außen 10 m, in Etagen 1 m)">Raster</button>
   <button class="tgl" id="vM2" title="Flächenansicht: Räume und Etagen in m² nach DIN 277">m² Flächen</button>
+  <span class="gaw"><button class="tgl" id="vGebAus" title="Festgelegte Gebäude aus- und wieder einblenden">🏢 Gebäude ausblenden …</button><button id="vGebAusCfg" title="Festlegen, welche Gebäude ausgeblendet werden">⚙</button></span>
   <span class="vsep"></span>
   <button id="vTour" class="primary" title="Eine oder mehrere Stationen auswählen und Raum für Raum besuchen">▶ Stationsrundgang</button>
   <button id="vWalk" title="Frei begehen in der Ich-Perspektive (WASD + Maus)">🚶 Begehen</button>
@@ -5542,6 +5547,10 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Außenanlag
   { id: 'aussen.wegweiser', name: 'Leitsystem-Stele', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Wegweiser', 'Orientierung'], size: { w: 0.9, d: 0.25, h: 2.6 }, parts: [K.box(0, 1.3, 0, 0.9, 2.6, 0.2, NV, 'lack'), K.box(0, 2.2, 0.101, 0.7, 0.3, 0.005, '#ffffff', 'lack'), ...[0, 1, 2, 3].map(i => K.box(0, 1.7 - i * 0.28, 0.101, 0.7, 0.2, 0.005, ['#1c3a6e', '#0f5c4c', '#d9531e', '#e3ac0c'][i], 'lack'))] },
   { id: 'aussen.ladesaeule', name: 'E-Ladesäule', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Laden', 'E-Mobilität'], size: { w: 0.5, d: 0.35, h: 1.7 }, parts: [K.box(0, 0.85, 0, 0.45, 1.7, 0.3, '#eef1f4', 'lack', { rr: 0.05 }), K.box(0, 1.35, 0.152, 0.25, 0.18, 0.005, '#14324f', 'bildschirm'), K.box(0, 1.6, 0.152, 0.35, 0.05, 0.005, '#0A967A', 'leucht')] },
   { id: 'aussen.parkscheinautomat', name: 'Kassenautomat', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Parken'], size: { w: 0.7, d: 0.5, h: 1.9 }, parts: [K.box(0, 0.95, 0, 0.7, 1.9, 0.5, '#2D7694', 'lack', { rr: 0.04 }), K.box(0, 1.4, 0.252, 0.4, 0.3, 0.005, '#14324f', 'bildschirm')] },
+  { id: 'aussen.vz.verbot', name: 'Verkehrszeichen 250 (Verbot für Fahrzeuge aller Art) mit Zusatzzeichen', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Schild', 'Zufahrt', 'Rettungsdienst'], size: { w: 0.7, d: 0.1, h: 2.9 }, parts: [K.cyl(0, 1.35, 0, 0.03, 2.7, '#9aa1aa', 'metall'), K.cyl(0, 2.5, 0.03, 0.32, 0.02, '#c8102e', 'lack', { ax: 'z', seg: 32 }), K.cyl(0, 2.5, 0.042, 0.255, 0.02, '#ffffff', 'lack', { ax: 'z', seg: 32 }), K.box(0, 2.0, 0.035, 0.62, 0.34, 0.02, '#ffffff', 'lack'), K.box(0, 2.04, 0.047, 0.46, 0.06, 0.005, '#1f2328', 'lack'), K.box(0, 1.94, 0.047, 0.36, 0.05, 0.005, '#1f2328', 'lack')] },
+  { id: 'aussen.vz.stop', name: 'Verkehrszeichen 206 (Halt. Vorfahrt gewähren.)', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Schild', 'Ausfahrt'], size: { w: 0.7, d: 0.1, h: 2.6 }, parts: [K.cyl(0, 1.25, 0, 0.03, 2.5, '#9aa1aa', 'metall'), K.cyl(0, 2.25, 0.03, 0.33, 0.02, '#ffffff', 'lack', { ax: 'z', seg: 8 }), K.cyl(0, 2.25, 0.042, 0.3, 0.02, '#c8102e', 'lack', { ax: 'z', seg: 8 }), K.box(0, 2.25, 0.055, 0.36, 0.09, 0.005, '#ffffff', 'lack')] },
+  { id: 'aussen.hinweistafel', name: 'Hinweistafel (weiß, rote Schrift)', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Schild', 'Hinweis', 'Notaufnahme'], size: { w: 1.8, d: 0.12, h: 1.3 }, parts: [K.cyl(-0.75, 0.55, 0, 0.03, 1.1, '#9aa1aa', 'metall'), K.cyl(0.75, 0.55, 0, 0.03, 1.1, '#9aa1aa', 'metall'), K.box(0, 1.0, 0.02, 1.8, 0.6, 0.04, '#ffffff', 'lack'), K.box(-0.05, 1.12, 0.042, 1.4, 0.07, 0.005, '#c8102e', 'lack'), K.box(0, 0.99, 0.042, 1.55, 0.07, 0.005, '#c8102e', 'lack'), K.box(-0.2, 0.86, 0.042, 1.1, 0.06, 0.005, '#c8102e', 'lack')] },
+  { id: 'aussen.einfahrtssaeule', name: 'Säule an der Einfahrt (Sprechstelle / Ticket)', category: 'Außenanlagen/ÖPNV & Verkehr', tags: ['Parken', 'Einfahrt', 'Schranke'], size: { w: 0.3, d: 0.3, h: 1.4 }, parts: [K.box(0, 0.7, 0, 0.26, 1.4, 0.26, '#1f2328', 'lack'), K.box(0, 1.15, 0.132, 0.16, 0.22, 0.005, '#d9dde2', 'lack'), K.box(0, 0.85, 0.132, 0.12, 0.05, 0.005, '#0A967A', 'leucht')] },
   { id: 'aussen.fahnenmast', name: 'Fahnenmast', category: 'Außenanlagen/Stadtmobiliar', tags: ['Eingang'], size: { w: 1.6, d: 0.2, h: 8 }, parts: [K.cyl(0, 4, 0, 0.05, 8, '#e3e7eb', 'chrom'), K.box(0.6, 6.8, 0, 1.1, 1.8, 0.02, '#144477', 'stoff')] },
   { id: 'aussen.muellstandplatz', name: 'Abfallsammelstelle (Einhausung)', category: 'Außenanlagen/Ver- und Entsorgung', tags: ['Abfall', 'Entsorgung', 'Unrein'], size: { w: 8, d: 4, h: 2.4 }, parts: [K.box(0, 0.05, 0, 8, 0.1, 4, '#b5b0a5', 'matt'), K.box(0, 1.2, -1.95, 8, 2.4, 0.1, '#6e7378', 'metall'), ...[-1, 1].map(s => K.box(s * 3.95, 1.2, 0, 0.1, 2.4, 4, '#6e7378', 'metall')), K.box(0, 2.45, 0, 8, 0.1, 4, '#3b4048', 'metall'), ...[-2.8, -1.4, 0, 1.4].map(x => K.box(x, 0.8, -0.8, 1.3, 1.2, 1.0, '#4b5058', 'kunststoff', { rr: 0.04 })), K.box(2.8, 1.0, -0.4, 1.8, 1.8, 2.5, '#2D7694', 'metall')], logistik: { rolle: 'senke', reinheit: 'unrein' } },
   { id: 'aussen.presscontainer', name: 'Presscontainer (20 m³)', category: 'Außenanlagen/Ver- und Entsorgung', tags: ['Abfall', 'Entsorgung'], size: { w: 2.5, d: 6.5, h: 2.6 }, parts: [K.box(0, 1.35, 0, 2.4, 2.4, 6.3, '#2D7694', 'metall'), K.box(0, 2.0, 3.0, 2.4, 1.2, 0.8, '#144477', 'metall'), K.box(0, 0.08, 0, 2.5, 0.16, 6.5, '#3b4048', 'metall')] },
@@ -6251,8 +6260,8 @@ HSS.WEGARTEN = {
   bach: { name: 'Bach / Fluss', color: '#6fa3c4', w: 4, info: 'Fließgewässer' },
   bahn: { name: 'Bahngleis', color: '#7d7468', w: 3.2, info: 'Eisenbahn / Straßenbahn' }
 };
-HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / Pflaster', wasser: 'Wasserfläche', acker: 'Acker / Feld', wiese: 'Wiese', wald: 'Wald', wohngebiet: 'Wohngebiet', gewerbe: 'Gewerbegebiet', park: 'Park / Garten', friedhof: 'Friedhof', sport: 'Sportplatz' };
-const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f' };
+HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / Pflaster', sperrflaeche: 'Sperrfläche (Markierung)', wasser: 'Wasserfläche', acker: 'Acker / Feld', wiese: 'Wiese', wald: 'Wald', wohngebiet: 'Wohngebiet', gewerbe: 'Gewerbegebiet', park: 'Park / Garten', friedhof: 'Friedhof', sport: 'Sportplatz' };
+const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f', sperrflaeche: '#4f5358' };
 HSS.FLAECHEN_FARBE = FL_COL;
 
 /* ---------- Gelände ---------- */
@@ -6398,6 +6407,33 @@ const drapedPoly = (a, yoff, color) => {
   const mat = HSS.library.shared('flaeche|' + color + '|0.95', () => new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
 };
+// Erhöhte Fläche (Verkehrsinsel, Mauer, Podest): Vieleck um a.hoehe (m) über Gelände extrudiert
+const raisedPoly = (a, color) => {
+  const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
+  const g = new THREE.ExtrudeGeometry(sh, { depth: a.hoehe, bevelEnabled: false }); g.rotateX(-Math.PI / 2);
+  g.translate(0, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + 0.005, 0); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, LM(color)); m.castShadow = true; m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
+};
+// Schraffur einer Sperrfläche (Zeichen 298): weiße Schrägstreifen im Vieleck und Randlinie
+const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
+  const th = U.rad(ang), u = [Math.cos(th), Math.sin(th)], n = [-u[1], u[0]], P = a.poly;
+  const ds = P.map(p => p[0] * n[0] + p[1] * n[1]), lo = Math.min(...ds), hi = Math.max(...ds), geos = [];
+  for (let c = lo + step / 2; c < hi; c += step) {
+    const ts = [];
+    for (let i = 0; i < P.length; i++) {
+      const j = (i + 1) % P.length, da = ds[i] - c, db = ds[j] - c;
+      if ((da < 0) !== (db < 0)) { const t = da / (da - db), X = P[i][0] + (P[j][0] - P[i][0]) * t, Z = P[i][1] + (P[j][1] - P[i][1]) * t; ts.push(X * u[0] + Z * u[1]); }
+    }
+    ts.sort((p, q) => p - q);
+    for (let k = 0; k + 1 < ts.length; k += 2) {
+      const L = ts[k + 1] - ts[k] - 0.3; if (L < 0.2) continue;
+      const m = (ts[k] + ts[k + 1]) / 2, g = new THREE.BoxGeometry(L, 0.012, bw); g.rotateY(-th); g.translate(u[0] * m + n[0] * c, y, u[1] * m + n[1] * c); geos.push(g);
+    }
+  }
+  for (let i = 0; i < P.length; i++) { const A = P[i], B = P[(i + 1) % P.length], L = G.dist(A, B); if (L < 0.05) continue; const g = new THREE.BoxGeometry(L, 0.012, 0.12); g.rotateY(-Math.atan2(B[1] - A[1], B[0] - A[0])); g.translate((A[0] + B[0]) / 2, y, (A[1] + B[1]) / 2); geos.push(g); }
+  if (!geos.length) return null;
+  const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
+};
 function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
@@ -6417,6 +6453,14 @@ function buildPolyArea(a, grp) {
 }
 HSS.buildArea = (a, view = {}) => {
   const grp = new THREE.Group(); grp.userData = { kind: 'area', id: a.id };
+  if ((a.hoehe > 0 || a.kind === 'sperrflaeche') && !(a.poly && a.poly.length >= 3)) a = Object.assign({}, a, { poly: HSS.areaPoly(a) });
+  if (a.poly && a.poly.length >= 3 && (a.hoehe > 0 || a.kind === 'sperrflaeche')) {
+    const col = a.color || FL_COL[a.kind] || '#c9d6b8', top = a.hoehe > 0 ? a.hoehe : 0;
+    // Sperrflächen liegen auf Fahrbahnen (Wege +0,08 m über Gelände) – deshalb etwas höher
+    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col));
+    if (a.kind === 'sperrflaeche') { const m = hatch(a, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + (top || 0.09) + 0.012, a.markWinkel ?? 45); if (m) grp.add(m); }
+    return grp;
+  }
   if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp);
   if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp);
   const r = U.rad(a.rot || 0);
@@ -7124,6 +7168,7 @@ S3.rebuild = (scope = 'all') => {
   if (!S3.scene) return;
   const prj = HSS.project(), L = S3.layers;
   if (scope === 'objects') { buildObjects(); collectPickables(); S3.showSelection(); HSS.emit('rebuilt'); return; }
+  const aus = HSS.gebAus?.hidden(prj); // „Gebäude ausblenden“ (nur Darstellung)
   S3.groups.clear();
   // Umgebung (OpenStreetMap-Bebauung, Straßen, Flächen) reduzieren: alle / nur nah am Campus / aus
   const umg = V.umgebung || 'alle'; let nah = null;
@@ -7152,7 +7197,7 @@ S3.rebuild = (scope = 'all') => {
   const tick = (S3._tick = (S3._tick || 0) + 1);
   // Zwischenspeicher je Element und Ansicht (Etagenwechsel hin und zurück ohne Neuaufbau)
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
-  for (const b of prj.buildings) for (const pt of b.parts) {
+  for (const b of prj.buildings) for (const pt of (aus && aus.has(b.id) ? [] : b.parts)) {
     if (!zeig(b.umgebung, pt.x, pt.z)) continue;
     const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
@@ -7163,6 +7208,7 @@ S3.rebuild = (scope = 'all') => {
   }
   for (const br of prj.bridges) {
     const A = HSS.findPart(br.a?.part, prj), B = HSS.findPart(br.b?.part, prj);
+    if (aus && (aus.has(A?.building?.id) || aus.has(B?.building?.id))) continue;
     const g = bcached(br.id, JSON.stringify([br, A?.part, B?.part, A && chain(A.part), B && chain(B.part)]) + vkey, () => HSS.buildBridge(br, V)); L.build.add(g); S3.groups.set(br.id, g);
   }
   if (bcache.size > 700) { const old = [...bcache.entries()].filter(([k]) => !live.has(k)).sort((a, b) => a[1].t - b[1].t); for (const [k] of old.slice(0, bcache.size - 500)) bcache.delete(k); }
@@ -7193,6 +7239,7 @@ function objVisible(o, prj) {
 }
 function buildObjects() {
   const prj = HSS.project(), L = S3.layers.objects; clear(L);
+  const aus = HSS.gebAus?.hidden(prj);
   const groups = new Map();
   // gewähltes Objekt einzeln aufbauen, damit es sich beim Ziehen direkt mitbewegt
   const selObj = HSS.state.selection?.kind === 'object' ? HSS.state.selection.id : null;
@@ -7203,6 +7250,7 @@ function buildObjects() {
     const role = d.logistik?.rolle;
     const P = o.host ? HSS.findPart(o.host.part, prj) : null;
     if (o.host && !P) continue;
+    if (aus && (P ? aus.has(P.building.id) : HSS.gebAus.ueber(o, prj))) continue;
     // Aufzüge/Treppen: auf jedem Halt-Geschoss wiederholen
     let floors = null;
     if (P && (role === 'aufzug' || role === 'treppe')) {
@@ -7258,8 +7306,9 @@ function buildObjects() {
 function buildLabels() {
   const prj = HSS.project(), L = S3.layers.labels;
   if (!V.labels) return;
+  const aus = HSS.gebAus?.hidden(prj);
   for (const b of prj.buildings) {
-    if (!b.parts.length || (b.noLabel && !V.m2)) continue;
+    if (!b.parts.length || (b.noLabel && !V.m2) || (aus && aus.has(b.id))) continue;
     // Anker: Mitte des größten Bauteils, Höhe = Dach des höchsten Bauteils; das Kürzel sitzt genau über dem Anker
     const top = b.parts.reduce((a, pt) => HSS.partTopY(pt) > HSS.partTopY(a) ? pt : a, b.parts[0]);
     const main = b.parts.filter(pt => !pt.stackOn).reduce((a, pt) => HSS.partArea(pt) > HSS.partArea(a) ? pt : a, b.parts.find(pt => !pt.stackOn) || b.parts[0]);
@@ -7271,6 +7320,7 @@ function buildLabels() {
   }
   if (V.floor !== null) {
     for (const b of prj.buildings) for (const pt of b.parts) {
+      if (aus && aus.has(b.id)) continue;
       const f = HSS.localFloor(pt, V.floor); if (f === null) continue;
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
@@ -11154,7 +11204,8 @@ INSP.area = s => {
   <div class="fg">${UI.fSel('Art', 'kind', a.kind, UI.opts(HSS.FLAECHEN, a.kind))}${UI.fNum('Drehung', 'rot', a.rot, { unit: '°', step: 1 })}${UI.fNum('Länge', 'w', a.w, { unit: 'm', step: 0.5 })}${UI.fNum('Tiefe', 'd', a.d, { unit: 'm', step: 0.5 })}
   ${UI.fNum('Lage x', 'x', a.x, { step: 0.5 })}${UI.fNum('Lage z', 'z', a.z, { step: 0.5 })}
   ${a.kind === 'parkplatz' ? UI.fNum('Stellplatzbreite', 'stallW', a.stallW ?? 2.5, { unit: 'm', step: 0.05 }) + UI.fNum('Stellplatztiefe', 'stallD', a.stallD ?? 5, { unit: 'm', step: 0.1 }) + UI.fNum('Fahrgasse', 'aisle', a.aisle ?? 6, { unit: 'm', step: 0.5 }) + UI.fNum('Belegung', 'occupancy', a.occupancy ?? 0.7, { min: 0, max: 1, step: 0.05 }) : ''}
-  ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}</div>
+  ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}${['sperrflaeche', 'wiese'].includes(a.kind) ? UI.fCol('Farbe', 'color', a.color || HSS.FLAECHEN_FARBE[a.kind]) : ''}${a.kind === 'sperrflaeche' ? UI.fNum('Streifenwinkel', 'markWinkel', a.markWinkel ?? 45, { unit: '°', step: 5 }) : ''}
+  ${UI.fNum('Erhöhung (Insel, Mauer)', 'hoehe', a.hoehe ?? 0, { unit: 'm', step: 0.05, min: 0 })}</div>
   ${a.kind === 'parkplatz' ? '<div class="note">Richtwerte: Stellplatz 2,50 × 5,00 m, Fahrgasse 6,00 m bei Senkrechtaufstellung (GaVO).</div>' : ''}
   <div class="actions"><button id="iDup">Duplizieren</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
@@ -15781,6 +15832,105 @@ function punkt(p, q) {
   else Object.assign(o, { x: q.x, z: q.z });
   p.objects.push(o); return o.id;
 }
+})();
+
+</script>
+<script>
+/* =====================================================================
+   HSS · ausblenden.js – Gebäude gezielt aus- und einblenden (nur Darstellung)
+   Schaltfläche „Gebäude ausblenden“ in der Ansichtsleiste, auch in der
+   exportierten HTML-Ansicht:
+   1. Erster Klick (noch keine Auswahl): Gebäude auswählen (Dialog).
+   2. Danach blendet jeder Klick die gewählten Gebäude aus bzw. wieder ein.
+   ⚙ daneben ändert die Auswahl. Auswahl und Zustand stehen im Projekt
+   (settings.gebAus), werden mitgespeichert und in die HTML-Ansicht
+   übernommen. Wegenetz, Flüsse und Simulation rechnen weiter mit allen
+   Gebäuden.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, G = HSS.geo;
+const GA = HSS.gebAus = {};
+const st = GA.state = () => HSS.view.gebAus || (HSS.view.gebAus = { ids: [], aktiv: false });
+let fp = null;
+// Menge der ausgeblendeten Gebäude (null, wenn nichts ausgeblendet ist)
+GA.hidden = (prj = HSS.project()) => {
+  const s = st(); if (!s.aktiv || !s.ids.length) { fp = null; return null; }
+  const ids = new Set(s.ids), set = new Set(prj.buildings.filter(b => ids.has(b.id)).map(b => b.id));
+  if (!set.size) { fp = null; return null; }
+  const key = [...set].join('|') + '#' + prj.buildings.length;
+  if (!fp || fp.key !== key) fp = { key, fps: prj.buildings.filter(b => set.has(b.id)).flatMap(b => b.parts.map(pt => { const o = HSS.partFootprint(pt).outer; return { o, bb: G.bbox(o) }; })) };
+  return set;
+};
+// Freistehendes Objekt auf dem Dach eines ausgeblendeten Gebäudes (z. B. Hubschrauber auf dem Parkhaus)
+GA.ueber = o => {
+  if (!fp || o.host || o.yAbs === undefined || o.yAbs < 0.5) return false;
+  return fp.fps.some(f => o.x >= f.bb.x0 && o.x <= f.bb.x1 && o.z >= f.bb.z0 && o.z <= f.bb.z1 && G.pointIn([o.x, o.z], f.o));
+};
+const anzahl = () => { const ids = new Set(st().ids); return HSS.project().buildings.filter(b => ids.has(b.id)).length; };
+const merken = () => {
+  const s = st(), prj = HSS.project(); prj.settings = prj.settings || {};
+  prj.settings.gebAus = { ids: s.ids.slice(), aktiv: !!s.aktiv };
+  if (!HSS.state.viewer) HSS.state.dirty = true;
+};
+GA.refresh = () => {
+  const b = document.getElementById('vGebAus'); if (!b) return;
+  const s = st(), n = anzahl(), an = s.aktiv && n > 0;
+  b.classList.toggle('on', an);
+  b.textContent = !n ? '🏢 Gebäude ausblenden …' : an ? `🏢 Gebäude einblenden (${n})` : `🏢 Gebäude ausblenden (${n})`;
+  b.title = !n ? 'Zuerst festlegen, welche Gebäude ausgeblendet werden sollen' : an ? `${n} Gebäude sind ausgeblendet – klicken zum Einblenden` : `${n} festgelegte Gebäude ausblenden (⚙ ändert die Auswahl)`;
+};
+GA.set = aktiv => {
+  const s = st(); s.aktiv = !!aktiv && anzahl() > 0;
+  merken(); GA.refresh(); HSS.s3.rebuild('all');
+  if (HSS.ui?.netMode && HSS.ui.netMode !== 'aus') HSS.drawNet(HSS.ui.netMode, HSS.ui.heatHour ?? null);
+};
+GA.toggle = () => {
+  if (!anzahl()) return GA.dialog();
+  const neu = !st().aktiv; GA.set(neu);
+  HSS.ui.toast(neu ? `${anzahl()} Gebäude ausgeblendet – erneut klicken zum Einblenden` : 'Gebäude wieder eingeblendet', 2500);
+};
+GA.dialog = () => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project(), s = st(), sel = new Set(s.ids);
+  const nr = b => String(b.kurz || b.name);
+  const eigene = prj.buildings.filter(b => !b.umgebung && b.parts.length).sort((a, b) => nr(a).localeCompare(nr(b), 'de', { numeric: true }));
+  const umg = prj.buildings.filter(b => b.umgebung && b.parts.length);
+  const row = b => `<label class="chk" data-q="${U.esc(((b.kurz || '') + ' ' + b.name).toLowerCase())}"><input type="checkbox" data-ga="${U.esc(b.id)}" ${sel.has(b.id) ? 'checked' : ''}> <b class="hk" style="background:${U.esc(b.color || '#5A6573')}">${U.esc(b.kurz || '•')}</b> <span>${U.esc(b.name)}<span class="sub"> · ${b.parts.length} Bauteil${b.parts.length === 1 ? '' : 'e'}</span></span></label>`;
+  const umgSel = umg.filter(b => sel.has(b.id)).length;
+  UI.dialog(`<div class="dh"><h2>Gebäude ausblenden – Auswahl</h2><button class="x" data-close>×</button></div>
+    <p>Gebäude wählen, die mit der Schaltfläche <b>„Gebäude ausblenden“</b> verschwinden sollen. Danach blendet jeder Klick auf die Schaltfläche diese Gebäude aus und wieder ein. Mit <b>⚙</b> daneben lässt sich die Auswahl jederzeit ändern.</p>
+    <div class="row nw"><input type="search" id="gaQ" placeholder="Gebäude suchen (Name oder Kürzel) …"><button class="mini" id="gaAll" title="Alle sichtbaren Einträge wählen">alle</button><button class="mini" id="gaNone" title="Auswahl leeren">keine</button></div>
+    <div class="galist" id="gaList"><h4>Klinikgebäude (${eigene.length})</h4>${eigene.map(row).join('') || '<p class="note">Keine Klinikgebäude im Projekt.</p>'}
+    ${umg.length ? `<h4>Umgebungsbebauung aus OpenStreetMap (${umg.length})</h4><label class="chk"><input type="checkbox" id="gaUmg" ${umgSel ? 'checked' : ''}> <span>Umgebungsgebäude einzeln in der Liste zeigen${umgSel ? ` (${umgSel} gewählt)` : ''}</span></label><div id="gaUmgL" ${umgSel ? '' : 'hidden'}>${umg.map(row).join('')}</div>` : ''}</div>
+    <p class="note" id="gaN"></p>
+    <p class="note">Nur Darstellung: Wegenetz, Flüsse und Simulation rechnen weiter mit allen Gebäuden. Die Auswahl wird im Projekt gespeichert und in die HTML-Ansicht übernommen. Die gesamte Umgebungsbebauung lässt sich auch über „Umgebung: aus“ ausblenden.</p>
+    <div class="actions"><button class="primary" id="gaSave">Auswahl speichern</button><button id="gaGo">Speichern und sofort ausblenden</button><button data-close>Abbrechen</button></div>`, d => {
+    const boxes = () => [...d.querySelectorAll('[data-ga]')];
+    const zahl = () => { const n = boxes().filter(c => c.checked).length; $('#gaN', d).textContent = n ? `${n} Gebäude gewählt.` : 'Noch kein Gebäude gewählt.'; };
+    zahl(); d.querySelectorAll('[data-ga]').forEach(c => c.onchange = zahl);
+    const sichtbar = c => { const l = c.closest('label'); return !l.hidden && !(l.parentElement.id === 'gaUmgL' && l.parentElement.hidden); };
+    $('#gaQ', d).oninput = e => { const q = e.target.value.trim().toLowerCase(); d.querySelectorAll('#gaList label[data-q]').forEach(l => (l.hidden = !!q && !l.dataset.q.includes(q))); };
+    $('#gaAll', d).onclick = () => { boxes().filter(sichtbar).forEach(c => (c.checked = true)); zahl(); };
+    $('#gaNone', d).onclick = () => { boxes().forEach(c => (c.checked = false)); zahl(); };
+    const um = $('#gaUmg', d); if (um) um.onchange = () => ($('#gaUmgL', d).hidden = !um.checked);
+    const save = sofort => {
+      s.ids = boxes().filter(c => c.checked).map(c => c.dataset.ga); d.close();
+      if (!s.ids.length) { GA.set(false); UI.toast('Keine Gebäude zum Ausblenden festgelegt', 2500); return; }
+      GA.set(sofort ? true : s.aktiv);
+      UI.toast(sofort ? `${anzahl()} Gebäude ausgeblendet – Schaltfläche erneut klicken zum Einblenden` : `Auswahl gespeichert (${anzahl()} Gebäude) – „Gebäude ausblenden“ klicken zum Ausblenden`, 3500);
+    };
+    $('#gaSave', d).onclick = () => save(false);
+    $('#gaGo', d).onclick = () => save(true);
+  });
+};
+GA.bind = () => {
+  const b = document.getElementById('vGebAus'), c = document.getElementById('vGebAusCfg');
+  if (b) b.onclick = GA.toggle; if (c) c.onclick = GA.dialog;
+  GA.refresh();
+};
+HSS.on('loaded', () => { const g = HSS.project().settings?.gebAus; HSS.view.gebAus = { ids: (g?.ids || []).slice(), aktiv: !!g?.aktiv }; GA.refresh(); });
+HSS.on('changed', () => GA.refresh());
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', GA.bind); else GA.bind();
 })();
 
 </script>
