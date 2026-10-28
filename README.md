@@ -63,6 +63,8 @@ Erweiterungen der Suite:
 
 - **Gebäude ausblenden** (Ansichtsleiste, auch in der exportierten HTML-Ansicht): Beim ersten Klick die Gebäude wählen, danach blendet jeder Klick sie aus und wieder ein. ⚙ ändert die Auswahl. Auswahl und Zustand werden im Projekt (`settings.gebAus`) gespeichert und beim Export übernommen. Nur Darstellung, Wegenetz und Simulation rechnen mit allen Gebäuden.
 - **Flächen**: Erhöhung `hoehe` (Verkehrsinsel, Mauer) und Art „Sperrfläche“ mit Schraffur (`markWinkel`).
+- **Wege mit Steigung**: Höhe je Wegpunkt (dritter Wert des Punkts, im Inspektor in der Punktliste). Der Weg verläuft zwischen den Punkten linear, z. B. erst eben, dann Rampe. Option „Rampenwangen / Brüstung“ zeichnet Stützwände, wo der Weg vom Gelände abweicht.
+- **Geländeniveaus** (`terrain.niveaus`): Flächen, auf denen das Gelände tiefer oder höher liegt, mit Böschung am Rand. Anlegen über eine Fläche → „Als Geländeniveau …“, Höhe und Böschungsbreite im Bereich „Gelände & Wege“.
 - **Grundstücksgrenze** ohne Zaun (`zaun: false`), z. B. an offenen Vorfahrten.
 - **Bibliothek**: Zeichen 250 mit Zusatzzeichen, Zeichen 206, Hinweistafel, Einfahrtssäule.
 
@@ -73,4 +75,5 @@ Erweiterungen der Suite:
 - Die angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in laut Plan anders belegten Räumen und liegen jetzt im Breitfuß Ost (Lage weiter angenommen). Die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.
 - **NIZ-Vorfahrt** nach Fotos und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg, Pflaster-Vorfahrt zum Kurzzeitparkplatz, Asphalt-Rettungszufahrt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern, Böschungen, Sperrfläche, Zeichen 250 und 206, Hinweistafeln, Fahnenmasten, Mastleuchten.
 
-Zwei Warenströme (Zentrallager ↔ Technik Haus 8, Technik Haus 8 → Abfall) sind nicht routbar, weil Haus 8 im Projekt nicht mehr enthalten ist. Das war schon vor diesen Änderungen so.
+- **Höhenlage an der Teutoburger Straße**: Straße, Geh- und Radweg und NIZ-Vorplatz liegen auf Niveau U1 (−3,80 m), das übrige Gelände auf Ebene E, dazwischen Böschungen. Die Pkw-Zufahrt zum Kurzzeitparkplatz bleibt eben auf U1. Die Rettungszufahrt ist bis zur überdachten Rampe eben und steigt dort auf ca. 27 m (14 %) zur Plattform. Die Wirtschaftszufahrt steigt von der Straße zum Wirtschaftshof. Die Klinikgebäude sind auf ihrer bisherigen Höhe festgehalten (`baseFixed`).
+- **Wiederhergestellte Häuser** (Abgleich mit der letzten Bielefeld-Version im Repo, `index.html`, Lageplan Okt. 2025): Haus 2 (MVZ, STATTKlinik), Haus 5 (Ärztehaus Teutoburger Straße 60), Haus 8, Haus 10 (Personalwohnheim im Alten Städtischen Krankenhaus) und Haus 11 (Kita Kidstown 2). Umrisse und Höhen stammen aus OpenStreetMap. Sie sind als Auswahl für „Gebäude ausblenden“ vorbelegt. In Haus 8 ist der Raum der Technischen Abteilung wieder vorhanden, damit sind alle 852 Warenströme routbar.

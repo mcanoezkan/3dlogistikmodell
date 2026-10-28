@@ -4747,6 +4747,27 @@ HSS.terrainH = (x, z, prj = S.project) => {
       const inner = r * 0.6; h += d <= inner ? k.h : d >= r ? 0 : k.h * (0.5 + 0.5 * Math.cos(Math.PI * (d - inner) / (r - inner)));
     } else h += k.h * Math.exp(-(d * d) / (r * r));
   }
+  // Geländeniveaus: Fläche (Vieleck) auf Höhe h, außen weicher Übergang (Böschung) über „rand“ Meter
+  if (t.niveaus?.length) {
+    let lo = 0, hi = 0;
+    for (const n of t.niveaus) {
+      const P = n.poly; if (!P || P.length < 3 || !n.h) continue;
+      const r = n.rand ?? 8;
+      let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+      for (const q of P) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < z0) z0 = q[1]; if (q[1] > z1) z1 = q[1]; }
+      if (x < x0 - r || x > x1 + r || z < z0 - r || z > z1 + r) continue;
+      let inside = false, d2 = Infinity;
+      for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
+        const a = P[i], b = P[j];
+        if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+        const ex = b[0] - a[0], ez = b[1] - a[1], L = ex * ex + ez * ez, tt = L ? Math.max(0, Math.min(1, ((x - a[0]) * ex + (z - a[1]) * ez) / L)) : 0;
+        const dx = a[0] + ex * tt - x, dz = a[1] + ez * tt - z; d2 = Math.min(d2, dx * dx + dz * dz);
+      }
+      const d = Math.sqrt(d2), w = inside ? 1 : d >= r ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d / r), v = n.h * w;
+      if (v < lo) lo = v; if (v > hi) hi = v;
+    }
+    h += lo + hi;
+  }
   return h;
 };
 
@@ -6266,7 +6287,7 @@ HSS.FLAECHEN_FARBE = FL_COL;
 
 /* ---------- Gelände ---------- */
 HSS.buildTerrain = (view = {}) => {
-  const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = Math.min(160, Math.max(40, Math.round(S / 4)));
+  const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = t.niveaus?.length ? Math.min(420, Math.max(40, Math.round(S / 2.4))) : Math.min(160, Math.max(40, Math.round(S / 4)));
   const g = new THREE.PlaneGeometry(S, S, n, n); g.rotateX(-Math.PI / 2);
   const pos = g.attributes.position, col = []; let minH = 0;
   const c1 = new THREE.Color(t.color || '#c9d6b8'), c2 = new THREE.Color('#b9c8a6'), c3 = new THREE.Color('#d8d2bf');
@@ -6294,6 +6315,14 @@ HSS.buildTerrain = (view = {}) => {
 // Linienpunkte mit Höhe (gelände-folgend oder absolut, optional Rampe/Gefälle)
 HSS.pathLine = (p, prj = HSS.project()) => {
   if (!p.points || p.points.length < 2) return [];
+  // Höhenpunkte: dritter Wert eines Wegpunkts = Anhebung dort (m); dazwischen linear, ersetzt „Anhebung Anfang/Ende“
+  let hp = null;
+  if (p.points.some(q => typeof q[2] === 'number')) {
+    const P = p.points, cs = [0]; for (let i = 1; i < P.length; i++) cs.push(cs[i - 1] + G.dist(P[i - 1], P[i]));
+    const tot = cs[cs.length - 1] || 1, K = P.map((q, i) => (typeof q[2] === 'number' ? [cs[i] / tot, q[2]] : null)).filter(Boolean);
+    hp = t => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) return U.lerp(K[i - 1][1], K[i][1], (t - K[i - 1][0]) / ((K[i][0] - K[i - 1][0]) || 1)); return K[K.length - 1][1]; };
+  }
+  const anh = t => (hp ? hp(t) : p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
   let pts = p.smooth ? G.smooth(p.points, 10) : p.points.map(q => q.slice());
   // Verdichten für Geländeanpassung
   const dense = [];
@@ -6307,8 +6336,8 @@ HSS.pathLine = (p, prj = HSS.project()) => {
     if (i) s += G.dist(dense[i - 1], q);
     const t = total ? s / total : 0;
     let y;
-    if (p.elev === 'absolut') y = (p.y ?? -4) + (p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
-    else y = HSS.terrainH(q[0], q[1], prj) + 0.06 + (p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
+    if (p.elev === 'absolut') y = (p.y ?? -4) + anh(t);
+    else y = HSS.terrainH(q[0], q[1], prj) + 0.06 + anh(t);
     return [q[0], y, q[1], s];
   });
 };
@@ -6337,6 +6366,24 @@ HSS.buildPath = (p, view = {}) => {
   const pof = -2 - (p.kind === 'strasse' ? 1 : 0), base = main.material;
   main.material = HSS.library.shared('weg|' + base.userData.key + '|' + pof, () => { const m = base.clone(); m.polygonOffset = true; m.polygonOffsetFactor = pof; return m; });
   grp.add(main);
+  // Rampenwangen: Stützwand bzw. Brüstung, wo der Weg vom Gelände abweicht (Rampe, Einschnitt)
+  if (p.wangen && !under) {
+    const br = p.wangenHoehe ?? 1.0, pos = [];
+    for (const sg of [-1, 1]) {
+      const E = L.map((q, i) => {
+        const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)], dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1;
+        const x = q[0] - dz / l * (w / 2 + 0.15) * sg, z = q[2] + dx / l * (w / 2 + 0.15) * sg, g = HSS.terrainH(x, z), y = q[1] - 0.06, diff = y - g;
+        if (Math.abs(diff) < 0.25) return { x, z, b: y, t: y };
+        return diff > 0 ? { x, z, b: g - 0.1, t: y + br } : { x, z, b: y - 0.1, t: g + 0.15 };
+      });
+      for (let i = 1; i < E.length; i++) { const A = E[i - 1], B = E[i]; if (A.t - A.b < 0.05 && B.t - B.b < 0.05) continue; pos.push(A.x, A.b, A.z, B.x, B.b, B.z, B.x, B.t, B.z, A.x, A.b, A.z, B.x, B.t, B.z, A.x, A.t, A.z); }
+    }
+    if (pos.length) {
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+      const m = new THREE.Mesh(g, HSS.library.shared('wange', () => new THREE.MeshStandardMaterial({ color: '#c5c2bb', roughness: 0.9, side: THREE.DoubleSide })));
+      m.castShadow = true; m.receiveShadow = true; m.userData = { kind: 'path', id: p.id }; grp.add(m);
+    }
+  }
   if (p.kind === 'strasse') {
     // Mittellinie gestrichelt, Bordsteine
     const dash = [];
@@ -6400,9 +6447,27 @@ HSS.parkingLayout = a => {
   return { stalls, cols, modules, sw, sd, aisle };
 };
 // Fläche als Vieleck (z. B. aus OpenStreetMap): auf das Gelände gelegt, je Art mit Bepflanzung
+const verfeinern = (g, maxL = 2.5) => {
+  // Dreiecke teilen, bis keine Kante länger als maxL ist (höchstens 6 Stufen)
+  let P = Array.from(g.toNonIndexed().attributes.position.array);
+  for (let k = 0; k < 6; k++) {
+    const out = []; let geteilt = false;
+    for (let i = 0; i < P.length; i += 9) {
+      const A = P.slice(i, i + 3), B = P.slice(i + 3, i + 6), C = P.slice(i + 6, i + 9);
+      const l = (u, v) => Math.hypot(u[0] - v[0], u[2] - v[2]);
+      if (Math.max(l(A, B), l(B, C), l(C, A)) <= maxL) { out.push(...A, ...B, ...C); continue; }
+      geteilt = true; const m = (u, v) => [(u[0] + v[0]) / 2, (u[1] + v[1]) / 2, (u[2] + v[2]) / 2], ab = m(A, B), bc = m(B, C), ca = m(C, A);
+      out.push(...A, ...ab, ...ca, ...ab, ...B, ...bc, ...ca, ...bc, ...C, ...ab, ...bc, ...ca);
+    }
+    P = out; if (!geteilt) break;
+  }
+  const n = new THREE.BufferGeometry(); n.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); return n;
+};
+const uneben = () => { const t = HSS.project().terrain || {}; return !!(t.niveaus?.length || t.hills?.length || t.tilt?.pct); };
 const drapedPoly = (a, yoff, color) => {
   const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
   let g = new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI / 2);
+  if (uneben()) g = verfeinern(g);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|0.95', () => new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1 }));
@@ -7433,7 +7498,7 @@ S3._commitDrag = () => {
       o.rot = Math.round(((o.rot || 0) - U.deg(dr)) % 360);
     }
     if (sel.kind === 'area') { const a = U.byId(prj.areas, sel.id); a.x = snap(a.x + d.x); a.z = snap(a.z + d.z); a.rot = Math.round((a.rot || 0) - U.deg(dr)); }
-    if (sel.kind === 'path') { const p = U.byId(prj.paths, sel.id); p.points[sel.point] = [snap(p.points[sel.point][0] + d.x), snap(p.points[sel.point][1] + d.z)]; }
+    if (sel.kind === 'path') { const p = U.byId(prj.paths, sel.id); p.points[sel.point] = [snap(p.points[sel.point][0] + d.x), snap(p.points[sel.point][1] + d.z), ...p.points[sel.point].slice(2)]; }
     if (sel.kind === 'room') {
       const P = HSS.findPart(sel.part, prj), I = HSS.interior(sel.part, sel.floor, false, prj), r = I.rooms.find(x => x.id === sel.id);
       const loc = HSS.toLocal(P.part, [S3.proxy.position.x, S3.proxy.position.z]); const dx = snap(loc[0]) - r.x, dz = snap(loc[1]) - r.z;
@@ -10883,7 +10948,8 @@ HSS.transformSite = (prj, dx, dz, deg) => {
   const a = U.rad(deg || 0);
   const T = p => { const q = G.rot(p, a); return [r1(q[0] + dx), r1(q[1] + dz)]; };
   for (const b of prj.buildings) for (const pt of b.parts) { if (pt.stackOn) { const q = T([pt.x, pt.z]); pt.x = q[0]; pt.z = q[1]; pt.rot = ((pt.rot || 0) + (deg || 0)) % 360; continue; } const q = T([pt.x, pt.z]); pt.x = q[0]; pt.z = q[1]; pt.rot = ((pt.rot || 0) + (deg || 0)) % 360; }
-  for (const p of prj.paths) p.points = p.points.map(T);
+  for (const p of prj.paths) p.points = p.points.map(q => T(q).concat(q.slice(2)));
+  for (const n of prj.terrain.niveaus || []) n.poly = n.poly.map(T);
   for (const ar of prj.areas) { if (ar.poly) ar.poly = ar.poly.map(T); if (ar.x !== undefined) { const q = T([ar.x, ar.z]); ar.x = q[0]; ar.z = q[1]; ar.rot = ((ar.rot || 0) + (deg || 0)) % 360; } }
   for (const o of prj.objects) if (!o.host) { const q = T([o.x, o.z]); o.x = q[0]; o.z = q[1]; o.rot = ((o.rot || 0) + (deg || 0)) % 360; }
   for (const p of prj.places) if (p.x !== undefined) { const q = T([p.x, p.z]); p.x = q[0]; p.z = q[1]; }
@@ -11184,14 +11250,15 @@ INSP.path = s => {
   ${UI.fSel('Höhenführung', 'elev', p.elev, opt('gelaende', 'folgt dem Gelände', p.elev) + opt('absolut', 'feste Höhe (Tunnel/Brücke)', p.elev))}${under ? UI.fNum('Höhe (absolut)', 'y', p.y, { unit: 'm', step: 0.1 }) : '<span></span>'}
   ${UI.fNum('Anhebung Anfang', 'ramp.0', p.ramp?.[0] ?? 0, { unit: 'm', step: 0.1 })}${UI.fNum('Anhebung Ende', 'ramp.1', p.ramp?.[1] ?? 0, { unit: 'm', step: 0.1 })}
   ${['strasse', 'zufahrt'].includes(p.kind) ? UI.fNum('Fahrzeuge (Animation)', 'traffic', p.traffic, { min: 0, step: 1 }) + UI.fNum('Tempo', 'speedKmh', p.speedKmh, { unit: 'km/h', step: 5 }) : ''}</div>
-  ${UI.fChk('Gebogen führen (Kurven glätten)', 'smooth', p.smooth)}${p.kind === 'grenze' ? UI.fChk('Zaun zeichnen (aus: offene Grenze, z. B. Vorfahrt)', 'zaun', p.zaun !== false) : ''}
-  <div class="note">Gefälle/Schräge: Anhebung am Anfang/Ende erzeugt eine gleichmäßige Rampe zusätzlich zum Gelände. Punkte im 3D-Modell anklicken und mit dem Gizmo verschieben.</div>
-  <h3>Punkte (${p.points.length})</h3><div class="list" style="max-height:160px">${p.points.map((q, i) => `<div class="li ${s.point === i ? 'on' : ''}" data-pi="${i}"><span class="t">P${i + 1}: ${U.fmt(q[0], 1)} / ${U.fmt(q[1], 1)}</span><button class="mini" data-pdel="${i}">×</button></div>`).join('')}</div>
+  ${UI.fChk('Gebogen führen (Kurven glätten)', 'smooth', p.smooth)}${UI.fChk('Rampenwangen / Brüstung, wo der Weg vom Gelände abweicht', 'wangen', !!p.wangen)}${p.kind === 'grenze' ? UI.fChk('Zaun zeichnen (aus: offene Grenze, z. B. Vorfahrt)', 'zaun', p.zaun !== false) : ''}
+  <div class="note">Gefälle/Schräge: Anhebung am Anfang/Ende erzeugt eine gleichmäßige Rampe zusätzlich zum Gelände. Für Steigungen an bestimmter Stelle (z. B. erst eben, dann Rampe) in der Punktliste je Punkt eine <b>Höhe</b> eintragen: Der Weg verläuft zwischen den Punkten linear, Anfang/Ende wird dann nicht verwendet. Punkte im 3D-Modell anklicken und mit dem Gizmo verschieben.</div>
+  <h3>Punkte (${p.points.length})</h3><div class="list" style="max-height:160px">${p.points.map((q, i) => `<div class="li ${s.point === i ? 'on' : ''}" data-pi="${i}"><span class="t">P${i + 1}: ${U.fmt(q[0], 1)} / ${U.fmt(q[1], 1)}</span><input type="number" step="0.1" data-ph="${i}" value="${typeof q[2] === 'number' ? q[2] : ''}" placeholder="Höhe" title="Höhe an diesem Punkt in m (über Gelände bzw. über der festen Höhe); leer = automatisch" style="width:72px"><button class="mini" data-pdel="${i}">×</button></div>`).join('')}</div>
   <div class="actions"><button id="pCont">Punkte anfügen</button><button id="pRev">Richtung umkehren</button><button id="iDup">Duplizieren</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
 INSP_BIND.path = (el, s) => {
   UI.bind(el, prj => U.byId(prj.paths, s.id), 'Weg', 'outdoor', (p, path, v) => { if (path.startsWith('ramp.')) { const r = Array.isArray(p.ramp) ? p.ramp : [p.ramp?.[0] || 0, p.ramp?.[1] || 0]; r[+path.split('.')[1]] = v || 0; p.ramp = r; } if (path === 'kind') { const k = HSS.WEGARTEN[v]; p.width = k.w; if (v === 'tunnel' || v === 'awt') { p.elev = 'absolut'; p.y = p.y ?? -4; } } });
-  $$('[data-pi]', el).forEach(li => li.onclick = e => { if (e.target.dataset.pdel !== undefined) return; HSS.s3.select({ kind: 'path', id: s.id, point: +li.dataset.pi }); });
+  $$('[data-pi]', el).forEach(li => li.onclick = e => { if (e.target.dataset.pdel !== undefined || e.target.dataset.ph !== undefined) return; HSS.s3.select({ kind: 'path', id: s.id, point: +li.dataset.pi }); });
+  $$('[data-ph]', el).forEach(inp => inp.onchange = () => HSS.change('Wegpunkt: Höhe', prj => { const q = U.byId(prj.paths, s.id).points[+inp.dataset.ph], v = inp.value.trim().replace(',', '.'); if (v === '' || isNaN(+v)) q.length = 2; else q[2] = +v; }, { scope: 'outdoor' }));
   $$('[data-pdel]', el).forEach(b => b.onclick = () => HSS.change('Wegpunkt löschen', prj => { const p = U.byId(prj.paths, s.id); if (p.points.length > 2) p.points.splice(+b.dataset.pdel, 1); }, { scope: 'outdoor' }));
   $('#pRev', el).onclick = () => HSS.change('Weg umkehren', prj => U.byId(prj.paths, s.id).points.reverse(), { scope: 'outdoor' });
   $('#pCont', el).onclick = () => HSS.tools.drawPath(null, s.id);
@@ -11208,9 +11275,16 @@ INSP.area = s => {
   ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}${['sperrflaeche', 'wiese'].includes(a.kind) ? UI.fCol('Farbe', 'color', a.color || HSS.FLAECHEN_FARBE[a.kind]) : ''}${a.kind === 'sperrflaeche' ? UI.fNum('Streifenwinkel', 'markWinkel', a.markWinkel ?? 45, { unit: '°', step: 5 }) : ''}
   ${UI.fNum('Erhöhung (Insel, Mauer)', 'hoehe', a.hoehe ?? 0, { unit: 'm', step: 0.05, min: 0 })}</div>
   ${a.kind === 'parkplatz' ? '<div class="note">Richtwerte: Stellplatz 2,50 × 5,00 m, Fahrgasse 6,00 m bei Senkrechtaufstellung (GaVO).</div>' : ''}
-  <div class="actions"><button id="iDup">Duplizieren</button><button class="danger" id="iDel">Löschen</button></div>`;
+  <div class="actions"><button id="iDup">Duplizieren</button><button id="iNiv" title="Gelände unter dieser Fläche absenken oder anheben (mit Böschung am Rand)">Als Geländeniveau …</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
-INSP_BIND.area = (el, s) => { UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläche', 'outdoor'); $('#iDup', el).onclick = UI.duplicateSelection; $('#iDel', el).onclick = UI.deleteSelection; };
+INSP_BIND.area = (el, s) => {
+  UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläche', 'outdoor'); $('#iDup', el).onclick = UI.duplicateSelection; $('#iDel', el).onclick = UI.deleteSelection;
+  $('#iNiv', el).onclick = async () => {
+    const v = await UI.prompt('Gelände unter der Fläche auf Höhe (m, z. B. −3,8 = ein Geschoss tiefer)', '-3.8'); if (v === null) return;
+    const h = +String(v).replace(',', '.'); if (!h) return;
+    HSS.change('Geländeniveau', prj => { const a = U.byId(prj.areas, s.id); prj.terrain.niveaus = prj.terrain.niveaus || []; prj.terrain.niveaus.push({ id: U.uid('niv'), name: a.name || HSS.FLAECHEN[a.kind], poly: (a.poly || HSS.areaPoly(a)).map(q => q.slice()), h, rand: 8 }); }, { scope: 'all' });
+  };
+};
 
 INSP.room = s => {
   const I = HSS.interior(s.part, s.floor); const r = I?.rooms.find(x => x.id === s.id); if (!r) return '';
@@ -11564,6 +11638,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     <div class="fg tf">${UI.fNum('Neigung', 'tilt.pct', t.tilt?.pct ?? 0, { unit: '%', step: 0.5 })}${UI.fNum('Gefällerichtung', 'tilt.dir', t.tilt?.dir ?? 0, { unit: '°', step: 15 })}${UI.fNum('Geländegröße', 'size', t.size, { unit: 'm', step: 50, min: 200 })}${UI.fCol('Farbe', 'color', t.color)}</div>
     <div class="row"><button id="gHill">+ Geländepunkt (Kuppe/Mulde/Plateau)</button></div>
     ${t.hills.length ? `<div class="list" style="margin-top:6px">${t.hills.map((h, i) => `<div class="li" data-hill="${i}"><span class="t">${h.plateau ? 'Plateau' : h.h >= 0 ? 'Kuppe' : 'Mulde'} ${U.fmt(h.h, 1)} m · r ${U.fmt(h.r)} m</span></div>`).join('')}</div>` : ''}
+    ${(t.niveaus || []).length ? `<h4>Geländeniveaus</h4><div class="list nivl">${t.niveaus.map((n, i) => `<div class="li"><span class="t" title="${U.esc(n.name || '')}">${U.esc(n.name || 'Niveau ' + (i + 1))}</span><input type="number" step="0.1" data-nh="${i}" value="${n.h}" title="Höhe gegenüber dem übrigen Gelände (m)" style="width:62px"><input type="number" step="1" min="0" data-nr="${i}" value="${n.rand ?? 8}" title="Breite der Böschung am Rand (m)" style="width:52px"><button class="mini" data-ndel="${i}" title="Niveau entfernen">×</button></div>`).join('')}</div><div class="note">Höhe (m) und Böschungsbreite (m) je Fläche. Neue Niveaus: Fläche wählen → „Als Geländeniveau …“.</div>` : ''}
     <h3>Vorhandene Wege (${prj.paths.length})</h3><div class="list">${prj.paths.map(p => `<div class="li" data-sel="path:${p.id}"><span class="sw" style="background:${HSS.WEGARTEN[p.kind]?.color}"></span><span class="t">${U.esc(p.name)}</span><span class="s">${U.fmt(HSS.pathStats(p).len)} m</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>
     <h3>Flächen (${prj.areas.length})</h3><div class="list">${prj.areas.map(a => `<div class="li" data-sel="area:${a.id}"><span class="t">${HSS.FLAECHEN[a.kind]}</span><span class="s">${U.fmt(a.w * a.d)} m²${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' St.' : ''}</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
     $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gOsm', el).onclick = () => HSS.osm.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
@@ -11573,6 +11648,8 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     UI.bind($('.tf', el), prj => prj.terrain, 'Gelände', 'all');
     $('#gHill', el).onclick = T.hill;
     $$('[data-hill]', el).forEach(li => li.onclick = () => HSS.s3.select({ kind: 'hill', idx: +li.dataset.hill, id: 'hill' + li.dataset.hill }, { focus: true }));
+    $$('[data-nh],[data-nr]', el).forEach(inp => inp.onchange = () => HSS.change('Geländeniveau', prj => { const n = prj.terrain.niveaus[+(inp.dataset.nh ?? inp.dataset.nr)], v = +inp.value.replace(',', '.'); if (inp.dataset.nh !== undefined) n.h = v; else n.rand = Math.max(0, v); }, { scope: 'all' }));
+    $$('[data-ndel]', el).forEach(b => b.onclick = () => HSS.change('Geländeniveau entfernen', prj => prj.terrain.niveaus.splice(+b.dataset.ndel, 1), { scope: 'all' }));
     selLinks(el);
   } };
 const selLinks = el => $$('[data-sel]', el).forEach(li => li.onclick = () => { const [kind, id] = li.dataset.sel.split(':'); HSS.s3.select({ kind, id }, { focus: true }); });
@@ -12330,12 +12407,12 @@ function dragObject(hit, fine, ev) {
 /* Weg */
 function dragPath(hit, fine, ev) {
   const pa0 = D.pa0, sel = D.sel, n = U.clone(pa0);
-  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } n.points = pa0.points.map(q => [q[0] + dx, q[1] + dz]); hint(`<b>Weg verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); }
+  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } n.points = pa0.points.map(q => [q[0] + dx, q[1] + dz, ...q.slice(2)]); hint(`<b>Weg verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); }
   if (D.op === 'point') {
     let q = fine ? [Math.round(hit.x * 10) / 10, Math.round(hit.z * 10) / 10] : [snap(hit.x), snap(hit.z)];
     const i = D.idx, prev = n.points[i - 1] || n.points[i + 1];
     if (ev.altKey && prev) { const dx = q[0] - prev[0], dz = q[1] - prev[1]; if (Math.abs(dx) > Math.abs(dz)) q[1] = prev[1]; else q[0] = prev[0]; }
-    n.points[i] = q;
+    n.points[i] = q.concat(pa0.points[i].slice(2));
     const len = G.polylineLength(n.points);
     hint(`<b>Punkt ${i + 1}</b> · Weglänge ${fmt(len)} m${prev ? ` · Abschnitt ${fmt(G.dist(prev, q))} m, Richtung ${fmt(((U.deg(Math.atan2(q[1] - prev[1], q[0] - prev[0])) % 360) + 360) % 360, 0)}°` : ''} · Alt: rechtwinklig`);
   }
