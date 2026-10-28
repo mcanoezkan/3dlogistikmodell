@@ -6870,9 +6870,14 @@ function buildNet(prj) {
     for (const p of fa) for (let k = 0; k < fb.length; k++) { const c = G.closestOnSeg(p, fb[k], fb[(k + 1) % fb.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = p; pb = c.pt; } }
     for (const p of fb) for (let k = 0; k < fa.length; k++) { const c = G.closestOnSeg(p, fa[k], fa[(k + 1) % fa.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = c.pt; pb = p; } }
     if (bd > 1.2 && !fa.some(p => G.pointIn(p, fb)) && !fb.some(p => G.pointIn(p, fa))) continue;
+    // Bauteil mit Geschossversatz (z. B. NIZ eine Ebene höher als das Hauptgebäude): Anschluss auf gleicher Höhe statt gleicher Geschossbezeichnung
+    const nachHoehe = A.anschlussNachHoehe || B.anschlussNachHoehe;
     for (const f of HSS.partFloors(A)) {
-      const gf = HSS.globalFloor(A, f, prj), fB = HSS.localFloor(B, gf, prj); if (fB === null) continue;
-      if (Math.abs(HSS.floorY(A, f, prj) - HSS.floorY(B, fB, prj)) > 0.8) continue;
+      const gf = HSS.globalFloor(A, f, prj), yA = HSS.floorY(A, f, prj);
+      let fB = HSS.localFloor(B, gf, prj);
+      if (nachHoehe && (fB === null || Math.abs(yA - HSS.floorY(B, fB, prj)) > 0.8)) fB = HSS.partFloors(B).find(g => Math.abs(yA - HSS.floorY(B, g, prj)) <= 0.8) ?? null;
+      if (fB === null) continue;
+      if (Math.abs(yA - HSS.floorY(B, fB, prj)) > 0.8) continue;
       const ia = nearestIn(floorNodes.get(A.id + '|' + f) || [], pa[0], pa[1]), ib = nearestIn(floorNodes.get(B.id + '|' + fB) || [], pb[0], pb[1]);
       if (ia && ib) addEdge(ia.id, ib.id, 'flur', { gf, uebergang: true });
     }
@@ -7288,7 +7293,7 @@ S3.rebuild = (scope = 'all') => {
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
   // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
   const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };
-  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); }
+  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || V.floor >= -1 || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Außenwege bleiben bis U1 sichtbar (ebenerdige Ebenen, z. B. NIZ)
   collectPickables();
   S3.showSelection();
   HSS.emit('rebuilt');
@@ -11119,7 +11124,7 @@ INSP.part = s => {
   <div class="note">${U.esc(HSS.FASSADEN[fc.type]?.info || '')}</div>
   <h3>Dach</h3>
   <div class="fg pf">${UI.fSel('Dachart', 'roof.type', pt.roof.type, opt('flach', 'Flachdach', pt.roof.type) + opt('gruen', 'Gründach', pt.roof.type))}${UI.fNum('Attika', 'roof.parapet', pt.roof.parapet, { unit: 'm', min: 0, step: 0.1 })}</div>
-  <div class="pf">${UI.fChk('Technikaufbau', 'roof.plant', pt.roof.plant)}${UI.fChk('Hubschrauberlandeplatz', 'roof.helipad', pt.roof.helipad)}</div>
+  <div class="pf">${UI.fChk('Technikaufbau', 'roof.plant', pt.roof.plant)}${UI.fChk('Hubschrauberlandeplatz', 'roof.helipad', pt.roof.helipad)}${UI.fChk('An Nachbarbauteile auf gleicher Höhe anschließen (Geschossversatz)', 'anschlussNachHoehe', !!pt.anschlussNachHoehe)}</div>
   <h3>Anordnung &amp; Verbindung</h3>
   <div class="fg pf">${UI.fSel('Aufgesetzt auf', 'stackOn', pt.stackOn || '', partOpts(pt.stackOn || '', pt.id), { full: true, t: 'ns' })}</div>
   <div class="box"><div class="note" style="margin-bottom:4px">Andocken: Bauteil bündig neben ein anderes setzen</div>
