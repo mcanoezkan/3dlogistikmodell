@@ -420,7 +420,7 @@ body.viewer #zLegend ~ #vwCard{bottom:auto;top:calc(var(--topH) + 110px)}
 body.viewer.vw-no-rundgang #vTour,body.viewer.vw-no-rundgang #vWalk,body.viewer.vw-no-rundgang #tourCard,body.viewer.vw-no-rundgang .vw-tour{display:none!important}
 body.viewer.vw-no-fluss .vw-fluss,body.viewer.vw-no-fluss #fbLegend,body.viewer.vw-no-fluss #stroeme{display:none!important}
 body.viewer.vw-no-sim #vwSim,body.viewer.vw-no-sim #timeline,body.viewer.vw-no-sim .vw-sim{display:none!important}
-#viewbar .gaw{display:inline-flex}#viewbar .gaw button+button{margin-left:-1px;padding:5px 7px}
+#feLegend{position:fixed;left:calc(var(--railW) + var(--panelW) + 12px);top:120px;z-index:8;background:var(--panel);border-radius:6px;box-shadow:var(--shadow);padding:8px 10px;min-width:200px;max-width:280px;max-height:50vh;overflow:auto;font-size:12.5px}#feLegend .feh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}#feLegend .feh button{border:0;background:none;cursor:pointer;font-size:14px}#feLegend .fer{display:flex;align-items:center;gap:7px;padding:3px 2px;cursor:pointer;border-radius:4px}#feLegend .fer:hover{background:rgba(10,34,60,.06)}#feLegend .fer.off{opacity:.45}#feLegend .sw{width:16px;height:16px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}#feLegend .sw.d{height:8px;margin-bottom:8px}#feLegend .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#feLegend .ct{color:#6b7682;font-size:11px}#feLegend .eye{border:0;background:none;cursor:pointer;color:#0A223C;padding:0 2px}#feLegend .fen{margin-top:5px;color:#6b7682;font-size:11px}.ferow{display:flex;gap:6px;align-items:center;margin:0 0 6px}.ferow input[type=color]{width:34px;height:28px;padding:0;border:1px solid #ccd;flex:none}.ferow input[type=text]{flex:1 1 auto;min-width:160px;width:auto}.ferow select{flex:0 0 150px;width:150px}.ferow button{flex:none;white-space:nowrap}.ferow button.on{background:#e8eef5}#feGeb .galist{max-height:260px;overflow:auto}#viewbar .gaw{display:inline-flex}#viewbar .gaw button+button{margin-left:-1px;padding:5px 7px}
 .galist{max-height:48vh;overflow:auto;border:1px solid var(--line);padding:2px 10px 8px;margin:8px 0}
 .galist h4{margin:10px 0 4px}.galist .chk{margin:3px 0;align-items:flex-start}.galist .hk{display:inline-block;min-width:24px;text-align:center;color:#fff;font-size:11px;padding:1px 4px;border-radius:2px;margin-top:1px}
 .galist .sub{color:var(--muted);font-size:11px}
@@ -602,6 +602,7 @@ body.insp #plan2dBar{max-width:calc(100vw - var(--railW) - var(--panelW) - var(-
   <button class="tgl on" id="vGrid" title="Planungsraster (außen 10 m, in Etagen 1 m)">Raster</button>
   <button class="tgl" id="vM2" title="Flächenansicht: Räume und Etagen in m² nach DIN 277">m² Flächen</button>
   <span class="gaw"><button class="tgl" id="vGebAus" title="Festgelegte Gebäude aus- und wieder einblenden">🏢 Gebäude ausblenden …</button><button id="vGebAusCfg" title="Festlegen, welche Gebäude ausgeblendet werden">⚙</button></span>
+  <span class="gaw"><button class="tgl" id="vFE" title="Gebäude nach Funktionseinheiten einfärben (Dach oder ganzes Gebäude)">🎨 Einfärben …</button><button id="vFECfg" title="Funktionseinheiten festlegen: Name, Farbe, Dach oder ganzes Gebäude, zugeordnete Gebäude">⚙</button></span>
   <span class="vsep"></span>
   <button id="vTour" class="primary" title="Eine oder mehrere Stationen auswählen und Raum für Raum besuchen">▶ Stationsrundgang</button>
   <button id="vWalk" title="Frei begehen in der Ich-Perspektive (WASD + Maus)">🚶 Begehen</button>
@@ -6006,11 +6007,12 @@ HSS.buildPart = (pt, building, view = {}) => {
   const fc = Object.assign({ type: 'band', color: '#e9ecef', accent: '#144477', glass: '#6f8fa8' }, pt.facade);
   const transparent = view.shell === 'transparent' || view.shell === 'glas', plan = view.stil === 'plan';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
-  const wallBase = plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
+  const feP = HSS.fe?.of(pt, building, prj), feG = feP && feP.modus === 'gebaeude';
+  const wallBase = feG ? feP.farbe : plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
   const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase + view.shell, () => { const m = new THREE.MeshStandardMaterial({ color: view.shell === 'glas' ? '#dfe7ee' : wallBase, transparent: true, opacity: view.shell === 'glas' ? 0.14 : 0.18, depthWrite: false, side: THREE.DoubleSide }); if (view.shell === 'glas') m.userData.noToon = true; return m; }) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
   const glasHull = view.shell === 'glas', tMat = (key, c, o) => HSS.library.shared(key + c + o, () => { const m = new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }); m.userData.noToon = true; return m; });
-  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
+  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = feP ? (glasHull ? tMat('fedach', feP.farbe, 0.6) : LM(feP.farbe)) : glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
   // Planungsmodell: schlichte Hülle – Wand, Fensterband, Geschosslinie (keine Einzelfenster)
   const bands = [], flines = [];
   const floors = HSS.partFloors(pt);
@@ -6069,7 +6071,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
     const par = pt.roof?.parapet ?? 0.9;
-    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
+    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
     if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
@@ -6078,7 +6080,7 @@ HSS.buildPart = (pt, building, view = {}) => {
       box.castShadow = true; box.userData = Object.assign({}, meta); grp.add(box);
       const grill = new THREE.Mesh(new THREE.BoxGeometry(pw * 0.9, 0.5, pd * 0.9), LM('#8d959e')); grill.position.set(c[0], yt + 3.25, c[1]); grill.rotation.y = box.rotation.y; grp.add(grill);
     }
-    if (pt.roof?.type === 'gruen' && !glasHull) { // Gründach-Aufkantung
+    if (pt.roof?.type === 'gruen' && !glasHull && !feP) { // Gründach-Aufkantung
       const g = new THREE.Mesh(HSS.slabGeo(G.fillet(outer, 0), holes, yt, 0.08), LM('#88b073')); g.receiveShadow = true; grp.add(g);
     }
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
@@ -6509,7 +6511,7 @@ function buildPolyArea(a, grp) {
   const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
   const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
-  else if (a.kind === 'park' || a.kind === 'gruen') { scatter('gruen.baum.laub', Math.min(60, area / 300), 0.7, 1.1); scatter('gruen.strauch', Math.min(60, area / 250), 0.6, 1.2); }
+  else if (a.kind === 'park' || a.kind === 'gruen') { const dn = a.density ?? 1; scatter('gruen.baum.laub', Math.min(60 * dn, area / 300 * dn), 0.7, 1.1); scatter('gruen.strauch', Math.min(60 * dn, area / 250 * dn), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
   else if (a.kind === 'wohngebiet') scatter('gruen.baum.klein', Math.min(40, area / 600), 0.7, 1.0);
   else if (a.kind === 'acker') { // Feldraine: wenige Bäume am Rand
@@ -7270,7 +7272,7 @@ S3.rebuild = (scope = 'all') => {
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of (aus && aus.has(b.id) ? [] : b.parts)) {
     if (!zeig(b.umgebung, pt.x, pt.z)) continue;
-    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
+    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '']);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
@@ -11041,7 +11043,7 @@ UI.describe = (h) => {
   if (h.kind === 'part') { const P = HSS.findPart(h.id); if (!P) return ''; return `<b>${U.esc(P.building.name)}</b> · ${U.esc(P.part.name)}<div class="s">${P.part.floors} Geschosse${P.part.basements && !P.part.stackOn ? ' + ' + P.part.basements + ' UG' : ''} · ${U.fmt(HSS.partArea(P.part))} m² BGF je Ebene · ${HSS.FASSADEN[P.part.facade.type]?.name || ''}</div>`; }
   if (h.kind === 'object') { const o = U.byId(prj.objects, h.id); const d = o && HSS.library.get(o.lib); if (!d) return ''; const s = o.size || d.size; return `<b>${U.esc(o.name || d.name)}</b><div class="s">${U.esc(d.category)} · ${U.fmt(s.w, 2)} × ${U.fmt(s.d, 2)} × ${U.fmt(s.h, 2)} m</div>`; }
   if (h.kind === 'path') { const p = U.byId(prj.paths, h.id); if (!p) return ''; const st = HSS.pathStats(p); return `<b>${U.esc(p.name)}</b><div class="s">${HSS.WEGARTEN[p.kind]?.name} · ${U.fmt(st.len)} m · max. ${U.fmt(st.maxSlope * 100, 1)} % Neigung</div>`; }
-  if (h.kind === 'area') { const a = U.byId(prj.areas, h.id); if (!a) return ''; return `<b>${HSS.FLAECHEN[a.kind]}</b><div class="s">${U.fmt(a.w)} × ${U.fmt(a.d)} m${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' Stellplätze' : ''}</div>`; }
+  if (h.kind === 'area') { const a = U.byId(prj.areas, h.id); if (!a) return ''; return `<b>${U.esc(a.name || HSS.FLAECHEN[a.kind])}</b><div class="s">${a.poly && a.poly.length >= 3 ? `Vieleck, ${a.poly.length} Ecken · ${U.fmt(HSS.areaM2(a))} m²` : `${U.fmt(a.w)} × ${U.fmt(a.d)} m`}${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' Stellplätze' : ''}</div>`; }
   if (h.kind === 'bridge') { const b = U.byId(prj.bridges, h.id); return `<b>${U.esc(b?.name || 'Brücke')}</b><div class="s">${b?.type === 'glas' ? 'Glasbrücke' : 'Gebäudebrücke'}</div>`; }
   if (h.kind === 'room') { const r = HSS.interior(h.part, h.floor)?.rooms.find(x => x.id === h.id); if (!r) return ''; return `<b>${U.esc(r.name || HSS.ROOMTYPES[r.use]?.name)}</b><div class="s">${U.fmt(r.w * r.d, 1)} m²${r.role ? ' · Rolle: ' + U.esc(HSS.ROLLEN[r.role] || r.role) : ''}</div>`; }
   if (h.kind === 'wall') return '<b>Wand</b><div class="s">Klicken zum Bearbeiten</div>';
@@ -11069,7 +11071,7 @@ UI.duplicateSelection = () => {
   HSS.change('Duplizieren', prj => {
     if (s.kind === 'object') { const o = U.clone(U.byId(prj.objects, s.id)); o.id = U.uid('obj'); o.x += 1; o.z += 1; prj.objects.push(o); ns = { kind: 'object', id: o.id }; }
     if (s.kind === 'part') { const P = HSS.findPart(s.id, prj); const n = U.clone(P.part); n.id = U.uid('part'); n.name += ' (Kopie)'; n.x += P.part.w + 8; n.stackOn = null; P.building.parts.push(n); ns = { kind: 'part', id: n.id }; }
-    if (s.kind === 'area') { const a = U.clone(U.byId(prj.areas, s.id)); a.id = U.uid('area'); a.x += a.w + 4; prj.areas.push(a); ns = { kind: 'area', id: a.id }; }
+    if (s.kind === 'area') { const a = U.clone(U.byId(prj.areas, s.id)); a.id = U.uid('area'); const dx = a.w + 4; a.x += dx; if (a.poly) a.poly = a.poly.map(q => [Math.round((q[0] + dx) * 10) / 10, q[1]]); prj.areas.push(a); ns = { kind: 'area', id: a.id }; }
     if (s.kind === 'path') { const p = U.clone(U.byId(prj.paths, s.id)); p.id = U.uid('path'); p.points = p.points.map(q => [q[0] + 6, q[1] + 6]); prj.paths.push(p); ns = { kind: 'path', id: p.id }; }
   });
   if (ns) HSS.s3.select(ns);
@@ -11273,17 +11275,21 @@ INSP_BIND.path = (el, s) => {
 INSP.area = s => {
   const a = U.byId(HSS.project().areas, s.id); if (!a) return '';
   const L = a.kind === 'parkplatz' ? HSS.parkingLayout(a) : null;
-  return head('Fläche', HSS.FLAECHEN[a.kind]) + `<div class="note">${U.fmt(a.w * a.d)} m²${L ? ` · <b>${L.stalls.length} Stellplätze</b> (${L.cols} je Reihe, ${L.modules} Doppelreihen à ${U.fmt(2 * L.sd + L.aisle, 1)} m)` : ''}</div>
-  <div class="fg">${UI.fSel('Art', 'kind', a.kind, UI.opts(HSS.FLAECHEN, a.kind))}${UI.fNum('Drehung', 'rot', a.rot, { unit: '°', step: 1 })}${UI.fNum('Länge', 'w', a.w, { unit: 'm', step: 0.5 })}${UI.fNum('Tiefe', 'd', a.d, { unit: 'm', step: 0.5 })}
-  ${UI.fNum('Lage x', 'x', a.x, { step: 0.5 })}${UI.fNum('Lage z', 'z', a.z, { step: 0.5 })}
+  const vl = a.poly && a.poly.length >= 3;
+  return head('Fläche', a.name || HSS.FLAECHEN[a.kind]) + `<div class="note">${U.fmt(HSS.areaM2(a))} m²${vl ? ` · Vieleck mit ${a.poly.length} Ecken (Umfang ${U.fmt(G.perimeter(a.poly))} m)` : ''}${L ? ` · <b>${L.stalls.length} Stellplätze</b> (${L.cols} je Reihe, ${L.modules} Doppelreihen à ${U.fmt(2 * L.sd + L.aisle, 1)} m)` : ''}</div>
+  <div class="fg">${UI.fTxt('Bezeichnung', 'name', a.name || '')}${UI.fSel('Art', 'kind', a.kind, UI.opts(HSS.FLAECHEN, a.kind))}${vl ? '' : UI.fNum('Drehung', 'rot', a.rot, { unit: '°', step: 1 }) + UI.fNum('Länge', 'w', a.w, { unit: 'm', step: 0.5 }) + UI.fNum('Tiefe', 'd', a.d, { unit: 'm', step: 0.5 }) + UI.fNum('Lage x', 'x', a.x, { step: 0.5 }) + UI.fNum('Lage z', 'z', a.z, { step: 0.5 })}
   ${a.kind === 'parkplatz' ? UI.fNum('Stellplatzbreite', 'stallW', a.stallW ?? 2.5, { unit: 'm', step: 0.05 }) + UI.fNum('Stellplatztiefe', 'stallD', a.stallD ?? 5, { unit: 'm', step: 0.1 }) + UI.fNum('Fahrgasse', 'aisle', a.aisle ?? 6, { unit: 'm', step: 0.5 }) + UI.fNum('Belegung', 'occupancy', a.occupancy ?? 0.7, { min: 0, max: 1, step: 0.05 }) : ''}
   ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}${['sperrflaeche', 'wiese'].includes(a.kind) ? UI.fCol('Farbe', 'color', a.color || HSS.FLAECHEN_FARBE[a.kind]) : ''}${a.kind === 'sperrflaeche' ? UI.fNum('Streifenwinkel', 'markWinkel', a.markWinkel ?? 45, { unit: '°', step: 5 }) : ''}
   ${UI.fNum('Erhöhung (Insel, Mauer)', 'hoehe', a.hoehe ?? 0, { unit: 'm', step: 0.05, min: 0 })}</div>
   ${a.kind === 'parkplatz' ? '<div class="note">Richtwerte: Stellplatz 2,50 × 5,00 m, Fahrgasse 6,00 m bei Senkrechtaufstellung (GaVO).</div>' : ''}
-  <div class="actions"><button id="iDup">Duplizieren</button><button id="iNiv" title="Gelände unter dieser Fläche absenken oder anheben (mit Böschung am Rand)">Als Geländeniveau …</button><button class="danger" id="iDel">Löschen</button></div>`;
+  ${vl ? '<div class="note">Form ändern: Eckpunkte im 3D-Bild ziehen, ＋ an einer Kante fügt eine Ecke ein, Alt+Klick auf eine Ecke löscht sie. Ganze Fläche verschieben: in die Fläche klicken und ziehen.</div>' : ''}
+  <div class="actions">${vl ? '<button id="iRect" title="Vieleck durch das umschließende Rechteck ersetzen">▭ Als Rechteck</button>' : '<button id="iPoly" class="primary" title="Ecken einzeln verschiebbar machen, z. B. für schräge Grünflächen">⬠ In Vieleck umwandeln</button><button id="iPolyNeu" title="Diese Fläche neu als Vieleck zeichnen (Eckpunkte anklicken)">⬠ Neu als Vieleck zeichnen</button>'}<button id="iDup">Duplizieren</button><button id="iNiv" title="Gelände unter dieser Fläche absenken oder anheben (mit Böschung am Rand)">Als Geländeniveau …</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
 INSP_BIND.area = (el, s) => {
   UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläche', 'outdoor'); $('#iDup', el).onclick = UI.duplicateSelection; $('#iDel', el).onclick = UI.deleteSelection;
+  const iPoly = $('#iPoly', el); if (iPoly) iPoly.onclick = () => HSS.change('In Vieleck umwandeln', prj => { const a = U.byId(prj.areas, s.id); a.poly = HSS.areaPoly(a).map(q => [Math.round(q[0] * 10) / 10, Math.round(q[1] * 10) / 10]); HSS.areaFit(a); }, { scope: 'outdoor' });
+  const iRect = $('#iRect', el); if (iRect) iRect.onclick = () => HSS.change('Als Rechteck', prj => { const a = U.byId(prj.areas, s.id); HSS.areaFit(a); delete a.poly; }, { scope: 'outdoor' });
+  const iNeu = $('#iPolyNeu', el); if (iNeu) iNeu.onclick = () => { const a = U.byId(HSS.project().areas, s.id); if (!a) return; HSS.s3.select(null); HSS.tools.drawArea(a.kind, { poly: true }); };
   $('#iNiv', el).onclick = async () => {
     const v = await UI.prompt('Gelände unter der Fläche auf Höhe (m, z. B. −3,8 = ein Geschoss tiefer)', '-3.8'); if (v === null) return;
     const h = +String(v).replace(',', '.'); if (!h) return;
@@ -11491,24 +11497,71 @@ T.drawPath = (kind, continueId) => {
   });
   UI.hint(`<b>${HSS.WEGARTEN[kind].name}</b> zeichnen · Punkte ins Gelände klicken · Kurven werden automatisch geglättet${under ? ' · liegt unterirdisch (Höhe im Inspektor)' : ''}`);
 };
-T.drawArea = (kind) => {
+T.drawArea = (kind, opts = {}) => {
   if (readonly()) return;
-  let a = null, b = null;
-  const redraw = () => { clearGhost(); if (!a || !b) return; const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), z0 = Math.min(a[1], b[1]), z1 = Math.max(a[1], b[1]); HSS.s3.layers.ghost.add(polyline([[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]])); UI.hint(`${HSS.FLAECHEN[kind]}: ${U.fmt(x1 - x0, 1)} × ${U.fmt(z1 - z0, 1)} m${kind === 'parkplatz' ? ' · ca. ' + HSS.parkingLayout({ w: x1 - x0, d: z1 - z0 }).stalls.length + ' Stellplätze' : ''}`); };
+  // Zwei Wege: mit gedrückter Maustaste ein Rechteck aufziehen – oder Eckpunkte nacheinander anklicken (beliebige Form, z. B. schräge Grünflächen)
+  let a = null, b = null, cur = null;
+  const pts = [], nurVieleck = !!opts.poly, name = HSS.FLAECHEN[kind];
+  const flaeche = q => Math.abs(G.area(q));
+  const redraw = () => {
+    clearGhost();
+    if (pts.length) {
+      const all = cur ? pts.concat([cur]) : pts.slice();
+      HSS.s3.layers.ghost.add(polyline(all.length >= 3 ? all.concat([all[0]]) : all));
+      UI.hint(`<b>${name} (Vieleck)</b> · ${pts.length} Ecke${pts.length === 1 ? '' : 'n'}${all.length >= 3 ? ` · ${U.fmt(flaeche(all))} m²` : ''} · Klick: Ecke · Doppelklick, Enter oder Klick auf den Startpunkt: fertig · Rücktaste: Ecke zurück · Umschalt: 15°-Winkel · Esc: abbrechen`);
+      return;
+    }
+    if (!a || !b) return;
+    const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), z0 = Math.min(a[1], b[1]), z1 = Math.max(a[1], b[1]);
+    HSS.s3.layers.ghost.add(polyline([[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]]));
+    UI.hint(`${name}: ${U.fmt(x1 - x0, 1)} × ${U.fmt(z1 - z0, 1)} m${kind === 'parkplatz' ? ' · ca. ' + HSS.parkingLayout({ w: x1 - x0, d: z1 - z0 }).stalls.length + ' Stellplätze' : ''}`);
+  };
+  const finishPoly = () => {
+    if (pts.length < 3) { UI.toast('Mindestens drei Ecken anklicken'); return; }
+    if (flaeche(pts) < 4) { UI.toast('Fläche zu klein'); return; }
+    const ar = HSS.areaFromPoly(kind, pts);
+    HSS.manip?.mark();
+    HSS.change('Fläche anlegen (Vieleck)', p => p.areas.push(ar), { scope: 'outdoor' });
+    // verzögert auswählen: Enter bestätigt sonst im selben Tastendruck die Auswahl und hebt sie auf
+    clearGhost(); HSS.s3.setTool(null); setTimeout(() => HSS.s3.select({ kind: 'area', id: ar.id }), 0);
+    UI.toast(`${name} mit ${ar.poly.length} Ecken angelegt (${U.fmt(flaeche(ar.poly))} m²) – Ecken an den Punkten verschieben, ＋ fügt Ecken ein, Alt+Klick löscht eine Ecke`, 4500);
+  };
+  const pick = ev => { const gp = HSS.s3.groundPoint(ev); if (!gp) return null; let q = [snap(gp.x), snap(gp.z)]; if (pts.length && ev.shiftKey) { const l = pts[pts.length - 1], dx = q[0] - l[0], dz = q[1] - l[1], an = Math.round(Math.atan2(dz, dx) / U.rad(15)) * U.rad(15), L = Math.hypot(dx, dz); q = [snap(l[0] + Math.cos(an) * L, 0.1), snap(l[1] + Math.sin(an) * L, 0.1)]; } if (pts.length >= 3 && G.dist(q, pts[0]) < 1.5) q = pts[0].slice(); return q; };
   HSS.s3.setTool({
     name: 'area',
-    down(ev) { if (ev.button !== 0) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; a = [snap(gp.x), snap(gp.z)]; b = a.slice(); HSS.s3.controls.enabled = false; },
-    move(ev) { if (!a) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; b = [snap(gp.x), snap(gp.z)]; redraw(); },
-    up() {
+    down(ev) { if (ev.button !== 0 || pts.length || nurVieleck) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; a = [snap(gp.x), snap(gp.z)]; b = a.slice(); HSS.s3.controls.enabled = false; },
+    move(ev) {
+      if (a) { const gp = HSS.s3.groundPoint(ev); if (!gp) return; b = [snap(gp.x), snap(gp.z)]; redraw(); return; }
+      if (pts.length) { cur = pick(ev); redraw(); }
+    },
+    up(ev) {
       HSS.s3.controls.enabled = true; if (!a || !b) return;
       const w = Math.abs(b[0] - a[0]), d = Math.abs(b[1] - a[1]);
-      if (w > 2 && d > 2) { const ar = { id: U.uid('area'), kind, x: (a[0] + b[0]) / 2, z: (a[1] + b[1]) / 2, w, d, rot: 0 }; HSS.change('Fläche anlegen', p => p.areas.push(ar), { scope: 'outdoor' }); HSS.s3.setTool(null); HSS.s3.select({ kind: 'area', id: ar.id }); }
-      a = b = null; clearGhost();
+      if (w > 2 && d > 2) { const ar = { id: U.uid('area'), kind, x: (a[0] + b[0]) / 2, z: (a[1] + b[1]) / 2, w, d, rot: 0 }; HSS.change('Fläche anlegen', p => p.areas.push(ar), { scope: 'outdoor' }); HSS.s3.setTool(null); HSS.s3.select({ kind: 'area', id: ar.id }); a = b = null; clearGhost(); return; }
+      // kurzer Klick ohne Ziehen: erste Ecke eines Vielecks
+      pts.push(a.slice()); a = b = null; cur = null; redraw();
     },
-    click() {}, cancel() { HSS.s3.controls.enabled = true; clearGhost(); UI.hint(null); }
+    click(ev) {
+      if (!pts.length && !nurVieleck) return; // erster Punkt kommt aus down/up
+      const q = pick(ev); if (!q) return;
+      if (pts.length >= 3 && G.dist(q, pts[0]) < 0.01) return finishPoly();
+      if (pts.length && G.dist(q, pts[pts.length - 1]) < 0.05) return;
+      pts.push(q); cur = null; redraw();
+    },
+    dbl() { if (pts.length >= 3) finishPoly(); },
+    key(ev) { if (ev.key === 'Enter') { finishPoly(); return true; } if (ev.key === 'Backspace') { pts.pop(); redraw(); return true; } },
+    cancel() { HSS.s3.controls.enabled = true; clearGhost(); UI.hint(null); }
   });
-  UI.hint(`<b>${HSS.FLAECHEN[kind]}</b>: Rechteck mit gedrückter Maustaste aufziehen`);
+  UI.hint(nurVieleck ? `<b>${name} als Vieleck</b>: Eckpunkte nacheinander ins Gelände klicken (beliebige Form) · Doppelklick oder Enter: fertig`
+    : `<b>${name}</b>: Rechteck mit gedrückter Maustaste aufziehen <b>oder</b> Eckpunkte nacheinander anklicken (beliebige Form) · Doppelklick oder Enter: fertig`);
 };
+// Fläche aus Eckpunkten (Weltkoordinaten): Mittelpunkt und Begrenzungsmaße werden mitgeführt
+HSS.areaFromPoly = (kind, pts, extra = {}) => {
+  const poly = G.ccw(pts.map(p => [Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10])), bb = G.bbox(poly);
+  return Object.assign({ id: U.uid('area'), kind, x: Math.round(bb.cx * 10) / 10, z: Math.round(bb.cz * 10) / 10, w: Math.round(bb.w * 10) / 10, d: Math.round(bb.d * 10) / 10, rot: 0, poly }, extra);
+};
+HSS.areaFit = a => { if (!a.poly || a.poly.length < 3) return a; const bb = G.bbox(a.poly); a.x = Math.round(bb.cx * 10) / 10; a.z = Math.round(bb.cz * 10) / 10; a.w = Math.round(bb.w * 10) / 10; a.d = Math.round(bb.d * 10) / 10; a.rot = 0; return a; };
+HSS.areaM2 = a => (a.poly && a.poly.length >= 3 ? Math.abs(G.area(a.poly)) : a.w * a.d);
 // Fläche in Standardgröße setzen (für Ziehen aus dem Panel); Größe danach an den Griffen ändern
 const AREA_STD = { parkplatz: [48, 32], gruen: [40, 30], platz: [30, 20], wasser: [24, 16], acker: [120, 80], wald: [80, 60] };
 T.placeArea = (kind) => {
@@ -11636,7 +11689,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     const geo = prj.meta.geo;
     el.innerHTML = `<h3>Standort</h3><div class="note">${geo?.lat ? `${U.esc(geo.adresse || prj.meta.standort?.id || '')} ${U.fmt(geo.lat, 5)}° N, ${U.fmt(geo.lon, 5)}° O · Nordwinkel ${U.fmt(geo.nord || 0)}°` : 'Noch nicht verortet.'}</div><div class="row" style="gap:6px;margin:6px 0 4px"><button id="gGeo">Standort verorten …</button><button id="gOsm" class="primary" title="Straßen, Felder, Wald, Wasser, Nachbargebäude und Grundstücksgrenze rund um den Standort laden">Umgebung aus OpenStreetMap …</button>${prj.meta.standort ? '<button id="gUpd" title="Geometrie und Daten des Standortmodells neu übernehmen, eigene Änderungen bleiben">Standortmodell aktualisieren</button>' : ''}</div>
     <h3>Wege zeichnen</h3><div class="tiles">${Object.entries(HSS.WEGARTEN).map(([k, v]) => tile(`data-path="${k}"`, v.name, v.info)).join('')}</div>
-    <h3>Flächen aufziehen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'mit Bäumen und Sträuchern')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}${tile('data-area="acker"', 'Acker / Feld', 'Umgebung')}${tile('data-area="wald"', 'Wald', 'dichter Baumbestand')}</div>
+    <h3>Flächen zeichnen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'Rechteck aufziehen oder Ecken klicken')}${tile('data-areapoly="gruen"', '⬠ Grünfläche frei', 'beliebige Form: Eckpunkte anklicken')}${tile('data-areapoly="platz"', '⬠ Platz frei', 'beliebige Form')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}${tile('data-area="acker"', 'Acker / Feld', 'Umgebung')}${tile('data-area="wald"', 'Wald', 'dichter Baumbestand')}</div>
     <h3>Außenausstattung</h3><div class="tiles">${[['Außenanlagen/Grün', 'Bäume & Grün'], ['Außenanlagen/Beleuchtung', 'Laternen & Leuchten'], ['Außenanlagen/ÖPNV & Verkehr', 'Haltestelle, Schranke, Landeplatz'], ['Fahrzeuge', 'Autos, Busse, RTW, LKW'], ['Außenanlagen/Stadtmobiliar', 'Bänke, Fahrradständer'], ['Außenanlagen/Ver- und Entsorgung', 'Müllplatz, Presscontainer']].map(([c, n]) => tile(`data-cat="${c}"`, n, '')).join('')}</div>
     <div class="note">Parkhäuser finden Sie unter „Gebäude“ als Baustein.</div>
     <h3>Gelände</h3>
@@ -11649,6 +11702,7 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gOsm', el).onclick = () => HSS.osm.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
     $$('[data-path]', el).forEach(b => b.onclick = () => T.drawPath(b.dataset.path));
     $$('[data-area]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.area); HSS.manip?.dragFrom(b, () => T.placeArea(b.dataset.area)); });
+  $$('[data-areapoly]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.areapoly, { poly: true }); });
     $$('[data-cat]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.cat; UI.setWS('bibliothek'); });
     UI.bind($('.tf', el), prj => prj.terrain, 'Gelände', 'all');
     $('#gHill', el).onclick = T.hill;
@@ -12150,7 +12204,15 @@ function buildHandles() {
     addHandle('move', W(bb.x1 - Math.min(8, bb.w * 0.2), bb.z1 - Math.min(4, bb.d * 0.25), top + 1.5), { op: 'move' });
     const r = [W(bb.x0, bb.z0), W(bb.x1, bb.z0), W(bb.x1, bb.z1), W(bb.x0, bb.z1), W(bb.x0, bb.z0)]; addLine(r);
   } else if (sel.kind === 'area') {
-    const a = U.byId(p.areas, sel.id); if (!a || a.poly) return;
+    const a = U.byId(p.areas, sel.id); if (!a) return;
+    if (a.poly && a.poly.length >= 3) {
+      const yy = q => HSS.terrainH(q[0], q[1]) + 0.8 + (a.hoehe || 0), n = a.poly.length;
+      a.poly.forEach((q, i) => addHandle(M.areaVtx === i ? 'pointOn' : 'point', new V3(q[0], yy(q), q[1]), { op: 'vtx', idx: i }));
+      for (let i = 0; i < n; i++) { const A = a.poly[i], B = a.poly[(i + 1) % n]; if (G.dist(A, B) < 3) continue; const m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2]; addHandle('insert', new V3(m[0], yy(m), m[1]), { op: 'vins', idx: i + 1 }); }
+      const bb = G.bbox(a.poly); addHandle('rotate', new V3(bb.x1 + 3, yy([bb.x1, bb.z0]), bb.z0 - 3), { op: 'rot' });
+      addLine(a.poly.concat([a.poly[0]]).map(q => new V3(q[0], yy(q), q[1])));
+      HSS.perf?.invalidate(2); return;
+    }
     const y = HSS.terrainH(a.x, a.z) + 0.6, W = (lx, lz) => { const q = G.rot([lx, lz], U.rad(a.rot || 0)); return new V3(q[0] + a.x, y, q[1] + a.z); };
     addHandle('resize', W(a.w / 2 + 1.2, 0), { op: 'edge', ax: 'x', sg: 1 }); addHandle('resize', W(-a.w / 2 - 1.2, 0), { op: 'edge', ax: 'x', sg: -1 });
     addHandle('resizeV', W(0, a.d / 2 + 1.2), { op: 'edge', ax: 'z', sg: 1 }); addHandle('resizeV', W(0, -a.d / 2 - 1.2), { op: 'edge', ax: 'z', sg: -1 });
@@ -12232,7 +12294,8 @@ function onDown(ev) {
   if (ev.button !== 0 || S3.tool || S3.fpvActive || ro()) return;
   const sel = HSS.state.selection; if (!sel) return;
   const hd = pickHandle(ev);
-  if (hd) { start(ev, hd.userData, sel); ev.stopImmediatePropagation(); return; }
+  if (hd && sel.kind === 'area' && hd.userData.op === 'vtx' && ev.altKey) { ev.stopImmediatePropagation(); const i = hd.userData.idx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const a = U.byId(p.areas, sel.id); if (a?.poly && a.poly.length > 3) { a.poly.splice(i, 1); HSS.areaFit(a); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); return; }
+  if (hd) { if (sel.kind === 'area') M.areaVtx = hd.userData.op === 'vtx' ? hd.userData.idx : hd.userData.op === 'vins' ? hd.userData.idx : undefined; start(ev, hd.userData, sel); ev.stopImmediatePropagation(); return; }
   const h = S3.pick(ev);
   if (sameSel(h, sel) && ['part', 'area', 'object', 'path', 'room', 'bridge', 'wall'].includes(sel.kind) && sel.kind !== 'bridge') { D = { armed: true, op: 'move', sel: U.clone(sel), x0: ev.clientX, y0: ev.clientY, p0: h.point.clone(), ev0: ev }; S3.controls.enabled = false; }
 }
@@ -12375,6 +12438,21 @@ function magnet(pt0, dx, dz) {
 /* Fläche */
 function dragArea(hit, fine) {
   const a0 = D.a0, sel = D.sel; let n = U.clone(a0), label = '';
+  if (a0.poly && a0.poly.length >= 3 && D.op !== 'move') {
+    let poly = a0.poly.map(q => q.slice());
+    const q = fine ? [Math.round(hit.x * 10) / 10, Math.round(hit.z * 10) / 10] : [snap(hit.x), snap(hit.z)];
+    if (D.op === 'vtx') { poly[D.idx] = q; label = `<b>Ecke ${D.idx + 1}</b> verschieben`; }
+    if (D.op === 'vins') { poly.splice(D.idx, 0, q); label = `<b>Neue Ecke</b> einfügen`; }
+    if (D.op === 'rot') { const bb = G.bbox(a0.poly), c = [bb.cx, bb.cz]; if (D.ang0 === undefined) D.ang0 = Math.atan2(hit.z - c[1], hit.x - c[0]); let da = U.deg(Math.atan2(hit.z - c[1], hit.x - c[0]) - D.ang0); da = fine ? Math.round(da) : Math.round(da / 5) * 5; poly = a0.poly.map(p => { const v = G.rot([p[0] - c[0], p[1] - c[1]], U.rad(da)); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); label = `<b>Drehen</b> · ${fmt(da, 0)}°`; }
+    n.poly = poly; HSS.areaFit(n);
+    preview(sel.id, () => HSS.buildArea(n, HSS.view)); clearGhost();
+    const y = HSS.terrainH(hit.x, hit.z) + 0.9 + (a0.hoehe || 0), pts = poly.concat([poly[0]]).map(p => new V3(p[0], y, p[1]));
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: '#d9531e', depthTest: false })); l.renderOrder = 41; ghost().add(l);
+    hint(`${label} · <b>${fmt(Math.abs(G.area(poly)), 0)} m²</b> · ${poly.length} Ecken · Umschalt: ohne Raster · Alt+Klick auf eine Ecke: löschen`);
+    const lbl = D.op === 'vins' ? 'Ecke einfügen' : D.op === 'rot' ? 'Fläche drehen' : 'Ecke verschieben';
+    D.commit = () => HSS.change(lbl, p => { const a = U.byId(p.areas, sel.id); a.poly = n.poly; HSS.areaFit(a); }, { scope: 'outdoor' });
+    return;
+  }
   if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } const g = groupOf(sel.id); if (g) g.position.set(dx, 0, dz); n.x = a0.x + dx; n.z = a0.z + dz; hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); D.commit = () => HSS.change('Fläche verschieben', p => { const a = U.byId(p.areas, sel.id); a.x = Math.round(n.x * 10) / 10; a.z = Math.round(n.z * 10) / 10; if (a.poly) a.poly = a0.poly.map(q => [Math.round((q[0] + dx) * 10) / 10, Math.round((q[1] + dz) * 10) / 10]); }, { scope: 'outdoor' }); return; }
   if (D.op === 'rot') { let r = (a0.rot || 0) + U.deg(Math.atan2(hit.z - a0.z, hit.x - a0.x) - D.ang0); r = fine ? Math.round(r) : Math.round(r / 5) * 5; n.rot = r; label = `<b>Drehen</b> · ${fmt(((r % 360) + 360) % 360, 0)}°`; }
   if (D.op === 'edge') {
@@ -12546,7 +12624,7 @@ function bar(show) {
   const B = (id, label, title, cls = '') => `<button data-m="${id}" class="${cls}" title="${U.esc(title)}">${label}</button>`;
   let h = '';
   if (sel.kind === 'part') h += B('rotL', '⟲', 'Um 15° nach links drehen (Umschalt: 90°)') + B('rotR', '⟳', 'Um 15° nach rechts drehen (Umschalt: 90°)') + B('fUp', '＋G', 'Ein Geschoss aufsetzen') + B('fDn', '－G', 'Oberstes Geschoss entfernen') + B('whole', M.moveWhole ? '▣ Ganzes Gebäude' : '▢ Nur Bauteil', 'Beim Ziehen das ganze Gebäude oder nur dieses Bauteil verschieben', M.moveWhole ? 'on' : '') + B('bridge', '⌒ Brücke', 'Brücke von diesem Gebäude zu einem anderen ziehen') + B('inside', '⌂ Innen', 'Etagen von innen ansehen');
-  if (sel.kind === 'area') h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen');
+  if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
   if (sel.kind === 'bridge') h += B('lvUp', '▲ Ebene', 'Brücke ein Geschoss höher') + B('lvDn', '▼ Ebene', 'Brücke ein Geschoss tiefer') + B('wide', '⇔ breiter', 'Brücke 1 m breiter (Umschalt: schmaler)');
@@ -12595,7 +12673,8 @@ function act(a, e) {
     HSS.change('Brückenebene', p => { const b = U.byId(p.bridges, sel.id); b.a.floor = fa; b.b.floor = fb; });
   }
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
-  if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id); q.rot = ((q.rot || 0) + (a === 'rotL' ? -15 : 15)) % 360; }, { scope: 'outdoor' });
+  if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
+  if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
     if (a === 'rotL' || a === 'rotR') HSS.change('Weg drehen', p => { const q = U.byId(p.paths, sel.id), c = centroid(q.points), da = U.rad(a === 'rotL' ? -15 : 15); q.points = q.points.map(t => { const v = G.rot([t[0] - c[0], t[1] - c[1]], da); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); }, { scope: 'outdoor' });
@@ -12838,13 +12917,14 @@ P2.palette = () => {
     <button data-t="poly" title="Freier Grundriss (Vieleck)">⬠ Vieleck</button>
     <label title="Geschosse neuer Gebäude">Geschosse <input type="number" id="p2Fl" min="1" max="40" value="${P2.floors || 4}"></label>
     <span class="vsep"></span>
-    <button data-t="strasse">Straße</button><button data-t="weg">Weg</button><button data-t="parkplatz">Parkplatz</button><button data-t="gruen">Grün</button>
+    <button data-t="strasse">Straße</button><button data-t="weg">Weg</button><button data-t="parkplatz">Parkplatz</button><button data-t="gruen" title="Grünfläche: Rechteck aufziehen oder Eckpunkte anklicken">Grün</button><button data-t="gruenPoly" title="Grünfläche in beliebiger Form: Eckpunkte anklicken">⬠ Grün frei</button>
     <span class="vsep"></span><button data-t="3d" class="primary" title="Zurück in die 3D-Ansicht">3D ansehen</button>`;
   el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => {
     const t = b.dataset.t; b.blur();
     if (t === 'rect') P2.toolRect(); if (t === 'rect3') P2.toolRect3(); if (t === 'poly') P2.toolPoly();
     if (t === 'strasse' || t === 'weg') HSS.tools.drawPath(t);
     if (t === 'parkplatz' || t === 'gruen') HSS.tools.drawArea(t);
+    if (t === 'gruenPoly') HSS.tools.drawArea('gruen', { poly: true });
     if (t === '3d') HSS.plan2d.set(false);
   });
   el.querySelector('#p2Fl').onchange = e => { P2.floors = U.clamp(+e.target.value || 4, 1, 40); };
@@ -16016,6 +16096,201 @@ HSS.on('changed', () => GA.refresh());
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', GA.bind); else GA.bind();
 })();
 
+</script>
+<script>
+/* =====================================================================
+   HSS · einfaerben.js – Gebäude nach Funktionseinheiten einfärben
+   Schaltfläche „🎨 Einfärben“ in der Ansichtsleiste (auch in der
+   HTML-Ansicht). Funktionseinheiten haben Name, Farbe und Modus:
+   „Dach“ färbt nur die Dachfläche (und Attika), „ganzes Gebäude“ auch
+   die Fassade. Zugeordnet werden ganze Gebäude oder einzelne Bauteile
+   (Inspektor des Bauteils). Eine Legende zeigt die Einheiten; Klick auf
+   einen Eintrag zeigt die zugehörigen Gebäude. Gespeichert wird im
+   Projekt unter settings.funktionseinheiten. Nur Darstellung.
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, { THREE } = window.THREEX;
+const FE = HSS.fe = {};
+const FARBEN = ['#e4572e', '#2e86ab', '#f2a541', '#6a994e', '#8e5ea2', '#d1495b', '#00a6a6', '#7d5a50', '#3d5a80', '#c9a227'];
+const MODI = { dach: 'nur Dach', gebaeude: 'ganzes Gebäude' };
+FE.cfg = (prj = HSS.project()) => prj?.settings?.funktionseinheiten || null;
+FE.ensure = (prj = HSS.project()) => { prj.settings = prj.settings || {}; const c = prj.settings.funktionseinheiten || (prj.settings.funktionseinheiten = { aktiv: false, liste: [] }); c.liste = c.liste || []; return c; };
+// Wirksame Einfärbung eines Bauteils (Bauteil-Zuordnung vor Gebäude-Zuordnung)
+FE.unit = (pt, b, prj = HSS.project()) => { const c = FE.cfg(prj); if (!c?.liste?.length) return null; return c.liste.find(e => (e.bauteile || []).includes(pt.id)) || c.liste.find(e => (e.gebaeude || []).includes(b.id)) || null; };
+FE.of = (pt, b, prj = HSS.project()) => {
+  const c = FE.cfg(prj); if (!c || !c.aktiv) return null;
+  const e = FE.unit(pt, b, prj); if (!e || e.aus) return null;
+  return { id: e.id, name: e.name, farbe: e.farbe || '#e4572e', modus: e.modus === 'gebaeude' ? 'gebaeude' : 'dach' };
+};
+FE.key = (pt, b, prj) => { const f = FE.of(pt, b, prj); return f ? f.farbe + '|' + f.modus : ''; };
+const viewer = () => !!HSS.state.viewer;
+// Änderung übernehmen: im Editor rückgängig machbar, in der HTML-Ansicht nur Darstellung
+FE.aendern = (label, fn) => {
+  if (viewer() || HSS.state.demoReadonly) { fn(HSS.project()); HSS.s3.rebuild('all'); FE.refresh(); return; }
+  HSS.change(label, prj => fn(prj), { scope: 'all' });
+  FE.refresh();
+};
+const gebaeudeVon = e => { const prj = HSS.project(), ids = new Set(e.gebaeude || []), pts = new Set(e.bauteile || []); return { geb: prj.buildings.filter(b => ids.has(b.id)), teile: prj.buildings.flatMap(b => b.parts.filter(p => pts.has(p.id)).map(p => ({ b, p }))) }; };
+const anzahl = e => { const g = gebaeudeVon(e); return g.geb.length + g.teile.length; };
+
+/* ---------- Schaltfläche und Legende ---------- */
+FE.refresh = () => {
+  const btn = document.getElementById('vFE'), c = FE.cfg(), n = c?.liste?.length || 0, an = !!(c?.aktiv && n);
+  if (btn) {
+    btn.classList.toggle('on', an);
+    btn.textContent = !n ? '🎨 Einfärben …' : an ? `🎨 Einfärbung aus (${n})` : `🎨 Einfärben (${n})`;
+    btn.title = !n ? 'Funktionseinheiten festlegen und Gebäude einfärben (Dach oder ganzes Gebäude)' : an ? 'Einfärbung ausblenden' : `${n} Funktionseinheit${n === 1 ? '' : 'en'} einfärben (⚙ ändert sie)`;
+  }
+  legende(an ? c : null);
+};
+function legende(c) {
+  let el = document.getElementById('feLegend');
+  if (!c) { if (el) el.hidden = true; return; }
+  if (!el) {
+    el = document.createElement('div'); el.id = 'feLegend'; document.body.appendChild(el);
+    el.addEventListener('pointerdown', e => e.stopPropagation());
+  }
+  const rows = c.liste.map(e => `<div class="fer${e.aus ? ' off' : ''}" data-fe="${U.esc(e.id)}" title="Klick: zugehörige Gebäude zeigen · Auge: Einheit aus-/einblenden">
+      <span class="sw ${e.modus === 'gebaeude' ? 'g' : 'd'}" style="background:${U.esc(e.farbe)}"></span><span class="nm">${U.esc(e.name || 'Funktionseinheit')}</span><span class="ct">${anzahl(e)}</span><button class="eye" data-eye="${U.esc(e.id)}">${e.aus ? '◌' : '◉'}</button></div>`).join('');
+  el.innerHTML = `<div class="feh"><b>Funktionseinheiten</b><button id="feLegCfg" title="Bearbeiten">⚙</button></div>${rows || '<div class="note">Noch keine Funktionseinheit.</div>'}<div class="fen">▀ nur Dach · █ ganzes Gebäude</div>`;
+  el.hidden = false;
+  el.querySelectorAll('[data-fe]').forEach(r => r.onclick = ev => { if (ev.target.closest('[data-eye]')) return; FE.zeige(r.dataset.fe); });
+  el.querySelectorAll('[data-eye]').forEach(b => b.onclick = () => FE.aendern('Funktionseinheit ein-/ausblenden', prj => { const e = FE.ensure(prj).liste.find(x => x.id === b.dataset.eye); if (e) e.aus = !e.aus; }));
+  el.querySelector('#feLegCfg').onclick = FE.dialog;
+  lage();
+}
+function lage() {
+  const el = document.getElementById('feLegend'); if (!el || el.hidden) return;
+  const vb = document.getElementById('viewbar'), p2 = document.getElementById('plan2dBar');
+  let top = vb ? vb.getBoundingClientRect().bottom + 8 : 120;
+  if (p2 && !p2.hidden) top = Math.max(top, p2.getBoundingClientRect().bottom + 8);
+  el.style.top = Math.round(top) + 'px';
+}
+window.addEventListener('resize', lage);
+HSS.on('view', () => setTimeout(lage, 0));
+FE.zeige = id => {
+  const c = FE.cfg(), e = c?.liste.find(x => x.id === id); if (!e) return;
+  const g = gebaeudeVon(e), box = new THREE.Box3();
+  for (const b of g.geb) for (const pt of b.parts) for (const [x, z] of HSS.partFootprint(pt).outer) box.expandByPoint(new THREE.Vector3(x, HSS.partTopY(pt), z));
+  for (const { p } of g.teile) for (const [x, z] of HSS.partFootprint(p).outer) box.expandByPoint(new THREE.Vector3(x, HSS.partTopY(p), z));
+  if (box.isEmpty()) return HSS.ui.toast(`„${e.name}“ ist noch kein Gebäude zugeordnet – ⚙ öffnen oder im Inspektor eines Gebäudes zuordnen`, 3500);
+  HSS.s3.focusBox(box);
+  HSS.ui.toast(`${e.name}: ${[...g.geb.map(b => b.kurz ? `Haus ${b.kurz}` : b.name), ...g.teile.map(({ b, p }) => `${b.kurz || b.name} · ${p.name}`)].join(', ')}`, 3500);
+};
+FE.toggle = () => {
+  const c = FE.cfg();
+  if (!c?.liste?.length) return FE.dialog();
+  FE.aendern(c.aktiv ? 'Einfärbung aus' : 'Einfärbung an', prj => { const k = FE.ensure(prj); k.aktiv = !k.aktiv; });
+};
+
+/* ---------- Dialog ---------- */
+FE.dialog = () => {
+  const UI = HSS.ui, $ = UI.$, prj = HSS.project();
+  const arbeit = U.clone(FE.ensure(prj)); // Entwurf, wird erst beim Speichern übernommen
+  if (!arbeit.liste.length) arbeit.liste.push({ id: U.uid('fe'), name: 'Funktionseinheit A', farbe: FARBEN[0], modus: 'dach', gebaeude: [], bauteile: [] });
+  const sel = HSS.state.selection, selP = sel?.kind === 'part' ? HSS.findPart(sel.id) : null;
+  const nr = b => String(b.kurz || b.name);
+  const eigene = prj.buildings.filter(b => !b.umgebung && b.parts.length).sort((a, b) => nr(a).localeCompare(nr(b), 'de', { numeric: true }));
+  let offen = null;
+  UI.dialog(`<div class="dh"><h2>Gebäude einfärben – Funktionseinheiten</h2><button class="x" data-close>×</button></div>
+    <p>Jede Funktionseinheit bekommt eine Farbe. <b>Nur Dach</b> färbt die Dachfläche, <b>ganzes Gebäude</b> zusätzlich die Fassade. Gebäude hier zuordnen oder im Inspektor eines Bauteils (dort auch einzelne Bauteile).</p>
+    <div id="feRows"></div>
+    <div class="row"><button id="feAdd">＋ Funktionseinheit</button>${selP ? `<span class="note">Ausgewählt: <b>${U.esc(selP.building.kurz || '')} ${U.esc(selP.building.name)}</b></span>` : ''}</div>
+    <div id="feGeb" hidden></div>
+    <label class="chk"><input type="checkbox" id="feAn" ${arbeit.aktiv || !FE.cfg()?.liste?.length ? 'checked' : ''}> Einfärbung im 3D-Bild anzeigen</label>
+    <p class="note">Nur Darstellung. Wird im Projekt gespeichert und in die HTML-Ansicht übernommen.</p>
+    <div class="actions"><button class="primary" id="feSave">Übernehmen</button><button data-close>Abbrechen</button></div>`, d => {
+    const rowsEl = $('#feRows', d), gebEl = $('#feGeb', d);
+    const zeilen = () => {
+      rowsEl.innerHTML = arbeit.liste.map((e, i) => `<div class="ferow" data-i="${i}">
+        <input type="color" data-k="farbe" value="${U.esc(e.farbe)}" title="Farbe">
+        <input type="text" data-k="name" value="${U.esc(e.name)}" placeholder="Name, z. B. Funktionseinheit A">
+        <select data-k="modus">${Object.entries(MODI).map(([k, v]) => `<option value="${k}" ${(e.modus || 'dach') === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+        <button data-geb="${i}" class="${offen === i ? 'on' : ''}" title="Gebäude zuordnen">Gebäude (${anzahl(e)}) ▾</button>
+        ${selP ? `<button data-add="${i}" title="Ausgewähltes Gebäude dieser Einheit zuordnen">＋ Auswahl</button>` : ''}
+        <button data-del="${i}" class="danger" title="Funktionseinheit löschen">🗑</button></div>`).join('');
+      rowsEl.querySelectorAll('[data-k]').forEach(inp => inp.oninput = inp.onchange = () => { const e = arbeit.liste[+inp.closest('[data-i]').dataset.i]; e[inp.dataset.k] = inp.value; });
+      rowsEl.querySelectorAll('[data-geb]').forEach(b => b.onclick = () => { offen = offen === +b.dataset.geb ? null : +b.dataset.geb; zeilen(); auswahl(); });
+      rowsEl.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { arbeit.liste.splice(+b.dataset.del, 1); offen = null; zeilen(); auswahl(); });
+      rowsEl.querySelectorAll('[data-add]').forEach(b => b.onclick = () => { zuordnen(arbeit, arbeit.liste[+b.dataset.add], selP.building.id); zeilen(); auswahl(); });
+    };
+    const auswahl = () => {
+      if (offen === null || !arbeit.liste[offen]) { gebEl.hidden = true; return; }
+      const e = arbeit.liste[offen], ids = new Set(e.gebaeude || []);
+      const andere = id => arbeit.liste.find(x => x !== e && (x.gebaeude || []).includes(id));
+      gebEl.hidden = false;
+      gebEl.innerHTML = `<h4>Gebäude für „${U.esc(e.name)}“</h4><div class="row nw"><input type="search" id="feQ" placeholder="Gebäude suchen …"></div><div class="galist">${eigene.map(b => { const o = andere(b.id); return `<label class="chk" data-q="${U.esc(((b.kurz || '') + ' ' + b.name).toLowerCase())}"><input type="checkbox" data-gb="${U.esc(b.id)}" ${ids.has(b.id) ? 'checked' : ''}> <b class="hk" style="background:${U.esc(b.color || '#5A6573')}">${U.esc(b.kurz || '•')}</b> <span>${U.esc(b.name)}${o ? `<span class="sub"> · jetzt bei ${U.esc(o.name)}</span>` : ''}</span></label>`; }).join('')}</div>`;
+      gebEl.querySelectorAll('[data-gb]').forEach(cb => cb.onchange = () => { if (cb.checked) zuordnen(arbeit, e, cb.dataset.gb); else e.gebaeude = (e.gebaeude || []).filter(x => x !== cb.dataset.gb); zeilen(); });
+      $('#feQ', gebEl).oninput = ev => { const q = ev.target.value.trim().toLowerCase(); gebEl.querySelectorAll('label[data-q]').forEach(l => (l.hidden = !!q && !l.dataset.q.includes(q))); };
+    };
+    $('#feAdd', d).onclick = () => { const n = arbeit.liste.length; arbeit.liste.push({ id: U.uid('fe'), name: 'Funktionseinheit ' + String.fromCharCode(65 + (n % 26)), farbe: FARBEN[n % FARBEN.length], modus: 'dach', gebaeude: [], bauteile: [] }); offen = n; zeilen(); auswahl(); };
+    zeilen(); auswahl();
+    $('#feSave', d).onclick = () => {
+      const an = $('#feAn', d).checked; d.close();
+      FE.aendern('Funktionseinheiten', p => { const c = FE.ensure(p); c.liste = arbeit.liste.map(e => Object.assign({}, e, { name: (e.name || '').trim() || 'Funktionseinheit' })); c.aktiv = an && c.liste.length > 0; });
+      UI.toast(an ? 'Gebäude eingefärbt – Legende oben links, Klick auf einen Eintrag zeigt die Gebäude' : 'Funktionseinheiten gespeichert', 3500);
+    };
+  });
+};
+// Ein Gebäude gehört zu höchstens einer Funktionseinheit
+function zuordnen(c, e, bid) { for (const x of c.liste) x.gebaeude = (x.gebaeude || []).filter(id => id !== bid); e.gebaeude = (e.gebaeude || []).concat([bid]); }
+
+/* ---------- Inspektor des Bauteils: Zuordnung ---------- */
+const UI0 = HSS.ui, INSP = UI0.INSP, BIND = UI0.INSP_BIND;
+if (INSP?.part && BIND?.part) {
+  const html0 = INSP.part, bind0 = BIND.part;
+  INSP.part = s => {
+    let h = html0(s); if (!h) return h;
+    const P = HSS.findPart(s.id); if (!P) return h;
+    const c = FE.cfg(), liste = c?.liste || [];
+    const ePt = liste.find(e => (e.bauteile || []).includes(P.part.id)), eB = liste.find(e => (e.gebaeude || []).includes(P.building.id));
+    const o = (v, t, on) => `<option value="${U.esc(v)}" ${on ? 'selected' : ''}>${U.esc(t)}</option>`;
+    const box = `<h3>Funktionseinheit (Einfärben)</h3><div class="fg pf">
+      <label class="f full"><span>Gebäude gehört zu</span><select id="feB">${o('', '– keine –', !eB)}${liste.map(e => o(e.id, e.name, eB === e)).join('')}${o('__neu', '＋ neue Funktionseinheit …', false)}</select></label>
+      <label class="f full"><span>Nur dieses Bauteil</span><select id="fePt">${o('', 'wie Gebäude', !ePt)}${liste.map(e => o(e.id, e.name, ePt === e)).join('')}</select></label></div>
+      <div class="note">${liste.length ? `Farbe und Modus (Dach / ganzes Gebäude) unter <a href="#" id="feCfg">🎨 ⚙ Funktionseinheiten</a>.${c?.aktiv ? '' : ' Einfärbung ist zurzeit ausgeblendet.'}` : 'Noch keine Funktionseinheit – „＋ neue Funktionseinheit“ wählen.'}</div>`;
+    const k = h.indexOf('<h3>Form &amp; Größe</h3>');
+    return k > 0 ? h.slice(0, k) + box + h.slice(k) : h + box;
+  };
+  BIND.part = (el, s) => {
+    bind0(el, s);
+    const fb = el.querySelector('#feB'), fp = el.querySelector('#fePt'), cfg = el.querySelector('#feCfg');
+    if (cfg) cfg.onclick = ev => { ev.preventDefault(); FE.dialog(); };
+    if (fb) fb.onchange = async () => {
+      let id = fb.value; const P = HSS.findPart(s.id); if (!P) return;
+      let neu = null;
+      if (id === '__neu') {
+        const n = FE.cfg()?.liste?.length || 0;
+        const name = await HSS.ui.prompt('Name der Funktionseinheit', 'Funktionseinheit ' + String.fromCharCode(65 + (n % 26))); if (!name) { HSS.ui.inspector(); return; }
+        neu = { id: U.uid('fe'), name, farbe: FARBEN[n % FARBEN.length], modus: 'dach', gebaeude: [], bauteile: [] }; id = neu.id;
+      }
+      FE.aendern('Funktionseinheit zuordnen', prj => {
+        const c = FE.ensure(prj); if (neu) c.liste.push(neu);
+        for (const e of c.liste) e.gebaeude = (e.gebaeude || []).filter(x => x !== P.building.id);
+        const e = c.liste.find(x => x.id === id); if (e) { e.gebaeude.push(P.building.id); c.aktiv = true; }
+      });
+    };
+    if (fp) fp.onchange = () => {
+      const id = fp.value;
+      FE.aendern('Funktionseinheit Bauteil', prj => {
+        const c = FE.ensure(prj);
+        for (const e of c.liste) e.bauteile = (e.bauteile || []).filter(x => x !== s.id);
+        const e = c.liste.find(x => x.id === id); if (e) { e.bauteile = (e.bauteile || []).concat([s.id]); c.aktiv = true; }
+      });
+    };
+  };
+}
+
+FE.bind = () => {
+  const b = document.getElementById('vFE'), c = document.getElementById('vFECfg');
+  if (b) b.onclick = FE.toggle; if (c) c.onclick = FE.dialog;
+  FE.refresh();
+};
+HSS.on('loaded', () => FE.refresh());
+HSS.on('changed', () => FE.refresh());
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', FE.bind); else FE.bind();
+})();
 </script>
 <script>
 /* =====================================================================

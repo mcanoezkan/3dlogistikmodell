@@ -57,7 +57,7 @@ Fehlende Knoten, unbekannte Bereiche und nicht routbare Relationen zeigt die Dat
 |---|---|
 | `suite/Healthcare_Simulation_Suite.html` | Suite als Einzeldatei (Stand „mit U2-Korrektur“) mit den Erweiterungen unten |
 | `suite/Klinikum_Bielefeld-Mitte.hss.json` | Projekt Bielefeld-Mitte (Bestand mit NIZ, U2, Bunker, EG Hauptgebäude), in der Suite über „Öffnen“ laden |
-| `suite/quellen/` | Grundlagen: Bestandsplan HGMI Ebene E Teil 1 (PDF) und Fotos der NIZ-Vorfahrt |
+| `suite/quellen/` | Grundlagen: Bestandsplan HGMI Ebene E Teil 1 (PDF), Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (PDF) und Fotos der NIZ-Vorfahrt |
 
 Erweiterungen der Suite:
 
@@ -69,6 +69,8 @@ Erweiterungen der Suite:
 - **Außenwege** bleiben in der Etagenansicht bis U1 sichtbar.
 - **Grundstücksgrenze** ohne Zaun (`zaun: false`), z. B. an offenen Vorfahrten.
 - **Bibliothek**: Zeichen 250 mit Zusatzzeichen, Zeichen 206, Hinweistafel, Einfahrtssäule.
+- **Gebäude einfärben (Funktionseinheiten)**: Schaltfläche „🎨 Einfärben“ in der Ansichtsleiste, ⚙ daneben legt die Funktionseinheiten an (Name, Farbe, Modus **nur Dach** oder **ganzes Gebäude**) und ordnet Gebäude zu. Im Inspektor eines Bauteils lässt sich das Gebäude oder nur dieses Bauteil einer Einheit zuordnen. Eine Legende oben links zeigt die Einheiten; Klick auf einen Eintrag fährt zu den Gebäuden, ◉ blendet eine Einheit aus. Gespeichert in `settings.funktionseinheiten`, auch in der HTML-Ansicht. Nur Darstellung.
+- **Flächen in beliebiger Form** (z. B. schräge Grünflächen): Beim Flächenwerkzeug entweder ein Rechteck aufziehen oder Eckpunkte nacheinander anklicken (Doppelklick, Enter oder Klick auf den Startpunkt beendet, Rücktaste nimmt eine Ecke zurück, Umschalt rastet 15°-Winkel ein). Eigene Kacheln „⬠ Grünfläche frei“ und „⬠ Platz frei“ im Bereich Gelände & Wege sowie „⬠ Grün frei“ in der 2D-Leiste. Vieleckflächen haben Griffe an jeder Ecke (ziehen), ＋ an den Kanten fügt eine Ecke ein, Alt+Klick oder „✕ Ecke“ löscht eine. Bestehende Rechtecke lassen sich im Inspektor „In Vieleck umwandeln“. Die Bepflanzungsdichte gilt auch für Vieleck-Grünflächen.
 
 Änderungen am Projekt:
 
@@ -78,4 +80,5 @@ Erweiterungen der Suite:
 - **NIZ-Vorfahrt** nach Fotos und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg, Pflaster-Vorfahrt zum Kurzzeitparkplatz, Asphalt-Rettungszufahrt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern, Böschungen, Sperrfläche, Zeichen 250 und 206, Hinweistafeln, Fahnenmasten, Mastleuchten.
 
 - **NIZ-Höhenlage**: Das Gelände bleibt eben. Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Pkw-Zufahrt ist ebenerdig. Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße). Die Rettungszufahrt führt in der überdachten Rampe hinauf (ca. 27 m, 14 %, Höhenpunkte am Weg). Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt. Die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz über die Bauteiloption „Anschluss nach Höhe“ an.
+- **Haus 6/7 Kellergeschoss** (Pathologie/Prosektur, Etage über dem Bunker) vereinfacht nach dem Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil `bie_H7_KG` (Ebene UG) mit 66 Räumen nach Raumnummern (U1 Sektionsraum, U2 Kühlraum/Kühlzellen, U16 Einsargung, U17 Aufbahrung, H6/7-KG.22 … KG.40) und vereinfachten Wänden, ohne Türen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %). Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst: Westende mit Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2, Nordseite mit Verbindungsgang zum Neubau/Tunnel zum Hauptgebäude, Südseite mit Aufzügen zum Bunker und Treppenhaus. Das bisher angenommene Untergeschoss der OSM-Bauteile von Haus 7 entfällt; der Aufzug von Haus 7 steht an der Stelle laut Plan. Alle 852 Warenströme bleiben routbar.
 - **Häuser 2, 5, 8, 10, 11** aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen, inkl. Aufzügen, Treppen und dem Technik-Raum in Haus 8. Sie sind als Auswahl für „Gebäude ausblenden“ vorbelegt. Alle 852 Warenströme sind routbar.

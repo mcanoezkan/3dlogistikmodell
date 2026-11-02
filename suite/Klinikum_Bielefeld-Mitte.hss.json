@@ -7,7 +7,7 @@
   "name": "Klinikum Bielefeld-Mitte – Bestand (NIZ, U2, Bunker, EG Hauptgebäude)",
   "created": "2026-10-15T22:35:38.638Z",
   "modified": "2026-10-28T20:00:00.000Z",
-  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).",
+  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.",
   "standort": {
    "id": "bielefeld",
    "variante": "ist",
@@ -5990,7 +5990,7 @@
      "floors": 4,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6050,7 +6050,7 @@
      "floors": 4,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6130,7 +6130,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6186,7 +6186,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6242,7 +6242,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6362,7 +6362,7 @@
      "floors": 2,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6422,7 +6422,7 @@
      "floors": 1,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6486,7 +6486,7 @@
      "floors": 1,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6542,7 +6542,7 @@
      "floors": 1,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 1,
+     "basements": 0,
      "basementHeight": 3.8,
      "facade": {
       "type": "loch",
@@ -6560,6 +6560,152 @@
       "helipad": false
      },
      "use": ""
+    },
+    {
+     "id": "bie_H7_KG",
+     "name": "Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker) – nach Flucht- und Rettungsplan Feb. 2023",
+     "shape": "poly",
+     "w": 26.5,
+     "d": 95.3,
+     "x": -121.85,
+     "z": -21.65,
+     "rot": 0,
+     "cornerRadius": 0,
+     "courtW": 14,
+     "courtD": 8,
+     "legW": 14,
+     "legD": 14,
+     "poly": [
+      [
+       -9.35,
+       -47.67
+      ],
+      [
+       5.32,
+       -47.67
+      ],
+      [
+       5.32,
+       -46.8
+      ],
+      [
+       10.29,
+       -46.8
+      ],
+      [
+       10.29,
+       -44.25
+      ],
+      [
+       11.61,
+       -44.25
+      ],
+      [
+       11.61,
+       -22.34
+      ],
+      [
+       12.74,
+       -22.34
+      ],
+      [
+       12.74,
+       -13.31
+      ],
+      [
+       11.45,
+       -13.31
+      ],
+      [
+       10.81,
+       16.69
+      ],
+      [
+       13.23,
+       16.69
+      ],
+      [
+       13.23,
+       42.17
+      ],
+      [
+       5.49,
+       42.17
+      ],
+      [
+       5.49,
+       47.66
+      ],
+      [
+       -0.48,
+       47.66
+      ],
+      [
+       -0.48,
+       38.95
+      ],
+      [
+       -6.45,
+       38.95
+      ],
+      [
+       -6.45,
+       6.46
+      ],
+      [
+       -7.9,
+       6.46
+      ],
+      [
+       -7.9,
+       -16.21
+      ],
+      [
+       -9.84,
+       -16.21
+      ],
+      [
+       -9.84,
+       -13.63
+      ],
+      [
+       -13.22,
+       -13.63
+      ],
+      [
+       -13.22,
+       -34.44
+      ],
+      [
+       -9.35,
+       -34.44
+      ]
+     ],
+     "stackOn": null,
+     "baseOffset": -3.8,
+     "floors": 1,
+     "floorHeight": 3.8,
+     "floorHeights": {},
+     "basements": 0,
+     "basementHeight": 3.8,
+     "facade": {
+      "type": "loch",
+      "color": "#b9b6ae",
+      "accent": "#6b7076",
+      "glass": "#6f8fa8",
+      "axis": 1.35,
+      "windowRatio": 0.12
+     },
+     "roof": {
+      "type": "flach",
+      "parapet": 0,
+      "plant": false,
+      "color": "#8f949a",
+      "helipad": false
+     },
+     "use": "pathologie",
+     "floorOffset": -1,
+     "quelle": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
     }
    ]
   },
@@ -48044,12 +48190,12 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_0",
-    "floor": -1
+    "floor": 0
    },
-   "x": -1.3,
-   "z": 0,
+   "x": 3.7,
+   "z": -5.63,
    "rot": 0,
-   "name": "Aufzug (angenommen)"
+   "name": "Aufzug Haus 6/7 (Lage nach Plan KG)"
   },
   {
    "id": "obj_auto_t_bie_H7_0",
@@ -48057,7 +48203,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_0",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -48070,7 +48216,7 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_2",
-    "floor": -1
+    "floor": 0
    },
    "x": -1.3,
    "z": 0,
@@ -48083,7 +48229,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_2",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -48096,7 +48242,7 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_3",
-    "floor": -1
+    "floor": 0
    },
    "x": -1.3,
    "z": 0,
@@ -48109,7 +48255,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_3",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -48122,7 +48268,7 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_4",
-    "floor": -1
+    "floor": 0
    },
    "x": -1.3,
    "z": 0,
@@ -48135,7 +48281,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_4",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -48148,7 +48294,7 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_6",
-    "floor": -1
+    "floor": 0
    },
    "x": -1.3,
    "z": 0,
@@ -48161,7 +48307,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_6",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -48174,7 +48320,7 @@
    "lib": "erschl.aufzug.bett",
    "host": {
     "part": "bie_H7_9",
-    "floor": -1
+    "floor": 0
    },
    "x": -1.3,
    "z": 0,
@@ -48187,7 +48333,7 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_H7_9",
-    "floor": -1
+    "floor": 0
    },
    "x": 1.6,
    "z": 0,
@@ -163154,6 +163300,4869 @@
       "d": 17.9,
       "noWalls": true,
       "hinweis": "Lageplan 2023 nennt die Technische Abteilung in Haus 8; im Lageplan Juli 2026 nur noch Schlaflabor und Verwaltung – Lage daher angenommen · Fläche laut Modell 450 m² · Zeitfenster 07:00–15:30 · Ersatzteile, Medizintechnik"
+     }
+    ]
+   }
+  },
+  "bie_H7_KG": {
+   "0": {
+    "walls": [
+     {
+      "id": "w_H7_KG_0",
+      "a": [
+       -9.35,
+       -47.67
+      ],
+      "b": [
+       5.32,
+       -47.67
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_1",
+      "a": [
+       5.32,
+       -47.67
+      ],
+      "b": [
+       5.32,
+       -46.8
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_2",
+      "a": [
+       5.32,
+       -46.8
+      ],
+      "b": [
+       10.29,
+       -46.8
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_3",
+      "a": [
+       10.29,
+       -46.8
+      ],
+      "b": [
+       10.29,
+       -44.25
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_4",
+      "a": [
+       10.29,
+       -44.25
+      ],
+      "b": [
+       11.61,
+       -44.25
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_5",
+      "a": [
+       11.61,
+       -44.25
+      ],
+      "b": [
+       11.61,
+       -22.34
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_6",
+      "a": [
+       11.61,
+       -22.34
+      ],
+      "b": [
+       12.74,
+       -22.34
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_7",
+      "a": [
+       12.74,
+       -22.34
+      ],
+      "b": [
+       12.74,
+       -13.31
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_8",
+      "a": [
+       12.74,
+       -13.31
+      ],
+      "b": [
+       11.45,
+       -13.31
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_9",
+      "a": [
+       11.45,
+       -13.31
+      ],
+      "b": [
+       10.81,
+       16.69
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_10",
+      "a": [
+       10.81,
+       16.69
+      ],
+      "b": [
+       13.23,
+       16.69
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_11",
+      "a": [
+       13.23,
+       16.69
+      ],
+      "b": [
+       13.23,
+       42.17
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_12",
+      "a": [
+       13.23,
+       42.17
+      ],
+      "b": [
+       5.49,
+       42.17
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_13",
+      "a": [
+       5.49,
+       42.17
+      ],
+      "b": [
+       5.49,
+       47.66
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_14",
+      "a": [
+       5.49,
+       47.66
+      ],
+      "b": [
+       -0.48,
+       47.66
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_15",
+      "a": [
+       -0.48,
+       47.66
+      ],
+      "b": [
+       -0.48,
+       38.95
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_16",
+      "a": [
+       -0.48,
+       38.95
+      ],
+      "b": [
+       -6.45,
+       38.95
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_17",
+      "a": [
+       -6.45,
+       38.95
+      ],
+      "b": [
+       -6.45,
+       6.46
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_18",
+      "a": [
+       -6.45,
+       6.46
+      ],
+      "b": [
+       -7.9,
+       6.46
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_19",
+      "a": [
+       -7.9,
+       6.46
+      ],
+      "b": [
+       -7.9,
+       -16.21
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_20",
+      "a": [
+       -7.9,
+       -16.21
+      ],
+      "b": [
+       -9.84,
+       -16.21
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_21",
+      "a": [
+       -9.84,
+       -16.21
+      ],
+      "b": [
+       -9.84,
+       -13.63
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_22",
+      "a": [
+       -9.84,
+       -13.63
+      ],
+      "b": [
+       -13.22,
+       -13.63
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_23",
+      "a": [
+       -13.22,
+       -13.63
+      ],
+      "b": [
+       -13.22,
+       -34.44
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_24",
+      "a": [
+       -13.22,
+       -34.44
+      ],
+      "b": [
+       -9.35,
+       -34.44
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_25",
+      "a": [
+       -9.35,
+       -34.44
+      ],
+      "b": [
+       -9.35,
+       -47.67
+      ],
+      "t": 0.45
+     },
+     {
+      "id": "w_H7_KG_26",
+      "a": [
+       9.71,
+       -46.38
+      ],
+      "b": [
+       9.71,
+       -45.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_27",
+      "a": [
+       9.71,
+       -45.34
+      ],
+      "b": [
+       5.32,
+       -45.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_28",
+      "a": [
+       5.32,
+       -45.34
+      ],
+      "b": [
+       5.32,
+       -46.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_29",
+      "a": [
+       5.32,
+       -46.38
+      ],
+      "b": [
+       9.71,
+       -46.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_30",
+      "a": [
+       9.71,
+       -45.28
+      ],
+      "b": [
+       9.71,
+       -44.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_31",
+      "a": [
+       9.71,
+       -44.25
+      ],
+      "b": [
+       5.32,
+       -44.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_32",
+      "a": [
+       5.32,
+       -44.25
+      ],
+      "b": [
+       5.32,
+       -45.28
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_33",
+      "a": [
+       11.07,
+       -43.6
+      ],
+      "b": [
+       11.07,
+       -39.86
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_34",
+      "a": [
+       11.07,
+       -39.86
+      ],
+      "b": [
+       5.32,
+       -39.86
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_35",
+      "a": [
+       5.32,
+       -39.86
+      ],
+      "b": [
+       5.32,
+       -43.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_36",
+      "a": [
+       5.32,
+       -43.6
+      ],
+      "b": [
+       11.07,
+       -43.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_37",
+      "a": [
+       11.07,
+       -39.8
+      ],
+      "b": [
+       11.07,
+       -36.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_38",
+      "a": [
+       11.07,
+       -36.31
+      ],
+      "b": [
+       5.32,
+       -36.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_39",
+      "a": [
+       5.32,
+       -36.31
+      ],
+      "b": [
+       5.32,
+       -39.8
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_40",
+      "a": [
+       5.32,
+       -39.8
+      ],
+      "b": [
+       11.07,
+       -39.8
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_41",
+      "a": [
+       7.74,
+       -36.21
+      ],
+      "b": [
+       7.74,
+       -34.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_42",
+      "a": [
+       7.74,
+       -34.6
+      ],
+      "b": [
+       5.32,
+       -34.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_43",
+      "a": [
+       5.32,
+       -34.6
+      ],
+      "b": [
+       5.32,
+       -36.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_44",
+      "a": [
+       5.32,
+       -36.21
+      ],
+      "b": [
+       7.74,
+       -36.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_45",
+      "a": [
+       7.74,
+       -34.34
+      ],
+      "b": [
+       7.74,
+       -32.73
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_46",
+      "a": [
+       7.74,
+       -32.73
+      ],
+      "b": [
+       5.32,
+       -32.73
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_47",
+      "a": [
+       5.32,
+       -32.73
+      ],
+      "b": [
+       5.32,
+       -34.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_48",
+      "a": [
+       5.32,
+       -34.34
+      ],
+      "b": [
+       7.74,
+       -34.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_49",
+      "a": [
+       11.07,
+       -36.21
+      ],
+      "b": [
+       11.07,
+       -30.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_50",
+      "a": [
+       11.07,
+       -30.31
+      ],
+      "b": [
+       5.32,
+       -30.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_51",
+      "a": [
+       5.32,
+       -30.31
+      ],
+      "b": [
+       5.32,
+       -32.73
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_52",
+      "a": [
+       7.74,
+       -32.73
+      ],
+      "b": [
+       7.74,
+       -36.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_53",
+      "a": [
+       7.74,
+       -36.21
+      ],
+      "b": [
+       11.07,
+       -36.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_54",
+      "a": [
+       11.07,
+       -30.21
+      ],
+      "b": [
+       11.07,
+       -26.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_55",
+      "a": [
+       11.07,
+       -26.38
+      ],
+      "b": [
+       5.32,
+       -26.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_56",
+      "a": [
+       5.32,
+       -26.38
+      ],
+      "b": [
+       5.32,
+       -30.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_57",
+      "a": [
+       5.32,
+       -30.21
+      ],
+      "b": [
+       11.07,
+       -30.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_58",
+      "a": [
+       11.07,
+       -26.31
+      ],
+      "b": [
+       11.07,
+       -22.44
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_59",
+      "a": [
+       11.07,
+       -22.44
+      ],
+      "b": [
+       5.32,
+       -22.44
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_60",
+      "a": [
+       5.32,
+       -22.44
+      ],
+      "b": [
+       5.32,
+       -26.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_61",
+      "a": [
+       5.32,
+       -26.31
+      ],
+      "b": [
+       11.07,
+       -26.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_62",
+      "a": [
+       8.87,
+       -22.15
+      ],
+      "b": [
+       8.87,
+       -19.76
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_63",
+      "a": [
+       8.87,
+       -19.76
+      ],
+      "b": [
+       5.49,
+       -19.76
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_64",
+      "a": [
+       5.49,
+       -19.76
+      ],
+      "b": [
+       5.49,
+       -22.15
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_65",
+      "a": [
+       5.49,
+       -22.15
+      ],
+      "b": [
+       8.87,
+       -22.15
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_66",
+      "a": [
+       12.74,
+       -15.28
+      ],
+      "b": [
+       12.74,
+       -13.5
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_67",
+      "a": [
+       12.74,
+       -13.5
+      ],
+      "b": [
+       5.65,
+       -13.5
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_68",
+      "a": [
+       5.65,
+       -13.5
+      ],
+      "b": [
+       5.65,
+       -15.28
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_69",
+      "a": [
+       5.65,
+       -15.28
+      ],
+      "b": [
+       12.74,
+       -15.28
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_70",
+      "a": [
+       2.26,
+       -47.67
+      ],
+      "b": [
+       2.26,
+       -44.28
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_71",
+      "a": [
+       2.26,
+       -44.28
+      ],
+      "b": [
+       -0.16,
+       -44.28
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_72",
+      "a": [
+       -0.16,
+       -44.28
+      ],
+      "b": [
+       -0.16,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_73",
+      "a": [
+       -0.16,
+       -47.67
+      ],
+      "b": [
+       2.26,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_74",
+      "a": [
+       2.26,
+       -43.6
+      ],
+      "b": [
+       2.26,
+       -41.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_75",
+      "a": [
+       2.26,
+       -41.21
+      ],
+      "b": [
+       -2.0,
+       -41.21
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_76",
+      "a": [
+       -2.0,
+       -41.21
+      ],
+      "b": [
+       -2.0,
+       -43.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_77",
+      "a": [
+       -2.0,
+       -43.6
+      ],
+      "b": [
+       2.26,
+       -43.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_78",
+      "a": [
+       1.68,
+       -41.12
+      ],
+      "b": [
+       1.68,
+       -37.83
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_79",
+      "a": [
+       1.68,
+       -37.83
+      ],
+      "b": [
+       -2.0,
+       -37.83
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_80",
+      "a": [
+       -2.0,
+       -37.83
+      ],
+      "b": [
+       -2.0,
+       -41.12
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_81",
+      "a": [
+       -2.0,
+       -41.12
+      ],
+      "b": [
+       1.68,
+       -41.12
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_82",
+      "a": [
+       2.26,
+       -37.76
+      ],
+      "b": [
+       2.26,
+       -36.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_83",
+      "a": [
+       2.26,
+       -36.38
+      ],
+      "b": [
+       -2.0,
+       -36.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_84",
+      "a": [
+       -2.0,
+       -36.38
+      ],
+      "b": [
+       -2.0,
+       -37.76
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_85",
+      "a": [
+       -2.0,
+       -37.76
+      ],
+      "b": [
+       2.26,
+       -37.76
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_86",
+      "a": [
+       1.68,
+       -36.28
+      ],
+      "b": [
+       1.68,
+       -34.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_87",
+      "a": [
+       1.68,
+       -34.34
+      ],
+      "b": [
+       -2.0,
+       -34.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_88",
+      "a": [
+       -2.0,
+       -34.34
+      ],
+      "b": [
+       -2.0,
+       -36.28
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_89",
+      "a": [
+       -2.0,
+       -36.28
+      ],
+      "b": [
+       1.68,
+       -36.28
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_90",
+      "a": [
+       1.68,
+       -34.25
+      ],
+      "b": [
+       1.68,
+       -33.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_91",
+      "a": [
+       1.68,
+       -33.09
+      ],
+      "b": [
+       0.07,
+       -33.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_92",
+      "a": [
+       0.07,
+       -33.09
+      ],
+      "b": [
+       0.07,
+       -34.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_93",
+      "a": [
+       0.07,
+       -34.25
+      ],
+      "b": [
+       1.68,
+       -34.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_94",
+      "a": [
+       0.0,
+       -34.25
+      ],
+      "b": [
+       0.0,
+       -33.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_95",
+      "a": [
+       0.0,
+       -33.09
+      ],
+      "b": [
+       -1.84,
+       -33.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_96",
+      "a": [
+       -1.84,
+       -33.09
+      ],
+      "b": [
+       -1.84,
+       -34.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_97",
+      "a": [
+       -1.84,
+       -34.25
+      ],
+      "b": [
+       0.0,
+       -34.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_98",
+      "a": [
+       1.68,
+       -32.99
+      ],
+      "b": [
+       1.68,
+       -30.99
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_99",
+      "a": [
+       1.68,
+       -30.99
+      ],
+      "b": [
+       -2.0,
+       -30.99
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_100",
+      "a": [
+       -2.0,
+       -30.99
+      ],
+      "b": [
+       -2.0,
+       -32.99
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_101",
+      "a": [
+       -2.0,
+       -32.99
+      ],
+      "b": [
+       1.68,
+       -32.99
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_102",
+      "a": [
+       1.68,
+       -30.92
+      ],
+      "b": [
+       1.68,
+       -27.41
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_103",
+      "a": [
+       1.68,
+       -27.41
+      ],
+      "b": [
+       -2.0,
+       -27.41
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_104",
+      "a": [
+       -2.0,
+       -27.41
+      ],
+      "b": [
+       -2.0,
+       -30.92
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_105",
+      "a": [
+       -2.0,
+       -30.92
+      ],
+      "b": [
+       1.68,
+       -30.92
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_106",
+      "a": [
+       1.94,
+       -27.41
+      ],
+      "b": [
+       1.94,
+       -19.44
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_107",
+      "a": [
+       1.94,
+       -19.44
+      ],
+      "b": [
+       -5.97,
+       -19.44
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_108",
+      "a": [
+       -5.97,
+       -19.44
+      ],
+      "b": [
+       -5.97,
+       -27.41
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_109",
+      "a": [
+       -5.97,
+       -27.41
+      ],
+      "b": [
+       1.94,
+       -27.41
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_110",
+      "a": [
+       -0.64,
+       -47.67
+      ],
+      "b": [
+       -0.64,
+       -43.96
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_111",
+      "a": [
+       -0.64,
+       -43.96
+      ],
+      "b": [
+       -5.1,
+       -43.96
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_112",
+      "a": [
+       -5.1,
+       -43.96
+      ],
+      "b": [
+       -5.1,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_113",
+      "a": [
+       -5.1,
+       -47.67
+      ],
+      "b": [
+       -0.64,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_114",
+      "a": [
+       -5.97,
+       -47.67
+      ],
+      "b": [
+       -5.97,
+       -44.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_115",
+      "a": [
+       -5.97,
+       -44.38
+      ],
+      "b": [
+       -9.26,
+       -44.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_116",
+      "a": [
+       -9.26,
+       -44.38
+      ],
+      "b": [
+       -9.26,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_117",
+      "a": [
+       -9.26,
+       -47.67
+      ],
+      "b": [
+       -5.97,
+       -47.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_118",
+      "a": [
+       -2.1,
+       -43.96
+      ],
+      "b": [
+       -2.1,
+       -27.41
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_119",
+      "a": [
+       -2.1,
+       -27.41
+      ],
+      "b": [
+       -7.74,
+       -27.41
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_120",
+      "a": [
+       -7.74,
+       -27.41
+      ],
+      "b": [
+       -7.74,
+       -34.44
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_121",
+      "a": [
+       -7.74,
+       -34.44
+      ],
+      "b": [
+       -9.26,
+       -34.44
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_122",
+      "a": [
+       -9.26,
+       -34.44
+      ],
+      "b": [
+       -9.26,
+       -44.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_123",
+      "a": [
+       -9.26,
+       -44.38
+      ],
+      "b": [
+       -5.32,
+       -44.38
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_124",
+      "a": [
+       -5.32,
+       -44.38
+      ],
+      "b": [
+       -5.32,
+       -43.96
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_125",
+      "a": [
+       -5.32,
+       -43.96
+      ],
+      "b": [
+       -2.1,
+       -43.96
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_126",
+      "a": [
+       -9.84,
+       -29.6
+      ],
+      "b": [
+       -9.84,
+       -24.05
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_127",
+      "a": [
+       -9.84,
+       -24.05
+      ],
+      "b": [
+       -13.22,
+       -24.05
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_128",
+      "a": [
+       -13.22,
+       -24.05
+      ],
+      "b": [
+       -13.22,
+       -29.6
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_129",
+      "a": [
+       -13.22,
+       -29.6
+      ],
+      "b": [
+       -9.84,
+       -29.6
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_130",
+      "a": [
+       -9.84,
+       -24.05
+      ],
+      "b": [
+       -9.84,
+       -13.63
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_131",
+      "a": [
+       -13.22,
+       -13.63
+      ],
+      "b": [
+       -13.22,
+       -24.05
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_132",
+      "a": [
+       11.0,
+       -13.09
+      ],
+      "b": [
+       11.0,
+       -10.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_133",
+      "a": [
+       11.0,
+       -10.31
+      ],
+      "b": [
+       5.74,
+       -10.31
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_134",
+      "a": [
+       5.74,
+       -10.31
+      ],
+      "b": [
+       5.74,
+       -13.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_135",
+      "a": [
+       5.74,
+       -13.09
+      ],
+      "b": [
+       11.0,
+       -13.09
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_136",
+      "a": [
+       10.97,
+       -10.05
+      ],
+      "b": [
+       10.97,
+       -7.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_137",
+      "a": [
+       10.97,
+       -7.34
+      ],
+      "b": [
+       5.74,
+       -7.34
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_138",
+      "a": [
+       5.74,
+       -7.34
+      ],
+      "b": [
+       5.74,
+       -10.05
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_139",
+      "a": [
+       5.74,
+       -10.05
+      ],
+      "b": [
+       10.97,
+       -10.05
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_140",
+      "a": [
+       10.97,
+       -7.25
+      ],
+      "b": [
+       10.97,
+       -2.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_141",
+      "a": [
+       10.97,
+       -2.67
+      ],
+      "b": [
+       5.74,
+       -2.67
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_142",
+      "a": [
+       5.74,
+       -2.67
+      ],
+      "b": [
+       5.74,
+       -7.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_143",
+      "a": [
+       5.74,
+       -7.25
+      ],
+      "b": [
+       10.97,
+       -7.25
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_144",
+      "a": [
+       10.87,
+       -2.6
+      ],
+      "b": [
+       10.87,
+       0.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_145",
+      "a": [
+       10.87,
+       0.79
+      ],
+      "b": [
+       5.74,
+       0.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_146",
+      "a": [
+       5.74,
+       0.79
+      ],
+      "b": [
+       5.74,
+       -2.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_147",
+      "a": [
+       5.74,
+       -2.6
+      ],
+      "b": [
+       10.87,
+       -2.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_148",
+      "a": [
+       10.81,
+       0.88
+      ],
+      "b": [
+       10.81,
+       11.56
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_149",
+      "a": [
+       10.81,
+       11.56
+      ],
+      "b": [
+       5.74,
+       11.56
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_150",
+      "a": [
+       5.74,
+       11.56
+      ],
+      "b": [
+       5.74,
+       0.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_151",
+      "a": [
+       5.74,
+       0.88
+      ],
+      "b": [
+       10.81,
+       0.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_152",
+      "a": [
+       10.39,
+       12.04
+      ],
+      "b": [
+       10.39,
+       17.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_153",
+      "a": [
+       10.39,
+       17.08
+      ],
+      "b": [
+       5.65,
+       17.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_154",
+      "a": [
+       5.65,
+       17.08
+      ],
+      "b": [
+       5.65,
+       12.04
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_155",
+      "a": [
+       5.65,
+       12.04
+      ],
+      "b": [
+       10.39,
+       12.04
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_156",
+      "a": [
+       13.0,
+       17.27
+      ],
+      "b": [
+       13.0,
+       23.98
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_157",
+      "a": [
+       13.0,
+       23.98
+      ],
+      "b": [
+       5.49,
+       23.98
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_158",
+      "a": [
+       5.49,
+       23.98
+      ],
+      "b": [
+       5.49,
+       17.27
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_159",
+      "a": [
+       5.49,
+       17.27
+      ],
+      "b": [
+       13.0,
+       17.27
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_160",
+      "a": [
+       13.07,
+       24.14
+      ],
+      "b": [
+       13.07,
+       27.72
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_161",
+      "a": [
+       13.07,
+       27.72
+      ],
+      "b": [
+       7.26,
+       27.72
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_162",
+      "a": [
+       7.26,
+       27.72
+      ],
+      "b": [
+       7.26,
+       24.14
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_163",
+      "a": [
+       7.26,
+       24.14
+      ],
+      "b": [
+       13.07,
+       24.14
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_164",
+      "a": [
+       13.07,
+       27.88
+      ],
+      "b": [
+       13.07,
+       31.11
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_165",
+      "a": [
+       13.07,
+       31.11
+      ],
+      "b": [
+       7.26,
+       31.11
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_166",
+      "a": [
+       7.26,
+       31.11
+      ],
+      "b": [
+       7.26,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_167",
+      "a": [
+       7.26,
+       27.88
+      ],
+      "b": [
+       13.07,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_168",
+      "a": [
+       7.26,
+       24.14
+      ],
+      "b": [
+       7.26,
+       31.11
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_169",
+      "a": [
+       7.26,
+       31.11
+      ],
+      "b": [
+       5.49,
+       31.11
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_170",
+      "a": [
+       5.49,
+       31.11
+      ],
+      "b": [
+       5.49,
+       24.14
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_171",
+      "a": [
+       5.49,
+       24.14
+      ],
+      "b": [
+       7.26,
+       24.14
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_172",
+      "a": [
+       13.07,
+       31.37
+      ],
+      "b": [
+       13.07,
+       36.85
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_173",
+      "a": [
+       13.07,
+       36.85
+      ],
+      "b": [
+       5.49,
+       36.85
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_174",
+      "a": [
+       5.49,
+       36.85
+      ],
+      "b": [
+       5.49,
+       31.37
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_175",
+      "a": [
+       5.49,
+       31.37
+      ],
+      "b": [
+       13.07,
+       31.37
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_176",
+      "a": [
+       13.07,
+       37.01
+      ],
+      "b": [
+       13.07,
+       42.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_177",
+      "a": [
+       13.07,
+       42.01
+      ],
+      "b": [
+       9.52,
+       42.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_178",
+      "a": [
+       9.52,
+       42.01
+      ],
+      "b": [
+       9.52,
+       37.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_179",
+      "a": [
+       9.52,
+       37.01
+      ],
+      "b": [
+       13.07,
+       37.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_180",
+      "a": [
+       9.52,
+       42.01
+      ],
+      "b": [
+       5.58,
+       42.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_181",
+      "a": [
+       5.58,
+       42.01
+      ],
+      "b": [
+       5.58,
+       37.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_182",
+      "a": [
+       5.58,
+       37.01
+      ],
+      "b": [
+       9.52,
+       37.01
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_183",
+      "a": [
+       1.84,
+       -16.15
+      ],
+      "b": [
+       1.84,
+       -7.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_184",
+      "a": [
+       1.84,
+       -7.6
+      ],
+      "b": [
+       -7.64,
+       -7.6
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_185",
+      "a": [
+       -7.64,
+       -7.6
+      ],
+      "b": [
+       -7.64,
+       -16.15
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_186",
+      "a": [
+       -7.64,
+       -16.15
+      ],
+      "b": [
+       1.84,
+       -16.15
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_187",
+      "a": [
+       1.84,
+       -7.5
+      ],
+      "b": [
+       1.84,
+       -0.8
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_188",
+      "a": [
+       1.84,
+       -0.8
+      ],
+      "b": [
+       -7.64,
+       -0.8
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_189",
+      "a": [
+       -7.64,
+       -0.8
+      ],
+      "b": [
+       -7.64,
+       -7.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_190",
+      "a": [
+       -7.64,
+       -7.5
+      ],
+      "b": [
+       1.84,
+       -7.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_191",
+      "a": [
+       1.84,
+       -0.73
+      ],
+      "b": [
+       1.84,
+       6.46
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_192",
+      "a": [
+       1.84,
+       6.46
+      ],
+      "b": [
+       -7.64,
+       6.46
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_193",
+      "a": [
+       -7.64,
+       6.46
+      ],
+      "b": [
+       -7.64,
+       -0.73
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_194",
+      "a": [
+       -7.64,
+       -0.73
+      ],
+      "b": [
+       1.84,
+       -0.73
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_195",
+      "a": [
+       -0.55,
+       6.62
+      ],
+      "b": [
+       -0.55,
+       8.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_196",
+      "a": [
+       -0.55,
+       8.5
+      ],
+      "b": [
+       -5.77,
+       8.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_197",
+      "a": [
+       -5.77,
+       8.5
+      ],
+      "b": [
+       -5.77,
+       6.62
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_198",
+      "a": [
+       -5.77,
+       6.62
+      ],
+      "b": [
+       -0.55,
+       6.62
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_199",
+      "a": [
+       -0.55,
+       8.59
+      ],
+      "b": [
+       -0.55,
+       11.3
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_200",
+      "a": [
+       -0.55,
+       11.3
+      ],
+      "b": [
+       -5.77,
+       11.3
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_201",
+      "a": [
+       -5.77,
+       11.3
+      ],
+      "b": [
+       -5.77,
+       8.59
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_202",
+      "a": [
+       -5.77,
+       8.59
+      ],
+      "b": [
+       -0.55,
+       8.59
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_203",
+      "a": [
+       -0.55,
+       12.04
+      ],
+      "b": [
+       -0.55,
+       17.17
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_204",
+      "a": [
+       -0.55,
+       17.17
+      ],
+      "b": [
+       -6.16,
+       17.17
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_205",
+      "a": [
+       -6.16,
+       17.17
+      ],
+      "b": [
+       -6.16,
+       12.04
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_206",
+      "a": [
+       -6.16,
+       12.04
+      ],
+      "b": [
+       -0.55,
+       12.04
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_207",
+      "a": [
+       1.49,
+       17.27
+      ],
+      "b": [
+       1.49,
+       23.46
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_208",
+      "a": [
+       1.49,
+       23.46
+      ],
+      "b": [
+       -6.16,
+       23.46
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_209",
+      "a": [
+       -6.16,
+       23.46
+      ],
+      "b": [
+       -6.16,
+       17.27
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_210",
+      "a": [
+       -6.16,
+       17.27
+      ],
+      "b": [
+       1.49,
+       17.27
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_211",
+      "a": [
+       1.49,
+       23.53
+      ],
+      "b": [
+       1.49,
+       27.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_212",
+      "a": [
+       1.49,
+       27.79
+      ],
+      "b": [
+       -6.16,
+       27.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_213",
+      "a": [
+       -6.16,
+       27.79
+      ],
+      "b": [
+       -6.16,
+       23.53
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_214",
+      "a": [
+       -0.06,
+       27.88
+      ],
+      "b": [
+       -0.06,
+       29.98
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_215",
+      "a": [
+       -0.06,
+       29.98
+      ],
+      "b": [
+       -4.35,
+       29.98
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_216",
+      "a": [
+       -4.35,
+       29.98
+      ],
+      "b": [
+       -4.35,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_217",
+      "a": [
+       -4.35,
+       27.88
+      ],
+      "b": [
+       -0.06,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_218",
+      "a": [
+       -4.35,
+       29.98
+      ],
+      "b": [
+       -6.16,
+       29.98
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_219",
+      "a": [
+       -6.16,
+       29.98
+      ],
+      "b": [
+       -6.16,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_220",
+      "a": [
+       -6.16,
+       27.88
+      ],
+      "b": [
+       -4.35,
+       27.88
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_221",
+      "a": [
+       -0.06,
+       30.08
+      ],
+      "b": [
+       -0.06,
+       32.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_222",
+      "a": [
+       -0.06,
+       32.5
+      ],
+      "b": [
+       -4.35,
+       32.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_223",
+      "a": [
+       -4.35,
+       32.5
+      ],
+      "b": [
+       -4.35,
+       30.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_224",
+      "a": [
+       -4.35,
+       30.08
+      ],
+      "b": [
+       -0.06,
+       30.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_225",
+      "a": [
+       -4.35,
+       32.5
+      ],
+      "b": [
+       -6.16,
+       32.5
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_226",
+      "a": [
+       -6.16,
+       32.5
+      ],
+      "b": [
+       -6.16,
+       30.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_227",
+      "a": [
+       -6.16,
+       30.08
+      ],
+      "b": [
+       -4.35,
+       30.08
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_228",
+      "a": [
+       -1.8,
+       32.85
+      ],
+      "b": [
+       -1.8,
+       34.5
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_229",
+      "a": [
+       -1.8,
+       34.5
+      ],
+      "b": [
+       -4.51,
+       34.5
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_230",
+      "a": [
+       -4.51,
+       34.5
+      ],
+      "b": [
+       -4.51,
+       32.85
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_231",
+      "a": [
+       -4.51,
+       32.85
+      ],
+      "b": [
+       -1.8,
+       32.85
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_232",
+      "a": [
+       -0.93,
+       35.11
+      ],
+      "b": [
+       -0.93,
+       38.59
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_233",
+      "a": [
+       -0.93,
+       38.59
+      ],
+      "b": [
+       -5.74,
+       38.59
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_234",
+      "a": [
+       -5.74,
+       38.59
+      ],
+      "b": [
+       -5.74,
+       35.11
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_235",
+      "a": [
+       -5.74,
+       35.11
+      ],
+      "b": [
+       -0.93,
+       35.11
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_H7_KG_236",
+      "a": [
+       2.2,
+       38.79
+      ],
+      "b": [
+       2.2,
+       42.95
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_237",
+      "a": [
+       2.2,
+       42.95
+      ],
+      "b": [
+       -0.42,
+       42.95
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_238",
+      "a": [
+       -0.42,
+       42.95
+      ],
+      "b": [
+       -0.42,
+       38.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_239",
+      "a": [
+       -0.42,
+       38.79
+      ],
+      "b": [
+       2.2,
+       38.79
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_240",
+      "a": [
+       2.2,
+       43.04
+      ],
+      "b": [
+       2.2,
+       47.56
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_241",
+      "a": [
+       2.2,
+       47.56
+      ],
+      "b": [
+       -0.42,
+       47.56
+      ],
+      "t": 0.12
+     },
+     {
+      "id": "w_H7_KG_242",
+      "a": [
+       -0.42,
+       47.56
+      ],
+      "b": [
+       -0.42,
+       43.04
+      ],
+      "t": 0.12
+     }
+    ],
+    "doors": [],
+    "rooms": [
+     {
+      "id": "r_H7_KG_U02",
+      "standort": true,
+      "use": "flur",
+      "name": "U02 Windfang (Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2)",
+      "poly": [
+       [
+        5.32,
+        -47.67
+       ],
+       [
+        5.32,
+        -42.5
+       ],
+       [
+        2.26,
+        -42.5
+       ],
+       [
+        2.26,
+        -47.67
+       ]
+      ],
+      "x": 3.79,
+      "z": -45.09,
+      "w": 3.06,
+      "d": 5.17,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U01",
+      "standort": true,
+      "use": "flur",
+      "name": "U01 Flur",
+      "poly": [
+       [
+        5.32,
+        -42.5
+       ],
+       [
+        5.32,
+        -19.44
+       ],
+       [
+        2.26,
+        -19.44
+       ],
+       [
+        2.26,
+        -42.5
+       ]
+      ],
+      "x": 3.79,
+      "z": -30.97,
+      "w": 3.06,
+      "d": 23.06,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U04",
+      "standort": true,
+      "use": "flur",
+      "name": "U04 Flur",
+      "poly": [
+       [
+        5.32,
+        -19.44
+       ],
+       [
+        5.32,
+        -5.25
+       ],
+       [
+        2.1,
+        -5.25
+       ],
+       [
+        2.1,
+        -19.44
+       ]
+      ],
+      "x": 3.71,
+      "z": -12.35,
+      "w": 3.22,
+      "d": 14.19,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_00",
+      "standort": true,
+      "use": "flur",
+      "name": "KG.00 Längsflur Kellergeschoss",
+      "poly": [
+       [
+        5.39,
+        -5.25
+       ],
+       [
+        5.39,
+        47.66
+       ],
+       [
+        2.42,
+        47.66
+       ],
+       [
+        2.42,
+        -5.25
+       ]
+      ],
+      "x": 3.9,
+      "z": 21.2,
+      "w": 2.97,
+      "d": 52.91,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U03",
+      "standort": true,
+      "use": "flur",
+      "name": "U03 Flur zum Treppenhaus 3",
+      "poly": [
+       [
+        2.1,
+        -19.44
+       ],
+       [
+        2.1,
+        -16.21
+       ],
+       [
+        -9.84,
+        -16.21
+       ],
+       [
+        -9.84,
+        -19.44
+       ]
+      ],
+      "x": -3.87,
+      "z": -17.83,
+      "w": 11.94,
+      "d": 3.23,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U03b",
+      "standort": true,
+      "use": "flur",
+      "name": "U03b Flur zum Notausgang",
+      "poly": [
+       [
+        -8.06,
+        -34.44
+       ],
+       [
+        -8.06,
+        -19.44
+       ],
+       [
+        -9.84,
+        -19.44
+       ],
+       [
+        -9.84,
+        -34.44
+       ]
+      ],
+      "x": -8.95,
+      "z": -26.94,
+      "w": 1.78,
+      "d": 15.0,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
+     },
+     {
+      "id": "r_H7_KG_KG_00_7",
+      "standort": true,
+      "use": "flur",
+      "name": "KG.00.7 Flur",
+      "poly": [
+       [
+        1.78,
+        6.46
+       ],
+       [
+        1.78,
+        17.08
+       ],
+       [
+        -0.45,
+        17.08
+       ],
+       [
+        -0.45,
+        6.46
+       ]
+      ],
+      "x": 0.67,
+      "z": 11.77,
+      "w": 2.23,
+      "d": 10.62,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_00_5",
+      "standort": true,
+      "use": "flur",
+      "name": "KG.00.5 Flur",
+      "poly": [
+       [
+        2.42,
+        27.79
+       ],
+       [
+        2.42,
+        32.69
+       ],
+       [
+        -0.06,
+        32.69
+       ],
+       [
+        -0.06,
+        27.79
+       ]
+      ],
+      "x": 1.18,
+      "z": 30.24,
+      "w": 2.48,
+      "d": 4.9,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_VG",
+      "standort": true,
+      "use": "flur",
+      "name": "Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude",
+      "poly": [
+       [
+        12.74,
+        -22.18
+       ],
+       [
+        12.74,
+        -15.38
+       ],
+       [
+        8.87,
+        -15.38
+       ],
+       [
+        8.87,
+        -22.18
+       ]
+      ],
+      "x": 10.8,
+      "z": -18.78,
+      "w": 3.87,
+      "d": 6.8,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
+     },
+     {
+      "id": "r_H7_KG_U19",
+      "standort": true,
+      "use": "wc",
+      "name": "U19 WC D",
+      "poly": [
+       [
+        9.71,
+        -46.38
+       ],
+       [
+        9.71,
+        -45.34
+       ],
+       [
+        5.32,
+        -45.34
+       ],
+       [
+        5.32,
+        -46.38
+       ]
+      ],
+      "x": 7.52,
+      "z": -45.86,
+      "w": 4.39,
+      "d": 1.04,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U18",
+      "standort": true,
+      "use": "wc",
+      "name": "U18 WC H",
+      "poly": [
+       [
+        9.71,
+        -45.28
+       ],
+       [
+        9.71,
+        -44.25
+       ],
+       [
+        5.32,
+        -44.25
+       ],
+       [
+        5.32,
+        -45.28
+       ]
+      ],
+      "x": 7.52,
+      "z": -44.77,
+      "w": 4.39,
+      "d": 1.03,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U17",
+      "standort": true,
+      "use": "abschied",
+      "name": "U17 Aufbahrung",
+      "poly": [
+       [
+        11.07,
+        -43.6
+       ],
+       [
+        11.07,
+        -39.86
+       ],
+       [
+        5.32,
+        -39.86
+       ],
+       [
+        5.32,
+        -43.6
+       ]
+      ],
+      "x": 8.2,
+      "z": -41.73,
+      "w": 5.75,
+      "d": 3.74,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U16",
+      "standort": true,
+      "use": "pathologie",
+      "name": "U16 Einsargung",
+      "poly": [
+       [
+        11.07,
+        -39.8
+       ],
+       [
+        11.07,
+        -36.31
+       ],
+       [
+        5.32,
+        -36.31
+       ],
+       [
+        5.32,
+        -39.8
+       ]
+      ],
+      "x": 8.2,
+      "z": -38.05,
+      "w": 5.75,
+      "d": 3.49,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U15",
+      "standort": true,
+      "use": "wc",
+      "name": "U15 WC D",
+      "poly": [
+       [
+        7.74,
+        -36.21
+       ],
+       [
+        7.74,
+        -34.6
+       ],
+       [
+        5.32,
+        -34.6
+       ],
+       [
+        5.32,
+        -36.21
+       ]
+      ],
+      "x": 6.53,
+      "z": -35.41,
+      "w": 2.42,
+      "d": 1.61,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U14",
+      "standort": true,
+      "use": "wc",
+      "name": "U14 WC H",
+      "poly": [
+       [
+        7.74,
+        -34.34
+       ],
+       [
+        7.74,
+        -32.73
+       ],
+       [
+        5.32,
+        -32.73
+       ],
+       [
+        5.32,
+        -34.34
+       ]
+      ],
+      "x": 6.53,
+      "z": -33.53,
+      "w": 2.42,
+      "d": 1.61,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U13",
+      "standort": true,
+      "use": "buero",
+      "name": "U13 Büro",
+      "poly": [
+       [
+        11.07,
+        -36.21
+       ],
+       [
+        11.07,
+        -30.31
+       ],
+       [
+        5.32,
+        -30.31
+       ],
+       [
+        5.32,
+        -32.73
+       ],
+       [
+        7.74,
+        -32.73
+       ],
+       [
+        7.74,
+        -36.21
+       ]
+      ],
+      "x": 8.2,
+      "z": -33.26,
+      "w": 5.75,
+      "d": 5.9,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U12",
+      "standort": true,
+      "use": "pathologie",
+      "name": "U12 Zuschnitt / Makrophoto",
+      "poly": [
+       [
+        11.07,
+        -30.21
+       ],
+       [
+        11.07,
+        -26.38
+       ],
+       [
+        5.32,
+        -26.38
+       ],
+       [
+        5.32,
+        -30.21
+       ]
+      ],
+      "x": 8.2,
+      "z": -28.3,
+      "w": 5.75,
+      "d": 3.83,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U11",
+      "standort": true,
+      "use": "archiv",
+      "name": "U11 Lager / Archiv",
+      "poly": [
+       [
+        11.07,
+        -26.31
+       ],
+       [
+        11.07,
+        -22.44
+       ],
+       [
+        5.32,
+        -22.44
+       ],
+       [
+        5.32,
+        -26.31
+       ]
+      ],
+      "x": 8.2,
+      "z": -24.38,
+      "w": 5.75,
+      "d": 3.87,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_AZ",
+      "standort": true,
+      "use": "kern",
+      "name": "Aufzug",
+      "poly": [
+       [
+        8.87,
+        -22.15
+       ],
+       [
+        8.87,
+        -19.76
+       ],
+       [
+        5.49,
+        -19.76
+       ],
+       [
+        5.49,
+        -22.15
+       ]
+      ],
+      "x": 7.18,
+      "z": -20.95,
+      "w": 3.38,
+      "d": 2.39,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_TRV",
+      "standort": true,
+      "use": "kern",
+      "name": "Treppe am Verbindungsgang",
+      "poly": [
+       [
+        12.74,
+        -15.28
+       ],
+       [
+        12.74,
+        -13.5
+       ],
+       [
+        5.65,
+        -13.5
+       ],
+       [
+        5.65,
+        -15.28
+       ]
+      ],
+      "x": 9.2,
+      "z": -14.39,
+      "w": 7.09,
+      "d": 1.78,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U8",
+      "standort": true,
+      "use": "warten",
+      "name": "U8 Warten",
+      "poly": [
+       [
+        2.26,
+        -47.67
+       ],
+       [
+        2.26,
+        -44.28
+       ],
+       [
+        -0.16,
+        -44.28
+       ],
+       [
+        -0.16,
+        -47.67
+       ]
+      ],
+      "x": 1.05,
+      "z": -45.98,
+      "w": 2.42,
+      "d": 3.39,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U7",
+      "standort": true,
+      "use": "pathologie",
+      "name": "U7 Übergabe / Büro",
+      "poly": [
+       [
+        2.26,
+        -43.6
+       ],
+       [
+        2.26,
+        -41.21
+       ],
+       [
+        -2.0,
+        -41.21
+       ],
+       [
+        -2.0,
+        -43.6
+       ]
+      ],
+      "x": 0.13,
+      "z": -42.41,
+      "w": 4.26,
+      "d": 2.39,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U6",
+      "standort": true,
+      "use": "geraete",
+      "name": "U6 Lager Geräte",
+      "poly": [
+       [
+        1.68,
+        -41.12
+       ],
+       [
+        1.68,
+        -37.83
+       ],
+       [
+        -2.0,
+        -37.83
+       ],
+       [
+        -2.0,
+        -41.12
+       ]
+      ],
+      "x": -0.16,
+      "z": -39.47,
+      "w": 3.68,
+      "d": 3.29,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U5",
+      "standort": true,
+      "use": "schleuse",
+      "name": "U5 Schleuse",
+      "poly": [
+       [
+        2.26,
+        -37.76
+       ],
+       [
+        2.26,
+        -36.38
+       ],
+       [
+        -2.0,
+        -36.38
+       ],
+       [
+        -2.0,
+        -37.76
+       ]
+      ],
+      "x": 0.13,
+      "z": -37.07,
+      "w": 4.26,
+      "d": 1.38,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U4_3",
+      "standort": true,
+      "use": "umkleide",
+      "name": "U4.3 Umkleide Damen",
+      "poly": [
+       [
+        1.68,
+        -36.28
+       ],
+       [
+        1.68,
+        -34.34
+       ],
+       [
+        -2.0,
+        -34.34
+       ],
+       [
+        -2.0,
+        -36.28
+       ]
+      ],
+      "x": -0.16,
+      "z": -35.31,
+      "w": 3.68,
+      "d": 1.94,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U4_2",
+      "standort": true,
+      "use": "nass",
+      "name": "U4.2 Dusche",
+      "poly": [
+       [
+        1.68,
+        -34.25
+       ],
+       [
+        1.68,
+        -33.09
+       ],
+       [
+        0.07,
+        -33.09
+       ],
+       [
+        0.07,
+        -34.25
+       ]
+      ],
+      "x": 0.88,
+      "z": -33.67,
+      "w": 1.61,
+      "d": 1.16,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U4_1",
+      "standort": true,
+      "use": "wc",
+      "name": "U4.1 WC",
+      "poly": [
+       [
+        0.0,
+        -34.25
+       ],
+       [
+        0.0,
+        -33.09
+       ],
+       [
+        -1.84,
+        -33.09
+       ],
+       [
+        -1.84,
+        -34.25
+       ]
+      ],
+      "x": -0.92,
+      "z": -33.67,
+      "w": 1.84,
+      "d": 1.16,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U4",
+      "standort": true,
+      "use": "umkleide",
+      "name": "U4 Umkleide Herren",
+      "poly": [
+       [
+        1.68,
+        -32.99
+       ],
+       [
+        1.68,
+        -30.99
+       ],
+       [
+        -2.0,
+        -30.99
+       ],
+       [
+        -2.0,
+        -32.99
+       ]
+      ],
+      "x": -0.16,
+      "z": -31.99,
+      "w": 3.68,
+      "d": 2.0,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U3",
+      "standort": true,
+      "use": "archiv",
+      "name": "U3 Lager / Archiv",
+      "poly": [
+       [
+        1.68,
+        -30.92
+       ],
+       [
+        1.68,
+        -27.41
+       ],
+       [
+        -2.0,
+        -27.41
+       ],
+       [
+        -2.0,
+        -30.92
+       ]
+      ],
+      "x": -0.16,
+      "z": -29.16,
+      "w": 3.68,
+      "d": 3.51,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U2",
+      "standort": true,
+      "use": "kuehlraum",
+      "name": "U2 Kühlraum / Kühlzellen",
+      "poly": [
+       [
+        1.94,
+        -27.41
+       ],
+       [
+        1.94,
+        -19.44
+       ],
+       [
+        -5.97,
+        -19.44
+       ],
+       [
+        -5.97,
+        -27.41
+       ]
+      ],
+      "x": -2.01,
+      "z": -23.43,
+      "w": 7.91,
+      "d": 7.97,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U9",
+      "standort": true,
+      "use": "aufenthalt",
+      "name": "U9 Personal-Aufenthaltsraum",
+      "poly": [
+       [
+        -0.64,
+        -47.67
+       ],
+       [
+        -0.64,
+        -43.96
+       ],
+       [
+        -5.1,
+        -43.96
+       ],
+       [
+        -5.1,
+        -47.67
+       ]
+      ],
+      "x": -2.87,
+      "z": -45.81,
+      "w": 4.46,
+      "d": 3.71,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U10",
+      "standort": true,
+      "use": "entsorgung",
+      "name": "U10 Aufstellraum für Sammelbehälter",
+      "poly": [
+       [
+        -5.97,
+        -47.67
+       ],
+       [
+        -5.97,
+        -44.38
+       ],
+       [
+        -9.26,
+        -44.38
+       ],
+       [
+        -9.26,
+        -47.67
+       ]
+      ],
+      "x": -7.62,
+      "z": -46.03,
+      "w": 3.29,
+      "d": 3.29,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U1",
+      "standort": true,
+      "use": "pathologie",
+      "name": "U1 Sektionsraum",
+      "poly": [
+       [
+        -2.1,
+        -43.96
+       ],
+       [
+        -2.1,
+        -27.41
+       ],
+       [
+        -7.74,
+        -27.41
+       ],
+       [
+        -7.74,
+        -34.44
+       ],
+       [
+        -9.26,
+        -34.44
+       ],
+       [
+        -9.26,
+        -44.38
+       ],
+       [
+        -5.32,
+        -44.38
+       ],
+       [
+        -5.32,
+        -43.96
+       ]
+      ],
+      "x": -5.68,
+      "z": -35.9,
+      "w": 7.16,
+      "d": 16.97,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_TR3",
+      "standort": true,
+      "use": "kern",
+      "name": "Treppenhaus 3",
+      "poly": [
+       [
+        -9.84,
+        -29.6
+       ],
+       [
+        -9.84,
+        -24.05
+       ],
+       [
+        -13.22,
+        -24.05
+       ],
+       [
+        -13.22,
+        -29.6
+       ]
+      ],
+      "x": -11.53,
+      "z": -26.83,
+      "w": 3.38,
+      "d": 5.55,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_NA",
+      "standort": true,
+      "use": "flur",
+      "name": "Notausgang",
+      "poly": [
+       [
+        -9.84,
+        -34.44
+       ],
+       [
+        -9.84,
+        -29.6
+       ],
+       [
+        -13.22,
+        -29.6
+       ],
+       [
+        -13.22,
+        -34.44
+       ]
+      ],
+      "x": -11.53,
+      "z": -32.02,
+      "w": 3.38,
+      "d": 4.84,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
+     },
+     {
+      "id": "r_H7_KG_AB",
+      "standort": true,
+      "use": "kern",
+      "name": "Vorraum Aufzüge Bunker, daneben Treppenhaus zum Bunker (Ebene U2)",
+      "poly": [
+       [
+        -9.84,
+        -24.05
+       ],
+       [
+        -9.84,
+        -13.63
+       ],
+       [
+        -13.22,
+        -13.63
+       ],
+       [
+        -13.22,
+        -24.05
+       ]
+      ],
+      "x": -11.53,
+      "z": -18.84,
+      "w": 3.38,
+      "d": 10.42,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
+     },
+     {
+      "id": "r_H7_KG_KG_22",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.22 Lager",
+      "poly": [
+       [
+        11.0,
+        -13.09
+       ],
+       [
+        11.0,
+        -10.31
+       ],
+       [
+        5.74,
+        -10.31
+       ],
+       [
+        5.74,
+        -13.09
+       ]
+      ],
+      "x": 8.37,
+      "z": -11.7,
+      "w": 5.26,
+      "d": 2.78,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_24",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.24 Lager",
+      "poly": [
+       [
+        10.97,
+        -10.05
+       ],
+       [
+        10.97,
+        -7.34
+       ],
+       [
+        5.74,
+        -7.34
+       ],
+       [
+        5.74,
+        -10.05
+       ]
+      ],
+      "x": 8.36,
+      "z": -8.7,
+      "w": 5.23,
+      "d": 2.71,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_26",
+      "standort": true,
+      "use": "waesche",
+      "name": "KG.26 Waschküche",
+      "poly": [
+       [
+        10.97,
+        -7.25
+       ],
+       [
+        10.97,
+        -2.67
+       ],
+       [
+        5.74,
+        -2.67
+       ],
+       [
+        5.74,
+        -7.25
+       ]
+      ],
+      "x": 8.36,
+      "z": -4.96,
+      "w": 5.23,
+      "d": 4.58,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_28",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.28 Lager",
+      "poly": [
+       [
+        10.87,
+        -2.6
+       ],
+       [
+        10.87,
+        0.79
+       ],
+       [
+        5.74,
+        0.79
+       ],
+       [
+        5.74,
+        -2.6
+       ]
+      ],
+      "x": 8.3,
+      "z": -0.91,
+      "w": 5.13,
+      "d": 3.39,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_30",
+      "standort": true,
+      "use": "aufenthalt",
+      "name": "KG.30 Sozialraum",
+      "poly": [
+       [
+        10.81,
+        0.88
+       ],
+       [
+        10.81,
+        11.56
+       ],
+       [
+        5.74,
+        11.56
+       ],
+       [
+        5.74,
+        0.88
+       ]
+      ],
+      "x": 8.28,
+      "z": 6.22,
+      "w": 5.07,
+      "d": 10.68,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_31",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.31 Lager",
+      "poly": [
+       [
+        10.39,
+        12.04
+       ],
+       [
+        10.39,
+        17.08
+       ],
+       [
+        5.65,
+        17.08
+       ],
+       [
+        5.65,
+        12.04
+       ]
+      ],
+      "x": 8.02,
+      "z": 14.56,
+      "w": 4.74,
+      "d": 5.04,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_34",
+      "standort": true,
+      "use": "waesche",
+      "name": "KG.34 Waschküche",
+      "poly": [
+       [
+        13.0,
+        17.27
+       ],
+       [
+        13.0,
+        23.98
+       ],
+       [
+        5.49,
+        23.98
+       ],
+       [
+        5.49,
+        17.27
+       ]
+      ],
+      "x": 9.25,
+      "z": 20.62,
+      "w": 7.51,
+      "d": 6.71,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_36_1",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.36.1 Lager",
+      "poly": [
+       [
+        13.07,
+        24.14
+       ],
+       [
+        13.07,
+        27.72
+       ],
+       [
+        7.26,
+        27.72
+       ],
+       [
+        7.26,
+        24.14
+       ]
+      ],
+      "x": 10.16,
+      "z": 25.93,
+      "w": 5.81,
+      "d": 3.58,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_36_2",
+      "standort": true,
+      "use": "archiv",
+      "name": "KG.36.2 Archiv",
+      "poly": [
+       [
+        13.07,
+        27.88
+       ],
+       [
+        13.07,
+        31.11
+       ],
+       [
+        7.26,
+        31.11
+       ],
+       [
+        7.26,
+        27.88
+       ]
+      ],
+      "x": 10.16,
+      "z": 29.49,
+      "w": 5.81,
+      "d": 3.23,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_36",
+      "standort": true,
+      "use": "vorraum",
+      "name": "KG.36 Vorraum",
+      "poly": [
+       [
+        7.26,
+        24.14
+       ],
+       [
+        7.26,
+        31.11
+       ],
+       [
+        5.49,
+        31.11
+       ],
+       [
+        5.49,
+        24.14
+       ]
+      ],
+      "x": 6.38,
+      "z": 27.62,
+      "w": 1.77,
+      "d": 6.97,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_38",
+      "standort": true,
+      "use": "it",
+      "name": "KG.38 Serverraum",
+      "poly": [
+       [
+        13.07,
+        31.37
+       ],
+       [
+        13.07,
+        36.85
+       ],
+       [
+        5.49,
+        36.85
+       ],
+       [
+        5.49,
+        31.37
+       ]
+      ],
+      "x": 9.28,
+      "z": 34.11,
+      "w": 7.58,
+      "d": 5.48,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_40_1",
+      "standort": true,
+      "use": "technik",
+      "name": "KG.40.1 Technik ELT",
+      "poly": [
+       [
+        13.07,
+        37.01
+       ],
+       [
+        13.07,
+        42.01
+       ],
+       [
+        9.52,
+        42.01
+       ],
+       [
+        9.52,
+        37.01
+       ]
+      ],
+      "x": 11.29,
+      "z": 39.51,
+      "w": 3.55,
+      "d": 5.0,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_40",
+      "standort": true,
+      "use": "technik",
+      "name": "KG.40 Technik",
+      "poly": [
+       [
+        9.52,
+        37.01
+       ],
+       [
+        9.52,
+        42.01
+       ],
+       [
+        5.58,
+        42.01
+       ],
+       [
+        5.58,
+        37.01
+       ]
+      ],
+      "x": 7.55,
+      "z": 39.51,
+      "w": 3.94,
+      "d": 5.0,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U21",
+      "standort": true,
+      "use": "schulung",
+      "name": "U21 Demonstration",
+      "poly": [
+       [
+        1.84,
+        -16.15
+       ],
+       [
+        1.84,
+        -7.6
+       ],
+       [
+        -7.64,
+        -7.6
+       ],
+       [
+        -7.64,
+        -16.15
+       ]
+      ],
+      "x": -2.9,
+      "z": -11.88,
+      "w": 9.48,
+      "d": 8.55,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_U20",
+      "standort": true,
+      "use": "technikzentrale",
+      "name": "U20 Heiz- und Sanitärzentrale",
+      "poly": [
+       [
+        1.84,
+        -7.5
+       ],
+       [
+        1.84,
+        -0.8
+       ],
+       [
+        -7.64,
+        -0.8
+       ],
+       [
+        -7.64,
+        -7.5
+       ]
+      ],
+      "x": -2.9,
+      "z": -4.15,
+      "w": 9.48,
+      "d": 6.7,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_23",
+      "standort": true,
+      "use": "aufenthalt",
+      "name": "KG.23 Aufenthalt",
+      "poly": [
+       [
+        1.84,
+        -0.73
+       ],
+       [
+        1.84,
+        6.46
+       ],
+       [
+        -7.64,
+        6.46
+       ],
+       [
+        -7.64,
+        -0.73
+       ]
+      ],
+      "x": -2.9,
+      "z": 2.87,
+      "w": 9.48,
+      "d": 7.19,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_24U",
+      "standort": true,
+      "use": "umkleide",
+      "name": "KG.24U Umkleide Herren",
+      "poly": [
+       [
+        -0.55,
+        6.62
+       ],
+       [
+        -0.55,
+        8.5
+       ],
+       [
+        -5.77,
+        8.5
+       ],
+       [
+        -5.77,
+        6.62
+       ]
+      ],
+      "x": -3.16,
+      "z": 7.56,
+      "w": 5.22,
+      "d": 1.88,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_25",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.25 Lager",
+      "poly": [
+       [
+        -0.55,
+        8.59
+       ],
+       [
+        -0.55,
+        11.3
+       ],
+       [
+        -5.77,
+        11.3
+       ],
+       [
+        -5.77,
+        8.59
+       ]
+      ],
+      "x": -3.16,
+      "z": 9.95,
+      "w": 5.22,
+      "d": 2.71,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_27",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.27 Lager",
+      "poly": [
+       [
+        -0.55,
+        12.04
+       ],
+       [
+        -0.55,
+        17.17
+       ],
+       [
+        -6.16,
+        17.17
+       ],
+       [
+        -6.16,
+        12.04
+       ]
+      ],
+      "x": -3.35,
+      "z": 14.61,
+      "w": 5.61,
+      "d": 5.13,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_29",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.29 Lager",
+      "poly": [
+       [
+        1.49,
+        17.27
+       ],
+       [
+        1.49,
+        23.46
+       ],
+       [
+        -6.16,
+        23.46
+       ],
+       [
+        -6.16,
+        17.27
+       ]
+      ],
+      "x": -2.33,
+      "z": 20.37,
+      "w": 7.65,
+      "d": 6.19,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_31_1",
+      "standort": true,
+      "use": "lager",
+      "name": "KG.31.1 Lager",
+      "poly": [
+       [
+        1.49,
+        23.53
+       ],
+       [
+        1.49,
+        27.79
+       ],
+       [
+        -6.16,
+        27.79
+       ],
+       [
+        -6.16,
+        23.53
+       ]
+      ],
+      "x": -2.33,
+      "z": 25.66,
+      "w": 7.65,
+      "d": 4.26,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_33",
+      "standort": true,
+      "use": "umkleide",
+      "name": "KG.33 Umkleide H",
+      "poly": [
+       [
+        -0.06,
+        27.88
+       ],
+       [
+        -0.06,
+        29.98
+       ],
+       [
+        -4.35,
+        29.98
+       ],
+       [
+        -4.35,
+        27.88
+       ]
+      ],
+      "x": -2.2,
+      "z": 28.93,
+      "w": 4.29,
+      "d": 2.1,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_33_1",
+      "standort": true,
+      "use": "sonstiges",
+      "name": "KG.33.1 Raum (4)",
+      "poly": [
+       [
+        -4.35,
+        27.88
+       ],
+       [
+        -4.35,
+        29.98
+       ],
+       [
+        -6.16,
+        29.98
+       ],
+       [
+        -6.16,
+        27.88
+       ]
+      ],
+      "x": -5.25,
+      "z": 28.93,
+      "w": 1.81,
+      "d": 2.1,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_35",
+      "standort": true,
+      "use": "umkleide",
+      "name": "KG.35 Umkleide D",
+      "poly": [
+       [
+        -0.06,
+        30.08
+       ],
+       [
+        -0.06,
+        32.5
+       ],
+       [
+        -4.35,
+        32.5
+       ],
+       [
+        -4.35,
+        30.08
+       ]
+      ],
+      "x": -2.2,
+      "z": 31.29,
+      "w": 4.29,
+      "d": 2.42,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_35_1",
+      "standort": true,
+      "use": "wc",
+      "name": "KG.35.1 WC D",
+      "poly": [
+       [
+        -4.35,
+        30.08
+       ],
+       [
+        -4.35,
+        32.5
+       ],
+       [
+        -6.16,
+        32.5
+       ],
+       [
+        -6.16,
+        30.08
+       ]
+      ],
+      "x": -5.25,
+      "z": 31.29,
+      "w": 1.81,
+      "d": 2.42,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_AZO",
+      "standort": true,
+      "use": "kern",
+      "name": "Aufzug Kern Ost",
+      "poly": [
+       [
+        -1.8,
+        32.85
+       ],
+       [
+        -1.8,
+        34.5
+       ],
+       [
+        -4.51,
+        34.5
+       ],
+       [
+        -4.51,
+        32.85
+       ]
+      ],
+      "x": -3.15,
+      "z": 33.67,
+      "w": 2.71,
+      "d": 1.65,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_TRO",
+      "standort": true,
+      "use": "kern",
+      "name": "Treppenhaus Kern Ost",
+      "poly": [
+       [
+        -0.93,
+        35.11
+       ],
+       [
+        -0.93,
+        38.59
+       ],
+       [
+        -5.74,
+        38.59
+       ],
+       [
+        -5.74,
+        35.11
+       ]
+      ],
+      "x": -3.33,
+      "z": 36.85,
+      "w": 4.81,
+      "d": 3.48,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_TVO",
+      "standort": true,
+      "use": "flur",
+      "name": "Treppenvorraum Kern Ost",
+      "poly": [
+       [
+        2.42,
+        32.69
+       ],
+       [
+        2.42,
+        38.69
+       ],
+       [
+        -0.93,
+        38.69
+       ],
+       [
+        -0.93,
+        32.69
+       ]
+      ],
+      "x": 0.74,
+      "z": 35.69,
+      "w": 3.35,
+      "d": 6.0,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
+     },
+     {
+      "id": "r_H7_KG_KG_37",
+      "standort": true,
+      "use": "technikzentrale",
+      "name": "KG.37 Technikzentrale",
+      "poly": [
+       [
+        2.2,
+        38.79
+       ],
+       [
+        2.2,
+        42.95
+       ],
+       [
+        -0.42,
+        42.95
+       ],
+       [
+        -0.42,
+        38.79
+       ]
+      ],
+      "x": 0.89,
+      "z": 40.87,
+      "w": 2.62,
+      "d": 4.16,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     },
+     {
+      "id": "r_H7_KG_KG_37_1",
+      "standort": true,
+      "use": "technikzentrale",
+      "name": "KG.37.1 Technikzentrale",
+      "poly": [
+       [
+        2.2,
+        43.04
+       ],
+       [
+        2.2,
+        47.56
+       ],
+       [
+        -0.42,
+        47.56
+       ],
+       [
+        -0.42,
+        43.04
+       ]
+      ],
+      "x": 0.89,
+      "z": 45.3,
+      "w": 2.62,
+      "d": 4.52,
+      "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
      }
     ]
    }
