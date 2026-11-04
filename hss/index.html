@@ -57,6 +57,7 @@
   <label class="ctl" title="Umgebungsbebauung, Straßen und Flächen aus OpenStreetMap: weniger anzeigen macht die Darstellung flüssiger">Umgebung <select id="vUmg"><option value="alle">alle</option><option value="nah">nur nah</option><option value="aus">aus</option></select></label>
   <label class="ctl">Netz <select id="vNet"><option value="aus">aus</option><option value="netz">Wegenetz</option><option value="heat">Auslastung</option></select></label>
   <label class="ctl" title="Darstellungsqualität: „automatisch“ passt die Auflösung an den Rechner an">Leistung <select id="vQ"><option value="auto">automatisch</option><option value="fl">maximal flüssig</option><option value="0">sparsam</option><option value="1">mittel</option><option value="2">hoch</option><option value="3">sehr hoch</option></select></label>
+  <button class="tgl" id="vUL" title="Luftbild oder Karte als Unterlage ein-/ausblenden (⚙ wählt die Quelle)">🛰 Luftbild</button><button id="vULCfg" title="Unterlage: Quelle, Radius, Deckkraft">⚙</button>
   <button class="tgl on" id="vTraffic" title="Fahrende Autos und Busse anzeigen (aus = ruhiger, spart Rechenleistung)">Verkehr</button>
   <button class="tgl on" id="vLabels" title="Beschriftungen">Beschriftung</button>
   <button class="tgl on" id="vGrid" title="Planungsraster (außen 10 m, in Etagen 1 m)">Raster</button>
@@ -98,6 +99,7 @@
 <script src="js/library.js?v=20261019"></script>
 <script src="library/manifest.js?v=20261019"></script>
 <script src="js/build-gebaeude.js?v=20261019"></script>
+<script src="js/dach.js?v=20261019"></script>
 <script src="js/build-aussen.js?v=20261019"></script>
 <script src="js/network.js?v=20261019"></script>
 <script src="js/scene.js?v=20261019"></script>
@@ -121,6 +123,7 @@
 <script src="js/demo.js?v=20261019"></script>
 <script src="js/krankenhaus.js?v=20261019"></script>
 <script src="js/osm.js?v=20261019"></script>
+<script src="js/unterlage.js?v=20261019"></script>
 <script src="js/flaechenplan.js?v=20261019"></script>
 <script src="js/waende.js?v=20261019"></script>
 <script src="js/flussbild.js?v=20261019"></script>
@@ -131,6 +134,7 @@
 <script src="js/einfaerben.js?v=20261019"></script>
 <script src="js/ansicht.js?v=20261019"></script>
 <script src="js/lizenz.js?v=20261019"></script>
+<script src="js/edition.js?v=20261019"></script>
 <script src="js/app.js?v=20261019"></script>
 </body>
 </html>

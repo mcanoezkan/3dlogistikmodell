@@ -84,7 +84,7 @@ async function openDialog() {
   let list = []; try { list = await HSS.storage.listProjects(); } catch (e) { /* */ }
   UI.dialog(`<div class="dh"><h2>Projekt öffnen</h2><button class="x" data-close>×</button></div>
    <div class="dropbig" id="oDrop"><b>Projektdatei hierher ziehen</b><small>oder klicken und Datei wählen (.hss.json) – Projektdateien lassen sich auch jederzeit direkt ins Fenster ziehen</small></div>
-   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen …</button><button id="oDemo">▶ Demo (UNITY Hospital)</button></div>
+   <div class="actions" style="margin-top:0"><button class="primary" id="oFile">Datei wählen …</button><button id="oDemo">▶ Demo (${U.esc(HSS.ED?.demo || 'UNITY Hospital')})</button></div>
    <h3>Projektablage im Browser</h3>
    <table class="t"><tr><th>Projekt</th><th>zuletzt geändert</th><th class="n">Größe</th><th></th></tr>${list.map(p => `<tr><td><a href="#" data-open="${p.id}">${U.esc(p.name)}</a></td><td>${new Date(p.modified).toLocaleString('de-DE')}</td><td class="n">${U.fmt(p.size / 1024)} kB</td><td><button class="mini danger" data-del="${p.id}">×</button></td></tr>`).join('') || '<tr><td colspan="4" class="note">Noch keine Projekte gespeichert.</td></tr>'}</table>`, d => {
     $('#oFile', d).onclick = () => { d.close(); $('#fOpen').click(); };
@@ -98,23 +98,24 @@ async function openDialog() {
 }
 function welcome() {
   let recent = [];
-  const show = () => UI.dialog(`<div class="dh"><h2>Healthcare Simulation Suite</h2><button class="x" data-close>×</button></div>
-   <p>Krankenhäuser in 3D planen wie in einem Aufbauspiel – Gebäude ins Bild ziehen, an Griffen formen, Stationen automatisch einrichten und Material-, Waren- und Personenflüsse simulieren.</p>
+  const ED = HSS.ED || { titel: HSS.APP, lead: '', demo: 'UNITY Hospital', icon: '🏥', osm: ['Krankenhaus aus OpenStreetMap', ''], neu: 'Neues Krankenhausprojekt' };
+  const show = () => UI.dialog(`<div class="dh"><h2>${U.esc(ED.titel)}</h2><button class="x" data-close>×</button></div>
+   <p>${ED.lead}</p>
    <div class="tiles start3">
-    <button class="tile big" id="wDemo"><span class="ic">▶</span><b>Demo</b><small>UNITY Hospital mit geführter Tour durch alle Funktionen</small></button>
+    <button class="tile big" id="wDemo"><span class="ic">▶</span><b>Demo</b><small>${HSS.EDITION === 'health' ? 'UNITY Hospital mit geführter Tour durch alle Funktionen' : U.esc(ED.demo) + ' – fertig ausgestattetes Beispielprojekt'}</small></button>
     <button class="tile big" id="wNew"><span class="ic">＋</span><b>Neues Projekt</b><small>Leeres Gelände – Gebäude, Wege und Stationen selbst planen</small></button>
-    <button class="tile big" id="wOsm"><span class="ic">🏥</span><b>Krankenhaus aus OpenStreetMap</b><small>Klinikum suchen (DE/AT/CH) – Gebäude, Geschosse und Umgebung werden angelegt</small></button>
+    <button class="tile big" id="wOsm"><span class="ic">${ED.icon}</span><b>${U.esc(ED.osm[0])}</b><small>${U.esc(ED.osm[1])}</small></button>
     <button class="tile big drop" id="wOpen"><span class="ic">⇩</span><b>Projekt öffnen</b><small>Projektdatei (.hss.json) <b>hierher ziehen</b> oder klicken</small></button></div>
    ${recent.length ? `<h3>Zuletzt bearbeitet</h3><div class="list">${recent.slice(0, 5).map(p => `<div class="li" data-open="${p.id}"><span class="t">${U.esc(p.name)}</span><span class="s">${new Date(p.modified).toLocaleString('de-DE')}</span></div>`).join('')}</div>` : ''}`, d => {
     $('#wDemo', d).onclick = () => { d.close(); HSS.demo.start(); };
     $('#wNew', d).onclick = () => { d.close(); $('#bNew').click(); };
-    $('#wOsm', d).onclick = () => { d.close(); HSS.load(HSS.newProject('Neues Krankenhausprojekt')); UI.setWS('gelaende'); setTimeout(() => HSS.osm.dialog(), 200); };
+    $('#wOsm', d).onclick = () => { d.close(); HSS.load(HSS.newProject(ED.neu)); UI.setWS('gelaende'); setTimeout(() => HSS.osm.dialog(), 200); };
     const wo = $('#wOpen', d); wo.onclick = () => { d.close(); $('#fOpen').click(); };
     wo.ondragover = e => { e.preventDefault(); wo.classList.add('over'); }; wo.ondragleave = () => wo.classList.remove('over');
     wo.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.close(); HSS.openFiles([...e.dataTransfer.files]); };
     $$('[data-open]', d).forEach(li => li.onclick = async () => { const p = await HSS.storage.loadProject(li.dataset.open); d.close(); if (p) { HSS.load(p); UI.toast('Projekt geladen: ' + p.meta.name); } });
   });
-  HSS.storage.listProjects().then(l => { recent = l.filter(p => !/UNITY Hospital \(Demo\)/.test(p.name)); if (recent.length && $('#dlg').open && $('#wDemo')) show(); }).catch(() => {});
+  HSS.storage.listProjects().then(l => { recent = l.filter(p => !/\(Demo\)$/.test(p.name)); if (recent.length && $('#dlg').open && $('#wDemo')) show(); }).catch(() => {});
   show();
 }
 // Dateien öffnen: Projektdateien laden, Bibliotheksdateien in die Bibliothek übernehmen
@@ -150,6 +151,7 @@ function help() {
   <tr><td>Wege</td><td>Punkte klicken, Doppelklick beendet. Kurven werden geglättet; Neigung über „Anhebung Anfang/Ende“.</td></tr>
   <tr><td>Rundgang</td><td><b>W A S D</b> gehen, Maus umsehen, <b>Bild↑/↓</b> Geschoss, <b>P</b> Bild speichern, <b>Esc</b> Ende</td></tr>
   <tr><td>Speichern</td><td>Automatisch im Browser; „Speichern“ legt zusätzlich eine Datei ab (<b>Strg+S</b>)</td></tr></table>
+  ${HSS.EDITION !== 'health' ? `<h3>${HSS.EDITION === 'home' ? 'Haus planen' : 'Werk planen'}</h3><ul class="why"><li>${HSS.EDITION === 'home' ? 'Haus aus OpenStreetMap: Startfenster oder Gelände → „Umgebung aus OpenStreetMap“, Adresse mit Hausnummer wählen, „Umgebung mit Haus“.' : 'Werk aus OpenStreetMap: Startfenster oder Gelände → „Umgebung aus OpenStreetMap“, Firma/Adresse wählen, „Umgebung mit Werk“.'}</li><li>Dachform je Bauteil im Inspektor: Flach, Sattel, Walm, Zelt, Pult, Shed – mit Neigung und Firstrichtung.</li><li>${HSS.EDITION === 'home' ? 'Räume → „Grundriss vorschlagen“ legt Räume mit Türen und Möbeln an; jeder Raum lässt sich im Inspektor neu einrichten.' : 'Etagen → „Zonen vorschlagen“ gliedert die größte Halle in Wareneingang, Lager, Produktion, Montage, Verpackung und Versand.'}</li><li>🛰 Luftbild in der Ansichtsleiste legt ein Luftbild unter das Modell (NRW/Bayern amtlich, sonst Esri).</li></ul>` : ''}
   <h3>Rechengrundlagen</h3><ul class="why"><li>Bettenbedarf nach Hill-Burton: Fälle × Verweildauer ÷ (365 × Auslastung)</li><li>Transportzeit = Weglänge ÷ Geschwindigkeit des Transportmittels + Lade-/Entladezeit + Aufzugsfahrt inkl. Warteschlange</li><li>Hotspot: ≥ 60 % der Richtkapazität je Stunde (Flur 60, Tunnel 70, Weg 60 Fahrten/h; Aufzug Belegungszeit je Kabine)</li><li>Fahrzeugbedarf: gleichzeitige Spitze und Einsatzstunden ÷ (Betriebszeit × 85 %)</li></ul>
   <p class="note">Version ${HSS.VERSION} · UNITY · three.js r160 (MIT)</p><div class="actions"><button data-close>Schließen</button></div>`);
 }

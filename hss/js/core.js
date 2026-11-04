@@ -12,8 +12,18 @@ HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
 // Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
 try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
-HSS.VERSION = '1.0.0';
-HSS.APP = 'Healthcare Simulation Suite';
+HSS.VERSION = '1.1.0';
+/* Edition: health (Healthcare Simulation Suite), fabrik (Fabric Planning Suite), home (Home Planning Suite).
+   Gesetzt über window.HSS_EDITION (Einzeldatei) oder ?edition=… bzw. #fabrik/#home in der Adresse. */
+HSS.EDITION = (() => {
+  const ok = ['health', 'fabrik', 'home'];
+  let e = window.HSS_EDITION;
+  try { const q = new URLSearchParams(location.search).get('edition') || (location.hash || '').replace('#', ''); if (ok.includes(q)) e = q; } catch (er) { /* */ }
+  return ok.includes(e) ? e : 'health';
+})();
+HSS.APP = { health: 'Healthcare Simulation Suite', fabrik: 'Fabric Planning Suite', home: 'Home Planning Suite' }[HSS.EDITION];
+// Speicherbereiche je Edition getrennt (Healthcare behält die bisherigen Namen)
+HSS.STORE_SUFFIX = HSS.EDITION === 'health' ? '' : '-' + HSS.EDITION;
 
 /* ---------- Hilfsfunktionen ---------- */
 const U = HSS.util = {};
@@ -306,7 +316,10 @@ HSS.partFootprintLocal = pt => {
       return { outer, holes };
     }
     case 'poly':
-      outer = (pt.poly && pt.poly.length >= 3) ? pt.poly.map(p => p.slice()) : [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]]; break;
+      outer = (pt.poly && pt.poly.length >= 3) ? pt.poly.map(p => p.slice()) : [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
+      // Innenhöfe eines Vielecks (z. B. aus OpenStreetMap-Multipolygonen)
+      if (pt.polyHoles?.length) holes = pt.polyHoles.filter(h => h && h.length >= 3).map(h => G.cw(h.map(q => q.slice())));
+      break;
     default:
       outer = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
   }
@@ -361,7 +374,7 @@ HSS.interior = (partId, f, create = false, prj = S.project) => {
 };
 
 /* ---------- Speicherung: IndexedDB (Projektablage, eigene Bibliothek) ---------- */
-const DB_NAME = 'hss-db', DB_VER = 1;
+const DB_NAME = 'hss-db' + HSS.STORE_SUFFIX, DB_VER = 1;
 let dbp = null;
 const db = () => dbp || (dbp = new Promise((res, rej) => {
   if (!window.indexedDB) return rej(new Error('IndexedDB nicht verfügbar'));
@@ -393,7 +406,7 @@ HSS.storage = {
   },
   async importFile(file) { const txt = await U.readFile(file); const p = JSON.parse(txt); HSS.migrate(p); return p; }
 };
-const AUTOSAVE_KEY = 'hss-autosave-v1';
+const AUTOSAVE_KEY = 'hss-autosave-v1' + HSS.STORE_SUFFIX;
 const autosave = U.debounce(() => {
   if (HSS.state.demoReadonly) return;
   try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(S.project)); } catch (e) { /* Speicher voll: nur IndexedDB */ }

@@ -1,5 +1,23 @@
 # UNITY · 3D-Logistikmodelle
 
+## Drei Suiten aus einem Baukasten
+
+| Datei (Doppelklick, offline) | Edition | Schwerpunkt |
+|---|---|---|
+| `Healthcare_Simulation_Suite.html` | `health` | Krankenhäuser: Stationsplaner, Klinik-Planer, Material-, Waren- und Personenflüsse (wie bisher) |
+| `Fabric_Planning_Suite.html` | `fabrik` | Fabriken und Werke: Produktions-, Lager- und Hochregalhallen mit Shed-, Sattel- und Pultdach, Maschinen, Fördertechnik, Regale, Stapler, FTS, Silos, Tanks; Zonen Wareneingang → Lager → Produktion → Montage → Versand; Standardflüsse der Fabrik mit Stapler, Routenzug, FTS und LKW; Demo „UNITY Werk“ |
+| `Home_Planning_Suite.html` | `home` | Häuser und Wohnungen: Einfamilienhaus, Stadtvilla, Bungalow, Doppel-/Reihenhaus, Mehrfamilienhaus, Garage, Gartenhaus mit Dachformen; über 50 Möbel und Ausstattungen; „Grundriss vorschlagen“ legt Räume mit Türen und Möbeln an; Demo „Musterhaus“ |
+
+Alle drei teilen denselben Quellcode in `hss/`; die Edition steuert Namen, Startfenster, Arbeitsbereiche, Gebäudebausteine, Raumtypen, Bibliothek, Demo und das Ziel des OpenStreetMap-Imports (**Nur Umgebung** oder **Umgebung mit Krankenhaus / Werk / Haus**). Projekte und Browser-Ablage sind je Edition getrennt.
+
+```bash
+python3 tools/build_einzeldatei.py          # baut alle drei Einzeldateien (oder: … fabrik / home / health)
+python3 start.py fabrik                     # Entwicklungsstand im Browser (auch: home, ohne Angabe = Healthcare)
+```
+
+**Besserer Import für alle Editionen** (Details und weitere Vorschläge in [`hss/docs/IMPORT.md`](hss/docs/IMPORT.md)): Multipolygone und Innenhöfe, `building:part` mit eigenen Höhen und Dachformen, begradigte und rechtwinklig gestellte Umrisse (Rechtecke mit Griffen), Hallen als hohe Eingeschosser, Dachformen aus `roof:shape`, Einzelbäume, amtliche Grundrisse und Flurstücke aus ALKIS NRW, Luftbild als Unterlage (DOP NRW/Bayern, Esri), Ersatzweg über die OSM-API, wenn Overpass ausfällt, und die Herkunft jeder Angabe im Inspektor.
+
+
 ## Healthcare Simulation Suite (neu)
 
 Im Ordner [`hss/`](hss/README.md): Baukasten für Krankenhaus-Campus in 3D (Gebäude mit anpassbaren Fassaden und Rundungen, Brücken, Gelände, Wege, Verkehr, Etagen-Innenausbau, AWT) mit Objektbibliothek, Stationsplaner (Grundriss nach Gebäudetiefe, vollständig eingerichtete Räume), Flächenansicht nach DIN 277 und Simulation der Material-, Waren- und Personenflüsse inklusive Hotspot-Analyse, Fahrzeugbedarf und Ich-Perspektive. Demo-Modus „UNITY Hospital“; Standortmodelle BwZK Koblenz und Klinikum Hanau (Bestand und Variante) als bearbeitbare Projekte.
@@ -70,7 +88,7 @@ Fehlende Knoten, unbekannte Bereiche und nicht routbare Relationen zeigt die Dat
 
 | Datei | Inhalt |
 |---|---|
-| `suite/Healthcare_Simulation_Suite.html` | Suite als Einzeldatei (Stand „mit U2-Korrektur“) mit den Erweiterungen unten |
+| `Healthcare_Simulation_Suite.html` (Hauptordner) | Suite als Einzeldatei mit den Erweiterungen unten – die Erweiterungen stehen jetzt in den Quellen unter `hss/`, die frühere Kopie unter `suite/` entfällt |
 | `suite/Klinikum_Bielefeld-Mitte.hss.json` | Projekt Bielefeld-Mitte (Bestand mit NIZ, U2, Bunker, EG Hauptgebäude), in der Suite über „Öffnen“ laden |
 | `suite/quellen/` | Grundlagen: Bestandsplan HGMI Ebene E Teil 1 (PDF), Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (PDF) und Fotos der NIZ-Vorfahrt |
 

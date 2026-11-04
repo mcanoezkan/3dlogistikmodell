@@ -194,9 +194,19 @@ HSS.buildPart = (pt, building, view = {}) => {
   if ((view.floor === null || view.floor === undefined || view.floor > topGF) && view.shell !== 'aus') {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
-    const par = pt.roof?.parapet ?? 0.9;
-    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
-    if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
+    // Geneigtes Dach (Sattel, Walm, Zelt, Pult, Shed): Dachflächen, Giebel, Glasbänder
+    const geneigt = HSS.dachGeneigt?.(pt) && !holes.length;
+    if (geneigt) {
+      const dg = HSS.dachGeo(pt, HSS.partFootprintLocal(pt).outer, yt);
+      const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#9b4a32');
+      const dm = glasHull ? tMat('glasdach2', '#e6ebef', 0.22) : HSS.library.shared('dach2|' + dc, () => new THREE.MeshStandardMaterial({ color: dc, roughness: 0.85, side: THREE.DoubleSide }));
+      if (dg.dach) { const m = new THREE.Mesh(dg.dach, dm); m.castShadow = m.receiveShadow = true; m.userData = Object.assign({ roof: true }, meta); grp.add(m); }
+      if (dg.wand) { const m = new THREE.Mesh(dg.wand, transparent ? wallMat : HSS.library.shared('giebel|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: 0.9, side: THREE.DoubleSide }))); m.castShadow = !transparent; m.receiveShadow = true; m.userData = Object.assign({ wall: true }, meta); grp.add(m); }
+      if (dg.glas) { const m = new THREE.Mesh(dg.glas, glassMat); m.userData = Object.assign({}, meta); grp.add(m); }
+    }
+    const par = geneigt ? 0 : (pt.roof?.parapet ?? 0.9);
+    if (par > 0 || (plan && !geneigt)) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
+    if (pt.roof?.plant && !geneigt && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
       const box = new THREE.Mesh(new THREE.BoxGeometry(pw, 3.0, pd), LM('#b9c0c7'));

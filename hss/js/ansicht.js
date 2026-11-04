@@ -53,7 +53,7 @@ async function sammeln() {
   let body = (HSS._shell?.body || []).join('\n');
   for (const m of [...body.matchAll(/<img[^>]+src="([^"]+)"/g)]) { if (m[1].startsWith('data:')) continue; try { body = body.split(`src="${m[1]}"`).join(`src="${await dataUri(new URL(m[1], location.href).href)}"`); } catch (e) { /* Bild fehlt */ } }
   // Skripte in Ladereihenfolge; die Bibliotheksliste wird durch die bereits geladenen Pakete ersetzt
-  const scripts = [];
+  const scripts = ['window.HSS_EDITION = ' + JSON.stringify(HSS.EDITION || 'health') + ';'];
   for (const s of document.scripts) {
     if (s.type && !/javascript/i.test(s.type)) continue;
     if (s.id === 'hssViewerData') continue;
@@ -71,7 +71,7 @@ A.export = async (opts = {}) => {
   UI.toast('HTML-Ansicht wird erstellt …', 2500);
   let q;
   try { q = await sammeln(); } catch (e) {
-    UI.dialog(`<div class="dh"><h2>HTML-Ansicht nicht möglich</h2><button class="x" data-close>×</button></div><p>Die Programmdateien lassen sich in dieser Startart nicht einlesen. Bitte die Einzeldatei <b>Healthcare_Simulation_Suite.html</b> verwenden oder die Suite mit <code>python3 start.py</code> starten.</p><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`);
+    UI.dialog(`<div class="dh"><h2>HTML-Ansicht nicht möglich</h2><button class="x" data-close>×</button></div><p>Die Programmdateien lassen sich in dieser Startart nicht einlesen. Bitte die Einzeldatei <b>${U.esc((HSS.APP || 'Healthcare Simulation Suite').replace(/ /g, '_'))}.html</b> verwenden oder die Suite mit <code>python3 start.py</code> starten.</p><div class="errbox">${U.esc(e.message)}</div><div class="actions"><button data-close>OK</button></div>`);
     return;
   }
   const p = U.clone(prj);

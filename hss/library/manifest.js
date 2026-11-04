@@ -11,7 +11,9 @@ window.HSS_LIBRARY_FILES = [
   'aussen.js',
   'erweiterung.js',
   'einrichtung.js',
-  'klinik-plus.js'
+  'klinik-plus.js',
+  'fabrik.js',
+  'wohnen.js'
 ];
 (function () {
   var src = document.currentScript && document.currentScript.src || '', base = src.replace(/manifest\.js.*$/, ''), v = (src.match(/\?v=[^&]+/) || [''])[0];
