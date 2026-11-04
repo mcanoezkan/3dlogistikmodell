@@ -206,7 +206,7 @@ function dp(pts, tol) {
   }
   return pts.filter((_, i) => keep[i]);
 }
-function bereinigen(ring, tol = 0.2) {
+function bereinigen(ring, tol = 0.1) {
   let r = ring.slice(); if (r.length > 2 && G.dist(r[0], r[r.length - 1]) < 0.05) r.pop();
   r = r.filter((p, i) => G.dist(p, r[(i + 1) % r.length]) > 0.12);
   if (r.length < 3) return r;
@@ -214,8 +214,13 @@ function bereinigen(ring, tol = 0.2) {
   let far = 0, fd = 0; for (let i = 1; i < r.length; i++) { const d = G.dist(r[0], r[i]); if (d > fd) { fd = d; far = i; } }
   const A = dp(r.slice(0, far + 1), tol), B = dp(r.slice(far).concat([r[0]]), tol);
   r = A.slice(0, -1).concat(B.slice(0, -1));
-  // fast gerade Ecken (< 4°) entfernen
-  for (let pass = 0; pass < 3 && r.length > 3; pass++) r = r.filter((p, i) => { const a = r[(i - 1 + r.length) % r.length], b = r[(i + 1) % r.length]; const v1 = [p[0] - a[0], p[1] - a[1]], v2 = [b[0] - p[0], b[1] - p[1]]; const cr = v1[0] * v2[1] - v1[1] * v2[0], dt = v1[0] * v2[0] + v1[1] * v2[1]; return Math.abs(Math.atan2(cr, dt)) > U.rad(4); });
+  // fast gerade Ecken (< 2°) einzeln nacheinander entfernen (nie alle Punkte einer Rundung auf einmal)
+  for (let i = 0, guard = 0; r.length > 3 && guard < 4 * r.length + 20; guard++) {
+    const k = i % r.length, a = r[(k - 1 + r.length) % r.length], p = r[k], b = r[(k + 1) % r.length];
+    const v1 = [p[0] - a[0], p[1] - a[1]], v2 = [b[0] - p[0], b[1] - p[1]], cr = v1[0] * v2[1] - v1[1] * v2[0], dt = v1[0] * v2[0] + v1[1] * v2[1];
+    if (Math.abs(Math.atan2(cr, dt)) < U.rad(2)) r.splice(k, 1); else i++;
+    if (i >= r.length && guard > r.length) break;
+  }
   return r;
 }
 // Hauptrichtung (Winkel modulo 90°, längengewichtet)
@@ -229,18 +234,21 @@ function selbstschnitt(r) {
   for (let i = 0; i < n; i++) for (let j = i + 2; j < n; j++) { if (i === 0 && j === n - 1) continue; if (x(r[i], r[(i + 1) % n], r[j], r[(j + 1) % n])) return true; }
   return false;
 }
-// Rechtwinklig stellen, wenn ≥ 80 % des Umfangs fast achsparallel (± 9°) zur Hauptrichtung liegen
+// größter Abstand zwischen zwei Umrissen (beidseitig): so weit weicht der begradigte Umriss vom Original ab
+const ringAbstand = (a, b) => { const d = (p, r) => Math.min(...r.map((q, i) => G.dist(p, G.closestOnSeg(p, q, r[(i + 1) % r.length]).pt))); let m = 0; for (const p of a) m = Math.max(m, d(p, b)); for (const p of b) m = Math.max(m, d(p, a)); return m; };
+// Rechtwinklig stellen, wenn ≥ 90 % des Umfangs fast achsparallel (± 4°) zur Hauptrichtung liegen und keine Ecke um mehr als
+// 0,35 m wandert. So bleiben Grenzbebauung, gemeinsame Wände und schmale Lücken zwischen Nachbargebäuden lagerichtig.
 function rechtwinklig(r) {
   if (r.length < 4) return null;
   const th = hauptrichtung(r), c = Math.cos(-th), s = Math.sin(-th);
   const q = r.map(p => [p[0] * c - p[1] * s, p[0] * s + p[1] * c]);
-  const n = q.length, kl = [], tol = U.rad(9); let ok = 0, sum = 0;
+  const n = q.length, kl = [], tol = U.rad(4); let ok = 0, sum = 0;
   for (let i = 0; i < n; i++) {
     const a = q[i], b = q[(i + 1) % n], L = G.dist(a, b), t = Math.atan2(b[1] - a[1], b[0] - a[0]); sum += L;
     const m = ((t % (Math.PI / 2)) + Math.PI / 2) % (Math.PI / 2), dev = Math.min(m, Math.PI / 2 - m);
     if (dev < tol) { const horiz = Math.abs(Math.cos(t)) > Math.abs(Math.sin(t)); kl.push(horiz ? 'H' : 'V'); ok += L; } else kl.push(null);
   }
-  if (ok / sum < 0.8) return null;
+  if (ok / sum < 0.9) return null;
   // Lage der Kanten: H → z-Mittel, V → x-Mittel
   const val = kl.map((k, i) => { const a = q[i], b = q[(i + 1) % n]; return k === 'H' ? (a[1] + b[1]) / 2 : k === 'V' ? (a[0] + b[0]) / 2 : null; });
   // aufeinanderfolgende gleichgerichtete Kanten liegen auf einer gemeinsamen Flucht (längengewichtet)
@@ -263,13 +271,13 @@ function rechtwinklig(r) {
   out = out.filter((p, i) => G.dist(p, out[(i + 1) % out.length]) > 0.1);
   if (out.length < 3) return null;
   const a0 = Math.abs(G.area(q)), a1 = Math.abs(G.area(out));
-  if (Math.abs(a1 - a0) / a0 > 0.05 || selbstschnitt(out)) return null;
+  if (Math.abs(a1 - a0) / a0 > 0.03 || selbstschnitt(out) || ringAbstand(out, q) > 0.35) return null;
   return { th, lokal: out };
 }
 /* Grundriss eines Gebäudeteils: Welt-Ring (Meter) → Bauteil-Geometrie */
 O.form = (ringW, holesW = [], o = {}) => {
-  let r = bereinigen(ringW, o.tol ?? 0.2); if (r.length < 3) return null;
-  const holes = holesW.map(h => bereinigen(h, 0.2)).filter(h => h.length >= 3 && Math.abs(G.area(h)) > 4);
+  let r = bereinigen(ringW, o.tol ?? 0.1); if (r.length < 3) return null;
+  const holes = holesW.map(h => bereinigen(h, 0.1)).filter(h => h.length >= 3 && Math.abs(G.area(h)) > 4);
   const rw = !holes.length && o.ortho !== false ? rechtwinklig(r) : null;
   if (rw) {
     const bb = G.bbox(rw.lokal), cl = [(bb.x0 + bb.x1) / 2, (bb.z0 + bb.z1) / 2], wc = G.rot(cl, rw.th);
@@ -341,7 +349,7 @@ const fassade = (h, typ, i) => {
   const e = ED(), farbe = h.farbe;
   if (h.park) return { type: 'parkhaus', color: '#d9dee3', accent: '#5a6573', glass: '#8aa0b2', axis: 2.5, windowRatio: 0.5 };
   if (h.halle) return { type: 'paneel', color: farbe || '#d7dbe0', accent: '#8d969f', glass: '#8aa0b2', axis: 5, windowRatio: 0.3 };
-  if (h.haus || h.klein) return { type: 'loch', color: farbe || '#f1ede4', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.6, windowRatio: h.klein ? 0.2 : 0.45 };
+  if (h.haus || h.klein) return { type: 'loch', color: farbe || '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.6, windowRatio: h.klein ? 0.2 : 0.45 };
   if (e === 'health') return { type: 'band', color: '#eef0ee', accent: FARBEN[i % FARBEN.length], glass: '#7fa4bd', axis: 1.35, windowRatio: 0.5 };
   return { type: typ === 'office' ? 'band' : 'loch', color: farbe || '#eceae5', accent: FARBEN[i % FARBEN.length], glass: '#7fa4bd', axis: 1.5, windowRatio: 0.45 };
 };
@@ -546,7 +554,7 @@ O.zielImport = (prj, data, geo, Z, opt) => {
     const kurz = main ? 'H' : kurzName(t, n), fallbackName = e === 'home' ? ({ garage: 'Garage', garages: 'Garagen', carport: 'Carport', shed: 'Gartenhaus' }[t.building] || 'Nebengebäude') : e === 'fabrik' ? (teile[0].h.halle && teile[0].h.floors <= 2 ? 'Halle' : 'Gebäude') : 'Gebäude';
     const name = main ? Z.name : (e === 'home' ? fallbackName : gebName(t, kurz, fallbackName));
     const hasHeli = heli.some(h => G.pointIn(h, w0));
-    const b = Object.assign(HSS.defaults.building(), { id: `osmk_${el.type === 'relation' ? 'r' : ''}${el.id}`, name, kurz, color: e === 'home' ? (main ? '#144477' : '#8d6e63') : FARBEN[(n - 1) % FARBEN.length], info: '' });
+    const b = Object.assign(HSS.defaults.building(), { id: `osmk_${el.type === 'relation' ? 'r' : ''}${el.id}`, name, kurz, color: e === 'home' ? (main ? '#144477' : '#8d969f') : FARBEN[(n - 1) % FARBEN.length], info: '' });
     const q = []; let osmL = 0, ann = 0;
     for (const [i, x] of teile.entries()) {
       const pt = teilAnlegen(b, x, n - 1, teile.length > 1 ? `${name} · Teil ${i + 1}` : name);
@@ -620,11 +628,16 @@ O.apply = (prj, data, geo, opt) => {
   const near = (p, buf) => own.some(({ o, bb }) => p[0] > bb.x0 - buf && p[0] < bb.x1 + buf && p[1] > bb.z0 - buf && p[1] < bb.z1 + buf && (G.pointIn(p, o) || (buf > 0 && o.some((q, i) => G.dist(p, G.closestOnSeg(p, q, o[(i + 1) % o.length]).pt) < buf))));
   const inOwn = p => near(p, 0);
   // Gelände des Ziels: dort gilt das Modell, nicht OSM
+  // Nur wenn das Projekt auf dem Gelände schon eigene Außenanlagen hat (Wege, Flächen), gilt dort das Modell.
+  // Bei einem frischen Import kommen Wege, Parkplätze, Grün und Bäume des Geländes mit – sonst wäre das Gelände leer.
   const campus = [];
-  if (opt.campus !== false) {
+  const modellAussen = prj.paths.some(p => !p.umgebung && !String(p.id).startsWith('osmk_') && p.kind !== 'grenze') || prj.areas.some(a => !a.umgebung && !String(a.id).startsWith('osmk_'));
+  if (opt.campus !== false && modellAussen) {
     if (opt.zielRinge) campus.push(...opt.zielRinge);
-    if (e === 'health') for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of O.ringeLL(el).outer) if (r.length >= 4) campus.push(r.map(g => T(g.lat, g.lon))); }
-    const pts = own.flatMap(x => x.o); if (pts.length >= 3 && e !== 'home') campus.push(buffer(hull(pts), 12));
+    let ring = false;
+    if (e === 'health') for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of O.ringeLL(el).outer) if (r.length >= 4) { campus.push(r.map(g => T(g.lat, g.lon))); ring = true; } }
+    // Hülle um die Modellgebäude nur, wenn es keine Geländegrenze gibt (sonst fielen Nachbargebäude in Einbuchtungen weg)
+    const pts = own.flatMap(x => x.o); if (pts.length >= 3 && e === 'health' && !ring && !opt.zielRinge) campus.push(buffer(hull(pts), 12));
   }
   const inCampus = p => campus.some(r => G.pointIn(p, r));
   const polyHitsOwn = r => r.some(p => inOwn(p)) || own.some(({ o }) => o.some(q => G.pointIn(q, r)));
@@ -700,7 +713,7 @@ O.apply = (prj, data, geo, opt) => {
       const w0 = R0.map(g => T(g.lat, g.lon)), c0 = centroid(w0);
       if (inOwn(c0) || inCampus(c0) || polyHitsOwn(w0)) { stat.ausgelassen++; continue; }
       const A0 = Math.abs(G.area(w0)), typ = e === 'home' && (!t.building || t.building === 'yes') && A0 > 45 && A0 < 300 ? 'house' : e === 'home' && (!t.building || t.building === 'yes') && A0 <= 45 ? 'garage' : undefined;
-      const teile = O.bauteile(el, T, opt._parts, { minArea: 12, tol: 0.3, typ }); if (!teile.length) continue;
+      const teile = O.bauteile(el, T, opt._parts, { minArea: 5, typ, ortho: false }); if (!teile.length) continue; // Umgebung: Umrisse lagetreu (nicht begradigt), damit Grenzbebauung und Lücken stimmen
       const b = Object.assign(HSS.defaults.building(), { id: 'osm_b' + (el.type === 'relation' ? 'r' : '') + el.id, name: gebName(t, '', 'Gebäude (Umgebung)').trim(), kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
       for (const x of teile) {
         const pt = teilAnlegen(b, x, 0, b.name, { prefix: 'osm_p' });

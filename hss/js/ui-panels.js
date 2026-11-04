@@ -42,6 +42,7 @@ T.placeObject = (lib, opts = {}) => {
       const o = { id: U.uid('obj'), lib, rot: last.r, x: last.x, z: last.z };
       if (last.host) { const loc = HSS.toLocal(last.part, [last.x, last.z]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; o.host = last.host; o.rot = (last.r - (last.part.rot || 0) + 360) % 360; }
       if (d.logistik?.rolle && !['tuer', 'fahrzeug'].includes(d.logistik.rolle)) o.place = true;
+      if (o.host) { const fr = HSS.freieLage?.(o); if (fr) { o.x = fr.x; o.z = fr.z; UI.toast(`Um ${U.fmt(fr.dd, 2)} m verschoben, damit nichts ineinander steht`, 2500); } }
       if (!opts.multi && !ev.shiftKey) HSS.manip?.mark();
       HSS.change('Objekt platzieren', prj => prj.objects.push(o), { scope: 'objects' });
       // wie im Spiel: ein Objekt setzen, danach ist es gewählt (✓ / ✗); mit Umschalt weitere setzen

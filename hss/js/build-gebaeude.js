@@ -148,6 +148,8 @@ HSS.buildPart = (pt, building, view = {}) => {
   for (const f of floors) {
     const gf = HSS.globalFloor(pt, f, prj);
     if (view.floor !== null && view.floor !== undefined && gf > view.floor) continue;
+    // Untergeschoss-Ansicht: nur dieses Geschoss (keine tieferen Ebenen, keine Wände anderer Etagen)
+    if (view.floor !== null && view.floor !== undefined && view.floor < 0 && gf !== view.floor) continue;
     if (f < 0 && view.floor !== null && view.floor !== undefined && view.floor >= 0 && !view.showBasement) { /* UG unter Gelände: nur Platte */ }
     const y0 = HSS.floorY(pt, f, prj) + gf * ex, h = HSS.fh(pt, f);
     const isCut = view.floor === gf;
@@ -198,7 +200,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     const geneigt = HSS.dachGeneigt?.(pt) && !holes.length;
     if (geneigt) {
       const dg = HSS.dachGeo(pt, HSS.partFootprintLocal(pt).outer, yt);
-      const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#9b4a32');
+      const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#5f6469');
       const dm = glasHull ? tMat('glasdach2', '#e6ebef', 0.22) : HSS.library.shared('dach2|' + dc, () => new THREE.MeshStandardMaterial({ color: dc, roughness: 0.85, side: THREE.DoubleSide }));
       if (dg.dach) { const m = new THREE.Mesh(dg.dach, dm); m.castShadow = m.receiveShadow = true; m.userData = Object.assign({ roof: true }, meta); grp.add(m); }
       if (dg.wand) { const m = new THREE.Mesh(dg.wand, transparent ? wallMat : HSS.library.shared('giebel|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: 0.9, side: THREE.DoubleSide }))); m.castShadow = !transparent; m.receiveShadow = true; m.userData = Object.assign({ wall: true }, meta); grp.add(m); }
@@ -220,8 +222,12 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
   }
   // Sockel bei Gelände unterhalb der EG-Unterkante
-  if (!pt.stackOn && view.shell !== 'aus') {
-    const base = HSS.partBaseY(pt, prj); let minT = Infinity;
+  // Nur für Hanglagen: erhöhte Bauteile (Geschossversatz, min_height, Luftgeschoss) bekommen keinen Sockel bis zum Boden,
+  // und in einer Etagenansicht unterhalb des Bauteils erscheint er nicht
+  const ersteGF = HSS.globalFloor(pt, floors[0], prj);
+  const vf = view.floor;
+  if (!pt.stackOn && view.shell !== 'aus' && !(pt.floorOffset > 0) && (vf === null || vf === undefined || vf >= ersteGF)) {
+    const base = HSS.partBaseY(pt, prj) - ((pt.baseOffset || 0) > 1.5 ? pt.baseOffset : 0); let minT = Infinity;
     for (const p of outer) minT = Math.min(minT, HSS.terrainH(p[0], p[1], prj));
     if (minT < base - 0.15) { const s = new THREE.Mesh(ringWallGeo(outer, minT - 0.3, base - minT + 0.05), LM('#8f8a80')); s.userData = Object.assign({}, meta); s.castShadow = true; grp.add(s); }
   }
@@ -332,6 +338,82 @@ HSS.DIN277 = {
 HSS.roomArea = r => r.poly ? Math.abs(G.area(r.poly)) : r.w * r.d;
 HSS.roomDin = r => r.din || (HSS.ROOMTYPES[r.use] || HSS.ROOMTYPES.sonstiges).din || 'NUF7';
 const PICKMAT = new THREE.MeshBasicMaterial({ visible: false });
+/* Aufzugs- und Treppenschächte eines Geschosses (lokal zum Bauteil): Wände laufen nie durch einen Schacht */
+let _schachtMemo = { sig: '', map: null, t: 0, prj: null };
+HSS.schaechte = (pt, f, prj = HSS.project()) => {
+  const now = performance.now();
+  if (_schachtMemo.prj !== prj || now - _schachtMemo.t > 80) { _schachtMemo.t = now; _schachtMemo.prj = prj; _schachtMemo.alt = true; }
+  if (!_schachtMemo.alt) return schachtListe(pt, f, prj);
+  _schachtMemo.alt = false;
+  const objs = prj.objects.filter(o => o.host && /^erschl\.(aufzug|treppe)/.test(o.lib) && !o.hidden);
+  const sig = objs.map(o => { const P = HSS.findPart(o.host.part, prj)?.part; return [o.id, o.x, o.z, o.rot, o.host.part, o.host.floor, o.size?.w, o.size?.d, o.vonGF, o.bisGF, P?.x, P?.z, P?.rot].join(','); }).join(';') + '|' + prj.buildings.length;
+  if (_schachtMemo.sig !== sig) {
+    const map = new Map();
+    for (const o of objs) {
+      const d = HSS.library.get(o.lib), P = HSS.findPart(o.host.part, prj); if (!d || !P) continue;
+      const size = o.size || d.size, L = HSS.liftStops(o, prj), rot = (o.rot || 0) + (P.part.rot || 0);
+      for (const gf of L.stops) { if (!map.has(gf)) map.set(gf, []); map.get(gf).push({ x: L.x, z: L.z, rot, hw: size.w / 2 - 0.12, hd: size.d / 2 - 0.12, id: o.id }); }
+    }
+    Object.assign(_schachtMemo, { sig, map });
+  }
+  return schachtListe(pt, f, prj);
+};
+const schachtListe = (pt, f, prj) => {
+  const gf = HSS.globalFloor(pt, f, prj), list = _schachtMemo.map.get(gf) || [];
+  return list.map(s => { const c = HSS.toLocal(pt, [s.x, s.z]); return { x: c[0], z: c[1], rot: s.rot - (pt.rot || 0), hw: s.hw, hd: s.hd, id: s.id }; })
+    .filter(s => s.hw > 0 && s.hd > 0 && G.pointIn([s.x, s.z], HSS.partFootprintLocal(pt).outer));
+};
+// Abschnitt [t0, t1] (in Metern entlang der Wand), der in einem Schacht liegt
+const schachtSchnitt = (a, b, S) => {
+  const out = [];
+  for (const s of S) {
+    const r = -U.rad(s.rot), c = Math.cos(r), sn = Math.sin(r);
+    const loc = p => { const dx = p[0] - s.x, dz = p[1] - s.z; return [dx * c - dz * sn, dx * sn + dz * c]; };
+    const A = loc(a), B = loc(b), dx = B[0] - A[0], dz = B[1] - A[1]; let t0 = 0, t1 = 1, ok = true;
+    for (const [pp, q] of [[-dx, A[0] + s.hw], [dx, s.hw - A[0]], [-dz, A[1] + s.hd], [dz, s.hd - A[1]]]) {
+      if (Math.abs(pp) < 1e-12) { if (q < 0) { ok = false; break; } continue; }
+      const t = q / pp; if (pp < 0) { if (t > t1) { ok = false; break; } t0 = Math.max(t0, t); } else { if (t < t0) { ok = false; break; } t1 = Math.min(t1, t); }
+    }
+    const len = G.dist(a, b);
+    if (ok && t1 - t0 > 0.01) out.push([t0 * len, t1 * len]);
+  }
+  return out;
+};
+HSS.schachtSchnitt = schachtSchnitt;
+/* Kollisionsfrei stellen: ein Einrichtungsobjekt (im Gebäude) darf weder Wände noch Aufzugs-/Treppenschächte
+   noch andere Objekte durchdringen. Liefert die nächste freie Lage (lokal zum Bauteil) im Umkreis von maxR m oder null. */
+HSS.freieLage = (o, prj = HSS.project(), maxR = 1.5) => {
+  if (!o.host) return null;
+  const d = HSS.library.get(o.lib), P = HSS.findPart(o.host.part, prj); if (!d || !P || d.anchor === 'wand' || d.anchor === 'decke') return null;
+  const shaft = /^erschl\.(aufzug|treppe)/.test(o.lib); if (/^erschl\./.test(o.lib) && !shaft) return null;
+  const pt = P.part, f = o.host.floor, I = HSS.interior(pt.id, f), s = o.size || d.size, m = shaft ? 0.12 : 0.06;
+  const hw = s.w / 2 - m, hd = s.d / 2 - m, r = U.rad(o.rot || 0); if (hw <= 0 || hd <= 0) return null;
+  const S = shaft ? [] : HSS.schaechte(pt, f, prj);
+  const andere = shaft ? [] : prj.objects.filter(y => y !== o && y.id !== o.id && y.host && y.host.part === pt.id && y.host.floor === f && !/^erschl\./.test(y.lib)).map(y => { const dy = HSS.library.get(y.lib); if (!dy || dy.anchor === 'wand' || dy.anchor === 'decke') return null; const sy = y.size || dy.size; return { x: y.x, z: y.z, rot: y.rot || 0, hw: sy.w / 2 - 0.06, hd: sy.d / 2 - 0.06 }; }).filter(y => y && y.hw > 0 && y.hd > 0 && Math.hypot(y.x - o.x, y.z - o.z) < maxR + 6);
+  const ecken = (x, z) => [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(q => { const w = G.rot(q, r); return [w[0] + x, w[1] + z]; });
+  const kanten = c => c.map((q, i) => [q, c[(i + 1) % 4]]);
+  const nah = maxR + Math.hypot(hw, hd) + 0.5, umriss = HSS.partFootprintLocal(pt).outer;
+  const waende = (I?.walls || []).filter(w => G.dist([o.x, o.z], G.closestOnSeg([o.x, o.z], w.a, w.b).pt) < nah);
+  const imUmriss = (x, z) => ecken(x, z).every(q => G.pointIn(q, umriss)), warDrin = imUmriss(o.x, o.z);
+  const kosten = (x, z) => {
+    const c = ecken(x, z), box = { x, z, rot: o.rot || 0, hw, hd }; let k = 0;
+    for (const w of waende) for (const q of schachtSchnitt(w.a, w.b, [box])) k += q[1] - q[0];
+    for (const b of S.concat(andere)) { if (Math.hypot(b.x - x, b.z - z) > Math.hypot(b.hw, b.hd) + Math.hypot(hw, hd)) continue; for (const [a, e] of kanten(c)) for (const q of schachtSchnitt(a, e, [b])) k += q[1] - q[0]; const l = G.rot([x - b.x, z - b.z], -U.rad(b.rot)); if (Math.abs(l[0]) < b.hw && Math.abs(l[1]) < b.hd) k += 1; }
+    if (warDrin && !imUmriss(x, z)) k += 10;
+    return k;
+  };
+  if (kosten(o.x, o.z) < 0.05) return null;
+  const ex = G.rot([1, 0], r), ez = G.rot([0, 1], r);
+  for (let R = 0.05; R <= maxR + 1e-6; R += 0.05) {
+    let best = null; const n = Math.round(R / 0.05);
+    for (let i = -n; i <= n; i++) for (const [u, v] of [[i * 0.05, -R], [i * 0.05, R], [-R, i * 0.05], [R, i * 0.05]]) {
+      const x = o.x + ex[0] * u + ez[0] * v, z = o.z + ex[1] * u + ez[1] * v;
+      if (kosten(x, z) < 0.05) { const dd = Math.hypot(u, v); if (!best || dd < best.dd) best = { x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, dd }; }
+    }
+    if (best) return best;
+  }
+  return null;
+};
 HSS.buildInterior = (pt, f, view = {}) => {
   const I = HSS.interior(pt.id, f); const grp = new THREE.Group(); grp.userData = { kind: 'interior', part: pt.id, floor: f };
   if (!I) return grp;
@@ -348,13 +430,16 @@ HSS.buildInterior = (pt, f, view = {}) => {
   }
   // Wände mit Türöffnungen
   const wallMat = LM('#f4f5f7'), capMat = LM('#9aa3ad');
-  const geos = [], caps = [];
+  const geos = [], caps = [], S = HSS.schaechte(pt, f);
   for (const w of I.walls) {
     const len = G.dist(w.a, w.b); if (len < 0.05) continue;
     const doors = I.doors.filter(d => d.wall === w.id).map(d => [U.clamp(d.t * len - d.w / 2, 0, len), U.clamp(d.t * len + d.w / 2, 0, len), d]).sort((x, y) => x[0] - y[0]);
     const segs = []; let s = 0;
     for (const [d0, d1] of doors) { if (d0 > s) segs.push([s, d0, 0, wallH]); if (wallH > 2.2) segs.push([d0, d1, 2.15, wallH]); s = Math.max(s, d1); }
     if (s < len) segs.push([s, len, 0, wallH]);
+    // Schachtbereiche aussparen
+    const cuts = S.length ? schachtSchnitt(w.a, w.b, S) : [];
+    if (cuts.length) for (const [c0, c1] of cuts) for (let i = segs.length - 1; i >= 0; i--) { const q = segs[i]; if (c1 <= q[0] || c0 >= q[1]) continue; const rest = []; if (c0 > q[0]) rest.push([q[0], c0, q[2], q[3]]); if (c1 < q[1]) rest.push([c1, q[1], q[2], q[3]]); segs.splice(i, 1, ...rest); }
     const ux = (w.b[0] - w.a[0]) / len, uz = (w.b[1] - w.a[1]) / len, a = Math.atan2(uz, ux), t = w.t || 0.15;
     for (const [s0, s1, yb, yt] of segs) {
       if (s1 - s0 < 0.01 || yt - yb < 0.01) continue;

@@ -238,6 +238,20 @@ const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
   if (!geos.length) return null;
   const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
 };
+/* Pflanzplatz frei? Keine Bäume/Sträucher auf Wegen, Straßen, Wasser, Plätzen, Parkplätzen, in Gebäuden oder auf Einzelbäumen */
+HSS.pflanzFrei = (bb, selfId) => {
+  const prj = HSS.project(), pad = 12;
+  const nahBB = q => !(q.x1 < bb.x0 - pad || q.x0 > bb.x1 + pad || q.z1 < bb.z0 - pad || q.z0 > bb.z1 + pad);
+  const wege = prj.paths.filter(p => p.kind !== 'grenze' && p.points?.length >= 2 && nahBB(G.bbox(p.points.map(q => [q[0], q[1]])))).map(p => ({ pts: p.points.map(q => [q[0], q[1]]), h: (p.width || HSS.WEGARTEN[p.kind]?.w || 3) / 2 }));
+  const hart = prj.areas.filter(x => x.id !== selfId && ['wasser', 'parkplatz', 'platz', 'sperrflaeche', 'sport'].includes(x.kind)).map(x => x.poly?.length >= 3 ? x.poly : HSS.areaPoly(x)).filter(r => r && r.length >= 3 && nahBB(G.bbox(r)));
+  const baeume = prj.objects.filter(o => !o.host && /^gruen\.baum/.test(o.lib) && o.x > bb.x0 - pad && o.x < bb.x1 + pad && o.z > bb.z0 - pad && o.z < bb.z1 + pad).map(o => [o.x, o.z]);
+  return (p, r = 2) => {
+    for (const w of wege) for (let i = 0; i < w.pts.length - 1; i++) if (G.dist(p, G.closestOnSeg(p, w.pts[i], w.pts[i + 1]).pt) < w.h + r * 0.6) return false;
+    for (const h of hart) if (G.pointIn(p, h)) return false;
+    for (const t of baeume) if (G.dist(p, t) < r * 1.8) return false;
+    return true;
+  };
+};
 function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
@@ -245,7 +259,8 @@ function buildPolyArea(a, grp) {
   // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
   const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
   const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
-  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
+  const frei = HSS.pflanzFrei(bb, a.id);
+  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p) || !frei(p, lib === 'gruen.strauch' ? 0.8 : 2)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
   else if (a.kind === 'park' || a.kind === 'gruen') { const dn = a.density ?? 1; scatter('gruen.baum.laub', Math.min(60 * dn, area / 300 * dn), 0.7, 1.1); scatter('gruen.strauch', Math.min(60 * dn, area / 250 * dn), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
@@ -294,7 +309,8 @@ HSS.buildArea = (a, view = {}) => {
     grp.add(drapedRect(a, 0.03, a.color || '#9cc07f'));
     const rnd = U.rng(U.hash(a.id)), dens = a.density ?? 1.0;
     const nTrees = Math.round(a.w * a.d / 220 * dens), nShrub = Math.round(a.w * a.d / 120 * dens);
-    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
+    const frei = HSS.pflanzFrei(G.bbox(HSS.areaPoly(a)), a.id);
+    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); if (!frei(p, lib === 'gruen.strauch' ? 0.8 : 2)) continue; const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
     place(rnd() > 0.3 ? 'gruen.baum.laub' : 'gruen.baum.klein', nTrees, 0.7, 1.15); place('gruen.strauch', nShrub, 0.6, 1.3);
   } else if (a.kind === 'wasser') {
     const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); grp.add(m);

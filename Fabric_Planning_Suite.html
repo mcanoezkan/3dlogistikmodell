@@ -6219,6 +6219,8 @@ HSS.buildPart = (pt, building, view = {}) => {
   for (const f of floors) {
     const gf = HSS.globalFloor(pt, f, prj);
     if (view.floor !== null && view.floor !== undefined && gf > view.floor) continue;
+    // Untergeschoss-Ansicht: nur dieses Geschoss (keine tieferen Ebenen, keine Wände anderer Etagen)
+    if (view.floor !== null && view.floor !== undefined && view.floor < 0 && gf !== view.floor) continue;
     if (f < 0 && view.floor !== null && view.floor !== undefined && view.floor >= 0 && !view.showBasement) { /* UG unter Gelände: nur Platte */ }
     const y0 = HSS.floorY(pt, f, prj) + gf * ex, h = HSS.fh(pt, f);
     const isCut = view.floor === gf;
@@ -6269,7 +6271,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     const geneigt = HSS.dachGeneigt?.(pt) && !holes.length;
     if (geneigt) {
       const dg = HSS.dachGeo(pt, HSS.partFootprintLocal(pt).outer, yt);
-      const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#9b4a32');
+      const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#5f6469');
       const dm = glasHull ? tMat('glasdach2', '#e6ebef', 0.22) : HSS.library.shared('dach2|' + dc, () => new THREE.MeshStandardMaterial({ color: dc, roughness: 0.85, side: THREE.DoubleSide }));
       if (dg.dach) { const m = new THREE.Mesh(dg.dach, dm); m.castShadow = m.receiveShadow = true; m.userData = Object.assign({ roof: true }, meta); grp.add(m); }
       if (dg.wand) { const m = new THREE.Mesh(dg.wand, transparent ? wallMat : HSS.library.shared('giebel|' + wallBase, () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: 0.9, side: THREE.DoubleSide }))); m.castShadow = !transparent; m.receiveShadow = true; m.userData = Object.assign({ wall: true }, meta); grp.add(m); }
@@ -6291,8 +6293,12 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }
   }
   // Sockel bei Gelände unterhalb der EG-Unterkante
-  if (!pt.stackOn && view.shell !== 'aus') {
-    const base = HSS.partBaseY(pt, prj); let minT = Infinity;
+  // Nur für Hanglagen: erhöhte Bauteile (Geschossversatz, min_height, Luftgeschoss) bekommen keinen Sockel bis zum Boden,
+  // und in einer Etagenansicht unterhalb des Bauteils erscheint er nicht
+  const ersteGF = HSS.globalFloor(pt, floors[0], prj);
+  const vf = view.floor;
+  if (!pt.stackOn && view.shell !== 'aus' && !(pt.floorOffset > 0) && (vf === null || vf === undefined || vf >= ersteGF)) {
+    const base = HSS.partBaseY(pt, prj) - ((pt.baseOffset || 0) > 1.5 ? pt.baseOffset : 0); let minT = Infinity;
     for (const p of outer) minT = Math.min(minT, HSS.terrainH(p[0], p[1], prj));
     if (minT < base - 0.15) { const s = new THREE.Mesh(ringWallGeo(outer, minT - 0.3, base - minT + 0.05), LM('#8f8a80')); s.userData = Object.assign({}, meta); s.castShadow = true; grp.add(s); }
   }
@@ -6403,6 +6409,82 @@ HSS.DIN277 = {
 HSS.roomArea = r => r.poly ? Math.abs(G.area(r.poly)) : r.w * r.d;
 HSS.roomDin = r => r.din || (HSS.ROOMTYPES[r.use] || HSS.ROOMTYPES.sonstiges).din || 'NUF7';
 const PICKMAT = new THREE.MeshBasicMaterial({ visible: false });
+/* Aufzugs- und Treppenschächte eines Geschosses (lokal zum Bauteil): Wände laufen nie durch einen Schacht */
+let _schachtMemo = { sig: '', map: null, t: 0, prj: null };
+HSS.schaechte = (pt, f, prj = HSS.project()) => {
+  const now = performance.now();
+  if (_schachtMemo.prj !== prj || now - _schachtMemo.t > 80) { _schachtMemo.t = now; _schachtMemo.prj = prj; _schachtMemo.alt = true; }
+  if (!_schachtMemo.alt) return schachtListe(pt, f, prj);
+  _schachtMemo.alt = false;
+  const objs = prj.objects.filter(o => o.host && /^erschl\.(aufzug|treppe)/.test(o.lib) && !o.hidden);
+  const sig = objs.map(o => { const P = HSS.findPart(o.host.part, prj)?.part; return [o.id, o.x, o.z, o.rot, o.host.part, o.host.floor, o.size?.w, o.size?.d, o.vonGF, o.bisGF, P?.x, P?.z, P?.rot].join(','); }).join(';') + '|' + prj.buildings.length;
+  if (_schachtMemo.sig !== sig) {
+    const map = new Map();
+    for (const o of objs) {
+      const d = HSS.library.get(o.lib), P = HSS.findPart(o.host.part, prj); if (!d || !P) continue;
+      const size = o.size || d.size, L = HSS.liftStops(o, prj), rot = (o.rot || 0) + (P.part.rot || 0);
+      for (const gf of L.stops) { if (!map.has(gf)) map.set(gf, []); map.get(gf).push({ x: L.x, z: L.z, rot, hw: size.w / 2 - 0.12, hd: size.d / 2 - 0.12, id: o.id }); }
+    }
+    Object.assign(_schachtMemo, { sig, map });
+  }
+  return schachtListe(pt, f, prj);
+};
+const schachtListe = (pt, f, prj) => {
+  const gf = HSS.globalFloor(pt, f, prj), list = _schachtMemo.map.get(gf) || [];
+  return list.map(s => { const c = HSS.toLocal(pt, [s.x, s.z]); return { x: c[0], z: c[1], rot: s.rot - (pt.rot || 0), hw: s.hw, hd: s.hd, id: s.id }; })
+    .filter(s => s.hw > 0 && s.hd > 0 && G.pointIn([s.x, s.z], HSS.partFootprintLocal(pt).outer));
+};
+// Abschnitt [t0, t1] (in Metern entlang der Wand), der in einem Schacht liegt
+const schachtSchnitt = (a, b, S) => {
+  const out = [];
+  for (const s of S) {
+    const r = -U.rad(s.rot), c = Math.cos(r), sn = Math.sin(r);
+    const loc = p => { const dx = p[0] - s.x, dz = p[1] - s.z; return [dx * c - dz * sn, dx * sn + dz * c]; };
+    const A = loc(a), B = loc(b), dx = B[0] - A[0], dz = B[1] - A[1]; let t0 = 0, t1 = 1, ok = true;
+    for (const [pp, q] of [[-dx, A[0] + s.hw], [dx, s.hw - A[0]], [-dz, A[1] + s.hd], [dz, s.hd - A[1]]]) {
+      if (Math.abs(pp) < 1e-12) { if (q < 0) { ok = false; break; } continue; }
+      const t = q / pp; if (pp < 0) { if (t > t1) { ok = false; break; } t0 = Math.max(t0, t); } else { if (t < t0) { ok = false; break; } t1 = Math.min(t1, t); }
+    }
+    const len = G.dist(a, b);
+    if (ok && t1 - t0 > 0.01) out.push([t0 * len, t1 * len]);
+  }
+  return out;
+};
+HSS.schachtSchnitt = schachtSchnitt;
+/* Kollisionsfrei stellen: ein Einrichtungsobjekt (im Gebäude) darf weder Wände noch Aufzugs-/Treppenschächte
+   noch andere Objekte durchdringen. Liefert die nächste freie Lage (lokal zum Bauteil) im Umkreis von maxR m oder null. */
+HSS.freieLage = (o, prj = HSS.project(), maxR = 1.5) => {
+  if (!o.host) return null;
+  const d = HSS.library.get(o.lib), P = HSS.findPart(o.host.part, prj); if (!d || !P || d.anchor === 'wand' || d.anchor === 'decke') return null;
+  const shaft = /^erschl\.(aufzug|treppe)/.test(o.lib); if (/^erschl\./.test(o.lib) && !shaft) return null;
+  const pt = P.part, f = o.host.floor, I = HSS.interior(pt.id, f), s = o.size || d.size, m = shaft ? 0.12 : 0.06;
+  const hw = s.w / 2 - m, hd = s.d / 2 - m, r = U.rad(o.rot || 0); if (hw <= 0 || hd <= 0) return null;
+  const S = shaft ? [] : HSS.schaechte(pt, f, prj);
+  const andere = shaft ? [] : prj.objects.filter(y => y !== o && y.id !== o.id && y.host && y.host.part === pt.id && y.host.floor === f && !/^erschl\./.test(y.lib)).map(y => { const dy = HSS.library.get(y.lib); if (!dy || dy.anchor === 'wand' || dy.anchor === 'decke') return null; const sy = y.size || dy.size; return { x: y.x, z: y.z, rot: y.rot || 0, hw: sy.w / 2 - 0.06, hd: sy.d / 2 - 0.06 }; }).filter(y => y && y.hw > 0 && y.hd > 0 && Math.hypot(y.x - o.x, y.z - o.z) < maxR + 6);
+  const ecken = (x, z) => [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(q => { const w = G.rot(q, r); return [w[0] + x, w[1] + z]; });
+  const kanten = c => c.map((q, i) => [q, c[(i + 1) % 4]]);
+  const nah = maxR + Math.hypot(hw, hd) + 0.5, umriss = HSS.partFootprintLocal(pt).outer;
+  const waende = (I?.walls || []).filter(w => G.dist([o.x, o.z], G.closestOnSeg([o.x, o.z], w.a, w.b).pt) < nah);
+  const imUmriss = (x, z) => ecken(x, z).every(q => G.pointIn(q, umriss)), warDrin = imUmriss(o.x, o.z);
+  const kosten = (x, z) => {
+    const c = ecken(x, z), box = { x, z, rot: o.rot || 0, hw, hd }; let k = 0;
+    for (const w of waende) for (const q of schachtSchnitt(w.a, w.b, [box])) k += q[1] - q[0];
+    for (const b of S.concat(andere)) { if (Math.hypot(b.x - x, b.z - z) > Math.hypot(b.hw, b.hd) + Math.hypot(hw, hd)) continue; for (const [a, e] of kanten(c)) for (const q of schachtSchnitt(a, e, [b])) k += q[1] - q[0]; const l = G.rot([x - b.x, z - b.z], -U.rad(b.rot)); if (Math.abs(l[0]) < b.hw && Math.abs(l[1]) < b.hd) k += 1; }
+    if (warDrin && !imUmriss(x, z)) k += 10;
+    return k;
+  };
+  if (kosten(o.x, o.z) < 0.05) return null;
+  const ex = G.rot([1, 0], r), ez = G.rot([0, 1], r);
+  for (let R = 0.05; R <= maxR + 1e-6; R += 0.05) {
+    let best = null; const n = Math.round(R / 0.05);
+    for (let i = -n; i <= n; i++) for (const [u, v] of [[i * 0.05, -R], [i * 0.05, R], [-R, i * 0.05], [R, i * 0.05]]) {
+      const x = o.x + ex[0] * u + ez[0] * v, z = o.z + ex[1] * u + ez[1] * v;
+      if (kosten(x, z) < 0.05) { const dd = Math.hypot(u, v); if (!best || dd < best.dd) best = { x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, dd }; }
+    }
+    if (best) return best;
+  }
+  return null;
+};
 HSS.buildInterior = (pt, f, view = {}) => {
   const I = HSS.interior(pt.id, f); const grp = new THREE.Group(); grp.userData = { kind: 'interior', part: pt.id, floor: f };
   if (!I) return grp;
@@ -6419,13 +6501,16 @@ HSS.buildInterior = (pt, f, view = {}) => {
   }
   // Wände mit Türöffnungen
   const wallMat = LM('#f4f5f7'), capMat = LM('#9aa3ad');
-  const geos = [], caps = [];
+  const geos = [], caps = [], S = HSS.schaechte(pt, f);
   for (const w of I.walls) {
     const len = G.dist(w.a, w.b); if (len < 0.05) continue;
     const doors = I.doors.filter(d => d.wall === w.id).map(d => [U.clamp(d.t * len - d.w / 2, 0, len), U.clamp(d.t * len + d.w / 2, 0, len), d]).sort((x, y) => x[0] - y[0]);
     const segs = []; let s = 0;
     for (const [d0, d1] of doors) { if (d0 > s) segs.push([s, d0, 0, wallH]); if (wallH > 2.2) segs.push([d0, d1, 2.15, wallH]); s = Math.max(s, d1); }
     if (s < len) segs.push([s, len, 0, wallH]);
+    // Schachtbereiche aussparen
+    const cuts = S.length ? schachtSchnitt(w.a, w.b, S) : [];
+    if (cuts.length) for (const [c0, c1] of cuts) for (let i = segs.length - 1; i >= 0; i--) { const q = segs[i]; if (c1 <= q[0] || c0 >= q[1]) continue; const rest = []; if (c0 > q[0]) rest.push([q[0], c0, q[2], q[3]]); if (c1 < q[1]) rest.push([c1, q[1], q[2], q[3]]); segs.splice(i, 1, ...rest); }
     const ux = (w.b[0] - w.a[0]) / len, uz = (w.b[1] - w.a[1]) / len, a = Math.atan2(uz, ux), t = w.t || 0.15;
     for (const [s0, s1, yb, yt] of segs) {
       if (s1 - s0 < 0.01 || yt - yb < 0.01) continue;
@@ -6871,6 +6956,20 @@ const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
   if (!geos.length) return null;
   const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
 };
+/* Pflanzplatz frei? Keine Bäume/Sträucher auf Wegen, Straßen, Wasser, Plätzen, Parkplätzen, in Gebäuden oder auf Einzelbäumen */
+HSS.pflanzFrei = (bb, selfId) => {
+  const prj = HSS.project(), pad = 12;
+  const nahBB = q => !(q.x1 < bb.x0 - pad || q.x0 > bb.x1 + pad || q.z1 < bb.z0 - pad || q.z0 > bb.z1 + pad);
+  const wege = prj.paths.filter(p => p.kind !== 'grenze' && p.points?.length >= 2 && nahBB(G.bbox(p.points.map(q => [q[0], q[1]])))).map(p => ({ pts: p.points.map(q => [q[0], q[1]]), h: (p.width || HSS.WEGARTEN[p.kind]?.w || 3) / 2 }));
+  const hart = prj.areas.filter(x => x.id !== selfId && ['wasser', 'parkplatz', 'platz', 'sperrflaeche', 'sport'].includes(x.kind)).map(x => x.poly?.length >= 3 ? x.poly : HSS.areaPoly(x)).filter(r => r && r.length >= 3 && nahBB(G.bbox(r)));
+  const baeume = prj.objects.filter(o => !o.host && /^gruen\.baum/.test(o.lib) && o.x > bb.x0 - pad && o.x < bb.x1 + pad && o.z > bb.z0 - pad && o.z < bb.z1 + pad).map(o => [o.x, o.z]);
+  return (p, r = 2) => {
+    for (const w of wege) for (let i = 0; i < w.pts.length - 1; i++) if (G.dist(p, G.closestOnSeg(p, w.pts[i], w.pts[i + 1]).pt) < w.h + r * 0.6) return false;
+    for (const h of hart) if (G.pointIn(p, h)) return false;
+    for (const t of baeume) if (G.dist(p, t) < r * 1.8) return false;
+    return true;
+  };
+};
 function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
   grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
@@ -6878,7 +6977,8 @@ function buildPolyArea(a, grp) {
   // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
   const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
   const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
-  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
+  const frei = HSS.pflanzFrei(bb, a.id);
+  const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p) || !frei(p, lib === 'gruen.strauch' ? 0.8 : 2)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
   else if (a.kind === 'park' || a.kind === 'gruen') { const dn = a.density ?? 1; scatter('gruen.baum.laub', Math.min(60 * dn, area / 300 * dn), 0.7, 1.1); scatter('gruen.strauch', Math.min(60 * dn, area / 250 * dn), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
@@ -6927,7 +7027,8 @@ HSS.buildArea = (a, view = {}) => {
     grp.add(drapedRect(a, 0.03, a.color || '#9cc07f'));
     const rnd = U.rng(U.hash(a.id)), dens = a.density ?? 1.0;
     const nTrees = Math.round(a.w * a.d / 220 * dens), nShrub = Math.round(a.w * a.d / 120 * dens);
-    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
+    const frei = HSS.pflanzFrei(G.bbox(HSS.areaPoly(a)), a.id);
+    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); if (!frei(p, lib === 'gruen.strauch' ? 0.8 : 2)) continue; const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
     place(rnd() > 0.3 ? 'gruen.baum.laub' : 'gruen.baum.klein', nTrees, 0.7, 1.15); place('gruen.strauch', nShrub, 0.6, 1.3);
   } else if (a.kind === 'wasser') {
     const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); grp.add(m);
@@ -7645,7 +7746,7 @@ S3.rebuild = (scope = 'all') => {
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
-      if (V.floor === gf || (V.floor === null && V.shell === 'transparent' && !V.zonen)) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
+      if (V.floor === gf || (V.floor === null && V.shell === 'transparent' && !V.zonen)) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + JSON.stringify(HSS.schaechte(pt, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
     }
   }
   for (const br of prj.bridges) {
@@ -8445,6 +8546,7 @@ P.setQuality = (i, auto) => {
   const maxI = (window.devicePixelRatio || 1) >= 1.5 ? 3 : 2;
   i = Math.max(0, Math.min(maxI, i));
   if (auto && P.qLocked) return;
+  if (auto) i = Math.max(1, i); // automatisch nie unter die volle Bildschirmauflösung (sonst wirkt das Modell unscharf und grob)
   if (i === P.qIndex && P._qInit) return;
   P._qInit = true; P.qIndex = i;
   const q = Q[i], R = S3.renderer;
@@ -11494,7 +11596,7 @@ INSP.part = s => {
   ${UI.fNum('Achsraster', 'facade.axis', fc.axis, { unit: 'm', min: 0.6, step: 0.05 })}${UI.fNum('Fensteranteil', 'facade.windowRatio', fc.windowRatio, { min: 0.1, max: 0.95, step: 0.05 })}</div>
   <div class="note">${U.esc(HSS.FASSADEN[fc.type]?.info || '')}</div>
   <h3>Dach</h3>
-  <div class="fg pf">${UI.fSel('Dachart', 'roof.type', pt.roof.type, Object.entries(HSS.DACHARTEN || { flach: { name: 'Flachdach' }, gruen: { name: 'Gründach' } }).map(([k, v]) => opt(k, v.name, pt.roof.type)).join(''))}${HSS.dachGeneigt?.(pt) ? UI.fNum('Neigung', 'roof.neigung', pt.roof.neigung ?? HSS.DACHARTEN[pt.roof.type].neigung, { unit: '°', min: 3, max: 75, step: 1 }) + UI.fNum('Firstrichtung (leer = lange Seite)', 'roof.richtung', pt.roof.richtung ?? '', { unit: '°', step: 5 }) + (pt.roof.type === 'shed' ? UI.fNum('Shed-Raster', 'roof.raster', pt.roof.raster ?? 10, { unit: 'm', min: 4, step: 0.5 }) : '') + UI.fCol('Dachfarbe', 'roof.color', pt.roof.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : (pt.roof.type === 'shed' ? '#a9b1b9' : '#9b4a32')) : UI.fNum('Attika', 'roof.parapet', pt.roof.parapet, { unit: 'm', min: 0, step: 0.1 })}</div>
+  <div class="fg pf">${UI.fSel('Dachart', 'roof.type', pt.roof.type, Object.entries(HSS.DACHARTEN || { flach: { name: 'Flachdach' }, gruen: { name: 'Gründach' } }).map(([k, v]) => opt(k, v.name, pt.roof.type)).join(''))}${HSS.dachGeneigt?.(pt) ? UI.fNum('Neigung', 'roof.neigung', pt.roof.neigung ?? HSS.DACHARTEN[pt.roof.type].neigung, { unit: '°', min: 3, max: 75, step: 1 }) + UI.fNum('Firstrichtung (leer = lange Seite)', 'roof.richtung', pt.roof.richtung ?? '', { unit: '°', step: 5 }) + (pt.roof.type === 'shed' ? UI.fNum('Shed-Raster', 'roof.raster', pt.roof.raster ?? 10, { unit: 'm', min: 4, step: 0.5 }) : '') + UI.fCol('Dachfarbe', 'roof.color', pt.roof.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : (pt.roof.type === 'shed' ? '#a9b1b9' : '#5f6469')) : UI.fNum('Attika', 'roof.parapet', pt.roof.parapet, { unit: 'm', min: 0, step: 0.1 })}</div>
   ${HSS.dachGeneigt?.(pt) ? `<div class="note">Firsthöhe ca. ${U.fmt(HSS.dachHoehe(pt), 1)} m über der Traufe${pt.roof.type === 'pult' ? ` · ${UI.fChk('Gefälle umkehren', 'roof.umkehren', !!pt.roof.umkehren)}` : ''}</div>` : ''}
   <div class="pf">${UI.fChk('Technikaufbau', 'roof.plant', pt.roof.plant)}${UI.fChk('Hubschrauberlandeplatz', 'roof.helipad', pt.roof.helipad)}${UI.fChk('An Nachbarbauteile auf gleicher Höhe anschließen (Geschossversatz)', 'anschlussNachHoehe', !!pt.anschlussNachHoehe)}</div>
   <h3>Anordnung &amp; Verbindung</h3>
@@ -11834,6 +11936,7 @@ T.placeObject = (lib, opts = {}) => {
       const o = { id: U.uid('obj'), lib, rot: last.r, x: last.x, z: last.z };
       if (last.host) { const loc = HSS.toLocal(last.part, [last.x, last.z]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; o.host = last.host; o.rot = (last.r - (last.part.rot || 0) + 360) % 360; }
       if (d.logistik?.rolle && !['tuer', 'fahrzeug'].includes(d.logistik.rolle)) o.place = true;
+      if (o.host) { const fr = HSS.freieLage?.(o); if (fr) { o.x = fr.x; o.z = fr.z; UI.toast(`Um ${U.fmt(fr.dd, 2)} m verschoben, damit nichts ineinander steht`, 2500); } }
       if (!opts.multi && !ev.shiftKey) HSS.manip?.mark();
       HSS.change('Objekt platzieren', prj => prj.objects.push(o), { scope: 'objects' });
       // wie im Spiel: ein Objekt setzen, danach ist es gewählt (✓ / ✗); mit Umschalt weitere setzen
@@ -12845,7 +12948,7 @@ function dragObject(hit, fine, ev) {
     hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz), 2)} m`);
     D.commit = () => HSS.change('Objekt verschieben', p => {
       const o = U.byId(p.objects, sel.id);
-      if (o.host) { const P = HSS.findPart(o.host.part, p); const loc = HSS.toLocal(P.part, [w0.x + dx, w0.z + dz]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; }
+      if (o.host) { const P = HSS.findPart(o.host.part, p); const loc = HSS.toLocal(P.part, [w0.x + dx, w0.z + dz]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; const fr = HSS.freieLage?.(o, p); if (fr) { o.x = fr.x; o.z = fr.z; setTimeout(() => HSS.ui?.toast?.(`Objekt um ${fmt(fr.dd, 2)} m aus Wand/Schacht/Objekt gerückt (keine Überschneidung)`, 2500), 0); } }
       else { o.x = Math.round((o0.x + dx) * 100) / 100; o.z = Math.round((o0.z + dz) * 100) / 100; }
     }, { scope: 'objects' });
   } else if (D.op === 'rot') {
@@ -14485,7 +14588,7 @@ function dp(pts, tol) {
   }
   return pts.filter((_, i) => keep[i]);
 }
-function bereinigen(ring, tol = 0.2) {
+function bereinigen(ring, tol = 0.1) {
   let r = ring.slice(); if (r.length > 2 && G.dist(r[0], r[r.length - 1]) < 0.05) r.pop();
   r = r.filter((p, i) => G.dist(p, r[(i + 1) % r.length]) > 0.12);
   if (r.length < 3) return r;
@@ -14493,8 +14596,13 @@ function bereinigen(ring, tol = 0.2) {
   let far = 0, fd = 0; for (let i = 1; i < r.length; i++) { const d = G.dist(r[0], r[i]); if (d > fd) { fd = d; far = i; } }
   const A = dp(r.slice(0, far + 1), tol), B = dp(r.slice(far).concat([r[0]]), tol);
   r = A.slice(0, -1).concat(B.slice(0, -1));
-  // fast gerade Ecken (< 4°) entfernen
-  for (let pass = 0; pass < 3 && r.length > 3; pass++) r = r.filter((p, i) => { const a = r[(i - 1 + r.length) % r.length], b = r[(i + 1) % r.length]; const v1 = [p[0] - a[0], p[1] - a[1]], v2 = [b[0] - p[0], b[1] - p[1]]; const cr = v1[0] * v2[1] - v1[1] * v2[0], dt = v1[0] * v2[0] + v1[1] * v2[1]; return Math.abs(Math.atan2(cr, dt)) > U.rad(4); });
+  // fast gerade Ecken (< 2°) einzeln nacheinander entfernen (nie alle Punkte einer Rundung auf einmal)
+  for (let i = 0, guard = 0; r.length > 3 && guard < 4 * r.length + 20; guard++) {
+    const k = i % r.length, a = r[(k - 1 + r.length) % r.length], p = r[k], b = r[(k + 1) % r.length];
+    const v1 = [p[0] - a[0], p[1] - a[1]], v2 = [b[0] - p[0], b[1] - p[1]], cr = v1[0] * v2[1] - v1[1] * v2[0], dt = v1[0] * v2[0] + v1[1] * v2[1];
+    if (Math.abs(Math.atan2(cr, dt)) < U.rad(2)) r.splice(k, 1); else i++;
+    if (i >= r.length && guard > r.length) break;
+  }
   return r;
 }
 // Hauptrichtung (Winkel modulo 90°, längengewichtet)
@@ -14508,18 +14616,21 @@ function selbstschnitt(r) {
   for (let i = 0; i < n; i++) for (let j = i + 2; j < n; j++) { if (i === 0 && j === n - 1) continue; if (x(r[i], r[(i + 1) % n], r[j], r[(j + 1) % n])) return true; }
   return false;
 }
-// Rechtwinklig stellen, wenn ≥ 80 % des Umfangs fast achsparallel (± 9°) zur Hauptrichtung liegen
+// größter Abstand zwischen zwei Umrissen (beidseitig): so weit weicht der begradigte Umriss vom Original ab
+const ringAbstand = (a, b) => { const d = (p, r) => Math.min(...r.map((q, i) => G.dist(p, G.closestOnSeg(p, q, r[(i + 1) % r.length]).pt))); let m = 0; for (const p of a) m = Math.max(m, d(p, b)); for (const p of b) m = Math.max(m, d(p, a)); return m; };
+// Rechtwinklig stellen, wenn ≥ 90 % des Umfangs fast achsparallel (± 4°) zur Hauptrichtung liegen und keine Ecke um mehr als
+// 0,35 m wandert. So bleiben Grenzbebauung, gemeinsame Wände und schmale Lücken zwischen Nachbargebäuden lagerichtig.
 function rechtwinklig(r) {
   if (r.length < 4) return null;
   const th = hauptrichtung(r), c = Math.cos(-th), s = Math.sin(-th);
   const q = r.map(p => [p[0] * c - p[1] * s, p[0] * s + p[1] * c]);
-  const n = q.length, kl = [], tol = U.rad(9); let ok = 0, sum = 0;
+  const n = q.length, kl = [], tol = U.rad(4); let ok = 0, sum = 0;
   for (let i = 0; i < n; i++) {
     const a = q[i], b = q[(i + 1) % n], L = G.dist(a, b), t = Math.atan2(b[1] - a[1], b[0] - a[0]); sum += L;
     const m = ((t % (Math.PI / 2)) + Math.PI / 2) % (Math.PI / 2), dev = Math.min(m, Math.PI / 2 - m);
     if (dev < tol) { const horiz = Math.abs(Math.cos(t)) > Math.abs(Math.sin(t)); kl.push(horiz ? 'H' : 'V'); ok += L; } else kl.push(null);
   }
-  if (ok / sum < 0.8) return null;
+  if (ok / sum < 0.9) return null;
   // Lage der Kanten: H → z-Mittel, V → x-Mittel
   const val = kl.map((k, i) => { const a = q[i], b = q[(i + 1) % n]; return k === 'H' ? (a[1] + b[1]) / 2 : k === 'V' ? (a[0] + b[0]) / 2 : null; });
   // aufeinanderfolgende gleichgerichtete Kanten liegen auf einer gemeinsamen Flucht (längengewichtet)
@@ -14542,13 +14653,13 @@ function rechtwinklig(r) {
   out = out.filter((p, i) => G.dist(p, out[(i + 1) % out.length]) > 0.1);
   if (out.length < 3) return null;
   const a0 = Math.abs(G.area(q)), a1 = Math.abs(G.area(out));
-  if (Math.abs(a1 - a0) / a0 > 0.05 || selbstschnitt(out)) return null;
+  if (Math.abs(a1 - a0) / a0 > 0.03 || selbstschnitt(out) || ringAbstand(out, q) > 0.35) return null;
   return { th, lokal: out };
 }
 /* Grundriss eines Gebäudeteils: Welt-Ring (Meter) → Bauteil-Geometrie */
 O.form = (ringW, holesW = [], o = {}) => {
-  let r = bereinigen(ringW, o.tol ?? 0.2); if (r.length < 3) return null;
-  const holes = holesW.map(h => bereinigen(h, 0.2)).filter(h => h.length >= 3 && Math.abs(G.area(h)) > 4);
+  let r = bereinigen(ringW, o.tol ?? 0.1); if (r.length < 3) return null;
+  const holes = holesW.map(h => bereinigen(h, 0.1)).filter(h => h.length >= 3 && Math.abs(G.area(h)) > 4);
   const rw = !holes.length && o.ortho !== false ? rechtwinklig(r) : null;
   if (rw) {
     const bb = G.bbox(rw.lokal), cl = [(bb.x0 + bb.x1) / 2, (bb.z0 + bb.z1) / 2], wc = G.rot(cl, rw.th);
@@ -14620,7 +14731,7 @@ const fassade = (h, typ, i) => {
   const e = ED(), farbe = h.farbe;
   if (h.park) return { type: 'parkhaus', color: '#d9dee3', accent: '#5a6573', glass: '#8aa0b2', axis: 2.5, windowRatio: 0.5 };
   if (h.halle) return { type: 'paneel', color: farbe || '#d7dbe0', accent: '#8d969f', glass: '#8aa0b2', axis: 5, windowRatio: 0.3 };
-  if (h.haus || h.klein) return { type: 'loch', color: farbe || '#f1ede4', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.6, windowRatio: h.klein ? 0.2 : 0.45 };
+  if (h.haus || h.klein) return { type: 'loch', color: farbe || '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.6, windowRatio: h.klein ? 0.2 : 0.45 };
   if (e === 'health') return { type: 'band', color: '#eef0ee', accent: FARBEN[i % FARBEN.length], glass: '#7fa4bd', axis: 1.35, windowRatio: 0.5 };
   return { type: typ === 'office' ? 'band' : 'loch', color: farbe || '#eceae5', accent: FARBEN[i % FARBEN.length], glass: '#7fa4bd', axis: 1.5, windowRatio: 0.45 };
 };
@@ -14825,7 +14936,7 @@ O.zielImport = (prj, data, geo, Z, opt) => {
     const kurz = main ? 'H' : kurzName(t, n), fallbackName = e === 'home' ? ({ garage: 'Garage', garages: 'Garagen', carport: 'Carport', shed: 'Gartenhaus' }[t.building] || 'Nebengebäude') : e === 'fabrik' ? (teile[0].h.halle && teile[0].h.floors <= 2 ? 'Halle' : 'Gebäude') : 'Gebäude';
     const name = main ? Z.name : (e === 'home' ? fallbackName : gebName(t, kurz, fallbackName));
     const hasHeli = heli.some(h => G.pointIn(h, w0));
-    const b = Object.assign(HSS.defaults.building(), { id: `osmk_${el.type === 'relation' ? 'r' : ''}${el.id}`, name, kurz, color: e === 'home' ? (main ? '#144477' : '#8d6e63') : FARBEN[(n - 1) % FARBEN.length], info: '' });
+    const b = Object.assign(HSS.defaults.building(), { id: `osmk_${el.type === 'relation' ? 'r' : ''}${el.id}`, name, kurz, color: e === 'home' ? (main ? '#144477' : '#8d969f') : FARBEN[(n - 1) % FARBEN.length], info: '' });
     const q = []; let osmL = 0, ann = 0;
     for (const [i, x] of teile.entries()) {
       const pt = teilAnlegen(b, x, n - 1, teile.length > 1 ? `${name} · Teil ${i + 1}` : name);
@@ -14899,11 +15010,16 @@ O.apply = (prj, data, geo, opt) => {
   const near = (p, buf) => own.some(({ o, bb }) => p[0] > bb.x0 - buf && p[0] < bb.x1 + buf && p[1] > bb.z0 - buf && p[1] < bb.z1 + buf && (G.pointIn(p, o) || (buf > 0 && o.some((q, i) => G.dist(p, G.closestOnSeg(p, q, o[(i + 1) % o.length]).pt) < buf))));
   const inOwn = p => near(p, 0);
   // Gelände des Ziels: dort gilt das Modell, nicht OSM
+  // Nur wenn das Projekt auf dem Gelände schon eigene Außenanlagen hat (Wege, Flächen), gilt dort das Modell.
+  // Bei einem frischen Import kommen Wege, Parkplätze, Grün und Bäume des Geländes mit – sonst wäre das Gelände leer.
   const campus = [];
-  if (opt.campus !== false) {
+  const modellAussen = prj.paths.some(p => !p.umgebung && !String(p.id).startsWith('osmk_') && p.kind !== 'grenze') || prj.areas.some(a => !a.umgebung && !String(a.id).startsWith('osmk_'));
+  if (opt.campus !== false && modellAussen) {
     if (opt.zielRinge) campus.push(...opt.zielRinge);
-    if (e === 'health') for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of O.ringeLL(el).outer) if (r.length >= 4) campus.push(r.map(g => T(g.lat, g.lon))); }
-    const pts = own.flatMap(x => x.o); if (pts.length >= 3 && e !== 'home') campus.push(buffer(hull(pts), 12));
+    let ring = false;
+    if (e === 'health') for (const el of data.elements || []) { const t = el.tags || {}; if (t.amenity === 'hospital' && !t.building) for (const r of O.ringeLL(el).outer) if (r.length >= 4) { campus.push(r.map(g => T(g.lat, g.lon))); ring = true; } }
+    // Hülle um die Modellgebäude nur, wenn es keine Geländegrenze gibt (sonst fielen Nachbargebäude in Einbuchtungen weg)
+    const pts = own.flatMap(x => x.o); if (pts.length >= 3 && e === 'health' && !ring && !opt.zielRinge) campus.push(buffer(hull(pts), 12));
   }
   const inCampus = p => campus.some(r => G.pointIn(p, r));
   const polyHitsOwn = r => r.some(p => inOwn(p)) || own.some(({ o }) => o.some(q => G.pointIn(q, r)));
@@ -14979,7 +15095,7 @@ O.apply = (prj, data, geo, opt) => {
       const w0 = R0.map(g => T(g.lat, g.lon)), c0 = centroid(w0);
       if (inOwn(c0) || inCampus(c0) || polyHitsOwn(w0)) { stat.ausgelassen++; continue; }
       const A0 = Math.abs(G.area(w0)), typ = e === 'home' && (!t.building || t.building === 'yes') && A0 > 45 && A0 < 300 ? 'house' : e === 'home' && (!t.building || t.building === 'yes') && A0 <= 45 ? 'garage' : undefined;
-      const teile = O.bauteile(el, T, opt._parts, { minArea: 12, tol: 0.3, typ }); if (!teile.length) continue;
+      const teile = O.bauteile(el, T, opt._parts, { minArea: 5, typ, ortho: false }); if (!teile.length) continue; // Umgebung: Umrisse lagetreu (nicht begradigt), damit Grenzbebauung und Lücken stimmen
       const b = Object.assign(HSS.defaults.building(), { id: 'osm_b' + (el.type === 'relation' ? 'r' : '') + el.id, name: gebName(t, '', 'Gebäude (Umgebung)').trim(), kurz: '', color: '#8d969f', noLabel: true, umgebung: true });
       for (const x of teile) {
         const pt = teilAnlegen(b, x, 0, b.name, { prefix: 'osm_p' });
@@ -17929,19 +18045,19 @@ if (E === 'fabrik') HSS.PRESETS = {
   hochregallager: { name: 'Hochregallager (Silobauweise)', info: '42 × 26 m, 30 m hoch', p: { shape: 'rect', w: 42, d: 26, floors: 1, floorHeight: 30, basements: 0, facade: { type: 'paneel', color: '#eef0f2', accent: '#0A967A', glass: '#8aa0b2', axis: 4, windowRatio: 0.05 }, roof: { type: 'flach', parapet: 0.5, plant: false } } },
   satteldachhalle: { name: 'Halle mit Satteldach', info: '48 × 24 m, Traufe 7 m, 10° Dachneigung', p: { shape: 'rect', w: 48, d: 24, floors: 1, floorHeight: 7, basements: 0, facade: { type: 'paneel', color: '#d3d7db', accent: '#d9531e', glass: '#8aa0b2', axis: 5, windowRatio: 0.25 }, roof: { type: 'sattel', neigung: 10, parapet: 0, plant: false, color: '#8d969f' } } },
   verwaltung: { name: 'Verwaltungsgebäude', info: '36 × 14 m, 3 Geschosse, Bandfassade', p: { shape: 'rect', w: 36, d: 14, floors: 3, floorHeight: 3.5, basements: 0, facade: { type: 'band', color: '#eef0f2', accent: '#144477', glass: '#6f8fa8', axis: 1.35, windowRatio: 0.55 } } },
-  sozialgebaeude: { name: 'Sozialgebäude (Umkleiden, Kantine)', info: '28 × 12 m, 2 Geschosse', p: { shape: 'rect', w: 28, d: 12, floors: 2, floorHeight: 3.4, basements: 0, facade: { type: 'loch', color: '#f1ede4', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.6, windowRatio: 0.45 } } },
+  sozialgebaeude: { name: 'Sozialgebäude (Umkleiden, Kantine)', info: '28 × 12 m, 2 Geschosse', p: { shape: 'rect', w: 28, d: 12, floors: 2, floorHeight: 3.4, basements: 0, facade: { type: 'loch', color: '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.6, windowRatio: 0.45 } } },
   werkstatt: { name: 'Werkstatt / Instandhaltung', info: '24 × 16 m, 6 m, Pultdach', p: { shape: 'rect', w: 24, d: 16, floors: 1, floorHeight: 6, basements: 0, facade: { type: 'paneel', color: '#d7dbe0', accent: '#5a6573', glass: '#8aa0b2', axis: 4, windowRatio: 0.3 }, roof: { type: 'pult', neigung: 6, parapet: 0, plant: false } } },
-  energiezentrale: { name: 'Energiezentrale', info: '18 × 12 m, 8 m', p: { shape: 'rect', w: 18, d: 12, floors: 1, floorHeight: 8, basements: 0, facade: { type: 'klinker', color: '#9c5a3c', accent: '#f4f1ea', glass: '#5d7489', axis: 3, windowRatio: 0.2 } } },
+  energiezentrale: { name: 'Energiezentrale', info: '18 × 12 m, 8 m', p: { shape: 'rect', w: 18, d: 12, floors: 1, floorHeight: 8, basements: 0, facade: { type: 'paneel', color: '#d7dbe0', accent: '#5a6573', glass: '#8aa0b2', axis: 3, windowRatio: 0.2 } } },
   pforte: { name: 'Pforte', info: '8 × 6 m, eingeschossig', p: { shape: 'rect', w: 8, d: 6, floors: 1, floorHeight: 3.2, basements: 0, facade: { type: 'glas', color: '#e9ecef', accent: '#144477', glass: '#7fa4bd', axis: 1.5 }, roof: { type: 'flach', parapet: 0.3, plant: false } } },
   silo: { name: 'Silo / Tank (rund)', info: 'Ø 8 m, 16 m hoch', p: { shape: 'rund', w: 8, d: 8, floors: 1, floorHeight: 16, basements: 0, use: 'tank', facade: { type: 'paneel', color: '#dfe3e6', accent: '#a7b0ba', glass: '#a7b0ba', axis: 3, windowRatio: 0.1 }, roof: { type: 'flach', parapet: 0.3, plant: false } } },
   parkhaus: P0.parkhaus
 };
 if (E === 'home') HSS.PRESETS = {
-  efh: { name: 'Einfamilienhaus', info: '11 × 9 m, 2 Geschosse, Satteldach 38°, Keller', p: { shape: 'rect', w: 11, d: 9, floors: 2, floorHeight: 2.8, basements: 1, basementHeight: 2.5, facade: { type: 'loch', color: '#f1ede4', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.6, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 38, parapet: 0, plant: false, color: '#9b4a32' } } },
+  efh: { name: 'Einfamilienhaus', info: '11 × 9 m, 2 Geschosse, Satteldach 38°, Keller', p: { shape: 'rect', w: 11, d: 9, floors: 2, floorHeight: 2.8, basements: 1, basementHeight: 2.5, facade: { type: 'loch', color: '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.6, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 38, parapet: 0, plant: false, color: '#5f6469' } } },
   stadtvilla: { name: 'Stadtvilla', info: '11 × 11 m, 2 Geschosse, Zeltdach 22°', p: { shape: 'rect', w: 11, d: 11, floors: 2, floorHeight: 2.85, basements: 0, facade: { type: 'loch', color: '#f4f2ee', accent: '#5a6573', glass: '#6f8fa8', axis: 1.7, windowRatio: 0.5 }, roof: { type: 'zelt', neigung: 22, parapet: 0, plant: false, color: '#4a4f55' } } },
-  bungalow: { name: 'Bungalow', info: '15 × 11 m, eingeschossig, Walmdach 25°', p: { shape: 'rect', w: 15, d: 11, floors: 1, floorHeight: 2.9, basements: 0, facade: { type: 'loch', color: '#f1ede4', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.8, windowRatio: 0.5 }, roof: { type: 'walm', neigung: 25, parapet: 0, plant: false, color: '#7d2f22' } } },
-  doppelhaus: { name: 'Doppelhaushälfte', info: '7 × 10 m, 2 Geschosse, Satteldach 45°', p: { shape: 'rect', w: 7, d: 10, floors: 2, floorHeight: 2.8, basements: 1, basementHeight: 2.5, facade: { type: 'klinker', color: '#9c5a3c', accent: '#f4f1ea', glass: '#5d7489', axis: 1.6 }, roof: { type: 'sattel', neigung: 45, richtung: 90, parapet: 0, plant: false, color: '#4a4f55' } } },
-  reihenhaus: { name: 'Reihenhaus', info: '6 × 10 m, 2 Geschosse, Satteldach', p: { shape: 'rect', w: 6, d: 10, floors: 2, floorHeight: 2.75, basements: 0, facade: { type: 'loch', color: '#efe2a8', accent: '#8d6e63', glass: '#6f8fa8', axis: 1.5, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 40, richtung: 90, parapet: 0, plant: false, color: '#9b4a32' } } },
+  bungalow: { name: 'Bungalow', info: '15 × 11 m, eingeschossig, Walmdach 25°', p: { shape: 'rect', w: 15, d: 11, floors: 1, floorHeight: 2.9, basements: 0, facade: { type: 'loch', color: '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.8, windowRatio: 0.5 }, roof: { type: 'walm', neigung: 25, parapet: 0, plant: false, color: '#4a4f55' } } },
+  doppelhaus: { name: 'Doppelhaushälfte', info: '7 × 10 m, 2 Geschosse, Satteldach 45°', p: { shape: 'rect', w: 7, d: 10, floors: 2, floorHeight: 2.8, basements: 1, basementHeight: 2.5, facade: { type: 'loch', color: '#f1ede4', accent: '#5a6573', glass: '#6f8fa8', axis: 1.6, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 45, richtung: 90, parapet: 0, plant: false, color: '#4a4f55' } } },
+  reihenhaus: { name: 'Reihenhaus', info: '6 × 10 m, 2 Geschosse, Satteldach', p: { shape: 'rect', w: 6, d: 10, floors: 2, floorHeight: 2.75, basements: 0, facade: { type: 'loch', color: '#efe2a8', accent: '#5a6573', glass: '#6f8fa8', axis: 1.5, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 40, richtung: 90, parapet: 0, plant: false, color: '#5f6469' } } },
   modern: { name: 'Modernes Haus (Flachdach)', info: '14 × 9 m, 2 Geschosse, Kubus', p: { shape: 'rect', w: 14, d: 9, floors: 2, floorHeight: 3.0, basements: 0, facade: { type: 'glas', color: '#f4f5f7', accent: '#3d4146', glass: '#7fa4bd', axis: 1.8 }, roof: { type: 'flach', parapet: 0.3, plant: false } } },
   mfh: { name: 'Mehrfamilienhaus', info: '22 × 12 m, 4 Geschosse, Satteldach 35°', p: { shape: 'rect', w: 22, d: 12, floors: 4, floorHeight: 2.9, basements: 1, basementHeight: 2.5, facade: { type: 'loch', color: '#eceae5', accent: '#5a6573', glass: '#6f8fa8', axis: 1.5, windowRatio: 0.45 }, roof: { type: 'sattel', neigung: 35, parapet: 0, plant: false, color: '#6f757c' } } },
   garage: { name: 'Garage', info: '3,5 × 6,5 m, Flachdach', p: { shape: 'rect', w: 3.5, d: 6.5, floors: 1, floorHeight: 2.6, basements: 0, facade: { type: 'loch', color: '#eceae5', accent: '#8d969f', glass: '#8aa0b2', axis: 3, windowRatio: 0.15 }, roof: { type: 'flach', parapet: 0.15, plant: false } } },
@@ -18083,8 +18199,8 @@ HSS.buildDemoHome = () => {
   prj.meta.notes = 'Demo der Home Planning Suite: Einfamilienhaus mit Keller, Garage, Garten und Terrasse.';
   prj.terrain = { size: 220, color: '#b9cf9a', tilt: { dir: 0, pct: 0 }, hills: [] };
   prj.buildings.push({ id: 'bH', name: 'Musterhaus', kurz: 'H', color: '#144477', hauptgebaeude: true, parts: [pre('efh', { id: 'H1', name: 'Wohnhaus', x: 0, z: 0, w: 12, d: 9.5 })] });
-  prj.buildings.push({ id: 'bG', name: 'Garage', kurz: 'G', color: '#8d6e63', parts: [pre('garage', { id: 'G1', name: 'Garage', x: 9.0, z: -1.0, w: 3.6, d: 7 })] });
-  prj.buildings.push({ id: 'bGh', name: 'Gartenhaus', kurz: 'Gh', color: '#8d6e63', parts: [pre('gartenhaus', { id: 'GH1', name: 'Gartenhaus', x: -9, z: 13 })] });
+  prj.buildings.push({ id: 'bG', name: 'Garage', kurz: 'G', color: '#5a6573', parts: [pre('garage', { id: 'G1', name: 'Garage', x: 9.0, z: -1.0, w: 3.6, d: 7 })] });
+  prj.buildings.push({ id: 'bGh', name: 'Gartenhaus', kurz: 'Gh', color: '#5a6573', parts: [pre('gartenhaus', { id: 'GH1', name: 'Gartenhaus', x: -9, z: 13 })] });
   // Nachbarhäuser (Umgebung)
   prj.buildings.push({ id: 'bN1', name: 'Nachbarhaus', kurz: '', color: '#8d969f', umgebung: true, noLabel: true, parts: [pre('efh', { id: 'N1', name: 'Nachbarhaus', x: -26, z: 1, w: 10, d: 9, basements: 0, roof: { type: 'sattel', neigung: 42, color: '#6f757c' } })] });
   prj.buildings.push({ id: 'bN2', name: 'Nachbarhaus', kurz: '', color: '#8d969f', umgebung: true, noLabel: true, parts: [pre('stadtvilla', { id: 'N2', name: 'Nachbarhaus', x: 28, z: 2, basements: 0 })] });

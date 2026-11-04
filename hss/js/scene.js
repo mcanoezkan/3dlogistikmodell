@@ -149,7 +149,7 @@ S3.rebuild = (scope = 'all') => {
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
-      if (V.floor === gf || (V.floor === null && V.shell === 'transparent' && !V.zonen)) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
+      if (V.floor === gf || (V.floor === null && V.shell === 'transparent' && !V.zonen)) L.interior.add(bcached(pt.id + '@' + f, ptKey + JSON.stringify(HSS.interior(pt.id, f)) + JSON.stringify(HSS.schaechte(pt, f)) + vkey + (V.floor === null ? 'n' : 'f'), () => HSS.buildInterior(pt, f, { cut: V.floor === null ? 'aus' : V.cut, explode: V.explode, m2: V.m2 })));
     }
   }
   for (const br of prj.bridges) {

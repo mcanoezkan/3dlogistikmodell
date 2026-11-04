@@ -82,6 +82,7 @@ P.setQuality = (i, auto) => {
   const maxI = (window.devicePixelRatio || 1) >= 1.5 ? 3 : 2;
   i = Math.max(0, Math.min(maxI, i));
   if (auto && P.qLocked) return;
+  if (auto) i = Math.max(1, i); // automatisch nie unter die volle Bildschirmauflösung (sonst wirkt das Modell unscharf und grob)
   if (i === P.qIndex && P._qInit) return;
   P._qInit = true; P.qIndex = i;
   const q = Q[i], R = S3.renderer;

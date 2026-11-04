@@ -23,13 +23,24 @@ Fabric übernimmt zusätzlich Tanks, Silos, Gasbehälter und Wassertürme als Ru
 | Gebäude aus Multipolygonen (mehrere Teilstücke) wurden zerstückelt oder als Dreiecksfächer falsch gezeichnet | Die Teilstücke (`outer`/`inner`) werden zu geschlossenen Ringen zusammengesetzt |
 | Innenhöfe waren zugebaut | Innenringe bleiben als Hof offen (`polyHoles` im Bauteil) |
 | Gebäude mit gestaffelten Höhen (Sockel, Turm, Brücke) kamen als ein Klotz mit einer Höhe | `building:part` wird genutzt: jedes Teil mit eigener Höhe, `min_height`/`building:min_level` (schwebende Teile, Brücken) und Dachform |
-| Zackige, schiefe Umrisse mit vielen Punkten, die man von Hand begradigen musste | Doppelpunkte, Zacken < 0,2 m und fast gerade Ecken werden entfernt. Liegen ≥ 80 % des Umfangs fast achsparallel (± 9°), wird der Umriss exakt rechtwinklig gestellt (Flächenabweichung < 5 %, kein Selbstschnitt) |
+| Zackige, schiefe Umrisse mit vielen Punkten, die man von Hand begradigen musste | Doppelpunkte, Zacken < 0,1 m und fast gerade Ecken (< 2°) werden entfernt. Nur Modellgebäude (Ziel des Imports) werden rechtwinklig gestellt, und nur wenn ≥ 90 % des Umfangs fast achsparallel liegen (± 4°) und keine Ecke um mehr als 0,35 m wandert. Gebäude der Umgebung bleiben lagetreu, damit Grenzbebauung, gemeinsame Wände und Lücken zwischen Nachbarn stimmen |
 | Rechteckige Gebäude waren freie Vielecke ohne Griffe für Länge und Tiefe | Rechtecke werden als Rechteck-Bauteil mit Drehung angelegt (Griffe ⇔ ⇕ funktionieren). Vielecke liegen lokal in der Gebäudeachse |
 | Hallen mit 3 × 3,8 m statt einer hohen Halle | `industrial`, `warehouse`, `manufacture`, `hangar` … werden zu Eingeschossern mit 5,5–11 m (bzw. `height` minus Dach) |
 | Höhe ignorierte Dach und Sockel | Wandhöhe = `height` − `min_height` − `roof:height` (oder `roof:levels`). Ohne Dachhöhe wird sie für geneigte Dächer geschätzt |
 | Nur Flachdächer | `roof:shape` → Satteldach, Walmdach, Zeltdach, Pultdach, Sheddach. Ohne Angabe: Wohnhäuser Satteldach, Nebengebäude flach bzw. Pult. `roof:angle`, `roof:height`, `roof:colour`, `building:colour` werden übernommen |
 | Overpass überlastet → Import bricht ab | Ersatzweg über die OSM-API (`api.openstreetmap.org/api/0.6/map`), kachelweise bis 450 m Radius |
 | Nicht erkennbar, was aus OSM stammt | Inspektor zeigt die Herkunft je Gebäude: Grundriss (OSM oder ALKIS), Geschosse (laut OSM, aus Höhe geschätzt, **angenommen – bitte prüfen**), Dachform |
+
+## Nachbesserung Genauigkeit (Nov. 2026)
+
+| Beobachtung | Ursache | Änderung |
+|---|---|---|
+| Umgebung wirkte gröber als vorher | Die automatische Leistungsanpassung schaltete auf „sparsam“ (75 % Bildauflösung), sobald mehr Gebäude und geneigte Dächer im Bild waren | Automatisch nie unter volle Auflösung („mittel“); „sparsam“ nur noch von Hand bzw. „maximal flüssig“ |
+| Nachbargebäude verschoben, Lücken oder Überlappungen zwischen Reihenhäusern | Jedes Gebäude wurde einzeln rechtwinklig gestellt (± 9°), gemeinsame Wände wanderten unterschiedlich | Umgebung lagetreu; Modellgebäude nur bei kleiner Abweichung (± 4°, max. 0,35 m) |
+| Garagen, Schuppen, Kioske fehlten | Mindestfläche der Umgebung 12 m² | Mindestfläche 5 m² |
+| Werks- bzw. Klinikgelände nach dem Import leer (keine Wege, Parkplätze, Grün) | Auf dem Zielgelände wurden OSM-Wege und -Flächen immer verworfen; zusätzlich fiel alles in der konvexen Hülle der Modellgebäude weg (auch Nachbarn in Einbuchtungen) | Gelände nur dann ausgespart, wenn das Projekt dort schon eigene Außenanlagen hat; Hülle nur noch ohne Geländegrenze |
+| Häuser mit roten Dächern sahen wie Backsteinbauten aus | Standardfarbe geneigter Dächer war Ziegelrot | Standard anthrazit/grau; Rot nur, wenn OSM `roof:colour=red` angibt. Bausteine ohne Klinker (Doppelhaus, Energiezentrale) |
+| Bäume und Sträucher auf Wegen oder im Teich | Zufällige Bepflanzung prüfte nur Gebäude | Bepflanzung hält Abstand zu Wegen, Straßen, Wasser, Plätzen, Parkplätzen und Einzelbäumen |
 
 ## Amtliche Daten (bereits eingebaut)
 

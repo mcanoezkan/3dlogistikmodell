@@ -6,8 +6,8 @@
   "id": "prj_d1h6pymmm_v2",
   "name": "Klinikum Bielefeld-Mitte – Bestand (NIZ, U2, Bunker, EG Hauptgebäude)",
   "created": "2026-10-15T22:35:38.638Z",
-  "modified": "2026-10-28T20:00:00.000Z",
-  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.",
+  "modified": "2026-11-04T21:30:00.000Z",
+  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.",
   "standort": {
    "id": "bielefeld",
    "variante": "ist",
@@ -44872,29 +44872,6 @@
    "standort": true
   },
   {
-   "id": "path_bie_w63",
-   "name": "Campusweg",
-   "kind": "weg",
-   "points": [
-    [
-     -167.7,
-     22.6
-    ],
-    [
-     -154.2,
-     21.5
-    ]
-   ],
-   "width": 3.5,
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true
-  },
-  {
    "id": "path_bie_w64",
    "name": "Campusweg",
    "kind": "weg",
@@ -45664,33 +45641,6 @@
    "standort": true
   },
   {
-   "id": "path_bie_w96",
-   "name": "Campusweg",
-   "kind": "weg",
-   "points": [
-    [
-     -83.7,
-     143.2
-    ],
-    [
-     -84.5,
-     134.5
-    ],
-    [
-     -85,
-     128.5
-    ]
-   ],
-   "width": 3.5,
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true
-  },
-  {
    "id": "path_bie_w101",
    "name": "Campusweg",
    "kind": "weg",
@@ -45970,7 +45920,7 @@
    "kind": "weg",
    "points": [
     [
-     -40.5,
+     -43.6,
      -16.1
     ],
     [
@@ -45990,7 +45940,7 @@
      -17.1
     ],
     [
-     -60,
+     -60.0,
      -21.8
     ],
     [
@@ -46200,49 +46150,6 @@
     [
      29.2,
      -85.9
-    ]
-   ],
-   "width": 3.5,
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true
-  },
-  {
-   "id": "path_bie_w130",
-   "name": "Campusweg",
-   "kind": "weg",
-   "points": [
-    [
-     -29.5,
-     63
-    ],
-    [
-     -29.6,
-     49.8
-    ],
-    [
-     -20.4,
-     49.9
-    ],
-    [
-     -20.4,
-     41
-    ],
-    [
-     -19.9,
-     40.3
-    ],
-    [
-     -19.9,
-     39.6
-    ],
-    [
-     -19.9,
-     38.7
     ]
    ],
    "width": 3.5,
@@ -46473,29 +46380,6 @@
     [
      -99.7,
      -38.4
-    ]
-   ],
-   "width": 3.5,
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true
-  },
-  {
-   "id": "path_bie_w140",
-   "name": "Campusweg",
-   "kind": "weg",
-   "points": [
-    [
-     -1.9,
-     25.4
-    ],
-    [
-     -18.9,
-     25.3
     ]
    ],
    "width": 3.5,
@@ -47519,6 +47403,4562 @@
    "z": 112.48,
    "w": 12.19,
    "d": 8.56
+  },
+  {
+   "id": "area_campus_gruen_0",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     97.26,
+     -54.29
+    ],
+    [
+     93.02,
+     -50.99
+    ],
+    [
+     93.02,
+     -49.68
+    ],
+    [
+     99.99,
+     -49.63
+    ],
+    [
+     98.64,
+     -53.78
+    ],
+    [
+     101.01,
+     -56.49
+    ],
+    [
+     104.69,
+     -58.5
+    ],
+    [
+     106.61,
+     -58.32
+    ],
+    [
+     108.55,
+     -56.68
+    ],
+    [
+     111.16,
+     -58.44
+    ],
+    [
+     114.91,
+     -57.47
+    ],
+    [
+     115.24,
+     -55.72
+    ],
+    [
+     114.3,
+     -54.32
+    ],
+    [
+     109.68,
+     -54.24
+    ],
+    [
+     104.8,
+     -50.58
+    ],
+    [
+     106.19,
+     -47.98
+    ],
+    [
+     106.41,
+     -44.31
+    ],
+    [
+     104.84,
+     -40.94
+    ],
+    [
+     107.53,
+     -39.52
+    ],
+    [
+     108.07,
+     -36.13
+    ],
+    [
+     110.5,
+     -35.99
+    ],
+    [
+     115.25,
+     -39.25
+    ],
+    [
+     115.22,
+     -41.73
+    ],
+    [
+     113.21,
+     -44.63
+    ],
+    [
+     114.15,
+     -48.47
+    ],
+    [
+     119.18,
+     -52.11
+    ],
+    [
+     124.05,
+     -54.18
+    ],
+    [
+     124.8,
+     -59.34
+    ],
+    [
+     127.22,
+     -59.85
+    ],
+    [
+     129.19,
+     -57.05
+    ],
+    [
+     133.11,
+     -56.91
+    ],
+    [
+     136.1,
+     -55.49
+    ],
+    [
+     135.69,
+     -60.06
+    ],
+    [
+     136.67,
+     -65.29
+    ],
+    [
+     139.45,
+     -67.41
+    ],
+    [
+     145.93,
+     -67.1
+    ],
+    [
+     146.93,
+     -65.13
+    ],
+    [
+     145.3,
+     -62.58
+    ],
+    [
+     145.28,
+     -57.46
+    ],
+    [
+     146.74,
+     -55.28
+    ],
+    [
+     146.54,
+     -50.53
+    ],
+    [
+     145.29,
+     -49.45
+    ],
+    [
+     142.62,
+     -49.31
+    ],
+    [
+     141.78,
+     -47.26
+    ],
+    [
+     140.3,
+     -46.46
+    ],
+    [
+     134.95,
+     -46.49
+    ],
+    [
+     130.07,
+     -49.39
+    ],
+    [
+     128.41,
+     -49.21
+    ],
+    [
+     128.34,
+     -48.18
+    ],
+    [
+     130.29,
+     -46.53
+    ],
+    [
+     130.09,
+     -44.53
+    ],
+    [
+     126.15,
+     -43.32
+    ],
+    [
+     125.14,
+     -41.1
+    ],
+    [
+     122.78,
+     -39.65
+    ],
+    [
+     124.46,
+     -35.98
+    ],
+    [
+     128.14,
+     -32.97
+    ],
+    [
+     128.75,
+     -37.46
+    ],
+    [
+     129.82,
+     -38.7
+    ],
+    [
+     134.35,
+     -39.06
+    ],
+    [
+     136.58,
+     -37.49
+    ],
+    [
+     140.29,
+     -37.51
+    ],
+    [
+     141.71,
+     -43.2
+    ],
+    [
+     144.93,
+     -43.59
+    ],
+    [
+     146.77,
+     -46.45
+    ],
+    [
+     153.91,
+     -46.47
+    ],
+    [
+     155.6,
+     -47.97
+    ],
+    [
+     155.78,
+     -53.52
+    ],
+    [
+     154.32,
+     -56.78
+    ],
+    [
+     155.75,
+     -58.73
+    ],
+    [
+     156.16,
+     -62.18
+    ],
+    [
+     160.05,
+     -63.18
+    ],
+    [
+     160.27,
+     -68.58
+    ],
+    [
+     156.79,
+     -73.39
+    ],
+    [
+     153.9,
+     -71.96
+    ],
+    [
+     150.77,
+     -73.45
+    ],
+    [
+     148.11,
+     -71.99
+    ],
+    [
+     144.05,
+     -71.99
+    ],
+    [
+     140.76,
+     -76.27
+    ],
+    [
+     137.27,
+     -77.95
+    ],
+    [
+     133.57,
+     -77.77
+    ],
+    [
+     131.32,
+     -72.68
+    ],
+    [
+     127.96,
+     -69.28
+    ],
+    [
+     125.99,
+     -68.88
+    ],
+    [
+     124.31,
+     -70.16
+    ],
+    [
+     124.25,
+     -73.17
+    ],
+    [
+     122.69,
+     -76.32
+    ],
+    [
+     120.41,
+     -78.56
+    ],
+    [
+     118.3,
+     -72.33
+    ],
+    [
+     122.14,
+     -69.81
+    ],
+    [
+     124.25,
+     -66.25
+    ],
+    [
+     123.68,
+     -62.03
+    ],
+    [
+     122.14,
+     -61.32
+    ],
+    [
+     119.26,
+     -61.82
+    ],
+    [
+     117.97,
+     -64.28
+    ],
+    [
+     116.01,
+     -64.91
+    ],
+    [
+     107.48,
+     -71.92
+    ],
+    [
+     105.06,
+     -71.92
+    ],
+    [
+     103.11,
+     -70.49
+    ],
+    [
+     99.08,
+     -70.42
+    ],
+    [
+     97.28,
+     -68.5
+    ],
+    [
+     99.37,
+     -64.34
+    ],
+    [
+     98.83,
+     -59.84
+    ],
+    [
+     97.3,
+     -58.05
+    ]
+   ],
+   "x": 126.6,
+   "z": -55.8,
+   "w": 67.3,
+   "d": 45.6,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_1",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     27.08,
+     -100.56
+    ],
+    [
+     27.35,
+     -89.99
+    ],
+    [
+     31.0,
+     -89.99
+    ],
+    [
+     38.36,
+     -94.21
+    ],
+    [
+     42.1,
+     -95.02
+    ],
+    [
+     44.53,
+     -93.62
+    ],
+    [
+     44.84,
+     -90.18
+    ],
+    [
+     46.58,
+     -88.49
+    ],
+    [
+     51.92,
+     -88.47
+    ],
+    [
+     53.55,
+     -89.79
+    ],
+    [
+     56.18,
+     -89.95
+    ],
+    [
+     58.56,
+     -88.49
+    ],
+    [
+     60.83,
+     -88.45
+    ],
+    [
+     63.66,
+     -90.08
+    ],
+    [
+     66.48,
+     -89.45
+    ],
+    [
+     67.71,
+     -87.04
+    ],
+    [
+     71.68,
+     -87.06
+    ],
+    [
+     73.68,
+     -85.47
+    ],
+    [
+     76.0,
+     -85.49
+    ],
+    [
+     78.68,
+     -86.95
+    ],
+    [
+     84.14,
+     -83.97
+    ],
+    [
+     88.11,
+     -85.41
+    ],
+    [
+     92.99,
+     -82.51
+    ],
+    [
+     96.35,
+     -82.2
+    ],
+    [
+     98.74,
+     -78.19
+    ],
+    [
+     102.14,
+     -76.47
+    ],
+    [
+     103.22,
+     -76.94
+    ],
+    [
+     103.78,
+     -80.15
+    ],
+    [
+     106.15,
+     -81.32
+    ],
+    [
+     106.25,
+     -83.96
+    ],
+    [
+     107.51,
+     -85.29
+    ],
+    [
+     118.11,
+     -85.41
+    ],
+    [
+     126.85,
+     -80.95
+    ],
+    [
+     130.1,
+     -82.74
+    ],
+    [
+     130.53,
+     -85.92
+    ],
+    [
+     132.39,
+     -87.1
+    ],
+    [
+     139.11,
+     -86.91
+    ],
+    [
+     141.06,
+     -85.49
+    ],
+    [
+     143.91,
+     -85.41
+    ],
+    [
+     146.86,
+     -82.59
+    ],
+    [
+     149.14,
+     -81.81
+    ],
+    [
+     150.12,
+     -79.59
+    ],
+    [
+     153.01,
+     -79.29
+    ],
+    [
+     154.56,
+     -77.99
+    ],
+    [
+     157.06,
+     -78.01
+    ],
+    [
+     158.77,
+     -79.82
+    ],
+    [
+     158.75,
+     -82.17
+    ],
+    [
+     157.1,
+     -85.16
+    ],
+    [
+     151.86,
+     -86.05
+    ],
+    [
+     148.4,
+     -91.34
+    ],
+    [
+     146.24,
+     -91.74
+    ],
+    [
+     146.57,
+     -94.38
+    ],
+    [
+     138.09,
+     -94.3
+    ],
+    [
+     136.4,
+     -95.57
+    ],
+    [
+     116.84,
+     -96.05
+    ],
+    [
+     115.5,
+     -96.67
+    ],
+    [
+     115.15,
+     -100.08
+    ],
+    [
+     112.93,
+     -101.1
+    ],
+    [
+     111.97,
+     -103.28
+    ],
+    [
+     107.55,
+     -103.61
+    ],
+    [
+     104.41,
+     -106.44
+    ],
+    [
+     99.27,
+     -106.39
+    ],
+    [
+     96.55,
+     -102.41
+    ],
+    [
+     93.06,
+     -101.92
+    ],
+    [
+     91.11,
+     -100.49
+    ],
+    [
+     86.95,
+     -100.49
+    ],
+    [
+     84.85,
+     -101.95
+    ],
+    [
+     78.35,
+     -101.92
+    ],
+    [
+     76.75,
+     -97.7
+    ],
+    [
+     66.43,
+     -97.44
+    ],
+    [
+     64.8,
+     -94.82
+    ],
+    [
+     62.14,
+     -94.32
+    ],
+    [
+     60.38,
+     -95.03
+    ],
+    [
+     59.14,
+     -97.44
+    ],
+    [
+     56.61,
+     -95.99
+    ],
+    [
+     53.64,
+     -96.12
+    ],
+    [
+     51.85,
+     -98.86
+    ],
+    [
+     47.26,
+     -99.32
+    ],
+    [
+     45.71,
+     -101.92
+    ],
+    [
+     39.09,
+     -100.3
+    ],
+    [
+     35.56,
+     -103.39
+    ],
+    [
+     31.38,
+     -103.34
+    ],
+    [
+     29.38,
+     -104.94
+    ],
+    [
+     28.38,
+     -104.53
+    ],
+    [
+     28.19,
+     -101.92
+    ]
+   ],
+   "x": 92.9,
+   "z": -91.5,
+   "w": 131.7,
+   "d": 30.0,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_2",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     139.3,
+     -14.09
+    ],
+    [
+     141.64,
+     -12.81
+    ],
+    [
+     142.56,
+     -10.64
+    ],
+    [
+     145.79,
+     -8.95
+    ],
+    [
+     148.04,
+     -10.41
+    ],
+    [
+     148.28,
+     -11.62
+    ],
+    [
+     143.92,
+     -13.06
+    ],
+    [
+     143.82,
+     -16.18
+    ],
+    [
+     144.76,
+     -17.58
+    ],
+    [
+     147.9,
+     -17.18
+    ],
+    [
+     148.73,
+     -13.17
+    ],
+    [
+     152.38,
+     -13.56
+    ],
+    [
+     152.21,
+     -16.77
+    ],
+    [
+     153.79,
+     -22.66
+    ],
+    [
+     151.05,
+     -26.72
+    ],
+    [
+     149.01,
+     -27.41
+    ],
+    [
+     146.56,
+     -29.89
+    ],
+    [
+     145.37,
+     -29.82
+    ],
+    [
+     142.47,
+     -26.93
+    ],
+    [
+     139.34,
+     -20.74
+    ]
+   ],
+   "x": 146.5,
+   "z": -19.4,
+   "w": 14.5,
+   "d": 20.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_3",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     89.8,
+     -15.8
+    ],
+    [
+     90.05,
+     17.79
+    ],
+    [
+     88.8,
+     22.5
+    ],
+    [
+     90.48,
+     22.55
+    ],
+    [
+     91.27,
+     21.91
+    ],
+    [
+     91.19,
+     18.07
+    ],
+    [
+     93.68,
+     15.39
+    ],
+    [
+     102.55,
+     15.51
+    ],
+    [
+     105.02,
+     22.32
+    ],
+    [
+     109.22,
+     22.65
+    ],
+    [
+     110.74,
+     24.32
+    ],
+    [
+     110.52,
+     27.39
+    ],
+    [
+     106.52,
+     28.78
+    ],
+    [
+     106.46,
+     31.52
+    ],
+    [
+     109.43,
+     34.45
+    ],
+    [
+     113.4,
+     35.32
+    ],
+    [
+     114.14,
+     40.41
+    ],
+    [
+     120.32,
+     40.02
+    ],
+    [
+     125.74,
+     43.35
+    ],
+    [
+     125.74,
+     45.18
+    ],
+    [
+     124.34,
+     46.77
+    ],
+    [
+     124.19,
+     49.58
+    ],
+    [
+     122.78,
+     51.83
+    ],
+    [
+     126.53,
+     52.98
+    ],
+    [
+     127.02,
+     55.89
+    ],
+    [
+     124.25,
+     57.28
+    ],
+    [
+     121.08,
+     61.64
+    ],
+    [
+     116.88,
+     61.66
+    ],
+    [
+     114.8,
+     60.05
+    ],
+    [
+     111.02,
+     60.28
+    ],
+    [
+     110.83,
+     63.16
+    ],
+    [
+     109.28,
+     65.03
+    ],
+    [
+     109.35,
+     71.83
+    ],
+    [
+     107.78,
+     74.33
+    ],
+    [
+     108.5,
+     75.05
+    ],
+    [
+     113.36,
+     75.15
+    ],
+    [
+     114.08,
+     78.01
+    ],
+    [
+     122.14,
+     77.92
+    ],
+    [
+     123.82,
+     78.78
+    ],
+    [
+     124.24,
+     82.38
+    ],
+    [
+     122.82,
+     84.33
+    ],
+    [
+     122.52,
+     87.39
+    ],
+    [
+     121.01,
+     88.51
+    ],
+    [
+     117.01,
+     88.61
+    ],
+    [
+     115.47,
+     90.07
+    ],
+    [
+     115.12,
+     93.28
+    ],
+    [
+     113.8,
+     94.91
+    ],
+    [
+     113.82,
+     98.48
+    ],
+    [
+     118.31,
+     99.14
+    ],
+    [
+     122.1,
+     101.03
+    ],
+    [
+     122.84,
+     104.82
+    ],
+    [
+     124.5,
+     106.49
+    ],
+    [
+     127.45,
+     105.09
+    ],
+    [
+     131.29,
+     104.99
+    ],
+    [
+     131.6,
+     100.84
+    ],
+    [
+     128.26,
+     100.32
+    ],
+    [
+     125.94,
+     97.78
+    ],
+    [
+     125.55,
+     89.92
+    ],
+    [
+     126.56,
+     88.57
+    ],
+    [
+     128.43,
+     88.39
+    ],
+    [
+     131.32,
+     90.78
+    ],
+    [
+     132.07,
+     92.87
+    ],
+    [
+     134.14,
+     93.03
+    ],
+    [
+     135.03,
+     89.48
+    ],
+    [
+     137.72,
+     88.06
+    ],
+    [
+     137.94,
+     83.82
+    ],
+    [
+     140.37,
+     81.22
+    ],
+    [
+     140.77,
+     75.42
+    ],
+    [
+     139.06,
+     73.61
+    ],
+    [
+     135.51,
+     73.09
+    ],
+    [
+     134.67,
+     70.98
+    ],
+    [
+     135.68,
+     69.39
+    ],
+    [
+     139.06,
+     68.99
+    ],
+    [
+     140.72,
+     67.33
+    ],
+    [
+     140.82,
+     51.32
+    ],
+    [
+     143.78,
+     48.58
+    ],
+    [
+     141.55,
+     45.21
+    ],
+    [
+     139.07,
+     46.62
+    ],
+    [
+     137.19,
+     46.25
+    ],
+    [
+     135.93,
+     43.68
+    ],
+    [
+     132.36,
+     42.95
+    ],
+    [
+     131.21,
+     40.23
+    ],
+    [
+     132.99,
+     37.66
+    ],
+    [
+     137.3,
+     37.56
+    ],
+    [
+     139.02,
+     38.71
+    ],
+    [
+     141.36,
+     44.83
+    ],
+    [
+     145.01,
+     42.12
+    ],
+    [
+     145.27,
+     37.91
+    ],
+    [
+     143.87,
+     36.08
+    ],
+    [
+     143.72,
+     31.77
+    ],
+    [
+     141.69,
+     28.44
+    ],
+    [
+     142.71,
+     26.3
+    ],
+    [
+     145.27,
+     24.42
+    ],
+    [
+     143.56,
+     22.61
+    ],
+    [
+     141.14,
+     22.68
+    ],
+    [
+     139.32,
+     25.83
+    ],
+    [
+     139.03,
+     29.12
+    ],
+    [
+     134.61,
+     31.51
+    ],
+    [
+     132.15,
+     30.57
+    ],
+    [
+     131.45,
+     27.0
+    ],
+    [
+     128.25,
+     27.58
+    ],
+    [
+     125.33,
+     25.55
+    ],
+    [
+     124.38,
+     25.97
+    ],
+    [
+     124.19,
+     28.49
+    ],
+    [
+     123.12,
+     29.79
+    ],
+    [
+     119.89,
+     30.64
+    ],
+    [
+     116.64,
+     29.88
+    ],
+    [
+     113.79,
+     23.67
+    ],
+    [
+     113.87,
+     21.02
+    ],
+    [
+     115.28,
+     19.11
+    ],
+    [
+     114.69,
+     16.44
+    ],
+    [
+     115.32,
+     12.32
+    ],
+    [
+     117.05,
+     10.59
+    ],
+    [
+     127.07,
+     10.48
+    ],
+    [
+     128.69,
+     12.02
+    ],
+    [
+     127.28,
+     16.02
+    ],
+    [
+     128.86,
+     17.91
+    ],
+    [
+     132.75,
+     16.37
+    ],
+    [
+     135.11,
+     18.01
+    ],
+    [
+     137.29,
+     17.99
+    ],
+    [
+     138.82,
+     13.8
+    ],
+    [
+     146.41,
+     13.53
+    ],
+    [
+     148.14,
+     11.97
+    ],
+    [
+     148.32,
+     6.22
+    ],
+    [
+     149.78,
+     4.11
+    ],
+    [
+     149.72,
+     -0.96
+    ],
+    [
+     137.09,
+     -1.95
+    ],
+    [
+     136.29,
+     -7.07
+    ],
+    [
+     137.75,
+     -9.23
+    ],
+    [
+     137.65,
+     -11.6
+    ],
+    [
+     134.36,
+     -12.19
+    ],
+    [
+     132.38,
+     -14.03
+    ],
+    [
+     131.72,
+     -17.73
+    ],
+    [
+     130.2,
+     -19.31
+    ],
+    [
+     124.96,
+     -19.93
+    ],
+    [
+     124.1,
+     -23.66
+    ],
+    [
+     120.76,
+     -24.32
+    ],
+    [
+     119.35,
+     -26.86
+    ],
+    [
+     116.88,
+     -26.84
+    ],
+    [
+     114.2,
+     -28.36
+    ],
+    [
+     111.82,
+     -23.18
+    ],
+    [
+     108.32,
+     -20.42
+    ],
+    [
+     102.68,
+     -22.79
+    ],
+    [
+     100.11,
+     -26.42
+    ],
+    [
+     103.22,
+     -30.17
+    ],
+    [
+     103.27,
+     -33.81
+    ],
+    [
+     100.58,
+     -34.42
+    ],
+    [
+     97.88,
+     -31.79
+    ],
+    [
+     92.88,
+     -29.53
+    ],
+    [
+     92.74,
+     -18.22
+    ]
+   ],
+   "x": 119.3,
+   "z": 36.0,
+   "w": 61.0,
+   "d": 140.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_4",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     97.39,
+     -125.66
+    ],
+    [
+     94.66,
+     -125.94
+    ],
+    [
+     91.91,
+     -124.32
+    ],
+    [
+     89.48,
+     -125.92
+    ],
+    [
+     85.66,
+     -125.94
+    ],
+    [
+     83.8,
+     -123.59
+    ],
+    [
+     88.7,
+     -122.71
+    ],
+    [
+     91.35,
+     -120.1
+    ],
+    [
+     92.71,
+     -120.1
+    ],
+    [
+     95.55,
+     -122.79
+    ],
+    [
+     97.7,
+     -122.71
+    ],
+    [
+     101.62,
+     -114.18
+    ],
+    [
+     102.02,
+     -111.18
+    ],
+    [
+     105.97,
+     -111.1
+    ],
+    [
+     108.11,
+     -109.49
+    ],
+    [
+     110.49,
+     -109.63
+    ],
+    [
+     110.72,
+     -110.74
+    ],
+    [
+     109.29,
+     -112.83
+    ],
+    [
+     109.1,
+     -122.93
+    ],
+    [
+     107.41,
+     -124.44
+    ],
+    [
+     102.96,
+     -123.88
+    ],
+    [
+     98.75,
+     -124.54
+    ]
+   ],
+   "x": 97.3,
+   "z": -117.7,
+   "w": 26.9,
+   "d": 16.5,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_5",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     83.8,
+     63.91
+    ],
+    [
+     84.5,
+     64.55
+    ],
+    [
+     95.56,
+     64.49
+    ],
+    [
+     97.25,
+     62.75
+    ],
+    [
+     97.22,
+     59.04
+    ],
+    [
+     86.99,
+     58.61
+    ],
+    [
+     83.92,
+     60.4
+    ]
+   ],
+   "x": 90.5,
+   "z": 61.6,
+   "w": 13.5,
+   "d": 5.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_6",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     79.3,
+     77.67
+    ],
+    [
+     82.28,
+     81.65
+    ],
+    [
+     81.64,
+     83.4
+    ],
+    [
+     79.37,
+     84.48
+    ],
+    [
+     79.34,
+     88.06
+    ],
+    [
+     83.29,
+     88.49
+    ],
+    [
+     84.58,
+     78.33
+    ],
+    [
+     87.74,
+     78.01
+    ],
+    [
+     88.28,
+     76.98
+    ],
+    [
+     85.44,
+     72.28
+    ],
+    [
+     85.15,
+     69.4
+    ],
+    [
+     81.95,
+     67.57
+    ],
+    [
+     79.32,
+     68.12
+    ]
+   ],
+   "x": 83.8,
+   "z": 78.0,
+   "w": 9.0,
+   "d": 20.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_7",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     53.68,
+     -124.44
+    ],
+    [
+     53.12,
+     -123.3
+    ],
+    [
+     54.78,
+     -122.15
+    ],
+    [
+     55.62,
+     -120.1
+    ],
+    [
+     65.69,
+     -120.1
+    ],
+    [
+     67.19,
+     -121.5
+    ],
+    [
+     70.15,
+     -121.55
+    ],
+    [
+     72.02,
+     -123.46
+    ],
+    [
+     70.23,
+     -124.45
+    ]
+   ],
+   "x": 62.6,
+   "z": -122.3,
+   "w": 18.9,
+   "d": 4.4,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_8",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     24.99,
+     -124.19
+    ],
+    [
+     27.2,
+     -120.05
+    ],
+    [
+     30.01,
+     -119.79
+    ],
+    [
+     31.72,
+     -118.45
+    ],
+    [
+     35.69,
+     -118.87
+    ],
+    [
+     35.72,
+     -124.23
+    ],
+    [
+     32.63,
+     -127.35
+    ],
+    [
+     28.51,
+     -127.39
+    ]
+   ],
+   "x": 30.4,
+   "z": -122.9,
+   "w": 10.7,
+   "d": 8.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_9",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -28.42,
+     -105.06
+    ],
+    [
+     -28.43,
+     -96.13
+    ],
+    [
+     -20.07,
+     -97.63
+    ],
+    [
+     -19.73,
+     -100.09
+    ],
+    [
+     -21.21,
+     -102.33
+    ],
+    [
+     -21.51,
+     -112.27
+    ],
+    [
+     -25.48,
+     -110.72
+    ]
+   ],
+   "x": -24.1,
+   "z": -104.2,
+   "w": 8.7,
+   "d": 16.1,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_10",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -42.24,
+     -118.57
+    ],
+    [
+     -40.46,
+     -117.0
+    ],
+    [
+     -29.08,
+     -116.97
+    ],
+    [
+     -27.45,
+     -118.29
+    ],
+    [
+     -24.5,
+     -118.49
+    ],
+    [
+     -21.57,
+     -120.09
+    ],
+    [
+     -21.23,
+     -122.31
+    ],
+    [
+     -24.64,
+     -123.19
+    ],
+    [
+     -29.0,
+     -125.92
+    ],
+    [
+     -32.84,
+     -125.94
+    ],
+    [
+     -36.95,
+     -120.41
+    ],
+    [
+     -41.93,
+     -119.91
+    ]
+   ],
+   "x": -31.7,
+   "z": -121.5,
+   "w": 21.0,
+   "d": 9.0,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_11",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -70.73,
+     110.67
+    ],
+    [
+     -71.93,
+     113.87
+    ],
+    [
+     -66.08,
+     116.95
+    ],
+    [
+     -60.14,
+     117.14
+    ],
+    [
+     -58.59,
+     118.95
+    ],
+    [
+     -59.07,
+     120.76
+    ],
+    [
+     -61.69,
+     122.96
+    ],
+    [
+     -63.45,
+     122.89
+    ],
+    [
+     -65.08,
+     121.56
+    ],
+    [
+     -67.69,
+     121.73
+    ],
+    [
+     -72.16,
+     129.26
+    ],
+    [
+     -71.98,
+     130.32
+    ],
+    [
+     -69.95,
+     131.01
+    ],
+    [
+     -69.11,
+     132.38
+    ],
+    [
+     -70.7,
+     135.45
+    ],
+    [
+     -70.72,
+     139.02
+    ],
+    [
+     -68.85,
+     141.03
+    ],
+    [
+     -62.1,
+     141.06
+    ],
+    [
+     -59.94,
+     142.51
+    ],
+    [
+     -57.59,
+     142.53
+    ],
+    [
+     -51.36,
+     137.97
+    ],
+    [
+     -51.25,
+     133.83
+    ],
+    [
+     -53.06,
+     131.51
+    ],
+    [
+     -54.04,
+     131.72
+    ],
+    [
+     -54.56,
+     134.15
+    ],
+    [
+     -56.48,
+     135.51
+    ],
+    [
+     -60.0,
+     134.05
+    ],
+    [
+     -60.33,
+     132.15
+    ],
+    [
+     -58.72,
+     129.56
+    ],
+    [
+     -60.21,
+     126.53
+    ],
+    [
+     -58.86,
+     124.72
+    ],
+    [
+     -53.08,
+     124.53
+    ],
+    [
+     -51.16,
+     122.99
+    ],
+    [
+     -49.49,
+     123.21
+    ],
+    [
+     -45.47,
+     125.48
+    ],
+    [
+     -44.93,
+     130.37
+    ],
+    [
+     -39.73,
+     132.05
+    ],
+    [
+     -37.95,
+     130.71
+    ],
+    [
+     -34.85,
+     130.19
+    ],
+    [
+     -34.83,
+     123.48
+    ],
+    [
+     -33.45,
+     121.71
+    ],
+    [
+     -29.62,
+     121.89
+    ],
+    [
+     -26.58,
+     126.03
+    ],
+    [
+     -24.43,
+     125.99
+    ],
+    [
+     -21.9,
+     123.99
+    ],
+    [
+     -27.59,
+     117.06
+    ],
+    [
+     -40.34,
+     117.06
+    ],
+    [
+     -44.1,
+     120.04
+    ],
+    [
+     -49.08,
+     118.56
+    ],
+    [
+     -51.45,
+     121.75
+    ],
+    [
+     -53.43,
+     121.2
+    ],
+    [
+     -55.63,
+     118.58
+    ],
+    [
+     -55.2,
+     114.66
+    ],
+    [
+     -48.31,
+     112.42
+    ],
+    [
+     -45.74,
+     108.42
+    ],
+    [
+     -43.89,
+     108.09
+    ],
+    [
+     -42.01,
+     109.49
+    ],
+    [
+     -40.69,
+     109.32
+    ],
+    [
+     -37.78,
+     106.33
+    ],
+    [
+     -37.68,
+     102.32
+    ],
+    [
+     -36.74,
+     100.92
+    ],
+    [
+     -28.22,
+     100.32
+    ],
+    [
+     -28.09,
+     99.33
+    ],
+    [
+     -31.2,
+     95.45
+    ],
+    [
+     -38.2,
+     95.41
+    ],
+    [
+     -40.71,
+     99.51
+    ],
+    [
+     -67.82,
+     99.36
+    ],
+    [
+     -70.68,
+     102.35
+    ]
+   ],
+   "x": -47.0,
+   "z": 119.0,
+   "w": 50.3,
+   "d": 47.1,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_12",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -116.93,
+     -91.54
+    ],
+    [
+     -117.13,
+     -90.13
+    ],
+    [
+     -114.69,
+     -86.8
+    ],
+    [
+     -111.36,
+     -91.28
+    ],
+    [
+     -107.0,
+     -91.49
+    ],
+    [
+     -105.05,
+     -92.91
+    ],
+    [
+     -100.64,
+     -92.86
+    ],
+    [
+     -99.26,
+     -91.65
+    ],
+    [
+     -99.18,
+     -87.28
+    ],
+    [
+     -97.56,
+     -85.12
+    ],
+    [
+     -98.21,
+     -83.08
+    ],
+    [
+     -100.61,
+     -81.86
+    ],
+    [
+     -105.24,
+     -82.46
+    ],
+    [
+     -107.88,
+     -84.68
+    ],
+    [
+     -110.52,
+     -79.95
+    ],
+    [
+     -114.08,
+     -79.1
+    ],
+    [
+     -114.31,
+     -74.92
+    ],
+    [
+     -115.7,
+     -73.09
+    ],
+    [
+     -113.69,
+     -69.48
+    ],
+    [
+     -113.86,
+     -66.09
+    ],
+    [
+     -105.49,
+     -65.91
+    ],
+    [
+     -103.81,
+     -64.39
+    ],
+    [
+     -105.72,
+     -59.26
+    ],
+    [
+     -109.68,
+     -57.91
+    ],
+    [
+     -108.23,
+     -55.07
+    ],
+    [
+     -108.04,
+     -43.48
+    ],
+    [
+     -106.59,
+     -43.01
+    ],
+    [
+     -106.5,
+     -42.01
+    ],
+    [
+     -103.61,
+     -42.0
+    ],
+    [
+     -102.04,
+     -40.55
+    ],
+    [
+     -99.19,
+     -40.36
+    ],
+    [
+     -97.44,
+     -38.99
+    ],
+    [
+     -94.61,
+     -39.54
+    ],
+    [
+     -91.38,
+     -38.69
+    ],
+    [
+     -89.5,
+     -34.45
+    ],
+    [
+     -86.12,
+     -34.47
+    ],
+    [
+     -84.31,
+     -36.0
+    ],
+    [
+     -81.52,
+     -35.98
+    ],
+    [
+     -78.82,
+     -38.61
+    ],
+    [
+     -76.78,
+     -38.85
+    ],
+    [
+     -73.67,
+     -34.51
+    ],
+    [
+     -70.02,
+     -32.45
+    ],
+    [
+     -69.23,
+     -30.97
+    ],
+    [
+     -69.68,
+     -29.18
+    ],
+    [
+     -72.13,
+     -26.9
+    ],
+    [
+     -76.44,
+     -26.92
+    ],
+    [
+     -81.6,
+     -23.96
+    ],
+    [
+     -84.5,
+     -25.42
+    ],
+    [
+     -86.84,
+     -25.44
+    ],
+    [
+     -89.62,
+     -22.79
+    ],
+    [
+     -91.34,
+     -22.46
+    ],
+    [
+     -93.58,
+     -23.94
+    ],
+    [
+     -99.95,
+     -24.33
+    ],
+    [
+     -100.75,
+     -29.67
+    ],
+    [
+     -102.31,
+     -32.82
+    ],
+    [
+     -104.01,
+     -35.77
+    ],
+    [
+     -106.3,
+     -35.86
+    ],
+    [
+     -106.76,
+     -28.62
+    ],
+    [
+     -108.22,
+     -26.52
+    ],
+    [
+     -108.23,
+     -10.94
+    ],
+    [
+     -110.08,
+     -8.93
+    ],
+    [
+     -109.97,
+     -7.51
+    ],
+    [
+     -106.28,
+     -5.95
+    ],
+    [
+     -98.9,
+     -6.52
+    ],
+    [
+     -96.56,
+     -5.05
+    ],
+    [
+     -96.12,
+     7.52
+    ],
+    [
+     -95.19,
+     7.9
+    ],
+    [
+     -93.82,
+     6.39
+    ],
+    [
+     -92.06,
+     6.06
+    ],
+    [
+     -90.09,
+     7.95
+    ],
+    [
+     -90.39,
+     10.69
+    ],
+    [
+     -91.58,
+     11.88
+    ],
+    [
+     -93.56,
+     11.79
+    ],
+    [
+     -95.14,
+     9.85
+    ],
+    [
+     -96.16,
+     10.3
+    ],
+    [
+     -94.16,
+     18.64
+    ],
+    [
+     -89.55,
+     14.92
+    ],
+    [
+     -86.69,
+     16.55
+    ],
+    [
+     -84.19,
+     15.04
+    ],
+    [
+     -82.3,
+     15.2
+    ],
+    [
+     -80.58,
+     19.53
+    ],
+    [
+     -78.05,
+     18.09
+    ],
+    [
+     -74.34,
+     18.23
+    ],
+    [
+     -73.23,
+     15.73
+    ],
+    [
+     -70.81,
+     14.63
+    ],
+    [
+     -70.56,
+     8.82
+    ],
+    [
+     -68.76,
+     5.28
+    ],
+    [
+     -67.29,
+     4.44
+    ],
+    [
+     -65.18,
+     5.28
+    ],
+    [
+     -62.86,
+     10.41
+    ],
+    [
+     -58.78,
+     10.65
+    ],
+    [
+     -56.24,
+     12.35
+    ],
+    [
+     -55.3,
+     9.76
+    ],
+    [
+     -55.73,
+     -7.18
+    ],
+    [
+     -56.75,
+     -7.79
+    ],
+    [
+     -58.42,
+     -6.06
+    ],
+    [
+     -60.35,
+     -5.99
+    ],
+    [
+     -61.7,
+     -7.37
+    ],
+    [
+     -61.63,
+     -9.25
+    ],
+    [
+     -59.65,
+     -10.45
+    ],
+    [
+     -56.33,
+     -9.51
+    ],
+    [
+     -55.13,
+     -15.19
+    ],
+    [
+     -51.32,
+     -15.37
+    ],
+    [
+     -50.41,
+     -17.45
+    ],
+    [
+     -48.19,
+     -18.18
+    ],
+    [
+     -45.87,
+     -23.6
+    ],
+    [
+     -39.86,
+     -23.97
+    ],
+    [
+     -39.22,
+     -24.75
+    ],
+    [
+     -42.37,
+     -28.35
+    ],
+    [
+     -47.41,
+     -28.95
+    ],
+    [
+     -48.4,
+     -34.43
+    ],
+    [
+     -49.94,
+     -35.89
+    ],
+    [
+     -53.14,
+     -36.19
+    ],
+    [
+     -54.31,
+     -37.72
+    ],
+    [
+     -53.6,
+     -39.92
+    ],
+    [
+     -48.22,
+     -42.75
+    ],
+    [
+     -49.88,
+     -45.28
+    ],
+    [
+     -49.56,
+     -48.18
+    ],
+    [
+     -48.23,
+     -49.81
+    ],
+    [
+     -48.22,
+     -53.52
+    ],
+    [
+     -50.29,
+     -58.13
+    ],
+    [
+     -49.72,
+     -67.0
+    ],
+    [
+     -51.35,
+     -69.62
+    ],
+    [
+     -49.73,
+     -72.81
+    ],
+    [
+     -53.06,
+     -73.71
+    ],
+    [
+     -54.21,
+     -75.44
+    ],
+    [
+     -52.72,
+     -78.39
+    ],
+    [
+     -52.81,
+     -85.3
+    ],
+    [
+     -54.44,
+     -86.89
+    ],
+    [
+     -57.79,
+     -87.2
+    ],
+    [
+     -58.95,
+     -89.72
+    ],
+    [
+     -61.93,
+     -91.39
+    ],
+    [
+     -64.75,
+     -91.54
+    ],
+    [
+     -66.65,
+     -92.95
+    ],
+    [
+     -75.25,
+     -93.04
+    ],
+    [
+     -79.08,
+     -95.94
+    ],
+    [
+     -79.7,
+     -89.1
+    ],
+    [
+     -76.98,
+     -87.29
+    ],
+    [
+     -76.54,
+     -83.66
+    ],
+    [
+     -75.5,
+     -83.48
+    ],
+    [
+     -73.72,
+     -85.49
+    ],
+    [
+     -70.89,
+     -85.41
+    ],
+    [
+     -69.41,
+     -84.37
+    ],
+    [
+     -68.69,
+     -81.92
+    ],
+    [
+     -69.68,
+     -78.68
+    ],
+    [
+     -71.9,
+     -77.38
+    ],
+    [
+     -74.59,
+     -78.44
+    ],
+    [
+     -76.44,
+     -81.91
+    ],
+    [
+     -79.49,
+     -79.61
+    ],
+    [
+     -82.83,
+     -79.4
+    ],
+    [
+     -87.12,
+     -82.51
+    ],
+    [
+     -87.4,
+     -94.16
+    ],
+    [
+     -91.55,
+     -94.49
+    ],
+    [
+     -93.5,
+     -95.92
+    ],
+    [
+     -96.99,
+     -96.41
+    ],
+    [
+     -98.98,
+     -98.53
+    ],
+    [
+     -100.85,
+     -103.36
+    ],
+    [
+     -102.67,
+     -104.95
+    ],
+    [
+     -108.15,
+     -101.97
+    ],
+    [
+     -110.98,
+     -101.72
+    ],
+    [
+     -111.48,
+     -97.11
+    ],
+    [
+     -114.0,
+     -95.7
+    ],
+    [
+     -114.56,
+     -93.85
+    ]
+   ],
+   "x": -78.2,
+   "z": -42.7,
+   "w": 77.9,
+   "d": 124.5,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_13",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -85.7,
+     -122.94
+    ],
+    [
+     -86.22,
+     -121.73
+    ],
+    [
+     -83.19,
+     -119.3
+    ],
+    [
+     -82.13,
+     -116.84
+    ],
+    [
+     -82.85,
+     -112.12
+    ],
+    [
+     -85.68,
+     -109.15
+    ],
+    [
+     -85.7,
+     -105.59
+    ],
+    [
+     -81.17,
+     -103.98
+    ],
+    [
+     -76.24,
+     -113.27
+    ],
+    [
+     -73.23,
+     -113.95
+    ],
+    [
+     -73.04,
+     -117.86
+    ],
+    [
+     -55.69,
+     -118.09
+    ],
+    [
+     -54.74,
+     -119.58
+    ],
+    [
+     -52.09,
+     -120.73
+    ],
+    [
+     -55.37,
+     -123.85
+    ],
+    [
+     -55.9,
+     -127.16
+    ],
+    [
+     -58.74,
+     -128.78
+    ],
+    [
+     -73.83,
+     -128.63
+    ],
+    [
+     -78.78,
+     -122.57
+    ]
+   ],
+   "x": -69.2,
+   "z": -116.4,
+   "w": 34.1,
+   "d": 24.8,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_14",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -183.2,
+     155.67
+    ],
+    [
+     -181.15,
+     158.73
+    ],
+    [
+     -181.88,
+     162.28
+    ],
+    [
+     -183.22,
+     164.06
+    ],
+    [
+     -181.76,
+     166.72
+    ],
+    [
+     -181.68,
+     170.48
+    ],
+    [
+     -178.6,
+     172.9
+    ],
+    [
+     -179.15,
+     174.8
+    ],
+    [
+     -181.7,
+     176.19
+    ],
+    [
+     -179.86,
+     179.91
+    ],
+    [
+     -174.43,
+     178.49
+    ],
+    [
+     -168.57,
+     175.41
+    ],
+    [
+     -167.84,
+     171.82
+    ],
+    [
+     -163.81,
+     169.5
+    ],
+    [
+     -160.3,
+     169.79
+    ],
+    [
+     -157.76,
+     172.72
+    ],
+    [
+     -157.59,
+     178.15
+    ],
+    [
+     -158.75,
+     179.8
+    ],
+    [
+     -169.89,
+     184.51
+    ],
+    [
+     -173.08,
+     183.06
+    ],
+    [
+     -176.73,
+     183.05
+    ],
+    [
+     -180.16,
+     184.85
+    ],
+    [
+     -180.29,
+     185.97
+    ],
+    [
+     -177.07,
+     188.95
+    ],
+    [
+     -173.9,
+     188.48
+    ],
+    [
+     -171.0,
+     190.49
+    ],
+    [
+     -168.5,
+     190.51
+    ],
+    [
+     -159.45,
+     186.21
+    ],
+    [
+     -156.37,
+     185.96
+    ],
+    [
+     -153.29,
+     183.07
+    ],
+    [
+     -147.71,
+     182.99
+    ],
+    [
+     -145.72,
+     180.01
+    ],
+    [
+     -137.14,
+     178.45
+    ],
+    [
+     -136.54,
+     174.67
+    ],
+    [
+     -140.16,
+     172.32
+    ],
+    [
+     -143.8,
+     175.31
+    ],
+    [
+     -146.4,
+     175.7
+    ],
+    [
+     -148.24,
+     174.87
+    ],
+    [
+     -148.71,
+     173.03
+    ],
+    [
+     -147.74,
+     171.42
+    ],
+    [
+     -144.05,
+     169.59
+    ],
+    [
+     -139.9,
+     171.15
+    ],
+    [
+     -139.72,
+     165.48
+    ],
+    [
+     -141.18,
+     163.38
+    ],
+    [
+     -140.85,
+     160.03
+    ],
+    [
+     -138.6,
+     159.06
+    ],
+    [
+     -136.44,
+     160.51
+    ],
+    [
+     -134.09,
+     160.53
+    ],
+    [
+     -132.23,
+     158.68
+    ],
+    [
+     -136.48,
+     153.47
+    ],
+    [
+     -136.48,
+     151.13
+    ],
+    [
+     -135.0,
+     149.98
+    ],
+    [
+     -130.93,
+     149.99
+    ],
+    [
+     -127.73,
+     147.91
+    ],
+    [
+     -127.73,
+     144.41
+    ],
+    [
+     -129.21,
+     141.53
+    ],
+    [
+     -128.41,
+     140.05
+    ],
+    [
+     -126.51,
+     139.36
+    ],
+    [
+     -126.22,
+     134.27
+    ],
+    [
+     -129.61,
+     133.41
+    ],
+    [
+     -130.68,
+     131.92
+    ],
+    [
+     -130.47,
+     130.08
+    ],
+    [
+     -128.79,
+     128.3
+    ],
+    [
+     -130.63,
+     126.12
+    ],
+    [
+     -130.72,
+     117.48
+    ],
+    [
+     -132.21,
+     115.17
+    ],
+    [
+     -131.72,
+     104.35
+    ],
+    [
+     -126.39,
+     103.59
+    ],
+    [
+     -118.44,
+     108.01
+    ],
+    [
+     -111.73,
+     108.05
+    ],
+    [
+     -109.55,
+     106.59
+    ],
+    [
+     -101.29,
+     106.52
+    ],
+    [
+     -100.07,
+     104.19
+    ],
+    [
+     -98.2,
+     103.56
+    ],
+    [
+     -96.48,
+     104.71
+    ],
+    [
+     -96.07,
+     107.77
+    ],
+    [
+     -89.44,
+     108.05
+    ],
+    [
+     -86.82,
+     104.92
+    ],
+    [
+     -81.39,
+     105.09
+    ],
+    [
+     -79.28,
+     106.55
+    ],
+    [
+     -75.57,
+     106.41
+    ],
+    [
+     -75.22,
+     99.32
+    ],
+    [
+     -77.04,
+     99.15
+    ],
+    [
+     -77.0,
+     96.09
+    ],
+    [
+     -81.39,
+     95.07
+    ],
+    [
+     -81.44,
+     90.64
+    ],
+    [
+     -85.58,
+     91.9
+    ],
+    [
+     -87.2,
+     94.91
+    ],
+    [
+     -87.38,
+     99.28
+    ],
+    [
+     -88.7,
+     100.54
+    ],
+    [
+     -91.19,
+     99.93
+    ],
+    [
+     -92.99,
+     94.95
+    ],
+    [
+     -94.99,
+     96.01
+    ],
+    [
+     -98.73,
+     96.11
+    ],
+    [
+     -100.13,
+     98.75
+    ],
+    [
+     -102.69,
+     98.86
+    ],
+    [
+     -103.71,
+     97.22
+    ],
+    [
+     -103.52,
+     92.14
+    ],
+    [
+     -105.93,
+     91.2
+    ],
+    [
+     -106.87,
+     89.51
+    ],
+    [
+     -104.96,
+     85.21
+    ],
+    [
+     -100.61,
+     83.46
+    ],
+    [
+     -97.37,
+     85.53
+    ],
+    [
+     -92.21,
+     85.49
+    ],
+    [
+     -91.78,
+     80.04
+    ],
+    [
+     -94.95,
+     79.39
+    ],
+    [
+     -96.58,
+     78.06
+    ],
+    [
+     -100.95,
+     77.89
+    ],
+    [
+     -102.76,
+     76.23
+    ],
+    [
+     -112.56,
+     76.64
+    ],
+    [
+     -115.97,
+     80.05
+    ],
+    [
+     -112.54,
+     85.02
+    ],
+    [
+     -115.68,
+     91.83
+    ],
+    [
+     -116.11,
+     98.39
+    ],
+    [
+     -118.89,
+     100.51
+    ],
+    [
+     -121.46,
+     99.39
+    ],
+    [
+     -121.78,
+     96.27
+    ],
+    [
+     -123.79,
+     93.37
+    ],
+    [
+     -123.06,
+     89.82
+    ],
+    [
+     -121.72,
+     88.11
+    ],
+    [
+     -121.75,
+     84.62
+    ],
+    [
+     -123.08,
+     84.14
+    ],
+    [
+     -127.62,
+     87.2
+    ],
+    [
+     -127.61,
+     91.45
+    ],
+    [
+     -129.82,
+     95.47
+    ],
+    [
+     -131.8,
+     97.31
+    ],
+    [
+     -135.12,
+     97.97
+    ],
+    [
+     -135.31,
+     103.58
+    ],
+    [
+     -138.72,
+     110.24
+    ],
+    [
+     -142.65,
+     112.53
+    ],
+    [
+     -145.51,
+     112.82
+    ],
+    [
+     -144.12,
+     121.13
+    ],
+    [
+     -141.11,
+     122.17
+    ],
+    [
+     -139.73,
+     124.93
+    ],
+    [
+     -139.57,
+     133.24
+    ],
+    [
+     -141.18,
+     135.37
+    ],
+    [
+     -141.26,
+     139.38
+    ],
+    [
+     -142.68,
+     141.33
+    ],
+    [
+     -143.18,
+     144.82
+    ],
+    [
+     -145.3,
+     146.81
+    ],
+    [
+     -148.44,
+     147.08
+    ],
+    [
+     -150.82,
+     148.55
+    ],
+    [
+     -154.95,
+     148.39
+    ],
+    [
+     -158.7,
+     145.29
+    ],
+    [
+     -163.3,
+     149.81
+    ],
+    [
+     -166.69,
+     151.46
+    ],
+    [
+     -169.72,
+     151.58
+    ],
+    [
+     -174.06,
+     145.78
+    ],
+    [
+     -174.18,
+     142.72
+    ],
+    [
+     -172.74,
+     140.19
+    ],
+    [
+     -175.35,
+     138.57
+    ],
+    [
+     -175.83,
+     135.48
+    ],
+    [
+     -173.87,
+     131.45
+    ],
+    [
+     -171.64,
+     129.29
+    ],
+    [
+     -165.65,
+     130.55
+    ],
+    [
+     -162.23,
+     128.41
+    ],
+    [
+     -163.68,
+     125.88
+    ],
+    [
+     -163.68,
+     121.72
+    ],
+    [
+     -162.25,
+     119.77
+    ],
+    [
+     -161.96,
+     115.95
+    ],
+    [
+     -159.49,
+     115.62
+    ],
+    [
+     -159.25,
+     114.62
+    ],
+    [
+     -160.44,
+     114.08
+    ],
+    [
+     -162.82,
+     115.55
+    ],
+    [
+     -164.72,
+     114.74
+    ],
+    [
+     -165.31,
+     101.85
+    ],
+    [
+     -166.38,
+     101.51
+    ],
+    [
+     -167.63,
+     103.25
+    ],
+    [
+     -169.37,
+     103.67
+    ],
+    [
+     -170.83,
+     102.75
+    ],
+    [
+     -171.22,
+     101.15
+    ],
+    [
+     -170.62,
+     99.63
+    ],
+    [
+     -169.01,
+     98.9
+    ],
+    [
+     -166.35,
+     101.07
+    ],
+    [
+     -165.28,
+     100.65
+    ],
+    [
+     -165.35,
+     96.4
+    ],
+    [
+     -168.22,
+     96.08
+    ],
+    [
+     -169.56,
+     94.82
+    ],
+    [
+     -169.68,
+     88.68
+    ],
+    [
+     -168.22,
+     87.01
+    ],
+    [
+     -163.9,
+     86.76
+    ],
+    [
+     -163.57,
+     83.58
+    ],
+    [
+     -162.22,
+     83.31
+    ],
+    [
+     -162.22,
+     80.27
+    ],
+    [
+     -166.15,
+     79.58
+    ],
+    [
+     -169.04,
+     83.79
+    ],
+    [
+     -171.97,
+     83.62
+    ],
+    [
+     -172.96,
+     80.11
+    ],
+    [
+     -175.25,
+     78.9
+    ],
+    [
+     -175.84,
+     76.88
+    ],
+    [
+     -173.44,
+     75.05
+    ],
+    [
+     -170.87,
+     77.21
+    ],
+    [
+     -169.9,
+     77.0
+    ],
+    [
+     -169.78,
+     69.54
+    ],
+    [
+     -175.66,
+     68.95
+    ],
+    [
+     -177.56,
+     66.19
+    ],
+    [
+     -179.8,
+     66.14
+    ],
+    [
+     -180.16,
+     68.55
+    ],
+    [
+     -177.59,
+     70.03
+    ],
+    [
+     -177.22,
+     72.98
+    ],
+    [
+     -178.33,
+     74.91
+    ],
+    [
+     -181.72,
+     75.77
+    ],
+    [
+     -181.73,
+     86.67
+    ],
+    [
+     -183.22,
+     89.54
+    ],
+    [
+     -181.73,
+     91.93
+    ],
+    [
+     -181.7,
+     108.91
+    ],
+    [
+     -177.77,
+     109.78
+    ],
+    [
+     -176.72,
+     107.35
+    ],
+    [
+     -175.0,
+     106.55
+    ],
+    [
+     -173.24,
+     107.16
+    ],
+    [
+     -172.57,
+     108.87
+    ],
+    [
+     -173.52,
+     112.05
+    ],
+    [
+     -176.91,
+     112.31
+    ],
+    [
+     -181.7,
+     115.92
+    ],
+    [
+     -181.54,
+     136.02
+    ],
+    [
+     -183.22,
+     138.61
+    ],
+    [
+     -181.76,
+     141.22
+    ],
+    [
+     -181.72,
+     144.95
+    ],
+    [
+     -183.22,
+     147.48
+    ]
+   ],
+   "x": -129.2,
+   "z": 128.3,
+   "w": 108.0,
+   "d": 124.4,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_15",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -87.16,
+     61.77
+    ],
+    [
+     -85.48,
+     65.82
+    ],
+    [
+     -81.68,
+     68.28
+    ],
+    [
+     -81.13,
+     70.13
+    ],
+    [
+     -78.28,
+     70.06
+    ],
+    [
+     -81.21,
+     64.17
+    ],
+    [
+     -80.6,
+     42.99
+    ],
+    [
+     -81.35,
+     39.4
+    ],
+    [
+     -83.32,
+     38.78
+    ],
+    [
+     -85.72,
+     43.98
+    ],
+    [
+     -85.72,
+     53.61
+    ],
+    [
+     -84.38,
+     55.32
+    ],
+    [
+     -84.22,
+     57.95
+    ]
+   ],
+   "x": -82.7,
+   "z": 54.5,
+   "w": 8.9,
+   "d": 31.3,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_16",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -95.08,
+     24.06
+    ],
+    [
+     -103.62,
+     25.97
+    ],
+    [
+     -103.3,
+     37.82
+    ],
+    [
+     -99.28,
+     35.61
+    ],
+    [
+     -99.31,
+     33.32
+    ],
+    [
+     -98.14,
+     31.79
+    ],
+    [
+     -94.69,
+     31.64
+    ],
+    [
+     -92.41,
+     33.51
+    ],
+    [
+     -90.32,
+     31.4
+    ],
+    [
+     -90.25,
+     28.83
+    ],
+    [
+     -91.95,
+     25.78
+    ]
+   ],
+   "x": -96.9,
+   "z": 30.9,
+   "w": 13.4,
+   "d": 13.8,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_17",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -103.02,
+     39.58
+    ],
+    [
+     -102.13,
+     50.89
+    ],
+    [
+     -98.45,
+     53.01
+    ],
+    [
+     -96.23,
+     55.93
+    ],
+    [
+     -96.48,
+     63.39
+    ],
+    [
+     -97.78,
+     64.45
+    ],
+    [
+     -100.56,
+     64.64
+    ],
+    [
+     -102.18,
+     66.35
+    ],
+    [
+     -102.22,
+     73.03
+    ],
+    [
+     -101.34,
+     73.74
+    ],
+    [
+     -99.51,
+     72.16
+    ],
+    [
+     -96.5,
+     72.01
+    ],
+    [
+     -91.73,
+     69.91
+    ],
+    [
+     -91.78,
+     67.77
+    ],
+    [
+     -93.81,
+     64.44
+    ],
+    [
+     -91.73,
+     59.69
+    ],
+    [
+     -91.73,
+     54.42
+    ],
+    [
+     -94.72,
+     50.45
+    ],
+    [
+     -93.22,
+     47.61
+    ],
+    [
+     -93.75,
+     43.02
+    ],
+    [
+     -91.73,
+     40.18
+    ],
+    [
+     -92.22,
+     35.23
+    ],
+    [
+     -97.67,
+     36.21
+    ],
+    [
+     -97.88,
+     39.28
+    ],
+    [
+     -99.2,
+     40.54
+    ]
+   ],
+   "x": -97.4,
+   "z": 54.5,
+   "w": 11.3,
+   "d": 38.5,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_18",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -127.72,
+     70.1
+    ],
+    [
+     -123.68,
+     74.28
+    ],
+    [
+     -121.67,
+     77.99
+    ],
+    [
+     -120.0,
+     79.49
+    ],
+    [
+     -118.69,
+     79.32
+    ],
+    [
+     -118.81,
+     72.2
+    ],
+    [
+     -127.0,
+     64.55
+    ],
+    [
+     -127.72,
+     65.27
+    ]
+   ],
+   "x": -123.2,
+   "z": 72.0,
+   "w": 9.0,
+   "d": 14.9,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_19",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -150.22,
+     -0.39
+    ],
+    [
+     -148.54,
+     4.52
+    ],
+    [
+     -147.0,
+     5.99
+    ],
+    [
+     -143.65,
+     6.3
+    ],
+    [
+     -142.15,
+     9.01
+    ],
+    [
+     -138.58,
+     9.03
+    ],
+    [
+     -136.95,
+     7.71
+    ],
+    [
+     -134.32,
+     7.55
+    ],
+    [
+     -131.15,
+     9.05
+    ],
+    [
+     -127.75,
+     6.98
+    ],
+    [
+     -127.78,
+     4.77
+    ],
+    [
+     -129.44,
+     3.11
+    ],
+    [
+     -134.36,
+     4.68
+    ],
+    [
+     -136.7,
+     3.12
+    ],
+    [
+     -135.89,
+     0.3
+    ],
+    [
+     -132.4,
+     -0.24
+    ],
+    [
+     -132.27,
+     -3.06
+    ],
+    [
+     -130.72,
+     -4.93
+    ],
+    [
+     -132.18,
+     -7.62
+    ],
+    [
+     -132.31,
+     -13.03
+    ],
+    [
+     -135.5,
+     -14.92
+    ],
+    [
+     -140.03,
+     -14.46
+    ],
+    [
+     -138.09,
+     -11.08
+    ],
+    [
+     -140.36,
+     -3.6
+    ],
+    [
+     -144.11,
+     -2.36
+    ],
+    [
+     -149.73,
+     -2.89
+    ]
+   ],
+   "x": -139.0,
+   "z": -2.9,
+   "w": 22.5,
+   "d": 24.0,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_20",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -147.69,
+     81.7
+    ],
+    [
+     -138.82,
+     81.05
+    ],
+    [
+     -136.36,
+     82.53
+    ],
+    [
+     -133.85,
+     82.19
+    ],
+    [
+     -133.72,
+     73.98
+    ],
+    [
+     -135.18,
+     71.88
+    ],
+    [
+     -135.57,
+     64.68
+    ],
+    [
+     -138.39,
+     66.01
+    ],
+    [
+     -142.12,
+     66.05
+    ],
+    [
+     -145.34,
+     64.56
+    ],
+    [
+     -148.58,
+     67.63
+    ]
+   ],
+   "x": -141.2,
+   "z": 73.5,
+   "w": 14.9,
+   "d": 18.0,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_21",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -160.7,
+     -114.33
+    ],
+    [
+     -156.42,
+     -111.39
+    ],
+    [
+     -154.4,
+     -111.61
+    ],
+    [
+     -151.39,
+     -114.11
+    ],
+    [
+     -137.36,
+     -113.97
+    ],
+    [
+     -136.07,
+     -116.31
+    ],
+    [
+     -133.85,
+     -117.32
+    ],
+    [
+     -133.73,
+     -119.31
+    ],
+    [
+     -139.28,
+     -119.95
+    ],
+    [
+     -141.39,
+     -118.49
+    ],
+    [
+     -148.44,
+     -118.42
+    ],
+    [
+     -150.39,
+     -116.99
+    ],
+    [
+     -160.08,
+     -116.94
+    ]
+   ],
+   "x": -147.2,
+   "z": -115.7,
+   "w": 27.0,
+   "d": 8.6,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_22",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -164.15,
+     137.3
+    ],
+    [
+     -168.03,
+     139.57
+    ],
+    [
+     -168.04,
+     142.26
+    ],
+    [
+     -163.18,
+     142.02
+    ],
+    [
+     -157.94,
+     144.36
+    ],
+    [
+     -156.25,
+     142.25
+    ],
+    [
+     -156.4,
+     138.34
+    ],
+    [
+     -159.65,
+     136.55
+    ]
+   ],
+   "x": -162.1,
+   "z": 140.5,
+   "w": 11.8,
+   "d": 7.8,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_campus_gruen_23",
+   "kind": "park",
+   "name": "Grünfläche Campus (Luftbild DOP NRW)",
+   "poly": [
+    [
+     -181.58,
+     -89.87
+    ],
+    [
+     -181.54,
+     -85.74
+    ],
+    [
+     -179.15,
+     -85.45
+    ],
+    [
+     -172.75,
+     -88.36
+    ],
+    [
+     -169.94,
+     -88.51
+    ],
+    [
+     -168.32,
+     -90.1
+    ],
+    [
+     -168.22,
+     -106.02
+    ],
+    [
+     -169.71,
+     -109.11
+    ],
+    [
+     -168.61,
+     -110.81
+    ],
+    [
+     -165.28,
+     -111.44
+    ],
+    [
+     -165.28,
+     -113.73
+    ],
+    [
+     -166.87,
+     -115.35
+    ],
+    [
+     -170.92,
+     -115.42
+    ],
+    [
+     -172.42,
+     -114.06
+    ],
+    [
+     -175.44,
+     -113.92
+    ],
+    [
+     -178.62,
+     -112.03
+    ],
+    [
+     -178.59,
+     -109.82
+    ],
+    [
+     -176.52,
+     -108.95
+    ],
+    [
+     -175.73,
+     -107.47
+    ],
+    [
+     -176.18,
+     -105.68
+    ],
+    [
+     -179.62,
+     -102.81
+    ],
+    [
+     -177.31,
+     -100.39
+    ],
+    [
+     -177.07,
+     -94.76
+    ]
+   ],
+   "x": -173.4,
+   "z": -100.4,
+   "w": 16.3,
+   "d": 30.0,
+   "rot": 0,
+   "lage": 2,
+   "density": 0,
+   "standort": true,
+   "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
   }
  ],
  "objects": [
@@ -47846,8 +52286,8 @@
     "part": "bie_H1_OA",
     "floor": -1
    },
-   "x": 1.6,
-   "z": 0,
+   "x": 4.2,
+   "z": 1.7,
    "rot": 0,
    "name": "Treppenhaus (angenommen)",
    "vonGF": -1
@@ -47916,7 +52356,7 @@
     "part": "bie_H1_16",
     "floor": -1
    },
-   "x": -1.3,
+   "x": -4,
    "z": 0,
    "rot": 0,
    "name": "Aufzug (angenommen)",
@@ -47930,8 +52370,8 @@
     "part": "bie_H1_16",
     "floor": -1
    },
-   "x": 1.6,
-   "z": 0,
+   "x": 2.8,
+   "z": 1.4,
    "rot": 0,
    "name": "Treppenhaus (angenommen)",
    "vonGF": -1
@@ -47944,8 +52384,8 @@
     "part": "bie_H1_17",
     "floor": -1
    },
-   "x": -1.3,
-   "z": 0,
+   "x": -2.6,
+   "z": -0.4,
    "rot": 0,
    "name": "Aufzug (angenommen)",
    "vonGF": -1
@@ -47973,7 +52413,7 @@
     "floor": -1
    },
    "x": -1.3,
-   "z": 0,
+   "z": -0.3,
    "rot": 0,
    "name": "Aufzug (angenommen)",
    "vonGF": -1
@@ -47987,7 +52427,7 @@
     "floor": -1
    },
    "x": 1.6,
-   "z": 0,
+   "z": -1.8,
    "rot": 0,
    "name": "Treppenhaus (angenommen)",
    "vonGF": -1
@@ -48042,8 +52482,8 @@
     "part": "bie_H1_25",
     "floor": -1
    },
-   "x": -18.97,
-   "z": -1.45,
+   "x": -18.87,
+   "z": -1.75,
    "rot": 0,
    "name": "Treppenhaus (angenommen)",
    "vonGF": -1
@@ -48070,8 +52510,8 @@
     "part": "bie_H1_26",
     "floor": -1
    },
-   "x": 1.6,
-   "z": 0,
+   "x": 2.2,
+   "z": -0.2,
    "rot": 0,
    "name": "Treppenhaus (angenommen)",
    "vonGF": -1
@@ -48205,7 +52645,7 @@
     "part": "bie_H7_0",
     "floor": 0
    },
-   "x": 1.6,
+   "x": 0.7,
    "z": 0,
    "rot": 0,
    "name": "Treppenhaus (angenommen)"
@@ -48218,7 +52658,7 @@
     "part": "bie_H7_2",
     "floor": 0
    },
-   "x": -1.3,
+   "x": -1.9,
    "z": 0,
    "rot": 0,
    "name": "Aufzug (angenommen)"
@@ -48244,7 +52684,7 @@
     "part": "bie_H7_3",
     "floor": 0
    },
-   "x": -1.3,
+   "x": -2.8,
    "z": 0,
    "rot": 0,
    "name": "Aufzug (angenommen)"
@@ -48257,7 +52697,7 @@
     "part": "bie_H7_3",
     "floor": 0
    },
-   "x": 1.6,
+   "x": 0.8,
    "z": 0,
    "rot": 0,
    "name": "Treppenhaus (angenommen)"
@@ -48309,8 +52749,8 @@
     "part": "bie_H7_6",
     "floor": 0
    },
-   "x": 1.6,
-   "z": 0,
+   "x": 3.2,
+   "z": -1.3,
    "rot": 0,
    "name": "Treppenhaus (angenommen)"
   },
@@ -85675,7 +90115,7 @@
    "auto": true,
    "lib": "buero.regal",
    "x": -32.82,
-   "z": 9.37,
+   "z": 7.67,
    "rot": 270
   },
   {
@@ -85686,20 +90126,8 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -32.82,
-   "z": 10.37,
-   "rot": 270
-  },
-  {
-   "id": "obj_m4vpbvmuj",
-   "host": {
-    "part": "bie_H1_BT",
-    "floor": 1
-   },
-   "auto": true,
-   "lib": "buero.regal",
-   "x": -32.82,
-   "z": 11.37,
+   "x": -31.02,
+   "z": 8.37,
    "rot": 270
   },
   {
@@ -85710,8 +90138,8 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -32.82,
-   "z": 12.37,
+   "x": -32.42,
+   "z": 14.37,
    "rot": 270
   },
   {
@@ -85722,8 +90150,8 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -32.82,
-   "z": 13.37,
+   "x": -33.32,
+   "z": 14.37,
    "rot": 270
   },
   {
@@ -85808,7 +90236,7 @@
    "lib": "buero.regal",
    "x": -21.36,
    "z": 9.37,
-   "rot": 90
+   "rot": 270
   },
   {
    "id": "obj_4l2u9zmuj",
@@ -85939,8 +90367,8 @@
    "auto": true,
    "lib": "buero.regal",
    "x": -32.09,
-   "z": 9.09,
-   "rot": 0
+   "z": 7.89,
+   "rot": 90
   },
   {
    "id": "obj_raqspjmuj",
@@ -85950,8 +90378,8 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -31.09,
-   "z": 9.09,
+   "x": -30.29,
+   "z": 8.59,
    "rot": 0
   },
   {
@@ -86070,9 +90498,9 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -31.49,
-   "z": 11.02,
-   "rot": 180
+   "x": -29.89,
+   "z": 12.82,
+   "rot": 0
   },
   {
    "id": "obj_s6x5vlmuj",
@@ -86082,9 +90510,9 @@
    },
    "auto": true,
    "lib": "buero.regal",
-   "x": -31.49,
-   "z": 11.54,
-   "rot": 0
+   "x": -29.59,
+   "z": 9.54,
+   "rot": 180
   },
   {
    "id": "obj_88vvn0muj",
@@ -86096,7 +90524,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_rv8dp1muj",
@@ -86108,7 +90536,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_uldbj6muj",
@@ -86120,7 +90548,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_qw57afmuj",
@@ -86132,7 +90560,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_f4wcwkmuj",
@@ -86144,7 +90572,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_oeidu6muj",
@@ -86156,7 +90584,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_57vst8muj",
@@ -86168,7 +90596,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_ystoe0muj",
@@ -86180,7 +90608,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_wmfmqumuj",
@@ -86192,7 +90620,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_nrdigxmuj",
@@ -86204,7 +90632,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_zqvnt1muj",
@@ -86216,7 +90644,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_iw0k5smuj",
@@ -86228,7 +90656,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_k17i03muj",
@@ -86240,7 +90668,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_n0jtg6muj",
@@ -86252,7 +90680,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_ew09r0muj",
@@ -86264,7 +90692,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 11.02,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_7dsfiemuj",
@@ -86276,7 +90704,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 11.54,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_ifs6fzmuj",
@@ -86287,8 +90715,8 @@
    "auto": true,
    "lib": "buero.regal",
    "x": -31.49,
-   "z": 13.42,
-   "rot": 180
+   "z": 14.32,
+   "rot": 0
   },
   {
    "id": "obj_lhebj8muj",
@@ -86299,8 +90727,8 @@
    "auto": true,
    "lib": "buero.regal",
    "x": -31.49,
-   "z": 13.94,
-   "rot": 0
+   "z": 14.74,
+   "rot": 180
   },
   {
    "id": "obj_ca38h3muj",
@@ -86312,7 +90740,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_658bk3muj",
@@ -86324,7 +90752,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_qdktkxmuj",
@@ -86336,7 +90764,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_g4twe6muj",
@@ -86348,7 +90776,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_9t1xktmuj",
@@ -86360,7 +90788,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_lim97tmuj",
@@ -86372,7 +90800,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_ne3zflmuj",
@@ -86384,7 +90812,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_bi6z4imuj",
@@ -86396,7 +90824,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_h67byfmuj",
@@ -86408,7 +90836,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_r19vg2muj",
@@ -86420,7 +90848,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_gw9392muj",
@@ -86432,7 +90860,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_dge0mkmuj",
@@ -86444,7 +90872,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_uyefqxmuj",
@@ -86456,7 +90884,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_69xg6mmuj",
@@ -86468,7 +90896,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_jaxoavmuj",
@@ -86480,7 +90908,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 13.42,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_805pxkmuj",
@@ -86492,7 +90920,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 13.94,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_l7w3clmuj",
@@ -86504,7 +90932,7 @@
    "lib": "buero.regal",
    "x": -31.49,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_pqxt9ymuj",
@@ -86516,7 +90944,7 @@
    "lib": "buero.regal",
    "x": -31.49,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_wjw7chmuj",
@@ -86528,7 +90956,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_ip08iomuj",
@@ -86540,7 +90968,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_lbnxwpmuj",
@@ -86552,7 +90980,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_pu3cvemuj",
@@ -86564,7 +90992,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_te1yrymuj",
@@ -86576,7 +91004,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_el476fmuj",
@@ -86588,7 +91016,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_2mjo4pmuj",
@@ -86600,7 +91028,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_39mc7emuj",
@@ -86612,7 +91040,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_n4gyrumuj",
@@ -86624,7 +91052,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_foqzvsmuj",
@@ -86636,7 +91064,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_78wld7muj",
@@ -86648,7 +91076,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_wvkmejmuj",
@@ -86660,7 +91088,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_be7bwxmuj",
@@ -86672,7 +91100,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_mvi8ypmuj",
@@ -86684,7 +91112,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_2a1939muj",
@@ -86696,7 +91124,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 15.82,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_aqvf3omuj",
@@ -86708,7 +91136,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 16.34,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_rrktmqmuj",
@@ -86720,7 +91148,7 @@
    "lib": "buero.regal",
    "x": -31.49,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_m9ywvomuj",
@@ -86732,7 +91160,7 @@
    "lib": "buero.regal",
    "x": -31.49,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_j1zzpumuj",
@@ -86744,7 +91172,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_alfe7hmuj",
@@ -86756,7 +91184,7 @@
    "lib": "buero.regal",
    "x": -30.44,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_bpsp2smuj",
@@ -86768,7 +91196,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_xi0lglmuj",
@@ -86780,7 +91208,7 @@
    "lib": "buero.regal",
    "x": -29.39,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_j26fupmuj",
@@ -86792,7 +91220,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_rixs7rmuj",
@@ -86804,7 +91232,7 @@
    "lib": "buero.regal",
    "x": -28.34,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_b0a7gtmuj",
@@ -86816,7 +91244,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_oltbnbmuj",
@@ -86828,7 +91256,7 @@
    "lib": "buero.regal",
    "x": -27.29,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_t8awf1muj",
@@ -86840,7 +91268,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_4vhydumuj",
@@ -86852,7 +91280,7 @@
    "lib": "buero.regal",
    "x": -26.24,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_3dqcqbmuj",
@@ -86864,7 +91292,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_5v528tmuj",
@@ -86876,7 +91304,7 @@
    "lib": "buero.regal",
    "x": -25.19,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_bp5eommuj",
@@ -86888,7 +91316,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_31ryclmuj",
@@ -86900,7 +91328,7 @@
    "lib": "buero.regal",
    "x": -24.14,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_5egcijmuj",
@@ -86912,7 +91340,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 18.22,
-   "rot": 180
+   "rot": 0
   },
   {
    "id": "obj_8o57vrmuj",
@@ -86924,7 +91352,7 @@
    "lib": "buero.regal",
    "x": -23.09,
    "z": 18.74,
-   "rot": 0
+   "rot": 180
   },
   {
    "id": "obj_oie2k2muj",
@@ -87271,7 +91699,7 @@
    "auto": true,
    "lib": "log.palette",
    "x": -14.49,
-   "z": 1.22,
+   "z": 0.72,
    "rot": 90
   },
   {
@@ -87582,8 +92010,8 @@
    },
    "auto": true,
    "lib": "log.rollcontainer",
-   "x": -8.02,
-   "z": -24.78,
+   "x": -8.42,
+   "z": -24.18,
    "rot": 180
   },
   {
@@ -87630,7 +92058,7 @@
    },
    "auto": true,
    "lib": "log.rollcontainer",
-   "x": -4.82,
+   "x": -4.22,
    "z": -24.78,
    "rot": 180
   },
@@ -87667,7 +92095,7 @@
    "auto": true,
    "lib": "log.waeschewagen.rein",
    "x": -3.24,
-   "z": -30.2,
+   "z": -29.9,
    "rot": 180
   },
   {
@@ -87702,8 +92130,8 @@
    },
    "auto": true,
    "lib": "log.palette",
-   "x": -7.64,
-   "z": -27.8,
+   "x": -8.34,
+   "z": -27.4,
    "rot": 180
   },
   {
@@ -87715,7 +92143,7 @@
    "auto": true,
    "lib": "log.speisenwagen",
    "x": -5.44,
-   "z": -27.8,
+   "z": -27.5,
    "rot": 180
   },
   {
@@ -88063,7 +92491,7 @@
    "auto": true,
    "lib": "log.modulwagen",
    "x": 16.36,
-   "z": -30,
+   "z": -30.3,
    "rot": 90
   },
   {
@@ -88135,7 +92563,7 @@
    "auto": true,
    "lib": "log.waeschewagen.rein",
    "x": 18.76,
-   "z": -30,
+   "z": -30.5,
    "rot": 90
   },
   {
@@ -88159,7 +92587,7 @@
    "auto": true,
    "lib": "log.modulwagen",
    "x": 21.16,
-   "z": -21.2,
+   "z": -20.8,
    "rot": 90
   },
   {
@@ -88206,7 +92634,7 @@
    },
    "auto": true,
    "lib": "log.speisenwagen",
-   "x": 21.16,
+   "x": 21.56,
    "z": -30,
    "rot": 90
   },
@@ -91230,7 +95658,7 @@
    },
    "auto": true,
    "lib": "med.ultraschall",
-   "x": 0.4,
+   "x": -0.2,
    "z": -0.8,
    "rot": 270
   },
@@ -91242,7 +95670,7 @@
    },
    "auto": true,
    "lib": "med.untersuchungsleuchte",
-   "x": 0.6,
+   "x": 0,
    "z": 0.9,
    "rot": 270
   },
@@ -93264,7 +97692,7 @@
    },
    "station": "st_kgmne6ldl",
    "lib": "buero.schreibtisch",
-   "x": 3.23,
+   "x": 2.93,
    "z": 22.24,
    "rot": 180
   },
@@ -93289,7 +97717,7 @@
    "station": "st_kgmne6ldl",
    "lib": "med.zentralmonitor",
    "x": 4.93,
-   "z": 22.24,
+   "z": 23.14,
    "rot": 180
   },
   {
@@ -93301,7 +97729,7 @@
    "station": "st_kgmne6ldl",
    "lib": "buero.aktenschrank",
    "x": 6.33,
-   "z": 22.41,
+   "z": 22.91,
    "rot": 180
   },
   {
@@ -93336,7 +97764,7 @@
    },
    "station": "st_kgmne6ldl",
    "lib": "stat.visitewagen",
-   "x": 5.36,
+   "x": 6.76,
    "z": 21.31,
    "rot": 90
   },
@@ -93348,7 +97776,7 @@
    },
    "station": "st_kgmne6ldl",
    "lib": "stat.visitewagen",
-   "x": 5.36,
+   "x": 6.76,
    "z": 20.12,
    "rot": 90
   },
@@ -93396,8 +97824,8 @@
    },
    "station": "st_kgmne6ldl",
    "lib": "med.blutdruck",
-   "x": 4.48,
-   "z": 19.78,
+   "x": 3.48,
+   "z": 20.38,
    "rot": 180
   },
   {
@@ -94513,7 +98941,7 @@
    "yAbs": 3.8
   },
   {
-   "id": "obj_nb2_3683",
+   "id": "obj_nb2_3683_e",
    "lib": "erschl.aufzug.bett",
    "x": 0,
    "z": 0,
@@ -94603,7 +99031,7 @@
    "bisGF": -1
   },
   {
-   "id": "obj_nb2_3677",
+   "id": "obj_nb2_3677_e",
    "lib": "erschl.treppe",
    "x": -0.15,
    "z": -5.37,
@@ -94616,7 +99044,7 @@
    "vonGF": -1
   },
   {
-   "id": "obj_nb2_3678",
+   "id": "obj_nb2_3678_e",
    "lib": "erschl.aufzug.bett",
    "x": -0.1,
    "z": 0.79,
@@ -94635,7 +99063,7 @@
    }
   },
   {
-   "id": "obj_nb2_3679",
+   "id": "obj_nb2_3679_e",
    "lib": "erschl.aufzug.bett",
    "x": -0.05,
    "z": 3.7,
@@ -94654,7 +99082,7 @@
    }
   },
   {
-   "id": "obj_nb2_3680",
+   "id": "obj_nb2_3680_e",
    "lib": "erschl.treppe",
    "x": -4.53,
    "z": -12.01,
@@ -94667,7 +99095,7 @@
    "vonGF": -1
   },
   {
-   "id": "obj_nb2_3681",
+   "id": "obj_nb2_3681_e",
    "lib": "erschl.aufzug.bett",
    "x": -6.48,
    "z": -4.94,
@@ -94686,7 +99114,7 @@
    }
   },
   {
-   "id": "obj_nb2_3682",
+   "id": "obj_nb2_3682_e",
    "lib": "erschl.aufzug.person",
    "x": -4.25,
    "z": -5.43,
@@ -94887,7 +99315,7 @@
     "part": "bie_H1_14",
     "floor": -1
    },
-   "x": -13.4,
+   "x": -13.5,
    "z": 3.55,
    "rot": 90,
    "size": {
@@ -94897,7 +99325,7 @@
    },
    "name": "Aufzug 8 – Bettenaufzug an der Halle (Schacht 2,55 × 3,25 m)",
    "vonGF": -1,
-   "bisGF": 12,
+   "bisGF": 1,
    "aufzug": {
     "kabinen": 1,
     "freigabe": [
@@ -94914,7 +99342,7 @@
     "part": "bie_H1_14",
     "floor": -1
    },
-   "x": -13.39,
+   "x": -13.49,
    "z": 6.31,
    "rot": 90,
    "size": {
@@ -94924,7 +99352,7 @@
    },
    "name": "Aufzug 9 – Bettenaufzug an der Halle (Schacht 2,55 × 3,25 m)",
    "vonGF": -1,
-   "bisGF": 12,
+   "bisGF": 1,
    "aufzug": {
     "kabinen": 1,
     "freigabe": [
@@ -94941,7 +99369,7 @@
     "part": "bie_H1_14",
     "floor": -1
    },
-   "x": 17.33,
+   "x": 17.43,
    "z": -0.72,
    "rot": 90,
    "size": {
@@ -95386,6 +99814,3366 @@
    "z": 0,
    "rot": 0,
    "name": "Treppenhaus (angenommen)"
+  },
+  {
+   "id": "obj_campus_baum_0",
+   "lib": "gruen.baum.laub",
+   "x": 86.0,
+   "z": -74.4,
+   "rot": 0,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/2088606410"
+  },
+  {
+   "id": "obj_campus_baum_1",
+   "lib": "gruen.baum.laub",
+   "x": 130.7,
+   "z": -50.0,
+   "rot": 37,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784348"
+  },
+  {
+   "id": "obj_campus_baum_2",
+   "lib": "gruen.baum.laub",
+   "x": 137.3,
+   "z": -59.2,
+   "rot": 74,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784349"
+  },
+  {
+   "id": "obj_campus_baum_3",
+   "lib": "gruen.baum.laub",
+   "x": 124.6,
+   "z": -70.9,
+   "rot": 111,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784350"
+  },
+  {
+   "id": "obj_campus_baum_4",
+   "lib": "gruen.baum.laub",
+   "x": 106.8,
+   "z": -65.7,
+   "rot": 148,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784351"
+  },
+  {
+   "id": "obj_campus_baum_5",
+   "lib": "gruen.baum.laub",
+   "x": 109.2,
+   "z": -39.8,
+   "rot": 185,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784352"
+  },
+  {
+   "id": "obj_campus_baum_6",
+   "lib": "gruen.baum.laub",
+   "x": 90.6,
+   "z": -89.5,
+   "rot": 222,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784353"
+  },
+  {
+   "id": "obj_campus_baum_7",
+   "lib": "gruen.baum.laub",
+   "x": 78.9,
+   "z": -92.2,
+   "rot": 259,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784354"
+  },
+  {
+   "id": "obj_campus_baum_8",
+   "lib": "gruen.baum.laub",
+   "x": 67.3,
+   "z": -91.1,
+   "rot": 296,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784355"
+  },
+  {
+   "id": "obj_campus_baum_9",
+   "lib": "gruen.baum.laub",
+   "x": 55.1,
+   "z": -92.5,
+   "rot": 333,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784356"
+  },
+  {
+   "id": "obj_campus_baum_10",
+   "lib": "gruen.baum.laub",
+   "x": 44.7,
+   "z": -92.2,
+   "rot": 10,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784357"
+  },
+  {
+   "id": "obj_campus_baum_11",
+   "lib": "gruen.baum.laub",
+   "x": 30.4,
+   "z": -95.7,
+   "rot": 47,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784358"
+  },
+  {
+   "id": "obj_campus_baum_12",
+   "lib": "gruen.baum.laub",
+   "x": 31.4,
+   "z": -121.9,
+   "rot": 84,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784365"
+  },
+  {
+   "id": "obj_campus_baum_13",
+   "lib": "gruen.baum.laub",
+   "x": 123.8,
+   "z": -99.2,
+   "rot": 121,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784378"
+  },
+  {
+   "id": "obj_campus_baum_14",
+   "lib": "gruen.baum.laub",
+   "x": -25.5,
+   "z": -120.4,
+   "rot": 158,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784399"
+  },
+  {
+   "id": "obj_campus_baum_15",
+   "lib": "gruen.baum.laub",
+   "x": -61.9,
+   "z": -120.8,
+   "rot": 195,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784401"
+  },
+  {
+   "id": "obj_campus_baum_16",
+   "lib": "gruen.baum.laub",
+   "x": -52.5,
+   "z": -28.1,
+   "rot": 232,
+   "size": {
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784639"
+  },
+  {
+   "id": "obj_campus_baum_17",
+   "lib": "gruen.baum.laub",
+   "x": -52.0,
+   "z": -49.5,
+   "rot": 269,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784640"
+  },
+  {
+   "id": "obj_campus_baum_18",
+   "lib": "gruen.baum.laub",
+   "x": -64.9,
+   "z": -83.1,
+   "rot": 306,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784641"
+  },
+  {
+   "id": "obj_campus_baum_19",
+   "lib": "gruen.baum.laub",
+   "x": -70.5,
+   "z": -88.1,
+   "rot": 343,
+   "size": {
+    "w": 7.6,
+    "d": 7.6,
+    "h": 12.0
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784642"
+  },
+  {
+   "id": "obj_campus_baum_20",
+   "lib": "gruen.baum.laub",
+   "x": -82.0,
+   "z": -90.1,
+   "rot": 20,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784655"
+  },
+  {
+   "id": "obj_campus_baum_21",
+   "lib": "gruen.baum.laub",
+   "x": -73.4,
+   "z": -100.9,
+   "rot": 57,
+   "size": {
+    "w": 7.4,
+    "d": 7.4,
+    "h": 11.6
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784656"
+  },
+  {
+   "id": "obj_campus_baum_22",
+   "lib": "gruen.baum.laub",
+   "x": 67.1,
+   "z": -75.5,
+   "rot": 94,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784662"
+  },
+  {
+   "id": "obj_campus_baum_23",
+   "lib": "gruen.baum.laub",
+   "x": 110.8,
+   "z": -46.0,
+   "rot": 131,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784664"
+  },
+  {
+   "id": "obj_campus_baum_24",
+   "lib": "gruen.baum.laub",
+   "x": 104.2,
+   "z": -72.4,
+   "rot": 168,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784665"
+  },
+  {
+   "id": "obj_campus_baum_25",
+   "lib": "gruen.baum.laub",
+   "x": -16.8,
+   "z": -93.2,
+   "rot": 205,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 8.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6515760688"
+  },
+  {
+   "id": "obj_campus_baum_26",
+   "lib": "gruen.baum.laub",
+   "x": -50.9,
+   "z": 107.9,
+   "rot": 242,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784380"
+  },
+  {
+   "id": "obj_campus_baum_27",
+   "lib": "gruen.baum.laub",
+   "x": -59.7,
+   "z": 105.5,
+   "rot": 279,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784381"
+  },
+  {
+   "id": "obj_campus_baum_28",
+   "lib": "gruen.baum.laub",
+   "x": -94.1,
+   "z": 81.6,
+   "rot": 316,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784382"
+  },
+  {
+   "id": "obj_campus_baum_29",
+   "lib": "gruen.baum.laub",
+   "x": -93.5,
+   "z": 73.5,
+   "rot": 353,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784383"
+  },
+  {
+   "id": "obj_campus_baum_30",
+   "lib": "gruen.baum.laub",
+   "x": -60.0,
+   "z": 112.5,
+   "rot": 30,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784411"
+  },
+  {
+   "id": "obj_campus_baum_31",
+   "lib": "gruen.baum.laub",
+   "x": -44.5,
+   "z": 111.5,
+   "rot": 67,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784412"
+  },
+  {
+   "id": "obj_campus_baum_32",
+   "lib": "gruen.baum.laub",
+   "x": -44.4,
+   "z": 122.8,
+   "rot": 104,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784413"
+  },
+  {
+   "id": "obj_campus_baum_33",
+   "lib": "gruen.baum.laub",
+   "x": -54.0,
+   "z": 125.1,
+   "rot": 141,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 10.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784414"
+  },
+  {
+   "id": "obj_campus_baum_34",
+   "lib": "gruen.baum.laub",
+   "x": -61.9,
+   "z": 129.5,
+   "rot": 178,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784415"
+  },
+  {
+   "id": "obj_campus_baum_35",
+   "lib": "gruen.baum.laub",
+   "x": -63.0,
+   "z": 140.4,
+   "rot": 215,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784416"
+  },
+  {
+   "id": "obj_campus_baum_36",
+   "lib": "gruen.baum.laub",
+   "x": -38.3,
+   "z": 128.0,
+   "rot": 252,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784417"
+  },
+  {
+   "id": "obj_campus_baum_37",
+   "lib": "gruen.baum.laub",
+   "x": -29.4,
+   "z": 120.6,
+   "rot": 289,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6894874225"
+  },
+  {
+   "id": "obj_campus_baum_38",
+   "lib": "gruen.baum.laub",
+   "x": -211.3,
+   "z": 167.5,
+   "rot": 326,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/8935509170"
+  },
+  {
+   "id": "obj_campus_baum_39",
+   "lib": "gruen.baum.laub",
+   "x": -218.4,
+   "z": 158.5,
+   "rot": 3,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/8935509171"
+  },
+  {
+   "id": "obj_campus_baum_40",
+   "lib": "gruen.baum.laub",
+   "x": -253.1,
+   "z": 311.8,
+   "rot": 40,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/9920684702"
+  },
+  {
+   "id": "obj_campus_baum_41",
+   "lib": "gruen.baum.laub",
+   "x": -263.5,
+   "z": 289.9,
+   "rot": 77,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/9920684703"
+  },
+  {
+   "id": "obj_campus_baum_42",
+   "lib": "gruen.baum.laub",
+   "x": -279.4,
+   "z": 259.1,
+   "rot": 114,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/9920684704"
+  },
+  {
+   "id": "obj_campus_baum_43",
+   "lib": "gruen.baum.laub",
+   "x": -91.4,
+   "z": -11.8,
+   "rot": 151,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784385"
+  },
+  {
+   "id": "obj_campus_baum_44",
+   "lib": "gruen.baum.laub",
+   "x": -67.1,
+   "z": -40.6,
+   "rot": 188,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784397"
+  },
+  {
+   "id": "obj_campus_baum_45",
+   "lib": "gruen.baum.laub",
+   "x": -104.9,
+   "z": -114.3,
+   "rot": 225,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784407"
+  },
+  {
+   "id": "obj_campus_baum_46",
+   "lib": "gruen.baum.laub",
+   "x": -80.6,
+   "z": 1.1,
+   "rot": 262,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784408"
+  },
+  {
+   "id": "obj_campus_baum_47",
+   "lib": "gruen.baum.laub",
+   "x": -77.7,
+   "z": 19.6,
+   "rot": 299,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784409"
+  },
+  {
+   "id": "obj_campus_baum_48",
+   "lib": "gruen.baum.laub",
+   "x": -86.4,
+   "z": 18.4,
+   "rot": 336,
+   "size": {
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784410"
+  },
+  {
+   "id": "obj_campus_baum_49",
+   "lib": "gruen.baum.laub",
+   "x": -90.5,
+   "z": -40.2,
+   "rot": 13,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784647"
+  },
+  {
+   "id": "obj_campus_baum_50",
+   "lib": "gruen.baum.laub",
+   "x": -94.3,
+   "z": -48.8,
+   "rot": 50,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.0
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784648"
+  },
+  {
+   "id": "obj_campus_baum_51",
+   "lib": "gruen.baum.laub",
+   "x": -91.2,
+   "z": -56.3,
+   "rot": 87,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784649"
+  },
+  {
+   "id": "obj_campus_baum_52",
+   "lib": "gruen.baum.laub",
+   "x": -96.1,
+   "z": -80.7,
+   "rot": 124,
+   "size": {
+    "w": 7.7,
+    "d": 7.7,
+    "h": 12.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784650"
+  },
+  {
+   "id": "obj_campus_baum_53",
+   "lib": "gruen.baum.laub",
+   "x": -95.2,
+   "z": -88.4,
+   "rot": 161,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784651"
+  },
+  {
+   "id": "obj_campus_baum_54",
+   "lib": "gruen.baum.laub",
+   "x": -203.3,
+   "z": -94.1,
+   "rot": 198,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622335"
+  },
+  {
+   "id": "obj_campus_baum_55",
+   "lib": "gruen.baum.laub",
+   "x": -203.1,
+   "z": -100.6,
+   "rot": 235,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622336"
+  },
+  {
+   "id": "obj_campus_baum_56",
+   "lib": "gruen.baum.laub",
+   "x": -207.3,
+   "z": -104.7,
+   "rot": 272,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622337"
+  },
+  {
+   "id": "obj_campus_baum_57",
+   "lib": "gruen.baum.laub",
+   "x": -197.1,
+   "z": -109.0,
+   "rot": 309,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 8.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622338"
+  },
+  {
+   "id": "obj_campus_baum_58",
+   "lib": "gruen.baum.laub",
+   "x": -200.7,
+   "z": -108.7,
+   "rot": 346,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622339"
+  },
+  {
+   "id": "obj_campus_baum_59",
+   "lib": "gruen.baum.laub",
+   "x": -212.5,
+   "z": -102.9,
+   "rot": 23,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6878622348"
+  },
+  {
+   "id": "obj_campus_baum_60",
+   "lib": "gruen.baum.laub",
+   "x": -176.7,
+   "z": 21.8,
+   "rot": 60,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/7272312432"
+  },
+  {
+   "id": "obj_campus_baum_61",
+   "lib": "gruen.baum.laub",
+   "x": -148.0,
+   "z": -11.0,
+   "rot": 97,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/7272312433"
+  },
+  {
+   "id": "obj_campus_baum_62",
+   "lib": "gruen.baum.laub",
+   "x": -148.2,
+   "z": -20.2,
+   "rot": 134,
+   "size": {
+    "w": 7.4,
+    "d": 7.4,
+    "h": 11.6
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/7272312434"
+  },
+  {
+   "id": "obj_campus_baum_63",
+   "lib": "gruen.baum.laub",
+   "x": -144.0,
+   "z": -20.3,
+   "rot": 171,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/7272312435"
+  },
+  {
+   "id": "obj_campus_baum_64",
+   "lib": "gruen.baum.laub",
+   "x": -91.7,
+   "z": 4.0,
+   "rot": 208,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/12701773103"
+  },
+  {
+   "id": "obj_campus_baum_65",
+   "lib": "gruen.baum.laub",
+   "x": 133.3,
+   "z": 292.3,
+   "rot": 245,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/4759264171"
+  },
+  {
+   "id": "obj_campus_baum_66",
+   "lib": "gruen.baum.laub",
+   "x": 105.1,
+   "z": 15.1,
+   "rot": 282,
+   "size": {
+    "w": 7.4,
+    "d": 7.4,
+    "h": 11.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784341"
+  },
+  {
+   "id": "obj_campus_baum_67",
+   "lib": "gruen.baum.laub",
+   "x": 132.1,
+   "z": 7.2,
+   "rot": 319,
+   "size": {
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784342"
+  },
+  {
+   "id": "obj_campus_baum_68",
+   "lib": "gruen.baum.laub",
+   "x": 122.4,
+   "z": 44.4,
+   "rot": 356,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784343"
+  },
+  {
+   "id": "obj_campus_baum_69",
+   "lib": "gruen.baum.laub",
+   "x": 114.5,
+   "z": 50.9,
+   "rot": 33,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 8.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784344"
+  },
+  {
+   "id": "obj_campus_baum_70",
+   "lib": "gruen.baum.laub",
+   "x": 111.0,
+   "z": 22.8,
+   "rot": 70,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784345"
+  },
+  {
+   "id": "obj_campus_baum_71",
+   "lib": "gruen.baum.laub",
+   "x": 132.7,
+   "z": -1.9,
+   "rot": 107,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784346"
+  },
+  {
+   "id": "obj_campus_baum_72",
+   "lib": "gruen.baum.laub",
+   "x": 131.6,
+   "z": -36.6,
+   "rot": 144,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784347"
+  },
+  {
+   "id": "obj_campus_baum_73",
+   "lib": "gruen.baum.laub",
+   "x": 115.6,
+   "z": 12.9,
+   "rot": 181,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784366"
+  },
+  {
+   "id": "obj_campus_baum_74",
+   "lib": "gruen.baum.laub",
+   "x": 124.8,
+   "z": 28.4,
+   "rot": 218,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784667"
+  },
+  {
+   "id": "obj_campus_baum_75",
+   "lib": "gruen.baum.laub",
+   "x": 108.0,
+   "z": 4.9,
+   "rot": 255,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/5664784668"
+  },
+  {
+   "id": "obj_campus_baum_76",
+   "lib": "gruen.baum.laub",
+   "x": 159.6,
+   "z": -13.5,
+   "rot": 292,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.7
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6581886621"
+  },
+  {
+   "id": "obj_campus_baum_77",
+   "lib": "gruen.baum.laub",
+   "x": 171.4,
+   "z": -0.8,
+   "rot": 329,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6581886622"
+  },
+  {
+   "id": "obj_campus_baum_78",
+   "lib": "gruen.baum.laub",
+   "x": 157.8,
+   "z": -4.6,
+   "rot": 6,
+   "size": {
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
+   },
+   "standort": true,
+   "quelle": "OpenStreetMap node/6581886623"
+  },
+  {
+   "id": "obj_campus_baum_79",
+   "lib": "gruen.baum.laub",
+   "x": 119.0,
+   "z": 69.8,
+   "rot": 43,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_80",
+   "lib": "gruen.baum.laub",
+   "x": -175.0,
+   "z": 152.3,
+   "rot": 80,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_81",
+   "lib": "gruen.baum.laub",
+   "x": 105.5,
+   "z": -114.7,
+   "rot": 117,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_82",
+   "lib": "gruen.baum.laub",
+   "x": 129.5,
+   "z": -18.7,
+   "rot": 154,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_83",
+   "lib": "gruen.baum.laub",
+   "x": 129.5,
+   "z": 86.3,
+   "rot": 191,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_84",
+   "lib": "gruen.baum.laub",
+   "x": -157.0,
+   "z": 152.3,
+   "rot": 228,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_85",
+   "lib": "gruen.baum.laub",
+   "x": 116.0,
+   "z": -60.7,
+   "rot": 265,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_86",
+   "lib": "gruen.baum.laub",
+   "x": -176.5,
+   "z": 114.8,
+   "rot": 302,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_87",
+   "lib": "gruen.baum.laub",
+   "x": -172.0,
+   "z": 87.8,
+   "rot": 339,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_88",
+   "lib": "gruen.baum.laub",
+   "x": 98.0,
+   "z": -68.2,
+   "rot": 16,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_89",
+   "lib": "gruen.baum.laub",
+   "x": 122.0,
+   "z": -6.7,
+   "rot": 53,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_90",
+   "lib": "gruen.baum.laub",
+   "x": -166.0,
+   "z": 183.8,
+   "rot": 90,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_91",
+   "lib": "gruen.baum.laub",
+   "x": 132.5,
+   "z": 66.8,
+   "rot": 127,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_92",
+   "lib": "gruen.baum.laub",
+   "x": 128.0,
+   "z": -9.7,
+   "rot": 164,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_93",
+   "lib": "gruen.baum.laub",
+   "x": -173.5,
+   "z": 164.3,
+   "rot": 201,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_94",
+   "lib": "gruen.baum.laub",
+   "x": -155.5,
+   "z": 174.8,
+   "rot": 238,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_95",
+   "lib": "gruen.baum.laub",
+   "x": 143.0,
+   "z": -45.7,
+   "rot": 275,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_96",
+   "lib": "gruen.baum.laub",
+   "x": 96.5,
+   "z": 8.3,
+   "rot": 312,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_97",
+   "lib": "gruen.baum.laub",
+   "x": -55.0,
+   "z": -84.7,
+   "rot": 349,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_98",
+   "lib": "gruen.baum.laub",
+   "x": -106.0,
+   "z": -80.2,
+   "rot": 26,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_99",
+   "lib": "gruen.baum.laub",
+   "x": -170.5,
+   "z": 75.8,
+   "rot": 63,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_100",
+   "lib": "gruen.baum.laub",
+   "x": 147.5,
+   "z": -51.7,
+   "rot": 100,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_101",
+   "lib": "gruen.baum.laub",
+   "x": -80.5,
+   "z": 104.3,
+   "rot": 137,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_102",
+   "lib": "gruen.baum.laub",
+   "x": -161.5,
+   "z": 165.8,
+   "rot": 174,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_103",
+   "lib": "gruen.baum.laub",
+   "x": -166.0,
+   "z": 141.8,
+   "rot": 211,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_104",
+   "lib": "gruen.baum.laub",
+   "x": 141.5,
+   "z": 9.8,
+   "rot": 248,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_105",
+   "lib": "gruen.baum.laub",
+   "x": 132.5,
+   "z": 36.8,
+   "rot": 285,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_106",
+   "lib": "gruen.baum.laub",
+   "x": 113.0,
+   "z": -24.7,
+   "rot": 322,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_107",
+   "lib": "gruen.baum.laub",
+   "x": 123.5,
+   "z": 8.3,
+   "rot": 359,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_108",
+   "lib": "gruen.baum.laub",
+   "x": -155.5,
+   "z": 182.3,
+   "rot": 36,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_109",
+   "lib": "gruen.baum.laub",
+   "x": -25.0,
+   "z": -104.2,
+   "rot": 73,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_110",
+   "lib": "gruen.baum.laub",
+   "x": 119.0,
+   "z": 95.3,
+   "rot": 110,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_111",
+   "lib": "gruen.baum.laub",
+   "x": -95.5,
+   "z": 56.3,
+   "rot": 147,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_112",
+   "lib": "gruen.baum.laub",
+   "x": -98.5,
+   "z": 44.3,
+   "rot": 184,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_113",
+   "lib": "gruen.baum.laub",
+   "x": 96.5,
+   "z": 62.3,
+   "rot": 221,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_114",
+   "lib": "gruen.baum.laub",
+   "x": -110.5,
+   "z": -72.7,
+   "rot": 258,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_115",
+   "lib": "gruen.baum.laub",
+   "x": 114.5,
+   "z": 60.8,
+   "rot": 295,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_116",
+   "lib": "gruen.baum.laub",
+   "x": 137.0,
+   "z": 53.3,
+   "rot": 332,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_117",
+   "lib": "gruen.baum.laub",
+   "x": 143.0,
+   "z": -23.2,
+   "rot": 9,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_118",
+   "lib": "gruen.baum.laub",
+   "x": 107.0,
+   "z": -95.2,
+   "rot": 46,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_119",
+   "lib": "gruen.baum.laub",
+   "x": -158.5,
+   "z": 141.8,
+   "rot": 83,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_120",
+   "lib": "gruen.baum.laub",
+   "x": 135.5,
+   "z": 77.3,
+   "rot": 120,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_121",
+   "lib": "gruen.baum.laub",
+   "x": -94.0,
+   "z": 27.8,
+   "rot": 157,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_122",
+   "lib": "gruen.baum.laub",
+   "x": -95.5,
+   "z": -68.2,
+   "rot": 194,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_123",
+   "lib": "gruen.baum.laub",
+   "x": 101.0,
+   "z": 69.8,
+   "rot": 231,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_124",
+   "lib": "gruen.baum.laub",
+   "x": -139.0,
+   "z": 156.8,
+   "rot": 268,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_125",
+   "lib": "gruen.baum.laub",
+   "x": -52.0,
+   "z": -41.2,
+   "rot": 305,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_126",
+   "lib": "gruen.baum.laub",
+   "x": 122.0,
+   "z": -54.7,
+   "rot": 342,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_127",
+   "lib": "gruen.baum.laub",
+   "x": 140.0,
+   "z": -89.2,
+   "rot": 19,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_128",
+   "lib": "gruen.baum.laub",
+   "x": -166.0,
+   "z": 152.3,
+   "rot": 56,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_129",
+   "lib": "gruen.baum.laub",
+   "x": 122.0,
+   "z": -90.7,
+   "rot": 93,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_130",
+   "lib": "gruen.baum.laub",
+   "x": 60.5,
+   "z": -77.2,
+   "rot": 130,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_131",
+   "lib": "gruen.baum.laub",
+   "x": -170.5,
+   "z": -101.2,
+   "rot": 167,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_132",
+   "lib": "gruen.baum.laub",
+   "x": -62.5,
+   "z": -0.7,
+   "rot": 204,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_133",
+   "lib": "gruen.baum.laub",
+   "x": 114.5,
+   "z": -17.2,
+   "rot": 241,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_134",
+   "lib": "gruen.baum.laub",
+   "x": 99.5,
+   "z": -29.2,
+   "rot": 278,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_135",
+   "lib": "gruen.baum.laub",
+   "x": 128.0,
+   "z": 74.3,
+   "rot": 315,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_136",
+   "lib": "gruen.baum.laub",
+   "x": 108.5,
+   "z": -3.7,
+   "rot": 352,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_137",
+   "lib": "gruen.baum.laub",
+   "x": 101.0,
+   "z": -89.2,
+   "rot": 29,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_138",
+   "lib": "gruen.baum.laub",
+   "x": -88.0,
+   "z": -68.2,
+   "rot": 66,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_139",
+   "lib": "gruen.baum.laub",
+   "x": 81.5,
+   "z": -86.2,
+   "rot": 103,
+   "size": {
+    "w": 5.2,
+    "d": 5.2,
+    "h": 8.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_140",
+   "lib": "gruen.baum.laub",
+   "x": 144.5,
+   "z": 3.8,
+   "rot": 140,
+   "size": {
+    "w": 5.2,
+    "d": 5.2,
+    "h": 8.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_141",
+   "lib": "gruen.baum.laub",
+   "x": 125.0,
+   "z": -38.2,
+   "rot": 177,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_142",
+   "lib": "gruen.baum.laub",
+   "x": 140.0,
+   "z": -69.7,
+   "rot": 214,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_143",
+   "lib": "gruen.baum.laub",
+   "x": -88.0,
+   "z": -86.2,
+   "rot": 251,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_144",
+   "lib": "gruen.baum.laub",
+   "x": -58.0,
+   "z": -14.2,
+   "rot": 288,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_145",
+   "lib": "gruen.baum.laub",
+   "x": 105.5,
+   "z": -123.7,
+   "rot": 325,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_146",
+   "lib": "gruen.baum.laub",
+   "x": -71.5,
+   "z": -62.2,
+   "rot": 2,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_147",
+   "lib": "gruen.baum.laub",
+   "x": -77.5,
+   "z": -113.2,
+   "rot": 39,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_148",
+   "lib": "gruen.baum.laub",
+   "x": 95.0,
+   "z": -125.2,
+   "rot": 76,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_149",
+   "lib": "gruen.baum.laub",
+   "x": -173.5,
+   "z": 171.8,
+   "rot": 113,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_150",
+   "lib": "gruen.baum.laub",
+   "x": 128.0,
+   "z": -60.7,
+   "rot": 150,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_151",
+   "lib": "gruen.baum.laub",
+   "x": 134.0,
+   "z": 45.8,
+   "rot": 187,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_152",
+   "lib": "gruen.baum.laub",
+   "x": 96.5,
+   "z": -98.2,
+   "rot": 224,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_153",
+   "lib": "gruen.baum.laub",
+   "x": -179.5,
+   "z": 144.8,
+   "rot": 261,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_154",
+   "lib": "gruen.baum.laub",
+   "x": -140.5,
+   "z": 168.8,
+   "rot": 298,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_155",
+   "lib": "gruen.baum.laub",
+   "x": -68.5,
+   "z": 102.8,
+   "rot": 335,
+   "size": {
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_156",
+   "lib": "gruen.baum.laub",
+   "x": 141.5,
+   "z": 35.3,
+   "rot": 12,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_157",
+   "lib": "gruen.baum.laub",
+   "x": 120.5,
+   "z": 77.3,
+   "rot": 49,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_158",
+   "lib": "gruen.baum.laub",
+   "x": 131.0,
+   "z": -66.7,
+   "rot": 86,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 9.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_159",
+   "lib": "gruen.baum.laub",
+   "x": -67.0,
+   "z": 114.8,
+   "rot": 123,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_160",
+   "lib": "gruen.baum.laub",
+   "x": -71.5,
+   "z": -33.7,
+   "rot": 160,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_161",
+   "lib": "gruen.baum.laub",
+   "x": 120.5,
+   "z": -77.2,
+   "rot": 197,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_162",
+   "lib": "gruen.baum.laub",
+   "x": -179.5,
+   "z": 134.3,
+   "rot": 234,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_163",
+   "lib": "gruen.baum.laub",
+   "x": 135.5,
+   "z": -11.2,
+   "rot": 271,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_164",
+   "lib": "gruen.baum.laub",
+   "x": -68.5,
+   "z": 131.3,
+   "rot": 308,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 9.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_165",
+   "lib": "gruen.baum.laub",
+   "x": -92.5,
+   "z": 15.8,
+   "rot": 345,
+   "size": {
+    "w": 5.4,
+    "d": 5.4,
+    "h": 8.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_166",
+   "lib": "gruen.baum.laub",
+   "x": 129.5,
+   "z": 60.8,
+   "rot": 22,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_167",
+   "lib": "gruen.baum.laub",
+   "x": 129.5,
+   "z": -90.7,
+   "rot": 59,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_168",
+   "lib": "gruen.baum.laub",
+   "x": -83.5,
+   "z": -21.7,
+   "rot": 96,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_169",
+   "lib": "gruen.baum.laub",
+   "x": -173.5,
+   "z": 102.8,
+   "rot": 133,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_170",
+   "lib": "gruen.baum.laub",
+   "x": 101.0,
+   "z": -57.7,
+   "rot": 170,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_171",
+   "lib": "gruen.baum.laub",
+   "x": 102.5,
+   "z": 26.3,
+   "rot": 207,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_172",
+   "lib": "gruen.baum.laub",
+   "x": -64.0,
+   "z": -62.2,
+   "rot": 244,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_173",
+   "lib": "gruen.baum.laub",
+   "x": 74.0,
+   "z": -68.2,
+   "rot": 281,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_174",
+   "lib": "gruen.baum.laub",
+   "x": -104.5,
+   "z": -20.2,
+   "rot": 318,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_175",
+   "lib": "gruen.baum.laub",
+   "x": 134.0,
+   "z": -42.7,
+   "rot": 355,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_176",
+   "lib": "gruen.baum.laub",
+   "x": -77.5,
+   "z": -39.7,
+   "rot": 32,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_177",
+   "lib": "gruen.baum.laub",
+   "x": 108.5,
+   "z": 32.3,
+   "rot": 69,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_178",
+   "lib": "gruen.baum.laub",
+   "x": -70.0,
+   "z": -24.7,
+   "rot": 106,
+   "size": {
+    "w": 5.1,
+    "d": 5.1,
+    "h": 8.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_179",
+   "lib": "gruen.baum.laub",
+   "x": -170.5,
+   "z": 108.8,
+   "rot": 143,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_180",
+   "lib": "gruen.baum.laub",
+   "x": 137.0,
+   "z": 60.8,
+   "rot": 180,
+   "size": {
+    "w": 5.2,
+    "d": 5.2,
+    "h": 8.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_181",
+   "lib": "gruen.baum.laub",
+   "x": 86.0,
+   "z": -98.2,
+   "rot": 217,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_182",
+   "lib": "gruen.baum.laub",
+   "x": 107.0,
+   "z": -18.7,
+   "rot": 254,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_183",
+   "lib": "gruen.baum.laub",
+   "x": -76.0,
+   "z": -17.2,
+   "rot": 291,
+   "size": {
+    "w": 4.9,
+    "d": 4.9,
+    "h": 7.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_184",
+   "lib": "gruen.baum.laub",
+   "x": -131.5,
+   "z": 168.8,
+   "rot": 328,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_185",
+   "lib": "gruen.baum.laub",
+   "x": -64.0,
+   "z": -32.2,
+   "rot": 5,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_186",
+   "lib": "gruen.baum.laub",
+   "x": 101.0,
+   "z": -6.7,
+   "rot": 42,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_187",
+   "lib": "gruen.baum.laub",
+   "x": -91.0,
+   "z": -93.7,
+   "rot": 79,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_188",
+   "lib": "gruen.baum.laub",
+   "x": 83.0,
+   "z": 35.3,
+   "rot": 116,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_189",
+   "lib": "gruen.baum.laub",
+   "x": -68.5,
+   "z": -75.7,
+   "rot": 153,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_190",
+   "lib": "gruen.baum.laub",
+   "x": 120.5,
+   "z": -21.7,
+   "rot": 190,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_191",
+   "lib": "gruen.baum.laub",
+   "x": -101.5,
+   "z": 72.8,
+   "rot": 227,
+   "size": {
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_192",
+   "lib": "gruen.baum.laub",
+   "x": 116.0,
+   "z": 5.3,
+   "rot": 264,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_193",
+   "lib": "gruen.baum.laub",
+   "x": -115.0,
+   "z": -90.7,
+   "rot": 301,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_194",
+   "lib": "gruen.baum.laub",
+   "x": -125.5,
+   "z": 68.3,
+   "rot": 338,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_195",
+   "lib": "gruen.baum.laub",
+   "x": -83.5,
+   "z": -42.7,
+   "rot": 15,
+   "size": {
+    "w": 7.3,
+    "d": 7.3,
+    "h": 11.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_196",
+   "lib": "gruen.baum.laub",
+   "x": -85.0,
+   "z": 93.8,
+   "rot": 52,
+   "size": {
+    "w": 5.2,
+    "d": 5.2,
+    "h": 8.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_197",
+   "lib": "gruen.baum.laub",
+   "x": -65.5,
+   "z": -47.2,
+   "rot": 89,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.5
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_198",
+   "lib": "gruen.baum.laub",
+   "x": -41.5,
+   "z": 104.3,
+   "rot": 126,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_199",
+   "lib": "gruen.baum.laub",
+   "x": 120.5,
+   "z": 33.8,
+   "rot": 163,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_200",
+   "lib": "gruen.baum.laub",
+   "x": 141.5,
+   "z": 26.3,
+   "rot": 200,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_201",
+   "lib": "gruen.baum.laub",
+   "x": 153.5,
+   "z": -66.7,
+   "rot": 237,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_202",
+   "lib": "gruen.baum.laub",
+   "x": 129.5,
+   "z": 14.3,
+   "rot": 274,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_203",
+   "lib": "gruen.baum.laub",
+   "x": -122.5,
+   "z": -117.7,
+   "rot": 311,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_204",
+   "lib": "gruen.baum.laub",
+   "x": -100.0,
+   "z": 99.8,
+   "rot": 348,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_205",
+   "lib": "gruen.baum.laub",
+   "x": -46.0,
+   "z": -120.7,
+   "rot": 25,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_206",
+   "lib": "gruen.baum.laub",
+   "x": 111.5,
+   "z": 69.8,
+   "rot": 62,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_207",
+   "lib": "gruen.baum.laub",
+   "x": 122.0,
+   "z": -14.2,
+   "rot": 99,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_208",
+   "lib": "gruen.baum.laub",
+   "x": -104.5,
+   "z": -45.7,
+   "rot": 136,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_209",
+   "lib": "gruen.baum.laub",
+   "x": -176.5,
+   "z": 186.8,
+   "rot": 173,
+   "size": {
+    "w": 5.7,
+    "d": 5.7,
+    "h": 8.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_210",
+   "lib": "gruen.baum.laub",
+   "x": 116.0,
+   "z": -3.7,
+   "rot": 210,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_211",
+   "lib": "gruen.baum.laub",
+   "x": 80.0,
+   "z": 75.8,
+   "rot": 247,
+   "size": {
+    "w": 6.9,
+    "d": 6.9,
+    "h": 10.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_212",
+   "lib": "gruen.baum.laub",
+   "x": -178.0,
+   "z": -89.2,
+   "rot": 284,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_213",
+   "lib": "gruen.baum.laub",
+   "x": 95.0,
+   "z": -84.7,
+   "rot": 321,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_214",
+   "lib": "gruen.baum.laub",
+   "x": 128.0,
+   "z": 51.8,
+   "rot": 358,
+   "size": {
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_215",
+   "lib": "gruen.baum.laub",
+   "x": -178.0,
+   "z": 93.8,
+   "rot": 35,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_216",
+   "lib": "gruen.baum.laub",
+   "x": 113.0,
+   "z": -90.7,
+   "rot": 72,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_217",
+   "lib": "gruen.baum.laub",
+   "x": -149.5,
+   "z": 179.3,
+   "rot": 109,
+   "size": {
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_218",
+   "lib": "gruen.baum.laub",
+   "x": 110.0,
+   "z": 44.3,
+   "rot": 146,
+   "size": {
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_219",
+   "lib": "gruen.baum.laub",
+   "x": -175.0,
+   "z": 81.8,
+   "rot": 183,
+   "size": {
+    "w": 4.9,
+    "d": 4.9,
+    "h": 7.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_220",
+   "lib": "gruen.baum.laub",
+   "x": -169.0,
+   "z": 117.8,
+   "rot": 220,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_221",
+   "lib": "gruen.baum.laub",
+   "x": -172.0,
+   "z": -110.2,
+   "rot": 257,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_222",
+   "lib": "gruen.baum.laub",
+   "x": -166.0,
+   "z": 84.8,
+   "rot": 294,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_223",
+   "lib": "gruen.baum.laub",
+   "x": -97.0,
+   "z": -41.2,
+   "rot": 331,
+   "size": {
+    "w": 5.5,
+    "d": 5.5,
+    "h": 8.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_224",
+   "lib": "gruen.baum.laub",
+   "x": 99.5,
+   "z": -104.2,
+   "rot": 8,
+   "size": {
+    "w": 5.6,
+    "d": 5.6,
+    "h": 8.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_225",
+   "lib": "gruen.baum.laub",
+   "x": 90.5,
+   "z": 59.3,
+   "rot": 45,
+   "size": {
+    "w": 5.3,
+    "d": 5.3,
+    "h": 8.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_226",
+   "lib": "gruen.baum.laub",
+   "x": -83.5,
+   "z": 65.3,
+   "rot": 82,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_227",
+   "lib": "gruen.baum.laub",
+   "x": 135.5,
+   "z": 17.3,
+   "rot": 119,
+   "size": {
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.1
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_228",
+   "lib": "gruen.baum.laub",
+   "x": -176.5,
+   "z": 177.8,
+   "rot": 156,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_229",
+   "lib": "gruen.baum.laub",
+   "x": -139.0,
+   "z": 140.3,
+   "rot": 193,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_230",
+   "lib": "gruen.baum.laub",
+   "x": 134.0,
+   "z": 24.8,
+   "rot": 230,
+   "size": {
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.8
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_231",
+   "lib": "gruen.baum.laub",
+   "x": -28.0,
+   "z": -98.2,
+   "rot": 267,
+   "size": {
+    "w": 6.1,
+    "d": 6.1,
+    "h": 9.6
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_232",
+   "lib": "gruen.baum.laub",
+   "x": -154.0,
+   "z": 167.3,
+   "rot": 304,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_233",
+   "lib": "gruen.baum.laub",
+   "x": -74.5,
+   "z": -122.2,
+   "rot": 341,
+   "size": {
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_234",
+   "lib": "gruen.baum.laub",
+   "x": -133.0,
+   "z": 146.3,
+   "rot": 18,
+   "size": {
+    "w": 5.0,
+    "d": 5.0,
+    "h": 7.9
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_235",
+   "lib": "gruen.baum.laub",
+   "x": 108.5,
+   "z": -57.7,
+   "rot": 55,
+   "size": {
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_236",
+   "lib": "gruen.baum.laub",
+   "x": 74.0,
+   "z": -86.2,
+   "rot": 92,
+   "size": {
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.3
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_237",
+   "lib": "gruen.baum.laub",
+   "x": -109.0,
+   "z": -93.7,
+   "rot": 129,
+   "size": {
+    "w": 6.3,
+    "d": 6.3,
+    "h": 10.0
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_238",
+   "lib": "gruen.baum.laub",
+   "x": -160.0,
+   "z": -114.7,
+   "rot": 166,
+   "size": {
+    "w": 4.9,
+    "d": 4.9,
+    "h": 7.7
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_239",
+   "lib": "gruen.baum.laub",
+   "x": 87.5,
+   "z": 77.3,
+   "rot": 203,
+   "size": {
+    "w": 5.8,
+    "d": 5.8,
+    "h": 9.2
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
   }
  ],
  "interiors": {

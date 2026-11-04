@@ -382,7 +382,7 @@ function dragObject(hit, fine, ev) {
     hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz), 2)} m`);
     D.commit = () => HSS.change('Objekt verschieben', p => {
       const o = U.byId(p.objects, sel.id);
-      if (o.host) { const P = HSS.findPart(o.host.part, p); const loc = HSS.toLocal(P.part, [w0.x + dx, w0.z + dz]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; }
+      if (o.host) { const P = HSS.findPart(o.host.part, p); const loc = HSS.toLocal(P.part, [w0.x + dx, w0.z + dz]); o.x = Math.round(loc[0] * 100) / 100; o.z = Math.round(loc[1] * 100) / 100; const fr = HSS.freieLage?.(o, p); if (fr) { o.x = fr.x; o.z = fr.z; setTimeout(() => HSS.ui?.toast?.(`Objekt um ${fmt(fr.dd, 2)} m aus Wand/Schacht/Objekt gerückt (keine Überschneidung)`, 2500), 0); } }
       else { o.x = Math.round((o0.x + dx) * 100) / 100; o.z = Math.round((o0.z + dz) * 100) / 100; }
     }, { scope: 'objects' });
   } else if (D.op === 'rot') {
