@@ -145,7 +145,7 @@ S3.rebuild = (scope = 'all') => {
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of (aus && aus.has(b.id) ? [] : b.parts)) {
     if (!zeig(b.umgebung, pt.x, pt.z)) continue;
-    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '']);
+    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '', HSS.nachbarn(pt, prj).sig]);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
@@ -168,7 +168,7 @@ S3.rebuild = (scope = 'all') => {
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
   // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
   const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };
-  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || V.floor >= -1 || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Außenwege bleiben bis U1 sichtbar (ebenerdige Ebenen, z. B. NIZ)
+  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Untergeschosse: nur Tunnel und AWT-Trassen, keine Außenwege
   collectPickables();
   S3.showSelection();
   HSS.emit('rebuilt');
@@ -209,6 +209,8 @@ function buildObjects() {
       if (fl) {
         const w = HSS.toWorld(P.part, [o.x, o.z]); wx = w[0]; wz = w[1]; wy = HSS.floorY(fl.pt, fl.f, prj) + fl.gf * V.explode; rot = (o.rot || 0) + (P.part.rot || 0);
         sy = HSS.fh(fl.pt, fl.f) / d.size.h; gfKey = fl.gf;
+        // Schnittansicht: Schächte wie die Wände schneiden (sonst ragen sie als Türme aus dem Geschoss)
+        if (V.floor === fl.gf && V.cut !== 'voll') sy = Math.min(HSS.fh(fl.pt, fl.f), V.cut === 'aus' ? 0.15 : 1.1) / d.size.h;
         if (!(V.floor === fl.gf || (V.floor === null && V.shell === 'transparent'))) continue;
       } else {
         if (!objVisible(o, prj)) continue;

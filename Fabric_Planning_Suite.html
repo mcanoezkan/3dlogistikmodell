@@ -6130,12 +6130,54 @@ class Inst {
 }
 
 /* ---------- Fassade eines Geschosses ---------- */
+// Segmente eines geschlossenen Rings
+const ringSegs = r => r.map((a, i) => [a, r[(i + 1) % r.length]]);
+// Wandfläche entlang einzelner Segmente (nur Außenkanten)
+const segWallGeo = (segs, y0, h) => { const pos = []; for (const [a, b] of segs) pos.push(a[0], y0, a[1], b[0], y0, b[1], b[0], y0 + h, b[1], a[0], y0, a[1], b[0], y0 + h, b[1], a[0], y0 + h, a[1]); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); return g; };
+/* Nachbarbauteile (gleiche Lage, berührende Grundrisse) – für innenliegende Kanten ohne Fassade */
+let _nbMemo = { t: 0, prj: null, map: null };
+HSS.nachbarn = (pt, prj = HSS.project()) => {
+  const now = performance.now();
+  if (_nbMemo.prj !== prj || now - _nbMemo.t > 80 || !_nbMemo.map) {
+    const all = [];
+    const aus = HSS.gebAus?.hidden?.(prj);
+    for (const b of prj.buildings) for (const q of (aus && aus.has(b.id) ? [] : b.parts)) { const fp = HSS.partFootprint(q); const bb = G.bbox(fp.outer); const nb = q.stackOn ? 0 : (q.basements || 0); all.push({ q, fp, bb, y0: HSS.floorY(q, -nb, prj), y1: HSS.partTopY(q, prj) }); }
+    _nbMemo = { t: now, prj, map: new Map(), all };
+  }
+  _nbMemo.t = now;
+  let r = _nbMemo.map.get(pt.id);
+  if (!r) {
+    const me = _nbMemo.all.find(x => x.q === pt) || { bb: G.bbox(HSS.partFootprint(pt).outer) };
+    const list = _nbMemo.all.filter(x => x.q !== pt && !(x.bb.x1 < me.bb.x0 - 0.6 || x.bb.x0 > me.bb.x1 + 0.6 || x.bb.z1 < me.bb.z0 - 0.6 || x.bb.z0 > me.bb.z1 + 0.6));
+    r = { list, sig: list.map(x => [x.q.id, x.q.x, x.q.z, x.q.rot, x.q.w, x.q.d, x.q.floors, x.q.basements, x.q.floorOffset, x.q.baseOffset, x.q.stackOn, x.q.poly ? x.q.poly.length : 0].join(',')).join(';') };
+    _nbMemo.map.set(pt.id, r);
+  }
+  return r;
+};
+// Außenkanten eines Rings auf Höhe ym: Kantenstücke, an die kein anderes Bauteil anschließt
+const aussenSegs = (ring, ym, nbs, tief = 0.35) => {
+  if (!nbs.length) return ringSegs(ring);
+  const out = [], n = ring.length;
+  const innen = p => nbs.some(x => ym > x.y0 + 0.05 && ym < x.y1 - 0.05 && p[0] > x.bb.x0 && p[0] < x.bb.x1 && p[1] > x.bb.z0 && p[1] < x.bb.z1 && G.pointIn(p, x.fp.outer) && !x.fp.holes.some(h => G.pointIn(p, h)));
+  for (let i = 0; i < n; i++) {
+    const a = ring[i], b = ring[(i + 1) % n], len = G.dist(a, b); if (len < 0.05) continue;
+    const nx = (b[1] - a[1]) / len, nz = -(b[0] - a[0]) / len, k = Math.max(1, Math.ceil(len / 0.8));
+    let start = null;
+    for (let j = 0; j <= k; j++) {
+      let frei = false;
+      if (j < k) { const t = (j + 0.5) / k, p = [a[0] + (b[0] - a[0]) * t + nx * tief, a[1] + (b[1] - a[1]) * t + nz * tief]; frei = !innen(p); }
+      if (frei && start === null) start = j;
+      if (!frei && start !== null) { const t0 = start / k, t1 = j / k; out.push([[a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0], [a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1]]); start = null; }
+    }
+  }
+  return out;
+};
 function facadeFloor(inst, ring, y0, h, fc, opt) {
   const t = fc.type, ax = Math.max(0.6, fc.axis || 1.35), wr = U.clamp(fc.windowRatio ?? 0.55, 0.1, 0.95);
   const glass = opt.glassMat, frame = opt.frameMat, wallMat = opt.wallMat, accent = opt.accentMat;
-  const n = ring.length;
+  const segs = opt.segs || ringSegs(ring), n = segs.length;
   for (let i = 0; i < n; i++) {
-    const a = ring[i], b = ring[(i + 1) % n];
+    const [a, b] = segs[i];
     const len = G.dist(a, b); if (len < 0.3) continue;
     const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
     // Außennormale (Ring gegen den Uhrzeigersinn in x/z → Normale = (dz, -dx)); für Löcher umgekehrt übergeben
@@ -6212,7 +6254,7 @@ HSS.buildPart = (pt, building, view = {}) => {
   const bands = [], flines = [];
   const floors = HSS.partFloors(pt);
   const ex = view.explode || 0;
-  const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];
+  const rings0 = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];
   const meta = { kind: 'part', id: pt.id, building: building.id };
   const inst = new Inst();
   const walls = [];
@@ -6224,6 +6266,9 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (f < 0 && view.floor !== null && view.floor !== undefined && view.floor >= 0 && !view.showBasement) { /* UG unter Gelände: nur Platte */ }
     const y0 = HSS.floorY(pt, f, prj) + gf * ex, h = HSS.fh(pt, f);
     const isCut = view.floor === gf;
+    // nur Außenkanten bekommen Wand und Fassade; Kanten, an die ein anderes Bauteil auf dieser Höhe anschließt, entfallen
+    const ym = HSS.floorY(pt, f, prj) + h / 2, NB = HSS.nachbarn(pt, prj).list;
+    const rings = rings0.map(({ r, side }) => ({ r, side, segs: aussenSegs(r, ym, NB) }));
     if (view.shell === 'aus' && !isCut) continue;
     // Geschossdecke
     const slab = new THREE.Mesh(HSS.slabGeo(outer, holes, y0 - 0.25, 0.25), slabMat); slab.receiveShadow = true; slab.castShadow = true;
@@ -6233,29 +6278,30 @@ HSS.buildPart = (pt, building, view = {}) => {
     if (isCut) { if (view.cut === 'aus') continue; if (view.cut === 'halb') wh = 1.1; }
     if (f < 0 && !isCut && !(view.floor !== null && view.floor !== undefined && view.floor < 0)) {
       // Untergeschoss im Erdreich: nur schlichte Wand
-      for (const { r } of rings) walls.push(ringWallGeo(r, y0, h));
+      for (const { segs } of rings) if (segs.length) walls.push(segWallGeo(segs, y0, h));
       continue;
     }
     if (plan && !(isCut && view.cut === 'voll')) {
       const park = fc.type === 'parkhaus' || pt.use === 'parkhaus';
-      for (const { r } of rings) {
-        walls.push(ringWallGeo(r, y0, park && !isCut ? Math.min(wh, 1.1) : wh));
-        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(ringWallGeo(r, y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
-        if (!isCut && f > 0) flines.push(ringWallGeo(r, y0 - 0.14, 0.16));
+      for (const { segs } of rings) {
+        if (!segs.length) continue;
+        walls.push(segWallGeo(segs, y0, park && !isCut ? Math.min(wh, 1.1) : wh));
+        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(segWallGeo(segs, y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
+        if (!isCut && f > 0) flines.push(segWallGeo(segs, y0 - 0.14, 0.16));
       }
       continue;
     }
     if (fc.type === 'glas' || fc.type === 'lamellen') {
       // Brüstung/Deckenstirn als schmales Band
-      for (const { r } of rings) walls.push(ringWallGeo(r, y0 - 0.25, 0.3));
-      if (!isCut || view.cut === 'voll') facadeFloor(inst, rings[0].r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1 });
-      else for (const { r } of rings) walls.push(ringWallGeo(r, y0, wh));
-      for (let i = 1; i < rings.length; i++) if (!isCut) facadeFloor(inst, rings[i].r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1 });
+      for (const { segs } of rings) if (segs.length) walls.push(segWallGeo(segs, y0 - 0.25, 0.3));
+      if (!isCut || view.cut === 'voll') facadeFloor(inst, rings[0].r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1, segs: rings[0].segs });
+      else for (const { segs } of rings) if (segs.length) walls.push(segWallGeo(segs, y0, wh));
+      for (let i = 1; i < rings.length; i++) if (!isCut) facadeFloor(inst, rings[i].r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1, segs: rings[i].segs });
     } else if (fc.type === 'parkhaus') {
-      for (const { r } of rings) facadeFloor(inst, r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1 });
+      for (const { r, segs } of rings) facadeFloor(inst, r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1, segs });
     } else {
-      for (const { r } of rings) walls.push(ringWallGeo(r, y0, wh));
-      if (!isCut || view.cut === 'voll') for (const { r } of rings) facadeFloor(inst, r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1 });
+      for (const { segs } of rings) if (segs.length) walls.push(segWallGeo(segs, y0, wh));
+      if (!isCut || view.cut === 'voll') for (const { r, segs } of rings) facadeFloor(inst, r, y0, wh, fc, { glassMat, frameMat, wallMat, accentMat, side: 1, segs });
     }
   }
   if (walls.length) { const wm = new THREE.Mesh(mergeGeometries(walls), wallMat); wm.castShadow = !transparent; wm.receiveShadow = true; wm.userData = Object.assign({ wall: true }, meta); grp.add(wm); }
@@ -6278,7 +6324,7 @@ HSS.buildPart = (pt, building, view = {}) => {
       if (dg.glas) { const m = new THREE.Mesh(dg.glas, glassMat); m.userData = Object.assign({}, meta); grp.add(m); }
     }
     const par = geneigt ? 0 : (pt.roof?.parapet ?? 0.9);
-    if (par > 0 || (plan && !geneigt)) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
+    if (par > 0 || (plan && !geneigt)) { const pm = new THREE.Mesh(mergeGeometries(rings0.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
     if (pt.roof?.plant && !geneigt && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
@@ -7742,7 +7788,7 @@ S3.rebuild = (scope = 'all') => {
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
   for (const b of prj.buildings) for (const pt of (aus && aus.has(b.id) ? [] : b.parts)) {
     if (!zeig(b.umgebung, pt.x, pt.z)) continue;
-    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '']);
+    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '', HSS.nachbarn(pt, prj).sig]);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
@@ -7765,7 +7811,7 @@ S3.rebuild = (scope = 'all') => {
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
   // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
   const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };
-  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || V.floor >= -1 || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Außenwege bleiben bis U1 sichtbar (ebenerdige Ebenen, z. B. NIZ)
+  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Untergeschosse: nur Tunnel und AWT-Trassen, keine Außenwege
   collectPickables();
   S3.showSelection();
   HSS.emit('rebuilt');
@@ -7806,6 +7852,8 @@ function buildObjects() {
       if (fl) {
         const w = HSS.toWorld(P.part, [o.x, o.z]); wx = w[0]; wz = w[1]; wy = HSS.floorY(fl.pt, fl.f, prj) + fl.gf * V.explode; rot = (o.rot || 0) + (P.part.rot || 0);
         sy = HSS.fh(fl.pt, fl.f) / d.size.h; gfKey = fl.gf;
+        // Schnittansicht: Schächte wie die Wände schneiden (sonst ragen sie als Türme aus dem Geschoss)
+        if (V.floor === fl.gf && V.cut !== 'voll') sy = Math.min(HSS.fh(fl.pt, fl.f), V.cut === 'aus' ? 0.15 : 1.1) / d.size.h;
         if (!(V.floor === fl.gf || (V.floor === null && V.shell === 'transparent'))) continue;
       } else {
         if (!objVisible(o, prj)) continue;

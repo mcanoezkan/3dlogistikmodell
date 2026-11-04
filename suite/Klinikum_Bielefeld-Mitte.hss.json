@@ -6,8 +6,8 @@
   "id": "prj_d1h6pymmm_v2",
   "name": "Klinikum Bielefeld-Mitte – Bestand (NIZ, U2, Bunker, EG Hauptgebäude)",
   "created": "2026-10-15T22:35:38.638Z",
-  "modified": "2026-11-04T21:30:00.000Z",
-  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.",
+  "modified": "2026-11-05T09:00:00.000Z",
+  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.\n• Etagen nach Bestandsplänen bereinigt (Stand Nov. 2026): Angenommene Treppenhäuser und Aufzüge im Bereich der Pläne (Ebene E Teil 1, Haus 6/7 KG) entfernt – dort gilt die Erschließung laut Plan. Angenommene Schächte je Gebäude auf einen Kern reduziert (Haus 7, Parkhaus 2, Häuser 2, 5, 10, Nebenteile Hauptgebäude); Haus 7 hat ein angenommenes Treppenhaus und den Aufzug laut Plan KG. Aufzugstüren zeigen zum Flur (Aufzüge 1, 4, 6, 7, Ärztehaus A1). Die angenommene Radiologie auf Ebene E liegt nur noch außerhalb des Plans (363 m²). Aufzug 12 als Schacht ohne Fenster. Alle 852 Warenströme routbar.\n• Bäume auf 109 ausgedünnt (47 aus OpenStreetMap, übrige aus dem Luftbild mit mindestens 11 m Abstand).",
   "standort": {
    "id": "bielefeld",
    "variante": "ist",
@@ -2679,7 +2679,7 @@
        19.26
       ],
       [
-       -57.0,
+       -57,
        19.26
       ],
       [
@@ -2719,7 +2719,7 @@
        7.38
       ],
       [
-       -63.0,
+       -63,
        6.18
       ],
       [
@@ -2903,11 +2903,11 @@
        5.34
       ],
       [
-       -39.0,
+       -39,
        4.98
       ],
       [
-       -39.0,
+       -39,
        4.26
       ],
       [
@@ -2919,7 +2919,7 @@
        2.82
       ],
       [
-       -39.0,
+       -39,
        2.46
       ],
       [
@@ -2939,7 +2939,7 @@
        0.42
       ],
       [
-       -36.0,
+       -36,
        0.06
       ],
       [
@@ -3407,7 +3407,7 @@
        -15.06
       ],
       [
-       66.0,
+       66,
        -14.22
       ],
       [
@@ -3571,7 +3571,7 @@
        -6.42
       ],
       [
-       6.0,
+       6,
        -6.42
       ],
       [
@@ -3603,11 +3603,11 @@
        4.74
       ],
       [
-       27.0,
+       27,
        4.74
       ],
       [
-       27.0,
+       27,
        16.02
       ],
       [
@@ -3628,7 +3628,7 @@
      "w": 2.8,
      "d": 3.2,
      "x": -11.2,
-     "z": 23.0,
+     "z": 23,
      "rot": 0,
      "cornerRadius": 0,
      "courtW": 14,
@@ -3657,7 +3657,8 @@
       "color": "#8f949a",
       "helipad": false
      },
-     "use": ""
+     "use": "",
+     "poly": null
     }
    ]
   },
@@ -3699,7 +3700,7 @@
        12.69
       ],
       [
-       19.0,
+       19,
        12.61
       ],
       [
@@ -3856,62 +3857,6 @@
      },
      "use": "",
      "anschlussNachHoehe": true
-    },
-    {
-     "id": "bie_NB_2",
-     "name": "NIZ überdachte Rampe der Liegendkrankenvorfahrt (von der Straße hinauf zur Plattform auf Ebene E)",
-     "shape": "poly",
-     "w": 27.24,
-     "d": 7.29,
-     "x": 36.86,
-     "z": 91.59,
-     "rot": 0,
-     "cornerRadius": 0,
-     "courtW": 14,
-     "courtD": 8,
-     "legW": 14,
-     "legD": 14,
-     "poly": [
-      [
-       13.61,
-       3.64
-      ],
-      [
-       -13.54,
-       3.43
-      ],
-      [
-       -13.62,
-       -3.65
-      ],
-      [
-       13.62,
-       -3.51
-      ]
-     ],
-     "stackOn": null,
-     "baseOffset": 0,
-     "floors": 1,
-     "floorHeight": 8.3,
-     "floorHeights": {},
-     "basements": 0,
-     "basementHeight": 3.8,
-     "facade": {
-      "type": "parkhaus",
-      "color": "#b9bec4",
-      "accent": "#6b7076",
-      "glass": "#6f8fa8",
-      "axis": 2.5,
-      "windowRatio": 0.5
-     },
-     "roof": {
-      "type": "flach",
-      "parapet": 0.3,
-      "plant": false,
-      "color": "#7b8087",
-      "helipad": false
-     },
-     "use": ""
     },
     {
      "id": "bie_NB_3",
@@ -4225,7 +4170,7 @@
      "stackOn": "bie_NB_0",
      "baseOffset": 0,
      "floors": 1,
-     "floorHeight": 5.0,
+     "floorHeight": 5,
      "floorHeights": {},
      "basements": 0,
      "basementHeight": 3.8,
@@ -5683,7 +5628,7 @@
        -18.55
       ],
       [
-       9.0,
+       9,
        -16.85
       ],
       [
@@ -5703,7 +5648,7 @@
        -13.45
       ],
       [
-       9.0,
+       9,
        -12.95
       ],
       [
@@ -5747,11 +5692,11 @@
        2.35
       ],
       [
-       29.0,
+       29,
        2.35
       ],
       [
-       29.0,
+       29,
        2.55
       ],
       [
@@ -5839,7 +5784,7 @@
        17.85
       ],
       [
-       5.0,
+       5,
        17.85
       ],
       [
@@ -5887,7 +5832,7 @@
        19.05
       ],
       [
-       -5.0,
+       -5,
        19.35
       ],
       [
@@ -5915,7 +5860,7 @@
        17.95
       ],
       [
-       -36.0,
+       -36,
        5.25
       ],
       [
@@ -42252,135 +42197,16 @@
    "traffic": 0,
    "speedKmh": null,
    "standort": true,
-   "id": "path_niz_gehweg_teuto",
-   "name": "Gehweg Teutoburger Straße, Seite NIZ (Betonpflaster, über die Zufahrten durchgehend)",
-   "kind": "gehweg",
-   "points": [
-    [
-     -7.79,
-     119.05
-    ],
-    [
-     2.15,
-     115.01
-    ],
-    [
-     26.4,
-     107.28
-    ],
-    [
-     43.6,
-     104.59
-    ],
-    [
-     61.04,
-     103.65
-    ],
-    [
-     126.0,
-     103.65
-    ]
-   ],
-   "width": 2.5,
-   "ramp": [
-    0.03,
-    0.03
-   ],
-   "color": "#b6b3ac"
-  },
-  {
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true,
-   "id": "path_niz_radweg_teuto",
-   "name": "Radweg Teutoburger Straße, Seite NIZ (rotes Pflaster, baulich getrennt)",
-   "kind": "weg",
-   "points": [
-    [
-     -6.83,
-     121.41
-    ],
-    [
-     3.02,
-     117.41
-    ],
-    [
-     26.99,
-     109.77
-    ],
-    [
-     43.87,
-     107.13
-    ],
-    [
-     61.11,
-     106.2
-    ],
-    [
-     126.0,
-     106.2
-    ]
-   ],
-   "width": 2.0,
-   "ramp": [
-    0.03,
-    0.03
-   ],
-   "color": "#a64b3c",
-   "noNet": true
-  },
-  {
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true,
-   "id": "path_niz_leit_1",
-   "name": "Leitstreifen (taktil) an den Zufahrten Kurzzeitparkplatz und Rettungszufahrt",
-   "kind": "gehweg",
-   "points": [
-    [
-     2.5,
-     113.85
-    ],
-    [
-     26.17,
-     106.3
-    ],
-    [
-     30.0,
-     105.7
-    ]
-   ],
-   "width": 0.3,
-   "ramp": [
-    0.045,
-    0.045
-   ],
-   "color": "#ecebe5",
-   "noNet": true
-  },
-  {
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true,
    "id": "path_niz_leit_2",
    "name": "Leitstreifen (taktil) an der Wirtschaftszufahrt",
    "kind": "gehweg",
    "points": [
     [
-     67.0,
+     67,
      102.65
     ],
     [
-     80.0,
+     80,
      102.65
     ]
    ],
@@ -42409,7 +42235,7 @@
     ],
     [
      7.47,
-     108.0
+     108
     ]
    ],
    "width": 4.5,
@@ -45849,37 +45675,6 @@
    "standort": true
   },
   {
-   "id": "path_bie_w117",
-   "name": "Campusweg",
-   "kind": "weg",
-   "points": [
-    [
-     31.9,
-     130.5
-    ],
-    [
-     33.5,
-     130.1
-    ],
-    [
-     35.8,
-     129.4
-    ],
-    [
-     38.1,
-     129.3
-    ]
-   ],
-   "width": 3.5,
-   "smooth": false,
-   "elev": "gelaende",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null,
-   "standort": true
-  },
-  {
    "id": "path_bie_w120",
    "name": "Campusweg",
    "kind": "weg",
@@ -45940,7 +45735,7 @@
      -17.1
     ],
     [
-     -60.0,
+     -60,
      -21.8
     ],
     [
@@ -46539,71 +46334,49 @@
    "standort": true
   },
   {
-   "id": "path_6d7w3zmr7",
-   "name": "AWT-Trasse",
-   "kind": "awt",
-   "points": [
-    [
-     -111,
-     -13.5
-    ],
-    [
-     -55.5,
-     -12.5
-    ]
-   ],
-   "width": 2.2,
-   "smooth": true,
-   "elev": "absolut",
-   "y": -4,
-   "ramp": null,
-   "traffic": 0,
-   "speedKmh": null
-  },
-  {
    "id": "path_niz_rett",
    "name": "Rettungszufahrt NIZ: ebenerdig bis zur überdachten Rampe, dort hinauf (+3,80 m auf ca. 27 m) zur Plattform der Liegendkrankenvorfahrt auf Ebene E (nur Rettungsdienst)",
    "kind": "zufahrt",
    "points": [
     [
-     18.53,
-     119.58,
-     0.0
+     17,
+     117.5,
+     0
     ],
     [
      15.82,
      110.65,
-     0.0
+     0
     ],
     [
      14.37,
      101.29,
-     0.0
+     0
     ],
     [
      14.92,
      97.47,
-     0.0
+     0
     ],
     [
      16.5,
      94.58,
-     0.0
+     0
     ],
     [
      18.67,
      92.61,
-     0.0
+     0
     ],
     [
      21.81,
      91.56,
-     0.0
+     0
     ],
     [
      23.28,
      91.48,
-     0.0
+     0
     ],
     [
      50.47,
@@ -46643,7 +46416,7 @@
    "points": [
     [
      7.47,
-     108.0
+     108
     ],
     [
      6.67,
@@ -46749,7 +46522,7 @@
      63.69
     ]
    ],
-   "width": 5.0,
+   "width": 5,
    "smooth": false,
    "elev": "gelaende",
    "y": -3.8,
@@ -46827,7 +46600,7 @@
      -36.7
     ]
    ],
-   "width": 3.0,
+   "width": 3,
    "smooth": false,
    "elev": "absolut",
    "y": -8.3,
@@ -47271,7 +47044,7 @@
      98.9
     ],
     [
-     21.0,
+     21,
      97.5
     ],
     [
@@ -47357,52 +47130,9 @@
    "color": "#4b4f55",
    "markWinkel": -17.7,
    "x": 22.17,
-   "z": 107.0,
+   "z": 107,
    "w": 8.66,
    "d": 3.01
-  },
-  {
-   "rot": 0,
-   "standort": true,
-   "quelle": "Fotos NIZ-Vorfahrt (Okt. 2026), OpenStreetMap",
-   "id": "area_niz_eckplatz",
-   "kind": "platz",
-   "name": "Pflasterfläche (Naturstein) an der Ecke Fußweg Eingangshalle / Vorfahrt",
-   "poly": [
-    [
-     -5.6,
-     113.95
-    ],
-    [
-     2.05,
-     113.75
-    ],
-    [
-     2.0,
-     108.2
-    ],
-    [
-     5.23,
-     108.2
-    ],
-    [
-     6.59,
-     112.24
-    ],
-    [
-     -2.0,
-     115.3
-    ],
-    [
-     -5.6,
-     116.76
-    ]
-   ],
-   "color": "#9b7d6b",
-   "x": 0.5,
-   "z": 112.48,
-   "w": 12.19,
-   "d": 8.56
   },
   {
    "id": "area_campus_gruen_0",
@@ -47846,7 +47576,7 @@
      -89.99
     ],
     [
-     31.0,
+     31,
      -89.99
     ],
     [
@@ -47910,7 +47640,7 @@
      -85.47
     ],
     [
-     76.0,
+     76,
      -85.49
     ],
     [
@@ -48181,7 +47911,7 @@
    "x": 92.9,
    "z": -91.5,
    "w": 131.7,
-   "d": 30.0,
+   "d": 30,
    "rot": 0,
    "lage": 2,
    "density": 0,
@@ -48687,7 +48417,7 @@
     ],
     [
      131.45,
-     27.0
+     27
     ],
     [
      128.25,
@@ -48891,8 +48621,8 @@
     ]
    ],
    "x": 119.3,
-   "z": 36.0,
-   "w": 61.0,
+   "z": 36,
+   "w": 61,
    "d": 140.9,
    "rot": 0,
    "lage": 2,
@@ -49107,8 +48837,8 @@
     ]
    ],
    "x": 83.8,
-   "z": 78.0,
-   "w": 9.0,
+   "z": 78,
+   "w": 9,
    "d": 20.9,
    "rot": 0,
    "lage": 2,
@@ -49271,7 +49001,7 @@
     ],
     [
      -40.46,
-     -117.0
+     -117
     ],
     [
      -29.08,
@@ -49298,7 +49028,7 @@
      -123.19
     ],
     [
-     -29.0,
+     -29,
      -125.92
     ],
     [
@@ -49316,8 +49046,8 @@
    ],
    "x": -31.7,
    "z": -121.5,
-   "w": 21.0,
-   "d": 9.0,
+   "w": 21,
+   "d": 9,
    "rot": 0,
    "lage": 2,
    "density": 0,
@@ -49434,7 +49164,7 @@
      135.51
     ],
     [
-     -60.0,
+     -60,
      134.05
     ],
     [
@@ -49602,8 +49332,8 @@
      102.35
     ]
    ],
-   "x": -47.0,
-   "z": 119.0,
+   "x": -47,
+   "z": 119,
    "w": 50.3,
    "d": 47.1,
    "rot": 0,
@@ -49634,7 +49364,7 @@
      -91.28
     ],
     [
-     -107.0,
+     -107,
      -91.49
     ],
     [
@@ -49731,7 +49461,7 @@
     ],
     [
      -103.61,
-     -42.0
+     -42
     ],
     [
      -102.04,
@@ -49763,7 +49493,7 @@
     ],
     [
      -84.31,
-     -36.0
+     -36
     ],
     [
      -81.52,
@@ -50103,7 +49833,7 @@
     ],
     [
      -49.72,
-     -67.0
+     -67
     ],
     [
      -51.35,
@@ -50262,7 +49992,7 @@
      -97.11
     ],
     [
-     -114.0,
+     -114,
      -95.7
     ],
     [
@@ -50478,7 +50208,7 @@
      188.48
     ],
     [
-     -171.0,
+     -171,
      190.49
     ],
     [
@@ -50582,7 +50312,7 @@
      151.13
     ],
     [
-     -135.0,
+     -135,
      149.98
     ],
     [
@@ -50710,7 +50440,7 @@
      99.15
     ],
     [
-     -77.0,
+     -77,
      96.09
     ],
     [
@@ -51147,7 +50877,7 @@
     ],
     [
      -169.9,
-     77.0
+     77
     ],
     [
      -169.78,
@@ -51210,7 +50940,7 @@
      107.35
     ],
     [
-     -175.0,
+     -175,
      106.55
     ],
     [
@@ -51256,7 +50986,7 @@
    ],
    "x": -129.2,
    "z": 128.3,
-   "w": 108.0,
+   "w": 108,
    "d": 124.4,
    "rot": 0,
    "lage": 2,
@@ -51526,7 +51256,7 @@
      77.99
     ],
     [
-     -120.0,
+     -120,
      79.49
     ],
     [
@@ -51538,7 +51268,7 @@
      72.2
     ],
     [
-     -127.0,
+     -127,
      64.55
     ],
     [
@@ -51547,8 +51277,8 @@
     ]
    ],
    "x": -123.2,
-   "z": 72.0,
-   "w": 9.0,
+   "z": 72,
+   "w": 9,
    "d": 14.9,
    "rot": 0,
    "lage": 2,
@@ -51570,7 +51300,7 @@
      4.52
     ],
     [
-     -147.0,
+     -147,
      5.99
     ],
     [
@@ -51666,10 +51396,10 @@
      -2.89
     ]
    ],
-   "x": -139.0,
+   "x": -139,
    "z": -2.9,
    "w": 22.5,
-   "d": 24.0,
+   "d": 24,
    "rot": 0,
    "lage": 2,
    "density": 0,
@@ -51729,7 +51459,7 @@
    "x": -141.2,
    "z": 73.5,
    "w": 14.9,
-   "d": 18.0,
+   "d": 18,
    "rot": 0,
    "lage": 2,
    "density": 0,
@@ -51796,7 +51526,7 @@
    ],
    "x": -147.2,
    "z": -115.7,
-   "w": 27.0,
+   "w": 27,
    "d": 8.6,
    "rot": 0,
    "lage": 2,
@@ -51953,7 +51683,7 @@
    "x": -173.4,
    "z": -100.4,
    "w": 16.3,
-   "d": 30.0,
+   "d": 30,
    "rot": 0,
    "lage": 2,
    "density": 0,
@@ -51972,7 +51702,7 @@
    },
    "x": -0.77,
    "z": -3.47,
-   "rot": 90,
+   "rot": 270,
    "name": "Aufzug 1 – Bettenaufzug Turmkern (Aufzugsgruppe 1–5 am Kern 5)",
    "vonGF": -1,
    "bisGF": 12,
@@ -51985,7 +51715,7 @@
    "size": {
     "w": 2.5,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "hinweis": "Lage und Schachtmaß laut Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100); Haltestellen und Nutzung angenommen"
   },
@@ -52012,30 +51742,9 @@
    "size": {
     "w": 2.6,
     "d": 3.5,
-    "h": 3.0
+    "h": 3
    },
    "hinweis": "Lage und Schachtmaß laut Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100); Haltestellen und Nutzung angenommen"
-  },
-  {
-   "id": "obj_bielefeld_LOB",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": -1
-   },
-   "x": 4,
-   "z": 5.9,
-   "rot": 0,
-   "name": "Aufzug Ostbau",
-   "vonGF": -1,
-   "bisGF": 4,
-   "aufzug": {
-    "kabinen": 1,
-    "freigabe": [
-     "*"
-    ]
-   }
   },
   {
    "id": "obj_bielefeld_LBO",
@@ -52055,29 +51764,6 @@
     "kabinen": 2,
     "freigabe": [
      "*"
-    ]
-   }
-  },
-  {
-   "id": "obj_bielefeld_LS",
-   "standort": true,
-   "lib": "erschl.aufzug.lasten",
-   "host": {
-    "part": "bie_H1_BT",
-    "floor": -1
-   },
-   "x": -15.09,
-   "z": 2.82,
-   "rot": 0,
-   "name": "Sterilgutaufzug ZSVA–OP",
-   "vonGF": -1,
-   "bisGF": 1,
-   "aufzug": {
-    "kabinen": 1,
-    "freigabe": [
-     "rein",
-     "neutral",
-     "person"
     ]
    }
   },
@@ -52265,314 +51951,6 @@
    "bisGF": -1
   },
   {
-   "id": "obj_auto_l_bie_H1_OA",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_OA",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_OA",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_OA",
-    "floor": -1
-   },
-   "x": 4.2,
-   "z": 1.7,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_OS",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_OS",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": 2
-  },
-  {
-   "id": "obj_auto_t_bie_H1_OS",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_OS",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": 2
-  },
-  {
-   "id": "obj_auto_l_bie_H1_15",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_15",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_15",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_15",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_16",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_16",
-    "floor": -1
-   },
-   "x": -4,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_16",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_16",
-    "floor": -1
-   },
-   "x": 2.8,
-   "z": 1.4,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_17",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_17",
-    "floor": -1
-   },
-   "x": -2.6,
-   "z": -0.4,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_17",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_17",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_WH",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_WH",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": -0.3,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_WH",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_WH",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": -1.8,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_OE",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_OE",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_OE",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_OE",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_25",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_25",
-    "floor": -1
-   },
-   "x": -21.87,
-   "z": -1.45,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_25",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_25",
-    "floor": -1
-   },
-   "x": -18.87,
-   "z": -1.75,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_26",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_26",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_26",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_26",
-    "floor": -1
-   },
-   "x": 2.2,
-   "z": -0.2,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_27",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_27",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_27",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_27",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_l_bie_H1_28",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H1_28",
-    "floor": -1
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)",
-   "vonGF": -1
-  },
-  {
-   "id": "obj_auto_t_bie_H1_28",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H1_28",
-    "floor": -1
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)",
-   "vonGF": -1
-  },
-  {
    "id": "obj_auto_l_bie_H3_1",
    "standort": true,
    "lib": "erschl.aufzug.bett",
@@ -52648,137 +52026,8 @@
    "x": 0.7,
    "z": 0,
    "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H7_2",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H7_2",
-    "floor": 0
-   },
-   "x": -1.9,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H7_2",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H7_2",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H7_3",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H7_3",
-    "floor": 0
-   },
-   "x": -2.8,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H7_3",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H7_3",
-    "floor": 0
-   },
-   "x": 0.8,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H7_4",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H7_4",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H7_4",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H7_4",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H7_6",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H7_6",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H7_6",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H7_6",
-    "floor": 0
-   },
-   "x": 3.2,
-   "z": -1.3,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H7_9",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H7_9",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H7_9",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H7_9",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
+   "name": "Treppenhaus Haus 7 (angenommen) – ab EG (im Kellergeschoss gilt der Plan)",
+   "vonGF": 0
   },
   {
    "id": "obj_auto_l_bie_H12_0",
@@ -52825,84 +52074,6 @@
    "lib": "erschl.treppe",
    "host": {
     "part": "bie_P2_2",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_P2_3",
-   "standort": true,
-   "lib": "erschl.aufzug.person",
-   "host": {
-    "part": "bie_P2_3",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_P2_3",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_P2_3",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_P2_4",
-   "standort": true,
-   "lib": "erschl.aufzug.person",
-   "host": {
-    "part": "bie_P2_4",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_P2_4",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_P2_4",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_P2_5",
-   "standort": true,
-   "lib": "erschl.aufzug.person",
-   "host": {
-    "part": "bie_P2_5",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_P2_5",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_P2_5",
     "floor": 0
    },
    "x": 1.6,
@@ -88271,18 +87442,6 @@
    "station": "st_bielefeld_babytown"
   },
   {
-   "id": "obj_0nxlnamu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "med.liege.untersuchung",
-   "x": -24.63,
-   "z": 20.78,
-   "rot": 180
-  },
-  {
    "id": "obj_fiu0x7mu9",
    "host": {
     "part": "bie_H1_OB",
@@ -88319,42 +87478,6 @@
    "rot": 90
   },
   {
-   "id": "obj_756emfmu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "med.instrumentenschrank",
-   "x": -23.88,
-   "z": 21.65,
-   "rot": 180
-  },
-  {
-   "id": "obj_dfemlemu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "hyg.handwaschbecken",
-   "x": -24.75,
-   "z": 21.43,
-   "rot": 270
-  },
-  {
-   "id": "obj_6n71agmu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "med.ultraschall",
-   "x": -8.9,
-   "z": 11.7,
-   "rot": 90
-  },
-  {
    "id": "obj_6y4xa6mu9",
    "host": {
     "part": "bie_H1_OB",
@@ -88367,42 +87490,6 @@
    "rot": 90
   },
   {
-   "id": "obj_m9gsmjmu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "med.ekg",
-   "x": -23.4,
-   "z": 0.5,
-   "rot": 90
-  },
-  {
-   "id": "obj_v7qkhmmu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "med.paravent",
-   "x": -24.75,
-   "z": 18.98,
-   "rot": 270
-  },
-  {
-   "id": "obj_upjwjdmu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "stat.desinfektion",
-   "x": -24.92,
-   "z": -0.03,
-   "rot": 270
-  },
-  {
    "id": "obj_mqs0remu9",
    "host": {
     "part": "bie_H1_OB",
@@ -88413,18 +87500,6 @@
    "x": 7.4,
    "z": 0.5,
    "rot": 90
-  },
-  {
-   "id": "obj_nb2q2omu9",
-   "host": {
-    "part": "bie_H1_OB",
-    "floor": 0
-   },
-   "auto": true,
-   "lib": "stat.treteimer",
-   "x": -24.83,
-   "z": 18.03,
-   "rot": 270
   },
   {
    "id": "obj_14ct6xmua",
@@ -92010,8 +91085,8 @@
    },
    "auto": true,
    "lib": "log.rollcontainer",
-   "x": -8.42,
-   "z": -24.18,
+   "x": -8.72,
+   "z": -23.38,
    "rot": 180
   },
   {
@@ -97745,18 +96820,6 @@
    "rot": 180
   },
   {
-   "id": "obj_avu7uclh2",
-   "host": {
-    "part": "bie_H6_0",
-    "floor": 1
-   },
-   "station": "st_kgmne6ldl",
-   "lib": "stat.whiteboard",
-   "x": 3.13,
-   "z": 22.61,
-   "rot": 180
-  },
-  {
    "id": "obj_niidablh2",
    "host": {
     "part": "bie_H6_0",
@@ -97839,18 +96902,6 @@
    "x": 3.32,
    "z": 21.45,
    "rot": 0
-  },
-  {
-   "id": "obj_x7905zlh2",
-   "host": {
-    "part": "bie_H6_0",
-    "floor": 1
-   },
-   "station": "st_kgmne6ldl",
-   "lib": "stat.wanduhr",
-   "x": 4.98,
-   "z": 22.61,
-   "rot": 180
   },
   {
    "id": "obj_zbv9ntlh2",
@@ -98455,7 +97506,7 @@
   {
    "id": "obj_nb2_3640",
    "lib": "erschl.treppe",
-   "x": 0.0,
+   "x": 0,
    "z": -0.04,
    "rot": 90,
    "host": {
@@ -98541,7 +97592,7 @@
   {
    "id": "obj_nb2_3647",
    "lib": "kfz.rtw",
-   "x": 44.0,
+   "x": 44,
    "z": 83.5,
    "rot": 90,
    "name": "RTW auf der Plattform (Vorfahrt)",
@@ -98550,8 +97601,8 @@
   {
    "id": "obj_nb2_3648",
    "lib": "kfz.rtw",
-   "x": 52.0,
-   "z": 75.0,
+   "x": 52,
+   "z": 75,
    "rot": 90,
    "name": "RTW auf der Plattform (Vorfahrt)",
    "yAbs": 3.8
@@ -98559,8 +97610,8 @@
   {
    "id": "obj_nb2_3649",
    "lib": "kfz.nef",
-   "x": 36.0,
-   "z": 75.0,
+   "x": 36,
+   "z": 75,
    "rot": 90,
    "name": "NEF auf der Plattform",
    "yAbs": 3.8
@@ -99067,7 +98118,7 @@
    "lib": "erschl.aufzug.bett",
    "x": -0.05,
    "z": 3.7,
-   "rot": 90,
+   "rot": 270,
    "host": {
     "part": "bie_H6_3",
     "floor": -1
@@ -99159,7 +98210,7 @@
    "size": {
     "w": 2.5,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 2 – Bettenaufzug Turmkern (Aufzugsgruppe 1–5 am Kern 5)",
    "vonGF": -1,
@@ -99186,7 +98237,7 @@
    "size": {
     "w": 2.5,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 3 – Bettenaufzug Turmkern (Aufzugsgruppe 1–5 am Kern 5)",
    "vonGF": -1,
@@ -99209,11 +98260,11 @@
    },
    "x": -0.75,
    "z": 4.52,
-   "rot": 90,
+   "rot": 270,
    "size": {
     "w": 2.5,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 4 – Bettenaufzug Turmkern (Aufzugsgruppe 1–5 am Kern 5)",
    "vonGF": -1,
@@ -99240,7 +98291,7 @@
    "size": {
     "w": 2.5,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 5 – Bettenaufzug Turmkern (Aufzugsgruppe 1–5 am Kern 5)",
    "vonGF": -1,
@@ -99263,11 +98314,11 @@
    },
    "x": -9.28,
    "z": 1.47,
-   "rot": 0,
+   "rot": 180,
    "size": {
     "w": 1.3,
     "d": 1.5,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 6 – Kleinaufzug am Turmkern (Schacht 1,40 × 1,60 m)",
    "vonGF": -1,
@@ -99290,11 +98341,11 @@
    },
    "x": -10.67,
    "z": 1.47,
-   "rot": 0,
+   "rot": 180,
    "size": {
     "w": 1.3,
     "d": 1.5,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 7 – Kleinaufzug am Turmkern (Schacht 1,40 × 1,60 m)",
    "vonGF": -1,
@@ -99321,7 +98372,7 @@
    "size": {
     "w": 2.4,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 8 – Bettenaufzug an der Halle (Schacht 2,55 × 3,25 m)",
    "vonGF": -1,
@@ -99348,7 +98399,7 @@
    "size": {
     "w": 2.4,
     "d": 3.1,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 9 – Bettenaufzug an der Halle (Schacht 2,55 × 3,25 m)",
    "vonGF": -1,
@@ -99375,7 +98426,7 @@
    "size": {
     "w": 2.6,
     "d": 3.5,
-    "h": 3.0
+    "h": 3
    },
    "name": "Aufzug 11 – Versorgungsaufzug am Kern 4",
    "vonGF": -1,
@@ -99490,7 +98541,7 @@
    "size": {
     "w": 0.5,
     "d": 0.5,
-    "h": 6.0
+    "h": 6
    }
   },
   {
@@ -99498,27 +98549,27 @@
    "standort": true,
    "lib": "licht.mastleuchte",
    "x": 3.6,
-   "z": 101.0,
+   "z": 101,
    "rot": 0,
    "name": "Mastleuchte Vorfahrt Kurzzeitparkplatz",
    "size": {
     "w": 0.5,
     "d": 0.5,
-    "h": 6.0
+    "h": 6
    }
   },
   {
    "id": "obj_niz_v11",
    "standort": true,
    "lib": "licht.mastleuchte",
-   "x": 36.0,
+   "x": 36,
    "z": 97.6,
    "rot": 0,
    "name": "Mastleuchte Rasenböschung",
    "size": {
     "w": 0.5,
     "d": 0.5,
-    "h": 6.0
+    "h": 6
    }
   },
   {
@@ -99538,7 +98589,7 @@
    "z": 109.3,
    "rot": 0,
    "name": "Poller an der Inselspitze",
-   "y": 0.0
+   "y": 0
   },
   {
    "id": "obj_bielefeld_T9",
@@ -99582,32 +98633,6 @@
    "name": "Treppenhaus (angenommen)"
   },
   {
-   "id": "obj_auto_l_bie_H2_1",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H2_1",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H2_1",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H2_1",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
    "id": "obj_auto_l_bie_H5_0",
    "standort": true,
    "lib": "erschl.aufzug.bett",
@@ -99634,32 +98659,6 @@
    "name": "Treppenhaus (angenommen)"
   },
   {
-   "id": "obj_auto_l_bie_H5_1",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H5_1",
-    "floor": 0
-   },
-   "x": 10.3,
-   "z": -1.38,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H5_1",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H5_1",
-    "floor": 0
-   },
-   "x": 13.2,
-   "z": -1.38,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
    "id": "obj_auto_l_bie_H10_0",
    "standort": true,
    "lib": "erschl.aufzug.bett",
@@ -99682,110 +98681,6 @@
    },
    "x": 1.6,
    "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H10_1",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H10_1",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H10_1",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H10_1",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H10_2",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H10_2",
-    "floor": 0
-   },
-   "x": -1.3,
-   "z": 0,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H10_2",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H10_2",
-    "floor": 0
-   },
-   "x": 1.6,
-   "z": 0,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H10_3",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H10_3",
-    "floor": 0
-   },
-   "x": -8.5,
-   "z": 0.65,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H10_3",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H10_3",
-    "floor": 0
-   },
-   "x": -5.6,
-   "z": 0.65,
-   "rot": 0,
-   "name": "Treppenhaus (angenommen)"
-  },
-  {
-   "id": "obj_auto_l_bie_H10_4",
-   "standort": true,
-   "lib": "erschl.aufzug.bett",
-   "host": {
-    "part": "bie_H10_4",
-    "floor": 0
-   },
-   "x": -8.63,
-   "z": -0.71,
-   "rot": 0,
-   "name": "Aufzug (angenommen)"
-  },
-  {
-   "id": "obj_auto_t_bie_H10_4",
-   "standort": true,
-   "lib": "erschl.treppe",
-   "host": {
-    "part": "bie_H10_4",
-    "floor": 0
-   },
-   "x": -5.73,
-   "z": -0.71,
    "rot": 0,
    "name": "Treppenhaus (angenommen)"
   },
@@ -99818,12 +98713,12 @@
   {
    "id": "obj_campus_baum_0",
    "lib": "gruen.baum.laub",
-   "x": 86.0,
+   "x": 86,
    "z": -74.4,
    "rot": 0,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
+    "w": 6,
+    "d": 6,
     "h": 9.5
    },
    "standort": true,
@@ -99833,7 +98728,7 @@
    "id": "obj_campus_baum_1",
    "lib": "gruen.baum.laub",
    "x": 130.7,
-   "z": -50.0,
+   "z": -50,
    "rot": 37,
    "size": {
     "w": 5.6,
@@ -99998,20 +98893,6 @@
    "quelle": "OpenStreetMap node/5664784365"
   },
   {
-   "id": "obj_campus_baum_13",
-   "lib": "gruen.baum.laub",
-   "x": 123.8,
-   "z": -99.2,
-   "rot": 121,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.4
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784378"
-  },
-  {
    "id": "obj_campus_baum_14",
    "lib": "gruen.baum.laub",
    "x": -25.5,
@@ -100056,7 +98937,7 @@
   {
    "id": "obj_campus_baum_17",
    "lib": "gruen.baum.laub",
-   "x": -52.0,
+   "x": -52,
    "z": -49.5,
    "rot": 269,
    "size": {
@@ -100082,23 +98963,9 @@
    "quelle": "OpenStreetMap node/5664784641"
   },
   {
-   "id": "obj_campus_baum_19",
-   "lib": "gruen.baum.laub",
-   "x": -70.5,
-   "z": -88.1,
-   "rot": 343,
-   "size": {
-    "w": 7.6,
-    "d": 7.6,
-    "h": 12.0
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784642"
-  },
-  {
    "id": "obj_campus_baum_20",
    "lib": "gruen.baum.laub",
-   "x": -82.0,
+   "x": -82,
    "z": -90.1,
    "rot": 20,
    "size": {
@@ -100108,20 +98975,6 @@
    },
    "standort": true,
    "quelle": "OpenStreetMap node/5664784655"
-  },
-  {
-   "id": "obj_campus_baum_21",
-   "lib": "gruen.baum.laub",
-   "x": -73.4,
-   "z": -100.9,
-   "rot": 57,
-   "size": {
-    "w": 7.4,
-    "d": 7.4,
-    "h": 11.6
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784656"
   },
   {
    "id": "obj_campus_baum_22",
@@ -100141,29 +98994,15 @@
    "id": "obj_campus_baum_23",
    "lib": "gruen.baum.laub",
    "x": 110.8,
-   "z": -46.0,
+   "z": -46,
    "rot": 131,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
+    "w": 6,
+    "d": 6,
     "h": 9.4
    },
    "standort": true,
    "quelle": "OpenStreetMap node/5664784664"
-  },
-  {
-   "id": "obj_campus_baum_24",
-   "lib": "gruen.baum.laub",
-   "x": 104.2,
-   "z": -72.4,
-   "rot": 168,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.4
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784665"
   },
   {
    "id": "obj_campus_baum_25",
@@ -100178,20 +99017,6 @@
    },
    "standort": true,
    "quelle": "OpenStreetMap node/6515760688"
-  },
-  {
-   "id": "obj_campus_baum_26",
-   "lib": "gruen.baum.laub",
-   "x": -50.9,
-   "z": 107.9,
-   "rot": 242,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784380"
   },
   {
    "id": "obj_campus_baum_27",
@@ -100214,8 +99039,8 @@
    "z": 81.6,
    "rot": 316,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
+    "w": 6,
+    "d": 6,
     "h": 9.5
    },
    "standort": true,
@@ -100236,102 +99061,18 @@
    "quelle": "OpenStreetMap node/5664784383"
   },
   {
-   "id": "obj_campus_baum_30",
-   "lib": "gruen.baum.laub",
-   "x": -60.0,
-   "z": 112.5,
-   "rot": 30,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784411"
-  },
-  {
    "id": "obj_campus_baum_31",
    "lib": "gruen.baum.laub",
    "x": -44.5,
    "z": 111.5,
    "rot": 67,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
+    "w": 6,
+    "d": 6,
     "h": 9.4
    },
    "standort": true,
    "quelle": "OpenStreetMap node/5664784412"
-  },
-  {
-   "id": "obj_campus_baum_32",
-   "lib": "gruen.baum.laub",
-   "x": -44.4,
-   "z": 122.8,
-   "rot": 104,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.3
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784413"
-  },
-  {
-   "id": "obj_campus_baum_33",
-   "lib": "gruen.baum.laub",
-   "x": -54.0,
-   "z": 125.1,
-   "rot": 141,
-   "size": {
-    "w": 7.0,
-    "d": 7.0,
-    "h": 10.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784414"
-  },
-  {
-   "id": "obj_campus_baum_34",
-   "lib": "gruen.baum.laub",
-   "x": -61.9,
-   "z": 129.5,
-   "rot": 178,
-   "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784415"
-  },
-  {
-   "id": "obj_campus_baum_35",
-   "lib": "gruen.baum.laub",
-   "x": -63.0,
-   "z": 140.4,
-   "rot": 215,
-   "size": {
-    "w": 6.7,
-    "d": 6.7,
-    "h": 10.5
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784416"
-  },
-  {
-   "id": "obj_campus_baum_36",
-   "lib": "gruen.baum.laub",
-   "x": -38.3,
-   "z": 128.0,
-   "rot": 252,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784417"
   },
   {
    "id": "obj_campus_baum_37",
@@ -100340,8 +99081,8 @@
    "z": 120.6,
    "rot": 289,
    "size": {
-    "w": 7.0,
-    "d": 7.0,
+    "w": 7,
+    "d": 7,
     "h": 11.1
    },
    "standort": true,
@@ -100432,20 +99173,6 @@
    "quelle": "OpenStreetMap node/5664784385"
   },
   {
-   "id": "obj_campus_baum_44",
-   "lib": "gruen.baum.laub",
-   "x": -67.1,
-   "z": -40.6,
-   "rot": 188,
-   "size": {
-    "w": 6.7,
-    "d": 6.7,
-    "h": 10.5
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784397"
-  },
-  {
    "id": "obj_campus_baum_45",
    "lib": "gruen.baum.laub",
    "x": -104.9,
@@ -100458,48 +99185,6 @@
    },
    "standort": true,
    "quelle": "OpenStreetMap node/5664784407"
-  },
-  {
-   "id": "obj_campus_baum_46",
-   "lib": "gruen.baum.laub",
-   "x": -80.6,
-   "z": 1.1,
-   "rot": 262,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784408"
-  },
-  {
-   "id": "obj_campus_baum_47",
-   "lib": "gruen.baum.laub",
-   "x": -77.7,
-   "z": 19.6,
-   "rot": 299,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784409"
-  },
-  {
-   "id": "obj_campus_baum_48",
-   "lib": "gruen.baum.laub",
-   "x": -86.4,
-   "z": 18.4,
-   "rot": 336,
-   "size": {
-    "w": 7.6,
-    "d": 7.6,
-    "h": 11.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784410"
   },
   {
    "id": "obj_campus_baum_49",
@@ -100516,20 +99201,6 @@
    "quelle": "OpenStreetMap node/5664784647"
   },
   {
-   "id": "obj_campus_baum_50",
-   "lib": "gruen.baum.laub",
-   "x": -94.3,
-   "z": -48.8,
-   "rot": 50,
-   "size": {
-    "w": 7.0,
-    "d": 7.0,
-    "h": 11.0
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784648"
-  },
-  {
    "id": "obj_campus_baum_51",
    "lib": "gruen.baum.laub",
    "x": -91.2,
@@ -100542,118 +99213,6 @@
    },
    "standort": true,
    "quelle": "OpenStreetMap node/5664784649"
-  },
-  {
-   "id": "obj_campus_baum_52",
-   "lib": "gruen.baum.laub",
-   "x": -96.1,
-   "z": -80.7,
-   "rot": 124,
-   "size": {
-    "w": 7.7,
-    "d": 7.7,
-    "h": 12.1
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784650"
-  },
-  {
-   "id": "obj_campus_baum_53",
-   "lib": "gruen.baum.laub",
-   "x": -95.2,
-   "z": -88.4,
-   "rot": 161,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.4
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784651"
-  },
-  {
-   "id": "obj_campus_baum_54",
-   "lib": "gruen.baum.laub",
-   "x": -203.3,
-   "z": -94.1,
-   "rot": 198,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622335"
-  },
-  {
-   "id": "obj_campus_baum_55",
-   "lib": "gruen.baum.laub",
-   "x": -203.1,
-   "z": -100.6,
-   "rot": 235,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622336"
-  },
-  {
-   "id": "obj_campus_baum_56",
-   "lib": "gruen.baum.laub",
-   "x": -207.3,
-   "z": -104.7,
-   "rot": 272,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622337"
-  },
-  {
-   "id": "obj_campus_baum_57",
-   "lib": "gruen.baum.laub",
-   "x": -197.1,
-   "z": -109.0,
-   "rot": 309,
-   "size": {
-    "w": 5.7,
-    "d": 5.7,
-    "h": 8.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622338"
-  },
-  {
-   "id": "obj_campus_baum_58",
-   "lib": "gruen.baum.laub",
-   "x": -200.7,
-   "z": -108.7,
-   "rot": 346,
-   "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.7
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622339"
-  },
-  {
-   "id": "obj_campus_baum_59",
-   "lib": "gruen.baum.laub",
-   "x": -212.5,
-   "z": -102.9,
-   "rot": 23,
-   "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.5
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6878622348"
   },
   {
    "id": "obj_campus_baum_60",
@@ -100672,8 +99231,8 @@
   {
    "id": "obj_campus_baum_61",
    "lib": "gruen.baum.laub",
-   "x": -148.0,
-   "z": -11.0,
+   "x": -148,
+   "z": -11,
    "rot": 97,
    "size": {
     "w": 6.2,
@@ -100700,7 +99259,7 @@
   {
    "id": "obj_campus_baum_63",
    "lib": "gruen.baum.laub",
-   "x": -144.0,
+   "x": -144,
    "z": -20.3,
    "rot": 171,
    "size": {
@@ -100715,7 +99274,7 @@
    "id": "obj_campus_baum_64",
    "lib": "gruen.baum.laub",
    "x": -91.7,
-   "z": 4.0,
+   "z": 4,
    "rot": 208,
    "size": {
     "w": 5.9,
@@ -100740,48 +99299,6 @@
    "quelle": "OpenStreetMap node/4759264171"
   },
   {
-   "id": "obj_campus_baum_66",
-   "lib": "gruen.baum.laub",
-   "x": 105.1,
-   "z": 15.1,
-   "rot": 282,
-   "size": {
-    "w": 7.4,
-    "d": 7.4,
-    "h": 11.7
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784341"
-  },
-  {
-   "id": "obj_campus_baum_67",
-   "lib": "gruen.baum.laub",
-   "x": 132.1,
-   "z": 7.2,
-   "rot": 319,
-   "size": {
-    "w": 7.6,
-    "d": 7.6,
-    "h": 11.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784342"
-  },
-  {
-   "id": "obj_campus_baum_68",
-   "lib": "gruen.baum.laub",
-   "x": 122.4,
-   "z": 44.4,
-   "rot": 356,
-   "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784343"
-  },
-  {
    "id": "obj_campus_baum_69",
    "lib": "gruen.baum.laub",
    "x": 114.5,
@@ -100798,7 +99315,7 @@
   {
    "id": "obj_campus_baum_70",
    "lib": "gruen.baum.laub",
-   "x": 111.0,
+   "x": 111,
    "z": 22.8,
    "rot": 70,
    "size": {
@@ -100824,34 +99341,6 @@
    "quelle": "OpenStreetMap node/5664784346"
   },
   {
-   "id": "obj_campus_baum_72",
-   "lib": "gruen.baum.laub",
-   "x": 131.6,
-   "z": -36.6,
-   "rot": 144,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.1
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784347"
-  },
-  {
-   "id": "obj_campus_baum_73",
-   "lib": "gruen.baum.laub",
-   "x": 115.6,
-   "z": 12.9,
-   "rot": 181,
-   "size": {
-    "w": 6.7,
-    "d": 6.7,
-    "h": 10.5
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/5664784366"
-  },
-  {
    "id": "obj_campus_baum_74",
    "lib": "gruen.baum.laub",
    "x": 124.8,
@@ -100868,7 +99357,7 @@
   {
    "id": "obj_campus_baum_75",
    "lib": "gruen.baum.laub",
-   "x": 108.0,
+   "x": 108,
    "z": 4.9,
    "rot": 255,
    "size": {
@@ -100880,99 +99369,15 @@
    "quelle": "OpenStreetMap node/5664784668"
   },
   {
-   "id": "obj_campus_baum_76",
-   "lib": "gruen.baum.laub",
-   "x": 159.6,
-   "z": -13.5,
-   "rot": 292,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.7
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6581886621"
-  },
-  {
-   "id": "obj_campus_baum_77",
-   "lib": "gruen.baum.laub",
-   "x": 171.4,
-   "z": -0.8,
-   "rot": 329,
-   "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.4
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6581886622"
-  },
-  {
-   "id": "obj_campus_baum_78",
-   "lib": "gruen.baum.laub",
-   "x": 157.8,
-   "z": -4.6,
-   "rot": 6,
-   "size": {
-    "w": 7.6,
-    "d": 7.6,
-    "h": 11.9
-   },
-   "standort": true,
-   "quelle": "OpenStreetMap node/6581886623"
-  },
-  {
-   "id": "obj_campus_baum_79",
-   "lib": "gruen.baum.laub",
-   "x": 119.0,
-   "z": 69.8,
-   "rot": 43,
-   "size": {
-    "w": 7.1,
-    "d": 7.1,
-    "h": 11.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
    "id": "obj_campus_baum_80",
    "lib": "gruen.baum.laub",
-   "x": -175.0,
+   "x": -175,
    "z": 152.3,
    "rot": 80,
    "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_81",
-   "lib": "gruen.baum.laub",
-   "x": 105.5,
-   "z": -114.7,
-   "rot": 117,
-   "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_82",
-   "lib": "gruen.baum.laub",
-   "x": 129.5,
-   "z": -18.7,
-   "rot": 154,
-   "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
+    "w": 8.2,
+    "d": 8.2,
+    "h": 12.8
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -100984,51 +99389,9 @@
    "z": 86.3,
    "rot": 191,
    "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_84",
-   "lib": "gruen.baum.laub",
-   "x": -157.0,
-   "z": 152.3,
-   "rot": 228,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_85",
-   "lib": "gruen.baum.laub",
-   "x": 116.0,
-   "z": -60.7,
-   "rot": 265,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_86",
-   "lib": "gruen.baum.laub",
-   "x": -176.5,
-   "z": 114.8,
-   "rot": 302,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.4
+    "w": 7.0,
+    "d": 7.0,
+    "h": 11.0
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101036,41 +99399,13 @@
   {
    "id": "obj_campus_baum_87",
    "lib": "gruen.baum.laub",
-   "x": -172.0,
+   "x": -172,
    "z": 87.8,
    "rot": 339,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
-    "h": 9.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_88",
-   "lib": "gruen.baum.laub",
-   "x": 98.0,
-   "z": -68.2,
-   "rot": 16,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_89",
-   "lib": "gruen.baum.laub",
-   "x": 122.0,
-   "z": -6.7,
-   "rot": 53,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101078,41 +99413,13 @@
   {
    "id": "obj_campus_baum_90",
    "lib": "gruen.baum.laub",
-   "x": -166.0,
+   "x": -166,
    "z": 183.8,
    "rot": 90,
    "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_91",
-   "lib": "gruen.baum.laub",
-   "x": 132.5,
-   "z": 66.8,
-   "rot": 127,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_92",
-   "lib": "gruen.baum.laub",
-   "x": 128.0,
-   "z": -9.7,
-   "rot": 164,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101124,37 +99431,9 @@
    "z": 164.3,
    "rot": 201,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_94",
-   "lib": "gruen.baum.laub",
-   "x": -155.5,
-   "z": 174.8,
-   "rot": 238,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_95",
-   "lib": "gruen.baum.laub",
-   "x": 143.0,
-   "z": -45.7,
-   "rot": 275,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.9
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101166,51 +99445,9 @@
    "z": 8.3,
    "rot": 312,
    "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_97",
-   "lib": "gruen.baum.laub",
-   "x": -55.0,
-   "z": -84.7,
-   "rot": 349,
-   "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_98",
-   "lib": "gruen.baum.laub",
-   "x": -106.0,
-   "z": -80.2,
-   "rot": 26,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_99",
-   "lib": "gruen.baum.laub",
-   "x": -170.5,
-   "z": 75.8,
-   "rot": 63,
-   "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.6
+    "w": 7.7,
+    "d": 7.7,
+    "h": 12.0
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101222,9 +99459,9 @@
    "z": -51.7,
    "rot": 100,
    "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.7
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101236,9 +99473,9 @@
    "z": 104.3,
    "rot": 137,
    "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.5
+    "w": 8.5,
+    "d": 8.5,
+    "h": 13.4
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101250,51 +99487,9 @@
    "z": 165.8,
    "rot": 174,
    "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.7
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_103",
-   "lib": "gruen.baum.laub",
-   "x": -166.0,
-   "z": 141.8,
-   "rot": 211,
-   "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_104",
-   "lib": "gruen.baum.laub",
-   "x": 141.5,
-   "z": 9.8,
-   "rot": 248,
-   "size": {
-    "w": 6.6,
-    "d": 6.6,
+    "w": 6.5,
+    "d": 6.5,
     "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_105",
-   "lib": "gruen.baum.laub",
-   "x": 132.5,
-   "z": 36.8,
-   "rot": 285,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101302,9 +99497,23 @@
   {
    "id": "obj_campus_baum_106",
    "lib": "gruen.baum.laub",
-   "x": 113.0,
+   "x": 113,
    "z": -24.7,
    "rot": 322,
+   "size": {
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
+   },
+   "standort": true,
+   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_campus_baum_109",
+   "lib": "gruen.baum.laub",
+   "x": -25,
+   "z": -104.2,
+   "rot": 73,
    "size": {
     "w": 6.6,
     "d": 6.6,
@@ -101314,57 +99523,15 @@
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
   },
   {
-   "id": "obj_campus_baum_107",
-   "lib": "gruen.baum.laub",
-   "x": 123.5,
-   "z": 8.3,
-   "rot": 359,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_108",
-   "lib": "gruen.baum.laub",
-   "x": -155.5,
-   "z": 182.3,
-   "rot": 36,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_109",
-   "lib": "gruen.baum.laub",
-   "x": -25.0,
-   "z": -104.2,
-   "rot": 73,
-   "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
    "id": "obj_campus_baum_110",
    "lib": "gruen.baum.laub",
-   "x": 119.0,
+   "x": 119,
    "z": 95.3,
    "rot": 110,
    "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
+    "w": 6.6,
+    "d": 6.6,
+    "h": 10.4
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101376,9 +99543,9 @@
    "z": 56.3,
    "rot": 147,
    "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.0
+    "w": 7.5,
+    "d": 7.5,
+    "h": 11.8
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101390,23 +99557,9 @@
    "z": 44.3,
    "rot": 184,
    "size": {
-    "w": 7.1,
-    "d": 7.1,
-    "h": 11.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_113",
-   "lib": "gruen.baum.laub",
-   "x": 96.5,
-   "z": 62.3,
-   "rot": 221,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
+    "w": 8.1,
+    "d": 8.1,
+    "h": 12.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101418,37 +99571,9 @@
    "z": -72.7,
    "rot": 258,
    "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_115",
-   "lib": "gruen.baum.laub",
-   "x": 114.5,
-   "z": 60.8,
-   "rot": 295,
-   "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_116",
-   "lib": "gruen.baum.laub",
-   "x": 137.0,
-   "z": 53.3,
-   "rot": 332,
-   "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.0
+    "w": 8.3,
+    "d": 8.3,
+    "h": 13.0
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101456,27 +99581,13 @@
   {
    "id": "obj_campus_baum_117",
    "lib": "gruen.baum.laub",
-   "x": 143.0,
+   "x": 143,
    "z": -23.2,
    "rot": 9,
    "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_118",
-   "lib": "gruen.baum.laub",
-   "x": 107.0,
-   "z": -95.2,
-   "rot": 46,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.3
+    "w": 7.5,
+    "d": 7.5,
+    "h": 11.8
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101488,23 +99599,9 @@
    "z": 141.8,
    "rot": 83,
    "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_120",
-   "lib": "gruen.baum.laub",
-   "x": 135.5,
-   "z": 77.3,
-   "rot": 120,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
+    "w": 8.7,
+    "d": 8.7,
+    "h": 13.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101512,13 +99609,13 @@
   {
    "id": "obj_campus_baum_121",
    "lib": "gruen.baum.laub",
-   "x": -94.0,
+   "x": -94,
    "z": 27.8,
    "rot": 157,
    "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.5
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101530,9 +99627,9 @@
    "z": -68.2,
    "rot": 194,
    "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
+    "w": 8.3,
+    "d": 8.3,
+    "h": 13.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101540,13 +99637,13 @@
   {
    "id": "obj_campus_baum_123",
    "lib": "gruen.baum.laub",
-   "x": 101.0,
+   "x": 101,
    "z": 69.8,
    "rot": 231,
    "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
+    "w": 7.1,
+    "d": 7.1,
+    "h": 11.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101554,97 +99651,13 @@
   {
    "id": "obj_campus_baum_124",
    "lib": "gruen.baum.laub",
-   "x": -139.0,
+   "x": -139,
    "z": 156.8,
    "rot": 268,
    "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_125",
-   "lib": "gruen.baum.laub",
-   "x": -52.0,
-   "z": -41.2,
-   "rot": 305,
-   "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_126",
-   "lib": "gruen.baum.laub",
-   "x": 122.0,
-   "z": -54.7,
-   "rot": 342,
-   "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.7
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_127",
-   "lib": "gruen.baum.laub",
-   "x": 140.0,
-   "z": -89.2,
-   "rot": 19,
-   "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_128",
-   "lib": "gruen.baum.laub",
-   "x": -166.0,
-   "z": 152.3,
-   "rot": 56,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_129",
-   "lib": "gruen.baum.laub",
-   "x": 122.0,
-   "z": -90.7,
-   "rot": 93,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_130",
-   "lib": "gruen.baum.laub",
-   "x": 60.5,
-   "z": -77.2,
-   "rot": 130,
-   "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.3
+    "w": 5.7,
+    "d": 5.7,
+    "h": 8.9
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101656,9 +99669,9 @@
    "z": -101.2,
    "rot": 167,
    "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101670,23 +99683,9 @@
    "z": -0.7,
    "rot": 204,
    "size": {
-    "w": 7.1,
-    "d": 7.1,
-    "h": 11.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_133",
-   "lib": "gruen.baum.laub",
-   "x": 114.5,
-   "z": -17.2,
-   "rot": 241,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101698,9 +99697,9 @@
    "z": -29.2,
    "rot": 278,
    "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101708,83 +99707,13 @@
   {
    "id": "obj_campus_baum_135",
    "lib": "gruen.baum.laub",
-   "x": 128.0,
+   "x": 128,
    "z": 74.3,
    "rot": 315,
    "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_136",
-   "lib": "gruen.baum.laub",
-   "x": 108.5,
-   "z": -3.7,
-   "rot": 352,
-   "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_137",
-   "lib": "gruen.baum.laub",
-   "x": 101.0,
-   "z": -89.2,
-   "rot": 29,
-   "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_138",
-   "lib": "gruen.baum.laub",
-   "x": -88.0,
-   "z": -68.2,
-   "rot": 66,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_139",
-   "lib": "gruen.baum.laub",
-   "x": 81.5,
-   "z": -86.2,
-   "rot": 103,
-   "size": {
-    "w": 5.2,
-    "d": 5.2,
-    "h": 8.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_140",
-   "lib": "gruen.baum.laub",
-   "x": 144.5,
-   "z": 3.8,
-   "rot": 140,
-   "size": {
-    "w": 5.2,
-    "d": 5.2,
-    "h": 8.2
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101792,41 +99721,13 @@
   {
    "id": "obj_campus_baum_141",
    "lib": "gruen.baum.laub",
-   "x": 125.0,
+   "x": 125,
    "z": -38.2,
    "rot": 177,
    "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_142",
-   "lib": "gruen.baum.laub",
-   "x": 140.0,
-   "z": -69.7,
-   "rot": 214,
-   "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_143",
-   "lib": "gruen.baum.laub",
-   "x": -88.0,
-   "z": -86.2,
-   "rot": 251,
-   "size": {
-    "w": 7.1,
-    "d": 7.1,
-    "h": 11.2
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101834,41 +99735,13 @@
   {
    "id": "obj_campus_baum_144",
    "lib": "gruen.baum.laub",
-   "x": -58.0,
+   "x": -58,
    "z": -14.2,
    "rot": 288,
    "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_145",
-   "lib": "gruen.baum.laub",
-   "x": 105.5,
-   "z": -123.7,
-   "rot": 325,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_146",
-   "lib": "gruen.baum.laub",
-   "x": -71.5,
-   "z": -62.2,
-   "rot": 2,
-   "size": {
     "w": 6.7,
     "d": 6.7,
-    "h": 10.5
+    "h": 10.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101880,9 +99753,9 @@
    "z": -113.2,
    "rot": 39,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
+    "w": 8.7,
+    "d": 8.7,
+    "h": 13.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101890,41 +99763,13 @@
   {
    "id": "obj_campus_baum_148",
    "lib": "gruen.baum.laub",
-   "x": 95.0,
+   "x": 95,
    "z": -125.2,
    "rot": 76,
    "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_149",
-   "lib": "gruen.baum.laub",
-   "x": -173.5,
-   "z": 171.8,
-   "rot": 113,
-   "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_150",
-   "lib": "gruen.baum.laub",
-   "x": 128.0,
-   "z": -60.7,
-   "rot": 150,
-   "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
+    "w": 8.3,
+    "d": 8.3,
+    "h": 13.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -101932,153 +99777,13 @@
   {
    "id": "obj_campus_baum_151",
    "lib": "gruen.baum.laub",
-   "x": 134.0,
+   "x": 134,
    "z": 45.8,
    "rot": 187,
    "size": {
-    "w": 6.0,
-    "d": 6.0,
-    "h": 9.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_152",
-   "lib": "gruen.baum.laub",
-   "x": 96.5,
-   "z": -98.2,
-   "rot": 224,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_153",
-   "lib": "gruen.baum.laub",
-   "x": -179.5,
-   "z": 144.8,
-   "rot": 261,
-   "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_154",
-   "lib": "gruen.baum.laub",
-   "x": -140.5,
-   "z": 168.8,
-   "rot": 298,
-   "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_155",
-   "lib": "gruen.baum.laub",
-   "x": -68.5,
-   "z": 102.8,
-   "rot": 335,
-   "size": {
-    "w": 6.7,
-    "d": 6.7,
-    "h": 10.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_156",
-   "lib": "gruen.baum.laub",
-   "x": 141.5,
-   "z": 35.3,
-   "rot": 12,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_157",
-   "lib": "gruen.baum.laub",
-   "x": 120.5,
-   "z": 77.3,
-   "rot": 49,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_158",
-   "lib": "gruen.baum.laub",
-   "x": 131.0,
-   "z": -66.7,
-   "rot": 86,
-   "size": {
-    "w": 5.7,
-    "d": 5.7,
-    "h": 9.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_159",
-   "lib": "gruen.baum.laub",
-   "x": -67.0,
-   "z": 114.8,
-   "rot": 123,
-   "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_160",
-   "lib": "gruen.baum.laub",
-   "x": -71.5,
-   "z": -33.7,
-   "rot": 160,
-   "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.7
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_161",
-   "lib": "gruen.baum.laub",
-   "x": 120.5,
-   "z": -77.2,
-   "rot": 197,
-   "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102090,23 +99795,9 @@
    "z": 134.3,
    "rot": 234,
    "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_163",
-   "lib": "gruen.baum.laub",
-   "x": 135.5,
-   "z": -11.2,
-   "rot": 271,
-   "size": {
-    "w": 7.0,
-    "d": 7.0,
-    "h": 11.1
+    "w": 7.5,
+    "d": 7.5,
+    "h": 11.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102118,9 +99809,9 @@
    "z": 131.3,
    "rot": 308,
    "size": {
-    "w": 5.7,
-    "d": 5.7,
-    "h": 9.0
+    "w": 6.5,
+    "d": 6.5,
+    "h": 10.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102132,9 +99823,9 @@
    "z": 15.8,
    "rot": 345,
    "size": {
-    "w": 5.4,
-    "d": 5.4,
-    "h": 8.5
+    "w": 6.7,
+    "d": 6.7,
+    "h": 10.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102146,79 +99837,9 @@
    "z": 60.8,
    "rot": 22,
    "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_167",
-   "lib": "gruen.baum.laub",
-   "x": 129.5,
-   "z": -90.7,
-   "rot": 59,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_168",
-   "lib": "gruen.baum.laub",
-   "x": -83.5,
-   "z": -21.7,
-   "rot": 96,
-   "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_169",
-   "lib": "gruen.baum.laub",
-   "x": -173.5,
-   "z": 102.8,
-   "rot": 133,
-   "size": {
     "w": 5.9,
     "d": 5.9,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_170",
-   "lib": "gruen.baum.laub",
-   "x": 101.0,
-   "z": -57.7,
-   "rot": 170,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_171",
-   "lib": "gruen.baum.laub",
-   "x": 102.5,
-   "z": 26.3,
-   "rot": 207,
-   "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
+    "h": 9.3
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102226,27 +99847,13 @@
   {
    "id": "obj_campus_baum_172",
    "lib": "gruen.baum.laub",
-   "x": -64.0,
+   "x": -64,
    "z": -62.2,
    "rot": 244,
    "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_173",
-   "lib": "gruen.baum.laub",
-   "x": 74.0,
-   "z": -68.2,
-   "rot": 281,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102258,23 +99865,9 @@
    "z": -20.2,
    "rot": 318,
    "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_175",
-   "lib": "gruen.baum.laub",
-   "x": 134.0,
-   "z": -42.7,
-   "rot": 355,
-   "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.0
+    "w": 8.7,
+    "d": 8.7,
+    "h": 13.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102286,93 +99879,9 @@
    "z": -39.7,
    "rot": 32,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_177",
-   "lib": "gruen.baum.laub",
-   "x": 108.5,
-   "z": 32.3,
-   "rot": 69,
-   "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_178",
-   "lib": "gruen.baum.laub",
-   "x": -70.0,
-   "z": -24.7,
-   "rot": 106,
-   "size": {
-    "w": 5.1,
-    "d": 5.1,
-    "h": 8.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_179",
-   "lib": "gruen.baum.laub",
-   "x": -170.5,
-   "z": 108.8,
-   "rot": 143,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_180",
-   "lib": "gruen.baum.laub",
-   "x": 137.0,
-   "z": 60.8,
-   "rot": 180,
-   "size": {
-    "w": 5.2,
-    "d": 5.2,
-    "h": 8.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_181",
-   "lib": "gruen.baum.laub",
-   "x": 86.0,
-   "z": -98.2,
-   "rot": 217,
-   "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_182",
-   "lib": "gruen.baum.laub",
-   "x": 107.0,
-   "z": -18.7,
-   "rot": 254,
-   "size": {
-    "w": 7.0,
-    "d": 7.0,
-    "h": 11.0
+    "w": 8.1,
+    "d": 8.1,
+    "h": 12.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102380,13 +99889,13 @@
   {
    "id": "obj_campus_baum_183",
    "lib": "gruen.baum.laub",
-   "x": -76.0,
+   "x": -76,
    "z": -17.2,
    "rot": 291,
    "size": {
-    "w": 4.9,
-    "d": 4.9,
-    "h": 7.8
+    "w": 7.2,
+    "d": 7.2,
+    "h": 11.3
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102398,9 +99907,9 @@
    "z": 168.8,
    "rot": 328,
    "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102408,13 +99917,13 @@
   {
    "id": "obj_campus_baum_185",
    "lib": "gruen.baum.laub",
-   "x": -64.0,
+   "x": -64,
    "z": -32.2,
    "rot": 5,
    "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
+    "w": 6.0,
+    "d": 6.0,
+    "h": 9.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102422,27 +99931,13 @@
   {
    "id": "obj_campus_baum_186",
    "lib": "gruen.baum.laub",
-   "x": 101.0,
+   "x": 101,
    "z": -6.7,
    "rot": 42,
    "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_187",
-   "lib": "gruen.baum.laub",
-   "x": -91.0,
-   "z": -93.7,
-   "rot": 79,
-   "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.3
+    "w": 7.9,
+    "d": 7.9,
+    "h": 12.3
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102450,69 +99945,13 @@
   {
    "id": "obj_campus_baum_188",
    "lib": "gruen.baum.laub",
-   "x": 83.0,
+   "x": 83,
    "z": 35.3,
    "rot": 116,
    "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_189",
-   "lib": "gruen.baum.laub",
-   "x": -68.5,
-   "z": -75.7,
-   "rot": 153,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_190",
-   "lib": "gruen.baum.laub",
-   "x": 120.5,
-   "z": -21.7,
-   "rot": 190,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_191",
-   "lib": "gruen.baum.laub",
-   "x": -101.5,
-   "z": 72.8,
-   "rot": 227,
-   "size": {
-    "w": 6.5,
-    "d": 6.5,
-    "h": 10.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_192",
-   "lib": "gruen.baum.laub",
-   "x": 116.0,
-   "z": 5.3,
-   "rot": 264,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
+    "w": 7.7,
+    "d": 7.7,
+    "h": 12.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102520,13 +99959,13 @@
   {
    "id": "obj_campus_baum_193",
    "lib": "gruen.baum.laub",
-   "x": -115.0,
+   "x": -115,
    "z": -90.7,
    "rot": 301,
    "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
+    "w": 8.5,
+    "d": 8.5,
+    "h": 13.3
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102538,23 +99977,9 @@
    "z": 68.3,
    "rot": 338,
    "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_195",
-   "lib": "gruen.baum.laub",
-   "x": -83.5,
-   "z": -42.7,
-   "rot": 15,
-   "size": {
-    "w": 7.3,
-    "d": 7.3,
-    "h": 11.5
+    "w": 7.7,
+    "d": 7.7,
+    "h": 12.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102562,13 +99987,13 @@
   {
    "id": "obj_campus_baum_196",
    "lib": "gruen.baum.laub",
-   "x": -85.0,
+   "x": -85,
    "z": 93.8,
    "rot": 52,
    "size": {
-    "w": 5.2,
-    "d": 5.2,
-    "h": 8.2
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102580,51 +100005,9 @@
    "z": -47.2,
    "rot": 89,
    "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.5
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_198",
-   "lib": "gruen.baum.laub",
-   "x": -41.5,
-   "z": 104.3,
-   "rot": 126,
-   "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_199",
-   "lib": "gruen.baum.laub",
-   "x": 120.5,
-   "z": 33.8,
-   "rot": 163,
-   "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_200",
-   "lib": "gruen.baum.laub",
-   "x": 141.5,
-   "z": 26.3,
-   "rot": 200,
-   "size": {
-    "w": 6.0,
-    "d": 6.0,
-    "h": 9.4
+    "w": 8.2,
+    "d": 8.2,
+    "h": 12.8
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102636,23 +100019,9 @@
    "z": -66.7,
    "rot": 237,
    "size": {
-    "w": 6.6,
-    "d": 6.6,
-    "h": 10.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_202",
-   "lib": "gruen.baum.laub",
-   "x": 129.5,
-   "z": 14.3,
-   "rot": 274,
-   "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.6
+    "w": 8.3,
+    "d": 8.3,
+    "h": 13.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102664,9 +100033,9 @@
    "z": -117.7,
    "rot": 311,
    "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 9.8
+    "w": 7.6,
+    "d": 7.6,
+    "h": 11.9
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102674,13 +100043,13 @@
   {
    "id": "obj_campus_baum_204",
    "lib": "gruen.baum.laub",
-   "x": -100.0,
+   "x": -100,
    "z": 99.8,
    "rot": 348,
    "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
+    "w": 6.2,
+    "d": 6.2,
+    "h": 9.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102688,27 +100057,13 @@
   {
    "id": "obj_campus_baum_205",
    "lib": "gruen.baum.laub",
-   "x": -46.0,
+   "x": -46,
    "z": -120.7,
    "rot": 25,
    "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_206",
-   "lib": "gruen.baum.laub",
-   "x": 111.5,
-   "z": 69.8,
-   "rot": 62,
-   "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
+    "w": 7.8,
+    "d": 7.8,
+    "h": 12.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102716,13 +100071,13 @@
   {
    "id": "obj_campus_baum_207",
    "lib": "gruen.baum.laub",
-   "x": 122.0,
+   "x": 122,
    "z": -14.2,
    "rot": 99,
    "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.1
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102734,51 +100089,9 @@
    "z": -45.7,
    "rot": 136,
    "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_209",
-   "lib": "gruen.baum.laub",
-   "x": -176.5,
-   "z": 186.8,
-   "rot": 173,
-   "size": {
-    "w": 5.7,
-    "d": 5.7,
-    "h": 8.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_210",
-   "lib": "gruen.baum.laub",
-   "x": 116.0,
-   "z": -3.7,
-   "rot": 210,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_211",
-   "lib": "gruen.baum.laub",
-   "x": 80.0,
-   "z": 75.8,
-   "rot": 247,
-   "size": {
-    "w": 6.9,
-    "d": 6.9,
-    "h": 10.9
+    "w": 8.6,
+    "d": 8.6,
+    "h": 13.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102786,69 +100099,13 @@
   {
    "id": "obj_campus_baum_212",
    "lib": "gruen.baum.laub",
-   "x": -178.0,
+   "x": -178,
    "z": -89.2,
    "rot": 284,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_213",
-   "lib": "gruen.baum.laub",
-   "x": 95.0,
-   "z": -84.7,
-   "rot": 321,
-   "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_214",
-   "lib": "gruen.baum.laub",
-   "x": 128.0,
-   "z": 51.8,
-   "rot": 358,
-   "size": {
-    "w": 6.0,
-    "d": 6.0,
-    "h": 9.4
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_215",
-   "lib": "gruen.baum.laub",
-   "x": -178.0,
-   "z": 93.8,
-   "rot": 35,
-   "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.7
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_216",
-   "lib": "gruen.baum.laub",
-   "x": 113.0,
-   "z": -90.7,
-   "rot": 72,
-   "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.1
+    "w": 7.8,
+    "d": 7.8,
+    "h": 12.2
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102860,37 +100117,9 @@
    "z": 179.3,
    "rot": 109,
    "size": {
-    "w": 6.4,
-    "d": 6.4,
-    "h": 10.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_218",
-   "lib": "gruen.baum.laub",
-   "x": 110.0,
-   "z": 44.3,
-   "rot": 146,
-   "size": {
-    "w": 7.0,
-    "d": 7.0,
-    "h": 11.0
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_219",
-   "lib": "gruen.baum.laub",
-   "x": -175.0,
-   "z": 81.8,
-   "rot": 183,
-   "size": {
-    "w": 4.9,
-    "d": 4.9,
-    "h": 7.8
+    "w": 6.8,
+    "d": 6.8,
+    "h": 10.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102898,55 +100127,13 @@
   {
    "id": "obj_campus_baum_220",
    "lib": "gruen.baum.laub",
-   "x": -169.0,
+   "x": -169,
    "z": 117.8,
    "rot": 220,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_221",
-   "lib": "gruen.baum.laub",
-   "x": -172.0,
-   "z": -110.2,
-   "rot": 257,
-   "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_222",
-   "lib": "gruen.baum.laub",
-   "x": -166.0,
-   "z": 84.8,
-   "rot": 294,
-   "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_223",
-   "lib": "gruen.baum.laub",
-   "x": -97.0,
-   "z": -41.2,
-   "rot": 331,
-   "size": {
-    "w": 5.5,
-    "d": 5.5,
-    "h": 8.6
+    "w": 5.9,
+    "d": 5.9,
+    "h": 9.3
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102958,9 +100145,9 @@
    "z": -104.2,
    "rot": 8,
    "size": {
-    "w": 5.6,
-    "d": 5.6,
-    "h": 8.7
+    "w": 8.6,
+    "d": 8.6,
+    "h": 13.5
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102972,9 +100159,9 @@
    "z": 59.3,
    "rot": 45,
    "size": {
-    "w": 5.3,
-    "d": 5.3,
-    "h": 8.3
+    "w": 8.7,
+    "d": 8.7,
+    "h": 13.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -102986,9 +100173,9 @@
    "z": 65.3,
    "rot": 82,
    "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.6
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -103000,93 +100187,9 @@
    "z": 17.3,
    "rot": 119,
    "size": {
-    "w": 7.1,
-    "d": 7.1,
-    "h": 11.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_228",
-   "lib": "gruen.baum.laub",
-   "x": -176.5,
-   "z": 177.8,
-   "rot": 156,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_229",
-   "lib": "gruen.baum.laub",
-   "x": -139.0,
-   "z": 140.3,
-   "rot": 193,
-   "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_230",
-   "lib": "gruen.baum.laub",
-   "x": 134.0,
-   "z": 24.8,
-   "rot": 230,
-   "size": {
-    "w": 6.2,
-    "d": 6.2,
-    "h": 9.8
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_231",
-   "lib": "gruen.baum.laub",
-   "x": -28.0,
-   "z": -98.2,
-   "rot": 267,
-   "size": {
-    "w": 6.1,
-    "d": 6.1,
-    "h": 9.6
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_232",
-   "lib": "gruen.baum.laub",
-   "x": -154.0,
-   "z": 167.3,
-   "rot": 304,
-   "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_233",
-   "lib": "gruen.baum.laub",
-   "x": -74.5,
-   "z": -122.2,
-   "rot": 341,
-   "size": {
-    "w": 6.8,
-    "d": 6.8,
-    "h": 10.7
+    "w": 7.5,
+    "d": 7.5,
+    "h": 11.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -103094,55 +100197,13 @@
   {
    "id": "obj_campus_baum_234",
    "lib": "gruen.baum.laub",
-   "x": -133.0,
+   "x": -133,
    "z": 146.3,
    "rot": 18,
    "size": {
-    "w": 5.0,
-    "d": 5.0,
-    "h": 7.9
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_235",
-   "lib": "gruen.baum.laub",
-   "x": 108.5,
-   "z": -57.7,
-   "rot": 55,
-   "size": {
-    "w": 5.9,
-    "d": 5.9,
-    "h": 9.2
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_236",
-   "lib": "gruen.baum.laub",
-   "x": 74.0,
-   "z": -86.2,
-   "rot": 92,
-   "size": {
-    "w": 7.2,
-    "d": 7.2,
-    "h": 11.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_237",
-   "lib": "gruen.baum.laub",
-   "x": -109.0,
-   "z": -93.7,
-   "rot": 129,
-   "size": {
-    "w": 6.3,
-    "d": 6.3,
-    "h": 10.0
+    "w": 8.7,
+    "d": 8.7,
+    "h": 13.7
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -103150,13 +100211,13 @@
   {
    "id": "obj_campus_baum_238",
    "lib": "gruen.baum.laub",
-   "x": -160.0,
+   "x": -160,
    "z": -114.7,
    "rot": 166,
    "size": {
-    "w": 4.9,
-    "d": 4.9,
-    "h": 7.7
+    "w": 8.0,
+    "d": 8.0,
+    "h": 12.6
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -103168,9 +100229,9 @@
    "z": 77.3,
    "rot": 203,
    "size": {
-    "w": 5.8,
-    "d": 5.8,
-    "h": 9.2
+    "w": 6.4,
+    "d": 6.4,
+    "h": 10.1
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -103339,7 +100400,7 @@
      {
       "id": "w_H1_E_13",
       "a": [
-       39.0,
+       39,
        29.74
       ],
       "b": [
@@ -103355,7 +100416,7 @@
        24.09
       ],
       "b": [
-       39.0,
+       39,
        27.09
       ],
       "t": 0.1
@@ -103916,7 +100977,7 @@
       "id": "w_H1_E_61",
       "a": [
        37.93,
-       18.0
+       18
       ],
       "b": [
        37.93,
@@ -103976,7 +101037,7 @@
       "id": "w_H1_E_66",
       "a": [
        37.89,
-       23.0
+       23
       ],
       "b": [
        37.89,
@@ -104196,7 +101257,7 @@
       ],
       "b": [
        37.64,
-       23.0
+       23
       ],
       "t": 0.1
      },
@@ -104288,7 +101349,7 @@
       "id": "w_H1_E_92",
       "a": [
        37.62,
-       46.0
+       46
       ],
       "b": [
        37.62,
@@ -104532,7 +101593,7 @@
       ],
       "b": [
        37.23,
-       19.0
+       19
       ],
       "t": 0.1
      },
@@ -104552,7 +101613,7 @@
       "id": "w_H1_E_114",
       "a": [
        37.26,
-       34.0
+       34
       ],
       "b": [
        37.27,
@@ -104640,7 +101701,7 @@
       ],
       "b": [
        37.02,
-       27.0
+       27
       ],
       "t": 0.2
      },
@@ -104772,7 +101833,7 @@
       ],
       "b": [
        36.83,
-       -14.0
+       -14
       ],
       "t": 0.2
      },
@@ -104804,7 +101865,7 @@
       "id": "w_H1_E_135",
       "a": [
        36.93,
-       19.0
+       19
       ],
       "b": [
        36.93,
@@ -104816,7 +101877,7 @@
       "id": "w_H1_E_136",
       "a": [
        36.94,
-       22.0
+       22
       ],
       "b": [
        36.94,
@@ -104844,7 +101905,7 @@
       ],
       "b": [
        36.75,
-       -25.0
+       -25
       ],
       "t": 0.2
      },
@@ -104924,7 +101985,7 @@
       "id": "w_H1_E_145",
       "a": [
        36.89,
-       22.0
+       22
       ],
       "b": [
        36.89,
@@ -104996,7 +102057,7 @@
       "id": "w_H1_E_151",
       "a": [
        36.74,
-       34.0
+       34
       ],
       "b": [
        36.74,
@@ -105168,7 +102229,7 @@
       ],
       "b": [
        36.58,
-       -14.0
+       -14
       ],
       "t": 0.4
      },
@@ -105176,11 +102237,11 @@
       "id": "w_H1_E_166",
       "a": [
        36.75,
-       -25.0
+       -25
       ],
       "b": [
        36.35,
-       -25.0
+       -25
       ],
       "t": 0.1
      },
@@ -105392,11 +102453,11 @@
       "id": "w_H1_E_184",
       "a": [
        36.25,
-       -5.0
+       -5
       ],
       "b": [
        35.3,
-       -5.0
+       -5
       ],
       "t": 0.2
      },
@@ -105752,7 +102813,7 @@
       "id": "w_H1_E_214",
       "a": [
        36.32,
-       27.0
+       27
       ],
       "b": [
        33.42,
@@ -109123,11 +106184,11 @@
      {
       "id": "w_H1_E_495",
       "a": [
-       26.0,
+       26,
        6.27
       ],
       "b": [
-       26.0,
+       26,
        6.42
       ],
       "t": 0.1
@@ -110039,7 +107100,7 @@
        -3.03
       ],
       "b": [
-       23.0,
+       23,
        -3.02
       ],
       "t": 0.2
@@ -110747,7 +107808,7 @@
        17.01
       ],
       "b": [
-       22.0,
+       22,
        17.01
       ],
       "t": 0.15
@@ -110759,7 +107820,7 @@
        17.38
       ],
       "b": [
-       22.0,
+       22,
        17.38
       ],
       "t": 0.1
@@ -110791,7 +107852,7 @@
      {
       "id": "w_H1_E_634",
       "a": [
-       22.0,
+       22,
        29.83
       ],
       "b": [
@@ -111511,11 +108572,11 @@
      {
       "id": "w_H1_E_694",
       "a": [
-       19.0,
+       19,
        -14.61
       ],
       "b": [
-       19.0,
+       19,
        -14.36
       ],
       "t": 0.1
@@ -112243,7 +109304,7 @@
      {
       "id": "w_H1_E_755",
       "a": [
-       19.0,
+       19,
        -4.94
       ],
       "b": [
@@ -112375,11 +109436,11 @@
      {
       "id": "w_H1_E_766",
       "a": [
-       16.0,
+       16,
        27.1
       ],
       "b": [
-       16.0,
+       16,
        27.65
       ],
       "t": 0.35
@@ -112388,7 +109449,7 @@
       "id": "w_H1_E_767",
       "a": [
        15.96,
-       41.0
+       41
       ],
       "b": [
        15.96,
@@ -112604,7 +109665,7 @@
       "id": "w_H1_E_785",
       "a": [
        15.86,
-       34.0
+       34
       ],
       "b": [
        15.87,
@@ -112740,7 +109801,7 @@
       ],
       "b": [
        15.5,
-       -16.0
+       -16
       ],
       "t": 0.15
      },
@@ -112772,7 +109833,7 @@
       "id": "w_H1_E_799",
       "a": [
        15.54,
-       34.0
+       34
       ],
       "b": [
        15.54,
@@ -113400,7 +110461,7 @@
       ],
       "b": [
        12.04,
-       -40.0
+       -40
       ],
       "t": 0.1
      },
@@ -113436,7 +110497,7 @@
       ],
       "b": [
        12.35,
-       -7.0
+       -7
       ],
       "t": 0.6
      },
@@ -113472,7 +110533,7 @@
       ],
       "b": [
        11.97,
-       -40.0
+       -40
       ],
       "t": 0.1
      },
@@ -113515,23 +110576,23 @@
      {
       "id": "w_H1_E_861",
       "a": [
-       12.0,
+       12,
        -26.25
       ],
       "b": [
-       12.0,
-       -26.0
+       12,
+       -26
       ],
       "t": 0.2
      },
      {
       "id": "w_H1_E_862",
       "a": [
-       12.0,
+       12,
        -27.95
       ],
       "b": [
-       12.0,
+       12,
        -26.9
       ],
       "t": 0.2
@@ -113551,7 +110612,7 @@
      {
       "id": "w_H1_E_864",
       "a": [
-       12.0,
+       12,
        -25.35
       ],
       "b": [
@@ -113580,7 +110641,7 @@
       ],
       "b": [
        11.89,
-       -40.0
+       -40
       ],
       "t": 0.1
      },
@@ -113588,7 +110649,7 @@
       "id": "w_H1_E_867",
       "a": [
        13.24,
-       -29.0
+       -29
       ],
       "b": [
        11.84,
@@ -113963,7 +111024,7 @@
        -26.1
       ],
       "b": [
-       9.0,
+       9,
        -26.09
       ],
       "t": 0.2
@@ -114031,7 +111092,7 @@
      {
       "id": "w_H1_E_904",
       "a": [
-       9.0,
+       9,
        -35.44
       ],
       "b": [
@@ -114187,7 +111248,7 @@
      {
       "id": "w_H1_E_917",
       "a": [
-       9.0,
+       9,
        -26.09
       ],
       "b": [
@@ -114547,11 +111608,11 @@
      {
       "id": "w_H1_E_947",
       "a": [
-       8.0,
+       8,
        15.31
       ],
       "b": [
-       8.0,
+       8,
        15.81
       ],
       "t": 0.2
@@ -115039,11 +112100,11 @@
      {
       "id": "w_H1_E_988",
       "a": [
-       5.0,
+       5,
        27.17
       ],
       "b": [
-       5.0,
+       5,
        27.42
       ],
       "t": 0.1
@@ -115411,7 +112472,7 @@
      {
       "id": "w_H1_E_1019",
       "a": [
-       4.0,
+       4,
        29.82
       ],
       "b": [
@@ -119288,7 +116349,7 @@
       "id": "w_H1_E_1342",
       "a": [
        -6.45,
-       29.0
+       29
       ],
       "b": [
        -6.45,
@@ -119820,7 +116881,7 @@
       ],
       "b": [
        -7.9,
-       -37.0
+       -37
       ],
       "t": 0.1
      },
@@ -119887,11 +116948,11 @@
      {
       "id": "w_H1_E_1392",
       "a": [
-       -8.0,
+       -8,
        -36.6
       ],
       "b": [
-       -8.0,
+       -8,
        -36.45
       ],
       "t": 0.1
@@ -119899,11 +116960,11 @@
      {
       "id": "w_H1_E_1393",
       "a": [
-       -8.0,
+       -8,
        -37.7
       ],
       "b": [
-       -8.0,
+       -8,
        -37.15
       ],
       "t": 0.1
@@ -119911,7 +116972,7 @@
      {
       "id": "w_H1_E_1394",
       "a": [
-       -8.0,
+       -8,
        -28.15
       ],
       "b": [
@@ -120044,7 +117105,7 @@
       "id": "w_H1_E_1405",
       "a": [
        -8.15,
-       -37.0
+       -37
       ],
       "b": [
        -8.15,
@@ -120156,7 +117217,7 @@
       ],
       "b": [
        -8.3,
-       -37.0
+       -37
       ],
       "t": 0.1
      },
@@ -120260,7 +117321,7 @@
       "id": "w_H1_E_1423",
       "a": [
        -8.4,
-       -37.0
+       -37
       ],
       "b": [
        -8.4,
@@ -120344,7 +117405,7 @@
       "id": "w_H1_E_1430",
       "a": [
        -8.5,
-       -38.0
+       -38
       ],
       "b": [
        -8.5,
@@ -120384,7 +117445,7 @@
       ],
       "b": [
        -8.55,
-       -37.0
+       -37
       ],
       "t": 0.1
      },
@@ -120595,11 +117656,11 @@
      {
       "id": "w_H1_E_1451",
       "a": [
-       -9.0,
+       -9,
        -38.15
       ],
       "b": [
-       -9.0,
+       -9,
        -37.85
       ],
       "t": 0.1
@@ -120607,11 +117668,11 @@
      {
       "id": "w_H1_E_1452",
       "a": [
-       -9.0,
+       -9,
        -37.6
       ],
       "b": [
-       -9.0,
+       -9,
        -37.45
       ],
       "t": 0.1
@@ -120776,11 +117837,11 @@
       "id": "w_H1_E_1466",
       "a": [
        -8.05,
-       -28.0
+       -28
       ],
       "b": [
        -9.65,
-       -28.0
+       -28
       ],
       "t": 0.3
      },
@@ -120907,11 +117968,11 @@
      {
       "id": "w_H1_E_1477",
       "a": [
-       -10.0,
+       -10,
        -37.39
       ],
       "b": [
-       -10.0,
+       -10,
        -37.24
       ],
       "t": 0.1
@@ -121472,7 +118533,7 @@
       "id": "w_H1_E_1524",
       "a": [
        -9.85,
-       -28.0
+       -28
       ],
       "b": [
        -10.8,
@@ -121675,11 +118736,11 @@
      {
       "id": "w_H1_E_1541",
       "a": [
-       -11.0,
+       -11,
        -37.44
       ],
       "b": [
-       -11.0,
+       -11,
        -36.84
       ],
       "t": 0.1
@@ -121951,7 +119012,7 @@
      {
       "id": "w_H1_E_1564",
       "a": [
-       -10.0,
+       -10,
        38.03
       ],
       "b": [
@@ -122549,18 +119610,6 @@
       "t": 0.1
      },
      {
-      "id": "w_H1_E_1614",
-      "a": [
-       -15.19,
-       0.62
-      ],
-      "b": [
-       -15.17,
-       7.82
-      ],
-      "t": 0.1
-     },
-     {
       "id": "w_H1_E_1615",
       "a": [
        -15.11,
@@ -122597,18 +119646,6 @@
       "t": 0.2
      },
      {
-      "id": "w_H1_E_1618",
-      "a": [
-       -15.26,
-       2.12
-      ],
-      "b": [
-       -15.25,
-       7.82
-      ],
-      "t": 0.1
-     },
-     {
       "id": "w_H1_E_1619",
       "a": [
        -15.18,
@@ -122629,42 +119666,6 @@
       "b": [
        -15.29,
        0.77
-      ],
-      "t": 0.1
-     },
-     {
-      "id": "w_H1_E_1621",
-      "a": [
-       -15.31,
-       2.12
-      ],
-      "b": [
-       -15.29,
-       8.32
-      ],
-      "t": 0.1
-     },
-     {
-      "id": "w_H1_E_1622",
-      "a": [
-       -15.41,
-       0.62
-      ],
-      "b": [
-       -15.39,
-       8.32
-      ],
-      "t": 0.15
-     },
-     {
-      "id": "w_H1_E_1623",
-      "a": [
-       -15.51,
-       0.62
-      ],
-      "b": [
-       -15.51,
-       3.12
       ],
       "t": 0.1
      },
@@ -122713,18 +119714,6 @@
       "b": [
        -16.01,
        36.12
-      ],
-      "t": 0.2
-     },
-     {
-      "id": "w_H1_E_1628",
-      "a": [
-       -15.53,
-       3.02
-      ],
-      "b": [
-       -16.08,
-       3.02
       ],
       "t": 0.2
      },
@@ -122975,7 +119964,7 @@
        -26.03
       ],
       "b": [
-       -18.0,
+       -18,
        -26.03
       ],
       "t": 0.1
@@ -122991,18 +119980,6 @@
        -21.98
       ],
       "t": 0.1
-     },
-     {
-      "id": "w_H1_E_1651",
-      "a": [
-       -16.98,
-       3.02
-      ],
-      "b": [
-       -18.08,
-       3.02
-      ],
-      "t": 0.2
      },
      {
       "id": "w_H1_E_1652",
@@ -123211,11 +120188,11 @@
      {
       "id": "w_H1_E_1669",
       "a": [
-       -19.0,
+       -19,
        27.03
       ],
       "b": [
-       -19.0,
+       -19,
        27.68
       ],
       "t": 0.1
@@ -123371,7 +120348,7 @@
        18.9
       ],
       "b": [
-       -21.0,
+       -21,
        18.91
       ],
       "t": 0.15
@@ -123403,7 +120380,7 @@
      {
       "id": "w_H1_E_1685",
       "a": [
-       -21.0,
+       -21,
        18.93
       ],
       "b": [
@@ -123667,7 +120644,7 @@
      {
       "id": "w_H1_E_1707",
       "a": [
-       -22.0,
+       -22,
        18.83
       ],
       "b": [
@@ -124496,7 +121473,7 @@
       "id": "w_H1_E_1776",
       "a": [
        -30.84,
-       11.0
+       11
       ],
       "b": [
        -30.84,
@@ -125023,7 +122000,7 @@
      {
       "id": "w_H1_E_1820",
       "a": [
-       -38.0,
+       -38,
        8.12
       ],
       "b": [
@@ -126079,7 +123056,7 @@
      {
       "id": "w_H1_E_1908",
       "a": [
-       -39.0,
+       -39,
        8.07
       ],
       "b": [
@@ -127012,7 +123989,7 @@
        ],
        [
         -6.2,
-        38.0
+        38
        ],
        [
         -6.6,
@@ -127020,7 +123997,7 @@
        ],
        [
         -6.51,
-        35.0
+        35
        ],
        [
         -4.61,
@@ -127536,7 +124513,7 @@
       "x": -20.06,
       "z": 34.53,
       "w": 2.7,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Raum HGMI-E.205 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 7 m²"
      },
      {
@@ -127631,7 +124608,7 @@
       "nr": "HGMI-E.200.1",
       "poly": [
        [
-        -22.0,
+        -22,
         36.93
        ],
        [
@@ -127639,7 +124616,7 @@
         38.33
        ],
        [
-        -23.0,
+        -23,
         38.54
        ],
        [
@@ -127980,7 +124957,7 @@
       "x": -25.72,
       "z": 9.44,
       "w": 2.5,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Raum HGMI-E.224 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 7 m²"
      },
      {
@@ -128288,7 +125265,7 @@
        ],
        [
         33.74,
-        14.0
+        14
        ]
       ],
       "x": 34.74,
@@ -128326,7 +125303,7 @@
        ],
        [
         36.96,
-        19.0
+        19
        ],
        [
         33.76,
@@ -128444,7 +125421,7 @@
        ],
        [
         35.76,
-        22.0
+        22
        ],
        [
         32.26,
@@ -128694,7 +125671,7 @@
       "x": 17.6,
       "z": 18.44,
       "w": 4.1,
-      "d": 9.0,
+      "d": 9,
       "hinweis": "Raum HGMI-E.148 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 24 m²"
      },
      {
@@ -128790,7 +125767,7 @@
       "x": 9.54,
       "z": 17.86,
       "w": 3.01,
-      "d": 7.0,
+      "d": 7,
       "hinweis": "Raum HGMI-E.144 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 16 m²"
      },
      {
@@ -128869,7 +125846,7 @@
       ],
       "x": 12.64,
       "z": 15.56,
-      "w": 9.0,
+      "w": 9,
       "d": 3.59,
       "hinweis": "Raum HGMI-E.100.5 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 21 m²"
      },
@@ -129543,7 +126520,7 @@
       ],
       "x": 12.52,
       "z": 2.91,
-      "w": 14.0,
+      "w": 14,
       "d": 5.3,
       "hinweis": "Raum HGMI-E.155.2 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 40 m²"
      },
@@ -129754,7 +126731,7 @@
        ],
        [
         36.06,
-        -21.0
+        -21
        ],
        [
         30.16,
@@ -129788,7 +126765,7 @@
       "poly": [
        [
         36.06,
-        -21.0
+        -21
        ],
        [
         36.07,
@@ -129919,7 +126896,7 @@
         -4.5
        ],
        [
-        36.0,
+        36,
         -3.9
        ],
        [
@@ -130072,7 +127049,7 @@
       "x": -0.31,
       "z": -30.52,
       "w": 5.3,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Raum HGMI-E.330 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 13 m²"
      },
      {
@@ -130640,7 +127617,7 @@
        ],
        [
         -9.15,
-        -27.0
+        -27
        ]
       ],
       "x": -9.35,
@@ -131548,7 +128525,7 @@
       "x": 17.91,
       "z": -22.46,
       "w": 4.7,
-      "d": 4.0,
+      "d": 4,
       "hinweis": "Raum HGMI-E.419 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 16 m²"
      },
      {
@@ -131669,7 +128646,7 @@
       ],
       "x": 17.13,
       "z": -34.76,
-      "w": 1.0,
+      "w": 1,
       "d": 1.2,
       "hinweis": "Raum HGMI-E.414 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 1 m²"
      },
@@ -131747,7 +128724,7 @@
         -4.17
        ],
        [
-        21.0,
+        21,
         -4.37
        ],
        [
@@ -133012,7 +129989,7 @@
        ]
       ],
       "x": 10.42,
-      "z": -16.0,
+      "z": -16,
       "w": 4.1,
       "d": 2.71,
       "hinweis": "Raum HGMI-E.403 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 10 m²"
@@ -133358,7 +130335,7 @@
        ],
        [
         35.89,
-        34.0
+        34
        ],
        [
         33.69,
@@ -133502,7 +130479,7 @@
       "x": 32.43,
       "z": 28.31,
       "w": 7.7,
-      "d": 4.0,
+      "d": 4,
       "hinweis": "Raum HGMI-E.821 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 19 m²"
      },
      {
@@ -133614,7 +130591,7 @@
        ],
        [
         33.66,
-        23.0
+        23
        ],
        [
         34.36,
@@ -133747,7 +130724,7 @@
       ],
       "x": -0.14,
       "z": -23.22,
-      "w": 5.0,
+      "w": 5,
       "d": 3.2,
       "hinweis": "Raum HGMI-E.324 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 13 m²"
      },
@@ -133868,7 +130845,7 @@
       "x": -0.12,
       "z": -16.71,
       "w": 5.01,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Raum HGMI-E.322 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 12 m²"
      },
      {
@@ -133930,15 +130907,15 @@
        ],
        [
         -5.92,
-        -13.0
+        -13
        ],
        [
         -7.52,
-        -13.0
+        -13
        ],
        [
         -8.42,
-        -14.0
+        -14
        ],
        [
         -7.52,
@@ -134176,7 +131153,7 @@
       "x": 24.49,
       "z": 17.33,
       "w": 3.51,
-      "d": 8.0,
+      "d": 8,
       "hinweis": "Raum HGMI-E.100.9 · Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100) · Fläche laut Modell 19 m²"
      },
      {
@@ -134661,7 +131638,7 @@
       "nr": "HGMI-E.100.10",
       "poly": [
        [
-        26.0,
+        26,
         37.52
        ],
        [
@@ -134761,7 +131738,7 @@
         37.92
        ],
        [
-        26.0,
+        26,
         36.92
        ],
        [
@@ -135969,8 +132946,8 @@
         13.1
        ],
        [
-        -7.0,
-        38.0
+        -7,
+        38
        ],
        [
         -11.3,
@@ -136101,8 +133078,8 @@
        ]
       ],
       "x": -1.24,
-      "z": -35.0,
-      "w": 6.0,
+      "z": -35,
+      "w": 6,
       "d": 3.2,
       "role": "rampe",
       "hinweis": "Lage laut OpenStreetMap (Eingang „Warenannahme Steri (im UG) & Küche“, access=delivery); Lieferantenzufahrt laut Lageplan von der Eduard-Windthorst-Straße · Andockfläche vor der Nordfassade (Raumprogramm der Ebene E dahinter laut Bestandsplan HGMI E belegt) · Zeitfenster Mo–Fr 06:00–14:00 · ca. 20 Anlieferungen/Tag, dazu Cook-&-Chill-Abgänge · Engpass: Eine Andockstelle in der Hofeinfahrt an der Nordseite (Annahme) · Engpass: Lebensmittel, Wäsche, Arzneimittel, Post, Sterilgutbedarf und Speisen für Rosenhöhe/Halle über dieselbe Rampe · Engpass: Zufahrt über die Eduard-Windthorst-Straße, auf dem Gelände nur mit Berechtigung (OSM: access=permit)"
@@ -136505,8 +133482,8 @@
       ],
       "x": -13.09,
       "z": -14.18,
-      "w": 12.0,
-      "d": 12.0,
+      "w": 12,
+      "d": 12,
       "role": "waescherei",
       "hinweis": "Fremdvergabe der Wäscherei angenommen · Fläche laut Modell 144 m² · Zeitfenster Anlieferung 06:00–08:00, Ausgabe bis 10:00 · ca. 2,2 t Wäsche/Tag (Fremdwäscherei) · Engpass: Rein- und Schmutzwäsche über denselben Versorgungsaufzug LV · Engpass: Wäschecontainer blockieren die Rampe Nord · Lage angenommen: Breitfuß Ost (Teil 2), da Ebene E Teil 1 laut Bestandsplan durch Ambulanzen, Seminarräume und Notfallbereich belegt ist"
      },
@@ -136535,8 +133512,8 @@
       ],
       "x": -6.59,
       "z": -0.18,
-      "w": 12.0,
-      "d": 12.0,
+      "w": 12,
+      "d": 12,
       "role": "labor",
       "hinweis": "Fläche laut Modell 144 m² · Zeitfenster Probeneingang 24/7, Spitze 07:00–10:00 · ca. 1.100 Proben/Tag · Engpass: Probentransport per Botendienst (kein Rohrpostsystem angenommen) · Lage angenommen: Breitfuß Ost (Teil 2), da Ebene E Teil 1 laut Bestandsplan durch Ambulanzen, Seminarräume und Notfallbereich belegt ist"
      }
@@ -136978,56 +133955,134 @@
    "0": {
     "walls": [
      {
-      "id": "w_3ojwc9mo0",
+      "id": "w_radio_0",
       "a": [
-       -25,
-       -0.1
+       8.0,
+       21.9
       ],
       "b": [
-       8,
+       8.0,
        -0.1
       ],
       "t": 0.15,
-      "auto": true
+      "room": "r_radiologie_0_bie_H1_OB_0"
      },
      {
-      "id": "w_xp6ubfmo0",
+      "id": "w_radio_1",
       "a": [
-       8,
+       8.0,
        -0.1
       ],
       "b": [
-       8,
-       21.9
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_llsasomo0",
-      "a": [
-       8,
-       21.9
-      ],
-      "b": [
-       -25,
-       21.9
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_n2gf2cmo0",
-      "a": [
-       -25,
-       21.9
-      ],
-      "b": [
-       -25,
+       -9.83,
        -0.1
       ],
       "t": 0.15,
-      "auto": true
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_2",
+      "a": [
+       -9.83,
+       -0.1
+      ],
+      "b": [
+       -8.54,
+       1.29
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_3",
+      "a": [
+       -8.54,
+       1.29
+      ],
+      "b": [
+       -8.14,
+       2.64
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_4",
+      "a": [
+       -8.14,
+       2.64
+      ],
+      "b": [
+       -8.23,
+       6.94
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_5",
+      "a": [
+       -8.23,
+       6.94
+      ],
+      "b": [
+       -9.6,
+       9.7
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_6",
+      "a": [
+       -9.6,
+       9.7
+      ],
+      "b": [
+       -8.09,
+       13.93
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_7",
+      "a": [
+       -8.09,
+       13.93
+      ],
+      "b": [
+       -8.08,
+       19.38
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_8",
+      "a": [
+       -8.08,
+       19.38
+      ],
+      "b": [
+       -9.11,
+       21.9
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
+     },
+     {
+      "id": "w_radio_9",
+      "a": [
+       -9.11,
+       21.9
+      ],
+      "b": [
+       8.0,
+       21.9
+      ],
+      "t": 0.15,
+      "room": "r_radiologie_0_bie_H1_OB_0"
      }
     ],
     "doors": [],
@@ -137039,28 +134094,52 @@
       "name": "Radiologie (MRT, Röntgen)",
       "poly": [
        [
-        -25,
-        -0.1
-       ],
-       [
-        8,
-        -0.1
-       ],
-       [
-        8,
+        8.0,
         21.9
        ],
        [
-        -25,
+        8.0,
+        -0.1
+       ],
+       [
+        -9.83,
+        -0.1
+       ],
+       [
+        -8.54,
+        1.29
+       ],
+       [
+        -8.14,
+        2.64
+       ],
+       [
+        -8.23,
+        6.94
+       ],
+       [
+        -9.6,
+        9.7
+       ],
+       [
+        -8.09,
+        13.93
+       ],
+       [
+        -8.08,
+        19.38
+       ],
+       [
+        -9.11,
         21.9
        ]
       ],
-      "x": -8.5,
+      "x": -0.92,
       "z": 10.9,
-      "w": 33,
-      "d": 22,
+      "w": 17.83,
+      "d": 22.0,
       "role": "radiologie",
-      "hinweis": "Fläche laut Modell 1.300 m² · Zeitfenster Elektiv 07:30–16:00 · ca. 160 Untersuchungen/Tag · Engpass: Stationspatient:innen aus dem Bettenturm über die Bettenaufzüge und die Magistrale"
+      "hinweis": "Fläche laut Modell 1.300 m² · Zeitfenster Elektiv 07:30–16:00 · ca. 160 Untersuchungen/Tag · Engpass: Stationspatient:innen aus dem Bettenturm über die Bettenaufzüge und die Magistrale · Fläche auf Ebene E auf den Teil außerhalb des Bestandsplans Teil 1 beschnitten (dort gelten die Planräume)"
      }
     ]
    }
@@ -141011,343 +138090,6 @@
    }
   },
   "bie_H6_0": {
-   "1": {
-    "walls": [
-     {
-      "id": "w_ikdemaldz",
-      "a": [
-       -8.74,
-       -35.47
-      ],
-      "b": [
-       -1.19,
-       -35.47
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_v2hpitldz",
-      "a": [
-       -8.74,
-       -31.576622516556288
-      ],
-      "b": [
-       -1.19,
-       -31.576622516556288
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_jvjz1sldz",
-      "a": [
-       -8.74,
-       -27.97662251655629
-      ],
-      "b": [
-       -1.19,
-       -27.97662251655629
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_rpqtllldz",
-      "a": [
-       -8.74,
-       -23.473311258278144
-      ],
-      "b": [
-       -1.19,
-       -23.473311258278144
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_qe5tmrldz",
-      "a": [
-       -8.74,
-       -18.97
-      ],
-      "b": [
-       -1.19,
-       -18.97
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_otm8kfldz",
-      "a": [
-       1.209999999999999,
-       19.28
-      ],
-      "b": [
-       8.76,
-       19.28
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_oxjbowldz",
-      "a": [
-       1.209999999999999,
-       22.657483443708614
-      ],
-      "b": [
-       8.76,
-       22.657483443708614
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_oen6iwldz",
-      "a": [
-       1.209999999999999,
-       27.160794701986756
-      ],
-      "b": [
-       8.76,
-       27.160794701986756
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_op5yazldz",
-      "a": [
-       1.209999999999999,
-       31.6641059602649
-      ],
-      "b": [
-       8.76,
-       31.6641059602649
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_xvi26eldz",
-      "a": [
-       1.209999999999999,
-       35.2641059602649
-      ],
-      "b": [
-       8.76,
-       35.2641059602649
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_71ha6wldz",
-      "a": [
-       -8.74,
-       -35.47
-      ],
-      "b": [
-       -8.74,
-       -18.97
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_93efoeldz",
-      "a": [
-       -1.19,
-       -35.47
-      ],
-      "b": [
-       -1.19,
-       -18.97
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_6t0otaldz",
-      "a": [
-       1.209999999999999,
-       19.28
-      ],
-      "b": [
-       1.209999999999999,
-       35.2641059602649
-      ],
-      "t": 0.15,
-      "auto": true
-     },
-     {
-      "id": "w_ivzj19ldz",
-      "a": [
-       8.76,
-       19.28
-      ],
-      "b": [
-       8.76,
-       35.2641059602649
-      ],
-      "t": 0.15,
-      "auto": true
-     }
-    ],
-    "doors": [
-     {
-      "w": 1.35,
-      "lib": "erschl.tuer.bett",
-      "id": "d_0tfvcoldz",
-      "wall": "w_93efoeldz",
-      "t": 0.11798113586193074
-     },
-     {
-      "w": 1.35,
-      "lib": "erschl.tuer.bett",
-      "id": "d_3px8gpldz",
-      "wall": "w_93efoeldz",
-      "t": 0.34505318081477016
-     },
-     {
-      "w": 1.4,
-      "lib": "erschl.tuer.bett",
-      "id": "d_s1nig5ldz",
-      "wall": "w_93efoeldz",
-      "t": 0.5906080674292595
-     },
-     {
-      "w": 1.4,
-      "lib": "erschl.tuer.bett",
-      "id": "d_5987cvldz",
-      "wall": "w_93efoeldz",
-      "t": 0.8635360224764198
-     },
-     {
-      "w": 2.5774834437086094,
-      "lib": "offen",
-      "id": "d_dl58lrldz",
-      "wall": "w_6t0otaldz",
-      "t": 0.10565130924759708
-     },
-     {
-      "w": 1.4,
-      "lib": "erschl.tuer.bett",
-      "id": "d_0q36ncldz",
-      "wall": "w_6t0otaldz",
-      "t": 0.3521710308253232
-     },
-     {
-      "w": 1.4,
-      "lib": "erschl.tuer.bett",
-      "id": "d_n5y661ldz",
-      "wall": "w_6t0otaldz",
-      "t": 0.6339078554855817
-     },
-     {
-      "w": 1.35,
-      "lib": "erschl.tuer.bett",
-      "id": "d_5ug2rtldz",
-      "wall": "w_6t0otaldz",
-      "t": 0.8873881339078556
-     }
-    ],
-    "rooms": [
-     {
-      "id": "r_h21e8rldx",
-      "use": "flur",
-      "name": "Stationsflur",
-      "station": "st_kgmne6ldl",
-      "x": 0.009999999999999565,
-      "z": -0.09499999999999886,
-      "w": 2.4,
-      "d": 71.05
-     },
-     {
-      "id": "r_2gvojuldy",
-      "use": "patient1",
-      "name": "Intensivplatz 1-Bett",
-      "station": "st_kgmne6ldl",
-      "x": -4.965,
-      "z": -33.52331125827814,
-      "w": 7.55,
-      "d": 3.8933774834437074
-     },
-     {
-      "id": "r_9vyzm7ldy",
-      "use": "patient1",
-      "name": "Intensivplatz 1-Bett",
-      "station": "st_kgmne6ldl",
-      "x": -4.965,
-      "z": -29.77662251655629,
-      "w": 7.55,
-      "d": 3.6000000000000014
-     },
-     {
-      "id": "r_3sckkuldy",
-      "use": "patient2",
-      "name": "Intensivplatz 2-Bett",
-      "station": "st_kgmne6ldl",
-      "x": -4.965,
-      "z": -25.724966887417217,
-      "w": 7.55,
-      "d": 4.503311258278146
-     },
-     {
-      "id": "r_86oyjuldy",
-      "use": "patient2",
-      "name": "Intensivplatz 2-Bett",
-      "station": "st_kgmne6ldl",
-      "x": -4.965,
-      "z": -21.22165562913907,
-      "w": 7.55,
-      "d": 4.503311258278146
-     },
-     {
-      "id": "r_8lip0tldy",
-      "use": "stuetzpunkt",
-      "name": "Stützpunkt / Dienstplatz",
-      "station": "st_kgmne6ldl",
-      "x": 4.984999999999999,
-      "z": 20.968741721854308,
-      "w": 7.550000000000001,
-      "d": 3.377483443708609,
-      "role": "stuetzpunkt"
-     },
-     {
-      "id": "r_ylovagldy",
-      "use": "patient2",
-      "name": "Intensivplatz 2-Bett",
-      "station": "st_kgmne6ldl",
-      "x": 4.984999999999999,
-      "z": 24.909139072847683,
-      "w": 7.550000000000001,
-      "d": 4.503311258278146
-     },
-     {
-      "id": "r_nycyogldy",
-      "use": "patient2",
-      "name": "Intensivplatz 2-Bett",
-      "station": "st_kgmne6ldl",
-      "x": 4.984999999999999,
-      "z": 29.41245033112583,
-      "w": 7.550000000000001,
-      "d": 4.503311258278146
-     },
-     {
-      "id": "r_lnq6d6ldy",
-      "use": "patient1",
-      "name": "Intensivplatz 1-Bett",
-      "station": "st_kgmne6ldl",
-      "x": 4.984999999999999,
-      "z": 33.4641059602649,
-      "w": 7.550000000000001,
-      "d": 3.599999999999998
-     }
-    ]
-   },
    "0": {
     "walls": [
      {
@@ -141526,7 +138268,7 @@
       ],
       "b": [
        -8.4,
-       -35.0
+       -35
       ],
       "t": 0.15
      },
@@ -141534,7 +138276,7 @@
       "id": "w_H6_0_0_15",
       "a": [
        -8.4,
-       -35.0
+       -35
       ],
       "b": [
        0.17,
@@ -142176,7 +138918,7 @@
        ],
        [
         -8.4,
-        -35.0
+        -35
        ]
       ],
       "x": -3.94,
@@ -142405,7 +139147,7 @@
       ],
       "x": -6.48,
       "z": -4.94,
-      "w": 3.0,
+      "w": 3,
       "d": 2.4,
       "hinweis": "Ärztehaus Ebene 0, Ausführungsplanung (Plan „Ebene 0“) · Raumnutzungen im Plan nicht als Text auswertbar, Zonen zusammengefasst"
      },
@@ -142433,7 +139175,7 @@
       ],
       "x": -4.25,
       "z": -5.43,
-      "w": 2.0,
+      "w": 2,
       "d": 1.6,
       "hinweis": "Ärztehaus Ebene 0, Ausführungsplanung (Plan „Ebene 0“) · Raumnutzungen im Plan nicht als Text auswertbar, Zonen zusammengefasst"
      },
@@ -142461,7 +139203,7 @@
       ],
       "x": 5.08,
       "z": 19.85,
-      "w": 5.0,
+      "w": 5,
       "d": 5.19,
       "hinweis": "Ärztehaus Ebene 0, Ausführungsplanung (Plan „Ebene 0“) · Raumnutzungen im Plan nicht als Text auswertbar, Zonen zusammengefasst"
      },
@@ -142490,8 +139232,345 @@
       "x": 0.46,
       "z": 29.37,
       "w": 14.68,
-      "d": 12.0,
+      "d": 12,
       "hinweis": "Ärztehaus Ebene 0, Ausführungsplanung (Plan „Ebene 0“) · Raumnutzungen im Plan nicht als Text auswertbar, Zonen zusammengefasst"
+     }
+    ]
+   },
+   "1": {
+    "walls": [
+     {
+      "id": "w_ikdemaldz",
+      "a": [
+       -8.74,
+       -35.47
+      ],
+      "b": [
+       -1.19,
+       -35.47
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_v2hpitldz",
+      "a": [
+       -8.74,
+       -31.576622516556288
+      ],
+      "b": [
+       -1.19,
+       -31.576622516556288
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_jvjz1sldz",
+      "a": [
+       -8.74,
+       -27.97662251655629
+      ],
+      "b": [
+       -1.19,
+       -27.97662251655629
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_rpqtllldz",
+      "a": [
+       -8.74,
+       -23.473311258278144
+      ],
+      "b": [
+       -1.19,
+       -23.473311258278144
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_qe5tmrldz",
+      "a": [
+       -8.74,
+       -18.97
+      ],
+      "b": [
+       -1.19,
+       -18.97
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_otm8kfldz",
+      "a": [
+       1.209999999999999,
+       19.28
+      ],
+      "b": [
+       8.76,
+       19.28
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_oxjbowldz",
+      "a": [
+       1.209999999999999,
+       22.657483443708614
+      ],
+      "b": [
+       8.76,
+       22.657483443708614
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_oen6iwldz",
+      "a": [
+       1.209999999999999,
+       27.160794701986756
+      ],
+      "b": [
+       8.76,
+       27.160794701986756
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_op5yazldz",
+      "a": [
+       1.209999999999999,
+       31.6641059602649
+      ],
+      "b": [
+       8.76,
+       31.6641059602649
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_xvi26eldz",
+      "a": [
+       1.209999999999999,
+       35.2641059602649
+      ],
+      "b": [
+       8.76,
+       35.2641059602649
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_71ha6wldz",
+      "a": [
+       -8.74,
+       -35.47
+      ],
+      "b": [
+       -8.74,
+       -18.97
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_93efoeldz",
+      "a": [
+       -1.19,
+       -35.47
+      ],
+      "b": [
+       -1.19,
+       -18.97
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_6t0otaldz",
+      "a": [
+       1.209999999999999,
+       19.28
+      ],
+      "b": [
+       1.209999999999999,
+       35.2641059602649
+      ],
+      "t": 0.15,
+      "auto": true
+     },
+     {
+      "id": "w_ivzj19ldz",
+      "a": [
+       8.76,
+       19.28
+      ],
+      "b": [
+       8.76,
+       35.2641059602649
+      ],
+      "t": 0.15,
+      "auto": true
+     }
+    ],
+    "doors": [
+     {
+      "w": 1.35,
+      "lib": "erschl.tuer.bett",
+      "id": "d_0tfvcoldz",
+      "wall": "w_93efoeldz",
+      "t": 0.11798113586193074
+     },
+     {
+      "w": 1.35,
+      "lib": "erschl.tuer.bett",
+      "id": "d_3px8gpldz",
+      "wall": "w_93efoeldz",
+      "t": 0.34505318081477016
+     },
+     {
+      "w": 1.4,
+      "lib": "erschl.tuer.bett",
+      "id": "d_s1nig5ldz",
+      "wall": "w_93efoeldz",
+      "t": 0.5906080674292595
+     },
+     {
+      "w": 1.4,
+      "lib": "erschl.tuer.bett",
+      "id": "d_5987cvldz",
+      "wall": "w_93efoeldz",
+      "t": 0.8635360224764198
+     },
+     {
+      "w": 2.5774834437086094,
+      "lib": "offen",
+      "id": "d_dl58lrldz",
+      "wall": "w_6t0otaldz",
+      "t": 0.10565130924759708
+     },
+     {
+      "w": 1.4,
+      "lib": "erschl.tuer.bett",
+      "id": "d_0q36ncldz",
+      "wall": "w_6t0otaldz",
+      "t": 0.3521710308253232
+     },
+     {
+      "w": 1.4,
+      "lib": "erschl.tuer.bett",
+      "id": "d_n5y661ldz",
+      "wall": "w_6t0otaldz",
+      "t": 0.6339078554855817
+     },
+     {
+      "w": 1.35,
+      "lib": "erschl.tuer.bett",
+      "id": "d_5ug2rtldz",
+      "wall": "w_6t0otaldz",
+      "t": 0.8873881339078556
+     }
+    ],
+    "rooms": [
+     {
+      "id": "r_h21e8rldx",
+      "use": "flur",
+      "name": "Stationsflur",
+      "station": "st_kgmne6ldl",
+      "x": 0.009999999999999565,
+      "z": -0.09499999999999886,
+      "w": 2.4,
+      "d": 71.05
+     },
+     {
+      "id": "r_2gvojuldy",
+      "use": "patient1",
+      "name": "Intensivplatz 1-Bett",
+      "station": "st_kgmne6ldl",
+      "x": -4.965,
+      "z": -33.52331125827814,
+      "w": 7.55,
+      "d": 3.8933774834437074
+     },
+     {
+      "id": "r_9vyzm7ldy",
+      "use": "patient1",
+      "name": "Intensivplatz 1-Bett",
+      "station": "st_kgmne6ldl",
+      "x": -4.965,
+      "z": -29.77662251655629,
+      "w": 7.55,
+      "d": 3.6000000000000014
+     },
+     {
+      "id": "r_3sckkuldy",
+      "use": "patient2",
+      "name": "Intensivplatz 2-Bett",
+      "station": "st_kgmne6ldl",
+      "x": -4.965,
+      "z": -25.724966887417217,
+      "w": 7.55,
+      "d": 4.503311258278146
+     },
+     {
+      "id": "r_86oyjuldy",
+      "use": "patient2",
+      "name": "Intensivplatz 2-Bett",
+      "station": "st_kgmne6ldl",
+      "x": -4.965,
+      "z": -21.22165562913907,
+      "w": 7.55,
+      "d": 4.503311258278146
+     },
+     {
+      "id": "r_8lip0tldy",
+      "use": "stuetzpunkt",
+      "name": "Stützpunkt / Dienstplatz",
+      "station": "st_kgmne6ldl",
+      "x": 4.984999999999999,
+      "z": 20.968741721854308,
+      "w": 7.550000000000001,
+      "d": 3.377483443708609,
+      "role": "stuetzpunkt"
+     },
+     {
+      "id": "r_ylovagldy",
+      "use": "patient2",
+      "name": "Intensivplatz 2-Bett",
+      "station": "st_kgmne6ldl",
+      "x": 4.984999999999999,
+      "z": 24.909139072847683,
+      "w": 7.550000000000001,
+      "d": 4.503311258278146
+     },
+     {
+      "id": "r_nycyogldy",
+      "use": "patient2",
+      "name": "Intensivplatz 2-Bett",
+      "station": "st_kgmne6ldl",
+      "x": 4.984999999999999,
+      "z": 29.41245033112583,
+      "w": 7.550000000000001,
+      "d": 4.503311258278146
+     },
+     {
+      "id": "r_lnq6d6ldy",
+      "use": "patient1",
+      "name": "Intensivplatz 1-Bett",
+      "station": "st_kgmne6ldl",
+      "x": 4.984999999999999,
+      "z": 33.4641059602649,
+      "w": 7.550000000000001,
+      "d": 3.599999999999998
      }
     ]
    }
@@ -142542,7 +139621,7 @@
        -50.28
       ],
       "b": [
-       -42.0,
+       -42,
        -50.28
       ],
       "t": 0.12
@@ -142730,7 +139809,7 @@
      {
       "id": "w_H1_U2_0_19",
       "a": [
-       -69.0,
+       -69,
        -39.84
       ],
       "b": [
@@ -142911,11 +139990,11 @@
       "id": "w_H1_U2_0_34",
       "a": [
        -44.16,
-       -36.0
+       -36
       ],
       "b": [
        -43.56,
-       -36.0
+       -36
       ],
       "t": 0.12
      },
@@ -143222,7 +140301,7 @@
      {
       "id": "w_H1_U2_0_60",
       "a": [
-       -45.0,
+       -45,
        -32.28
       ],
       "b": [
@@ -143270,7 +140349,7 @@
      {
       "id": "w_H1_U2_0_64",
       "a": [
-       -51.0,
+       -51,
        -31.2
       ],
       "b": [
@@ -143354,7 +140433,7 @@
      {
       "id": "w_H1_U2_0_71",
       "a": [
-       -60.0,
+       -60,
        -30.18
       ],
       "b": [
@@ -143666,7 +140745,7 @@
      {
       "id": "w_H1_U2_0_97",
       "a": [
-       -45.0,
+       -45,
        -20.58
       ],
       "b": [
@@ -144006,7 +141085,7 @@
        -15.54
       ],
       "b": [
-       -18.0,
+       -18,
        -15.54
       ],
       "t": 0.24
@@ -144158,7 +141237,7 @@
      {
       "id": "w_H1_U2_0_138",
       "a": [
-       -51.0,
+       -51,
        -12.42
       ],
       "b": [
@@ -144198,7 +141277,7 @@
        -12.36
       ],
       "b": [
-       -51.0,
+       -51,
        -12.36
       ],
       "t": 0.6
@@ -144318,7 +141397,7 @@
        -12.3
       ],
       "b": [
-       -18.0,
+       -18,
        -12.3
       ],
       "t": 0.24
@@ -144342,7 +141421,7 @@
        -12.12
       ],
       "b": [
-       -18.0,
+       -18,
        -12.12
       ],
       "t": 0.12
@@ -144590,7 +141669,7 @@
      {
       "id": "w_H1_U2_0_174",
       "a": [
-       27.0,
+       27,
        -8.82
       ],
       "b": [
@@ -144686,7 +141765,7 @@
      {
       "id": "w_H1_U2_0_182",
       "a": [
-       -9.0,
+       -9,
        -8.64
       ],
       "b": [
@@ -144999,11 +142078,11 @@
       "id": "w_H1_U2_0_208",
       "a": [
        -35.88,
-       -3.0
+       -3
       ],
       "b": [
        -32.4,
-       -3.0
+       -3
       ],
       "t": 0.36
      },
@@ -145074,7 +142153,7 @@
        -2.64
       ],
       "b": [
-       -18.0,
+       -18,
        -2.64
       ],
       "t": 0.12
@@ -145122,7 +142201,7 @@
        -1.08
       ],
       "b": [
-       -15.0,
+       -15,
        -1.08
       ],
       "t": 0.36
@@ -145242,7 +142321,7 @@
        2.64
       ],
       "b": [
-       72.0,
+       72,
        2.64
       ],
       "t": 0.6
@@ -145338,7 +142417,7 @@
        5.04
       ],
       "b": [
-       27.0,
+       27,
        5.04
       ],
       "t": 0.6
@@ -145770,7 +142849,7 @@
        11.88
       ],
       "b": [
-       60.0,
+       60,
        11.88
       ],
       "t": 0.36
@@ -146415,11 +143494,11 @@
       "id": "w_H1_U2_0_326",
       "a": [
        -23.04,
-       33.0
+       33
       ],
       "b": [
        -22.44,
-       33.0
+       33
       ],
       "t": 0.36
      },
@@ -146642,7 +143721,7 @@
      {
       "id": "w_H1_U2_0_345",
       "a": [
-       -27.0,
+       -27,
        49.38
       ],
       "b": [
@@ -151790,11 +148869,11 @@
      {
       "id": "w_H1_U2_0_774",
       "a": [
-       -15.0,
+       -15,
        3.66
       ],
       "b": [
-       -15.0,
+       -15,
        4.74
       ],
       "t": 0.24
@@ -154568,11 +151647,11 @@
         -40.02
        ],
        [
-        -69.0,
+        -69,
         -40.02
        ],
        [
-        -69.0,
+        -69,
         -43.26
        ],
        [
@@ -154672,7 +151751,7 @@
         -42.78
        ]
       ],
-      "x": -60.0,
+      "x": -60,
       "z": -41.52,
       "w": 1.68,
       "d": 2.52,
@@ -155752,11 +152831,11 @@
         -30.3
        ],
        [
-        -60.0,
+        -60,
         -30.3
        ],
        [
-        -60.0,
+        -60,
         -30.06
        ],
        [
@@ -156168,7 +153247,7 @@
         -20.7
        ],
        [
-        -45.0,
+        -45,
         -20.82
        ],
        [
@@ -156328,7 +153407,7 @@
         -14.82
        ],
        [
-        66.0,
+        66,
         -16.02
        ],
        [
@@ -156356,7 +153435,7 @@
         -13.02
        ],
        [
-        66.0,
+        66,
         -13.74
        ],
        [
@@ -156464,7 +153543,7 @@
         -5.1
        ],
        [
-        63.0,
+        63,
         -5.1
        ],
        [
@@ -156640,11 +153719,11 @@
         11.94
        ],
        [
-        60.0,
+        60,
         11.94
        ],
        [
-        60.0,
+        60,
         11.7
        ],
        [
@@ -156884,7 +153963,7 @@
         10.98
        ],
        [
-        51.0,
+        51,
         9.78
        ],
        [
@@ -157025,7 +154104,7 @@
        ]
       ],
       "x": 53.76,
-      "z": 9.0,
+      "z": 9,
       "w": 25.92,
       "d": 50.04,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 289 m²"
@@ -157036,11 +154115,11 @@
       "name": "Lufttechnik (HGMI-U2.401)",
       "poly": [
        [
-        -18.0,
+        -18,
         -11.46
        ],
        [
-        -18.0,
+        -18,
         -12.42
        ],
        [
@@ -157068,11 +154147,11 @@
         -15.42
        ],
        [
-        -18.0,
+        -18,
         -15.42
        ],
        [
-        -18.0,
+        -18,
         -15.66
        ],
        [
@@ -157164,11 +154243,11 @@
         -8.82
        ],
        [
-        -9.0,
+        -9,
         -8.82
        ],
        [
-        -9.0,
+        -9,
         -8.22
        ],
        [
@@ -157296,7 +154375,7 @@
         -12.3
        ],
        [
-        -72.0,
+        -72,
         -11.7
        ],
        [
@@ -157384,7 +154463,7 @@
         -9.18
        ],
        [
-        -63.0,
+        -63,
         -8.7
        ],
        [
@@ -157420,7 +154499,7 @@
         -9.66
        ],
        [
-        -72.0,
+        -72,
         -9.42
        ],
        [
@@ -157508,7 +154587,7 @@
         -10.38
        ],
        [
-        -42.0,
+        -42,
         -10.5
        ],
        [
@@ -157520,7 +154599,7 @@
         -11.46
        ],
        [
-        -42.0,
+        -42,
         -11.58
        ],
        [
@@ -157876,7 +154955,7 @@
         34.38
        ],
        [
-        -27.0,
+        -27,
         34.38
        ],
        [
@@ -157884,7 +154963,7 @@
         35.46
        ],
        [
-        -27.0,
+        -27,
         36.54
        ],
        [
@@ -157912,11 +154991,11 @@
         49.14
        ],
        [
-        -27.0,
+        -27,
         49.14
        ],
        [
-        -27.0,
+        -27,
         49.62
        ],
        [
@@ -158560,7 +155639,7 @@
         -6.9
        ],
        [
-        -9.0,
+        -9,
         -6.9
        ],
        [
@@ -158692,7 +155771,7 @@
         -1.02
        ],
        [
-        -15.0,
+        -15,
         -1.26
        ],
        [
@@ -158776,11 +155855,11 @@
         -9.18
        ],
        [
-        -51.0,
+        -51,
         -9.66
        ],
        [
-        -51.0,
+        -51,
         -11.82
        ],
        [
@@ -159180,7 +156259,7 @@
         -6.42
        ],
        [
-        6.0,
+        6,
         -6.42
        ],
        [
@@ -159448,7 +156527,7 @@
         -0.78
        ],
        [
-        69.0,
+        69,
         -0.42
        ],
        [
@@ -159456,7 +156535,7 @@
         -0.3
        ],
        [
-        69.0,
+        69,
         1.5
        ],
        [
@@ -159704,7 +156783,7 @@
         -5.46
        ],
        [
-        63.0,
+        63,
         -5.1
        ],
        [
@@ -159840,7 +156919,7 @@
         -2.58
        ],
        [
-        -18.0,
+        -18,
         -2.58
        ],
        [
@@ -160348,11 +157427,11 @@
         -1.74
        ],
        [
-        72.0,
+        72,
         -1.74
        ],
        [
-        72.0,
+        72,
         2.34
        ],
        [
@@ -160441,7 +157520,7 @@
        ]
       ],
       "x": -33.12,
-      "z": 0.0,
+      "z": 0,
       "w": 1.44,
       "d": 1.56,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 2 m²"
@@ -160744,7 +157823,7 @@
         8.58
        ],
        [
-        -39.0,
+        -39,
         7.86
        ],
        [
@@ -161390,7 +158469,7 @@
       ],
       "x": 56.1,
       "z": 13.26,
-      "w": 3.0,
+      "w": 3,
       "d": 2.88,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 7 m²"
      },
@@ -161510,7 +158589,7 @@
       ],
       "x": -30.78,
       "z": 17.22,
-      "w": 3.0,
+      "w": 3,
       "d": 3.36,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 10 m²"
      },
@@ -161759,7 +158838,7 @@
       "x": 35.34,
       "z": 20.64,
       "w": 2.76,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 8 m²"
      },
      {
@@ -161815,7 +158894,7 @@
       "x": 38.82,
       "z": 20.64,
       "w": 3.96,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Grundriss HGMI U2 (Bestand, ART 15.05.2019) · Fläche 11 m²"
      },
      {
@@ -162756,7 +159835,7 @@
         -34.03
        ]
       ],
-      "x": -45.0,
+      "x": -45,
       "z": -34.08,
       "w": 12.44,
       "d": 1.4,
@@ -162955,7 +160034,7 @@
       "x": -62.64,
       "z": -1.2,
       "w": 1.4,
-      "d": 20.0,
+      "d": 20,
       "hinweis": "Verbindung im Wegenetz (Durchgang/Tür), keine eigene Fläche"
      }
     ]
@@ -162995,7 +160074,7 @@
        -18.15
       ],
       "b": [
-       -24.0,
+       -24,
        -18.15
       ],
       "t": 1.2
@@ -163003,7 +160082,7 @@
      {
       "id": "w_H6_BK_0_3",
       "a": [
-       -24.0,
+       -24,
        -18.1
       ],
       "b": [
@@ -163040,11 +160119,11 @@
       "id": "w_H6_BK_0_6",
       "a": [
        2.5,
-       -18.0
+       -18
       ],
       "b": [
        8.9,
-       -18.0
+       -18
       ],
       "t": 1.1
      },
@@ -163142,7 +160221,7 @@
        -7.5,
        -14.55
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_15",
@@ -163160,11 +160239,11 @@
       "id": "w_H6_BK_0_16",
       "a": [
        -6.3,
-       -14.0
+       -14
       ],
       "b": [
        -2.4,
-       -14.0
+       -14
       ],
       "t": 0.3
      },
@@ -163247,7 +160326,7 @@
        -9.4
       ],
       "b": [
-       -23.0,
+       -23,
        -9.4
       ],
       "t": 0.3
@@ -163267,7 +160346,7 @@
      {
       "id": "w_H6_BK_0_25",
       "a": [
-       -23.0,
+       -23,
        -9.35
       ],
       "b": [
@@ -163322,17 +160401,17 @@
        -14.3,
        -7.05
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_30",
       "a": [
        -14.3,
-       -7.0
+       -7
       ],
       "b": [
        -12.3,
-       -7.0
+       -7
       ],
       "t": 0.9
      },
@@ -163451,7 +160530,7 @@
        -1.1
       ],
       "b": [
-       -7.0,
+       -7,
        -1.1
       ],
       "t": 0.3
@@ -163471,7 +160550,7 @@
      {
       "id": "w_H6_BK_0_42",
       "a": [
-       -7.0,
+       -7,
        -1.05
       ],
       "b": [
@@ -163547,7 +160626,7 @@
        2.9
       ],
       "b": [
-       29.0,
+       29,
        2.9
       ],
       "t": 1.1
@@ -163583,7 +160662,7 @@
        3.2
       ],
       "b": [
-       1.0,
+       1,
        3.2
       ],
       "t": 0.3
@@ -163651,14 +160730,14 @@
      {
       "id": "w_H6_BK_0_57",
       "a": [
-       -35.0,
+       -35,
        6.25
       ],
       "b": [
        -29.6,
        6.25
       ],
-      "t": 2.0
+      "t": 2
      },
      {
       "id": "w_H6_BK_0_58",
@@ -163670,7 +160749,7 @@
        -27.5,
        6.35
       ],
-      "t": 2.0
+      "t": 2
      },
      {
       "id": "w_H6_BK_0_59",
@@ -163679,7 +160758,7 @@
        6.45
       ],
       "b": [
-       -19.0,
+       -19,
        6.45
       ],
       "t": 0.2
@@ -163703,10 +160782,10 @@
        7.05
       ],
       "b": [
-       1.0,
+       1,
        7.05
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_62",
@@ -163735,7 +160814,7 @@
      {
       "id": "w_H6_BK_0_64",
       "a": [
-       2.0,
+       2,
        7.5
       ],
       "b": [
@@ -163891,7 +160970,7 @@
      {
       "id": "w_H6_BK_0_77",
       "a": [
-       -23.0,
+       -23,
        7.55
       ],
       "b": [
@@ -163931,7 +161010,7 @@
        7.6
       ],
       "b": [
-       -10.0,
+       -10,
        7.6
       ],
       "t": 0.3
@@ -163943,7 +161022,7 @@
        7.6
       ],
       "b": [
-       -8.0,
+       -8,
        7.6
       ],
       "t": 0.3
@@ -163975,7 +161054,7 @@
      {
       "id": "w_H6_BK_0_84",
       "a": [
-       -27.0,
+       -27,
        7.6
       ],
       "b": [
@@ -163991,7 +161070,7 @@
        7.6
       ],
       "b": [
-       1.0,
+       1,
        7.6
       ],
       "t": 0.1
@@ -164015,7 +161094,7 @@
        7.9
       ],
       "b": [
-       -4.0,
+       -4,
        7.9
       ],
       "t": 0.1
@@ -164036,18 +161115,18 @@
       "id": "w_H6_BK_0_89",
       "a": [
        -2.1,
-       8.0
+       8
       ],
       "b": [
        -1.7,
-       8.0
+       8
       ],
       "t": 0.1
      },
      {
       "id": "w_H6_BK_0_90",
       "a": [
-       -2.0,
+       -2,
        8.1
       ],
       "b": [
@@ -164071,7 +161150,7 @@
      {
       "id": "w_H6_BK_0_92",
       "a": [
-       35.0,
+       35,
        8.6
       ],
       "b": [
@@ -164155,11 +161234,11 @@
      {
       "id": "w_H6_BK_0_99",
       "a": [
-       0.0,
+       0,
        10.5
       ],
       "b": [
-       1.0,
+       1,
        10.5
       ],
       "t": 0.7
@@ -164167,7 +161246,7 @@
      {
       "id": "w_H6_BK_0_100",
       "a": [
-       2.0,
+       2,
        10.5
       ],
       "b": [
@@ -164191,11 +161270,11 @@
      {
       "id": "w_H6_BK_0_102",
       "a": [
-       11.0,
+       11,
        10.55
       ],
       "b": [
-       15.0,
+       15,
        10.55
       ],
       "t": 0.8
@@ -164287,7 +161366,7 @@
      {
       "id": "w_H6_BK_0_110",
       "a": [
-       -29.0,
+       -29,
        11.5
       ],
       "b": [
@@ -164327,7 +161406,7 @@
        14.3
       ],
       "b": [
-       18.0,
+       18,
        14.3
       ],
       "t": 0.1
@@ -164339,7 +161418,7 @@
        14.4
       ],
       "b": [
-       18.0,
+       18,
        14.4
       ],
       "t": 0.1
@@ -164395,7 +161474,7 @@
      {
       "id": "w_H6_BK_0_119",
       "a": [
-       -23.0,
+       -23,
        15.3
       ],
       "b": [
@@ -164435,19 +161514,19 @@
        16.95
       ],
       "b": [
-       -29.0,
+       -29,
        16.95
       ],
-      "t": 2.0
+      "t": 2
      },
      {
       "id": "w_H6_BK_0_123",
       "a": [
-       -23.0,
+       -23,
        17.05
       ],
       "b": [
-       -21.0,
+       -21,
        17.05
       ],
       "t": 1.4
@@ -164531,7 +161610,7 @@
        17.3
       ],
       "b": [
-       18.0,
+       18,
        17.3
       ],
       "t": 1.1
@@ -164558,7 +161637,7 @@
        34.8,
        17.35
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_133",
@@ -164623,14 +161702,14 @@
      {
       "id": "w_H6_BK_0_138",
       "a": [
-       2.0,
+       2,
        -18.65
       ],
       "b": [
-       2.0,
+       2,
        -17.45
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_139",
@@ -164702,7 +161781,7 @@
        -16.7,
        -15.75
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_145",
@@ -164714,7 +161793,7 @@
        -16.7,
        -12.15
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_146",
@@ -164726,7 +161805,7 @@
        -16.7,
        3.25
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_147",
@@ -164738,7 +161817,7 @@
        -1.9,
        -15.55
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_148",
@@ -164750,7 +161829,7 @@
        -1.9,
        -12.15
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_149",
@@ -164762,7 +161841,7 @@
        -1.9,
        -7.45
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_150",
@@ -164774,7 +161853,7 @@
        -1.9,
        -4.05
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_151",
@@ -164786,7 +161865,7 @@
        -1.9,
        0.35
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_152",
@@ -164882,7 +161961,7 @@
        8.4,
        1.95
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_160",
@@ -165314,7 +162393,7 @@
        7.3,
        3.35
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_196",
@@ -165722,7 +162801,7 @@
        -35.5,
        17.95
       ],
-      "t": 1.0
+      "t": 1
      },
      {
       "id": "w_H6_BK_0_230",
@@ -166027,11 +163106,11 @@
      {
       "id": "w_H6_BK_0_255",
       "a": [
-       28.0,
+       28,
        10.15
       ],
       "b": [
-       28.0,
+       28,
        10.95
       ],
       "t": 0.2
@@ -166135,11 +163214,11 @@
      {
       "id": "w_H6_BK_0_264",
       "a": [
-       -17.0,
+       -17,
        10.85
       ],
       "b": [
-       -17.0,
+       -17,
        17.75
       ],
       "t": 0.2
@@ -166387,11 +163466,11 @@
      {
       "id": "w_H6_BK_0_285",
       "a": [
-       29.0,
+       29,
        13.45
       ],
       "b": [
-       29.0,
+       29,
        17.85
       ],
       "t": 0.4
@@ -167049,11 +164128,11 @@
         6.55
        ],
        [
-        -19.0,
+        -19,
         6.55
        ],
        [
-        -19.0,
+        -19,
         6.35
        ],
        [
@@ -167073,11 +164152,11 @@
         1.55
        ],
        [
-        -20.0,
+        -20,
         1.75
        ],
        [
-        -20.0,
+        -20,
         1.45
        ],
        [
@@ -167178,7 +164257,7 @@
        ]
       ],
       "x": -14.65,
-      "z": -16.0,
+      "z": -16,
       "w": 4.5,
       "d": 3.1,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 12 m²"
@@ -167197,7 +164276,7 @@
         -15.55
        ],
        [
-        -7.0,
+        -7,
         -15.65
        ],
        [
@@ -167277,7 +164356,7 @@
         1.55
        ],
        [
-        -2.0,
+        -2,
         1.45
        ],
        [
@@ -167341,7 +164420,7 @@
         -14.75
        ],
        [
-        -2.0,
+        -2,
         -14.85
        ],
        [
@@ -167357,11 +164436,11 @@
         -17.45
        ],
        [
-        1.0,
+        1,
         -17.45
        ],
        [
-        1.0,
+        1,
         -17.15
        ],
        [
@@ -167377,11 +164456,11 @@
         -15.95
        ],
        [
-        1.0,
+        1,
         -15.85
        ],
        [
-        1.0,
+        1,
         -14.95
        ],
        [
@@ -167393,7 +164472,7 @@
         -15.15
        ],
        [
-        2.0,
+        2,
         -15.15
        ],
        [
@@ -167413,11 +164492,11 @@
         -14.15
        ],
        [
-        1.0,
+        1,
         -14.15
        ],
        [
-        1.0,
+        1,
         -12.65
        ],
        [
@@ -167429,11 +164508,11 @@
         -11.55
        ],
        [
-        1.0,
+        1,
         -11.55
        ],
        [
-        1.0,
+        1,
         -7.95
        ],
        [
@@ -167445,11 +164524,11 @@
         -6.85
        ],
        [
-        1.0,
+        1,
         -6.85
        ],
        [
-        1.0,
+        1,
         -4.45
        ],
        [
@@ -167461,11 +164540,11 @@
         -3.35
        ],
        [
-        1.0,
+        1,
         -3.35
        ],
        [
-        1.0,
+        1,
         -0.65
        ],
        [
@@ -167501,11 +164580,11 @@
         1.75
        ],
        [
-        1.0,
+        1,
         1.65
        ],
        [
-        1.0,
+        1,
         3.05
        ],
        [
@@ -167521,11 +164600,11 @@
         3.35
        ],
        [
-        1.0,
+        1,
         3.85
        ],
        [
-        1.0,
+        1,
         6.55
        ],
        [
@@ -167569,7 +164648,7 @@
         -14.65
        ],
        [
-        2.0,
+        2,
         -15.15
        ],
        [
@@ -167741,7 +164820,7 @@
         -11.75
        ],
        [
-        -12.0,
+        -12,
         -14.05
        ],
        [
@@ -167944,7 +165023,7 @@
       "x": 4.55,
       "z": -7.55,
       "w": 6.5,
-      "d": 4.0,
+      "d": 4,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 25 m²"
      },
      {
@@ -168032,7 +165111,7 @@
       "x": -5.2,
       "z": -7.25,
       "w": 6.6,
-      "d": 4.0,
+      "d": 4,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 24 m²"
      },
      {
@@ -168233,7 +165312,7 @@
         0.95
        ],
        [
-        -20.0,
+        -20,
         1.75
        ],
        [
@@ -168269,7 +165348,7 @@
         0.35
        ],
        [
-        -2.0,
+        -2,
         1.45
        ],
        [
@@ -168373,11 +165452,11 @@
         7.35
        ],
        [
-        2.0,
+        2,
         7.25
        ],
        [
-        2.0,
+        2,
         3.35
        ],
        [
@@ -168441,11 +165520,11 @@
         3.45
        ],
        [
-        29.0,
+        29,
         3.45
        ],
        [
-        29.0,
+        29,
         2.55
        ],
        [
@@ -168471,7 +165550,7 @@
       ],
       "x": 29.6,
       "z": 3.8,
-      "w": 4.0,
+      "w": 4,
       "d": 2.5,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 7 m²"
      },
@@ -168577,11 +165656,11 @@
       "name": "Bunkerraum B.26",
       "poly": [
        [
-        -23.0,
+        -23,
         3.55
        ],
        [
-        -23.0,
+        -23,
         3.25
        ],
        [
@@ -168609,7 +165688,7 @@
         7.45
        ],
        [
-        -23.0,
+        -23,
         7.45
        ]
       ],
@@ -168665,11 +165744,11 @@
       "name": "Bunkerraum B.28",
       "poly": [
        [
-        -10.0,
+        -10,
         4.45
        ],
        [
-        -10.0,
+        -10,
         7.45
        ],
        [
@@ -168697,7 +165776,7 @@
         3.35
        ],
        [
-        -10.0,
+        -10,
         3.35
        ]
       ],
@@ -168717,7 +165796,7 @@
         5.55
        ],
        [
-        9.0,
+        9,
         3.45
        ],
        [
@@ -168749,7 +165828,7 @@
         7.35
        ]
       ],
-      "x": 10.0,
+      "x": 10,
       "z": 5.55,
       "w": 2.2,
       "d": 4.2,
@@ -168913,11 +165992,11 @@
         8.15
        ],
        [
-        2.0,
+        2,
         8.05
        ],
        [
-        2.0,
+        2,
         7.75
        ],
        [
@@ -169041,7 +166120,7 @@
         7.45
        ],
        [
-        25.0,
+        25,
         7.35
        ],
        [
@@ -169065,7 +166144,7 @@
         7.45
        ],
        [
-        27.0,
+        27,
         7.35
        ],
        [
@@ -169149,19 +166228,19 @@
         10.55
        ],
        [
-        15.0,
+        15,
         10.55
        ],
        [
-        15.0,
+        15,
         10.15
        ],
        [
-        11.0,
+        11,
         10.15
        ],
        [
-        11.0,
+        11,
         10.55
        ],
        [
@@ -169189,11 +166268,11 @@
         10.15
        ],
        [
-        2.0,
+        2,
         10.15
        ],
        [
-        2.0,
+        2,
         9.85
        ],
        [
@@ -169201,7 +166280,7 @@
         9.75
        ]
       ],
-      "x": 15.0,
+      "x": 15,
       "z": 7.05,
       "w": 27.4,
       "d": 7.2,
@@ -169213,11 +166292,11 @@
       "name": "Bunkerraum B.33",
       "poly": [
        [
-        25.0,
+        25,
         4.25
        ],
        [
-        25.0,
+        25,
         3.45
        ],
        [
@@ -169265,7 +166344,7 @@
         7.65
        ],
        [
-        25.0,
+        25,
         7.35
        ]
       ],
@@ -169281,11 +166360,11 @@
       "name": "Schleuse / Nebenraum B.34",
       "poly": [
        [
-        27.0,
+        27,
         6.55
        ],
        [
-        27.0,
+        27,
         5.65
        ],
        [
@@ -169317,7 +166396,7 @@
         7.35
        ],
        [
-        27.0,
+        27,
         7.35
        ]
       ],
@@ -169361,7 +166440,7 @@
         8.55
        ],
        [
-        35.0,
+        35,
         8.45
        ],
        [
@@ -169424,7 +166503,7 @@
       "x": 31.85,
       "z": 8.15,
       "w": 6.5,
-      "d": 5.0,
+      "d": 5,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 26 m²"
      },
      {
@@ -169433,11 +166512,11 @@
       "name": "Bunkergang",
       "poly": [
        [
-        -5.0,
+        -5,
         8.55
        ],
        [
-        -5.0,
+        -5,
         9.75
        ],
        [
@@ -169497,7 +166576,7 @@
         10.45
        ],
        [
-        -19.0,
+        -19,
         10.05
        ],
        [
@@ -169509,7 +166588,7 @@
         8.65
        ],
        [
-        -20.0,
+        -20,
         8.25
        ],
        [
@@ -169581,15 +166660,15 @@
       "name": "Bunkerraum B.36",
       "poly": [
        [
-        -35.0,
+        -35,
         8.75
        ],
        [
-        -35.0,
+        -35,
         7.25
        ],
        [
-        -29.0,
+        -29,
         7.35
        ],
        [
@@ -169613,11 +166692,11 @@
         12.75
        ],
        [
-        -29.0,
+        -29,
         15.95
        ],
        [
-        -35.0,
+        -35,
         15.85
        ]
       ],
@@ -169653,7 +166732,7 @@
         7.65
        ],
        [
-        -20.0,
+        -20,
         8.25
        ],
        [
@@ -169697,19 +166776,19 @@
         9.75
        ],
        [
-        1.0,
+        1,
         9.75
        ],
        [
-        1.0,
+        1,
         10.15
        ],
        [
-        0.0,
+        0,
         10.15
        ],
        [
-        0.0,
+        0,
         10.55
        ],
        [
@@ -169725,7 +166804,7 @@
         10.15
        ],
        [
-        -5.0,
+        -5,
         8.15
        ],
        [
@@ -169737,7 +166816,7 @@
         7.95
        ],
        [
-        -2.0,
+        -2,
         8.15
        ],
        [
@@ -169749,11 +166828,11 @@
         7.55
        ],
        [
-        1.0,
+        1,
         7.65
        ],
        [
-        1.0,
+        1,
         8.15
        ],
        [
@@ -169764,7 +166843,7 @@
       "x": -1.85,
       "z": 9.05,
       "w": 6.3,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 15 m²"
      },
      {
@@ -169777,15 +166856,15 @@
         12.75
        ],
        [
-        -23.0,
+        -23,
         10.85
        ],
        [
-        -19.0,
+        -19,
         10.85
        ],
        [
-        -19.0,
+        -19,
         10.35
        ],
        [
@@ -169817,11 +166896,11 @@
         15.25
        ],
        [
-        -21.0,
+        -21,
         15.35
        ],
        [
-        -21.0,
+        -21,
         15.65
        ],
        [
@@ -169845,15 +166924,15 @@
         16.15
        ],
        [
-        -21.0,
+        -21,
         16.35
        ],
        [
-        -23.0,
+        -23,
         16.35
        ],
        [
-        -23.0,
+        -23,
         15.35
        ],
        [
@@ -169861,13 +166940,13 @@
         15.25
        ],
        [
-        -23.0,
+        -23,
         15.25
        ]
       ],
       "x": -20.1,
       "z": 13.5,
-      "w": 6.0,
+      "w": 6,
       "d": 6.3,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 34 m²"
      },
@@ -169905,7 +166984,7 @@
         10.85
        ],
        [
-        -14.0,
+        -14,
         10.85
        ],
        [
@@ -169977,7 +167056,7 @@
         13.65
        ],
        [
-        -11.0,
+        -11,
         13.85
        ],
        [
@@ -170025,15 +167104,15 @@
         10.55
        ],
        [
-        0.0,
+        0,
         10.55
        ],
        [
-        0.0,
+        0,
         10.85
        ],
        [
-        1.0,
+        1,
         10.95
        ],
        [
@@ -170113,11 +167192,11 @@
         10.55
        ],
        [
-        11.0,
+        11,
         10.55
        ],
        [
-        11.0,
+        11,
         10.95
        ],
        [
@@ -170153,11 +167232,11 @@
         10.95
        ],
        [
-        15.0,
+        15,
         10.95
        ],
        [
-        15.0,
+        15,
         10.55
        ],
        [
@@ -170177,11 +167256,11 @@
         11.85
        ],
        [
-        18.0,
+        18,
         11.85
        ],
        [
-        18.0,
+        18,
         14.25
        ],
        [
@@ -170568,7 +167647,7 @@
       "x": -4.6,
       "z": 12.85,
       "w": 3.8,
-      "d": 4.0,
+      "d": 4,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 13 m²"
      },
      {
@@ -170577,11 +167656,11 @@
       "name": "Bunkerraum B.50",
       "poly": [
        [
-        2.0,
+        2,
         13.75
        ],
        [
-        2.0,
+        2,
         10.85
        ],
        [
@@ -170593,11 +167672,11 @@
         11.85
        ],
        [
-        5.0,
+        5,
         11.85
        ],
        [
-        5.0,
+        5,
         15.25
        ],
        [
@@ -170609,7 +167688,7 @@
         16.75
        ],
        [
-        2.0,
+        2,
         16.65
        ]
       ],
@@ -170765,7 +167844,7 @@
         14.35
        ],
        [
-        -11.0,
+        -11,
         13.75
        ],
        [
@@ -170800,7 +167879,7 @@
       "x": -8.75,
       "z": 15.25,
       "w": 5.9,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 15 m²"
      },
      {
@@ -170817,11 +167896,11 @@
         14.35
        ],
        [
-        18.0,
+        18,
         14.45
        ],
        [
-        18.0,
+        18,
         14.95
        ],
        [
@@ -170829,7 +167908,7 @@
         15.15
        ],
        [
-        18.0,
+        18,
         16.75
        ],
        [
@@ -170923,8 +168002,8 @@
       ],
       "x": -0.6,
       "z": 17.15,
-      "w": 3.0,
-      "d": 4.0,
+      "w": 3,
+      "d": 4,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 9 m²"
      },
      {
@@ -170933,11 +168012,11 @@
       "name": "Bunkerraum B.56",
       "poly": [
        [
-        -5.0,
+        -5,
         18.35
        ],
        [
-        -5.0,
+        -5,
         17.75
        ],
        [
@@ -170969,13 +168048,13 @@
         18.85
        ],
        [
-        -5.0,
+        -5,
         19.15
        ]
       ],
       "x": -4.2,
       "z": 17.3,
-      "w": 3.0,
+      "w": 3,
       "d": 3.7,
       "hinweis": "Luftschutzbunker, vermessungstechnisches Gebäudeaufmaß 20.–23.10.2014 (Massong) · Nutzung nicht beschriftet · Fläche 9 m²"
      },
@@ -170986,11 +168065,11 @@
       "poly": [
        [
         -1.9,
-        7.0
+        7
        ],
        [
         -1.8,
-        7.0
+        7
        ],
        [
         -1.8,
@@ -171032,7 +168111,7 @@
       "x": -5.6,
       "z": 7.85,
       "w": 1.4,
-      "d": 3.0,
+      "d": 3,
       "hinweis": "Verbindung im Wegenetz (Durchgang/Tür), keine eigene Fläche"
      }
     ]
@@ -172002,7 +169081,7 @@
        -41.21
       ],
       "b": [
-       -2.0,
+       -2,
        -41.21
       ],
       "t": 0.12
@@ -172010,11 +169089,11 @@
      {
       "id": "w_H7_KG_76",
       "a": [
-       -2.0,
+       -2,
        -41.21
       ],
       "b": [
-       -2.0,
+       -2,
        -43.6
       ],
       "t": 0.12
@@ -172022,7 +169101,7 @@
      {
       "id": "w_H7_KG_77",
       "a": [
-       -2.0,
+       -2,
        -43.6
       ],
       "b": [
@@ -172050,7 +169129,7 @@
        -37.83
       ],
       "b": [
-       -2.0,
+       -2,
        -37.83
       ],
       "t": 0.12
@@ -172058,11 +169137,11 @@
      {
       "id": "w_H7_KG_80",
       "a": [
-       -2.0,
+       -2,
        -37.83
       ],
       "b": [
-       -2.0,
+       -2,
        -41.12
       ],
       "t": 0.12
@@ -172070,7 +169149,7 @@
      {
       "id": "w_H7_KG_81",
       "a": [
-       -2.0,
+       -2,
        -41.12
       ],
       "b": [
@@ -172098,7 +169177,7 @@
        -36.38
       ],
       "b": [
-       -2.0,
+       -2,
        -36.38
       ],
       "t": 0.12
@@ -172106,11 +169185,11 @@
      {
       "id": "w_H7_KG_84",
       "a": [
-       -2.0,
+       -2,
        -36.38
       ],
       "b": [
-       -2.0,
+       -2,
        -37.76
       ],
       "t": 0.12
@@ -172118,7 +169197,7 @@
      {
       "id": "w_H7_KG_85",
       "a": [
-       -2.0,
+       -2,
        -37.76
       ],
       "b": [
@@ -172146,7 +169225,7 @@
        -34.34
       ],
       "b": [
-       -2.0,
+       -2,
        -34.34
       ],
       "t": 0.12
@@ -172154,11 +169233,11 @@
      {
       "id": "w_H7_KG_88",
       "a": [
-       -2.0,
+       -2,
        -34.34
       ],
       "b": [
-       -2.0,
+       -2,
        -36.28
       ],
       "t": 0.12
@@ -172166,7 +169245,7 @@
      {
       "id": "w_H7_KG_89",
       "a": [
-       -2.0,
+       -2,
        -36.28
       ],
       "b": [
@@ -172226,11 +169305,11 @@
      {
       "id": "w_H7_KG_94",
       "a": [
-       0.0,
+       0,
        -34.25
       ],
       "b": [
-       0.0,
+       0,
        -33.09
       ],
       "t": 0.12
@@ -172238,7 +169317,7 @@
      {
       "id": "w_H7_KG_95",
       "a": [
-       0.0,
+       0,
        -33.09
       ],
       "b": [
@@ -172266,7 +169345,7 @@
        -34.25
       ],
       "b": [
-       0.0,
+       0,
        -34.25
       ],
       "t": 0.12
@@ -172290,7 +169369,7 @@
        -30.99
       ],
       "b": [
-       -2.0,
+       -2,
        -30.99
       ],
       "t": 0.12
@@ -172298,11 +169377,11 @@
      {
       "id": "w_H7_KG_100",
       "a": [
-       -2.0,
+       -2,
        -30.99
       ],
       "b": [
-       -2.0,
+       -2,
        -32.99
       ],
       "t": 0.12
@@ -172310,7 +169389,7 @@
      {
       "id": "w_H7_KG_101",
       "a": [
-       -2.0,
+       -2,
        -32.99
       ],
       "b": [
@@ -172338,7 +169417,7 @@
        -27.41
       ],
       "b": [
-       -2.0,
+       -2,
        -27.41
       ],
       "t": 0.12
@@ -172346,11 +169425,11 @@
      {
       "id": "w_H7_KG_104",
       "a": [
-       -2.0,
+       -2,
        -27.41
       ],
       "b": [
-       -2.0,
+       -2,
        -30.92
       ],
       "t": 0.12
@@ -172358,7 +169437,7 @@
      {
       "id": "w_H7_KG_105",
       "a": [
-       -2.0,
+       -2,
        -30.92
       ],
       "b": [
@@ -172682,11 +169761,11 @@
      {
       "id": "w_H7_KG_132",
       "a": [
-       11.0,
+       11,
        -13.09
       ],
       "b": [
-       11.0,
+       11,
        -10.31
       ],
       "t": 0.12
@@ -172694,7 +169773,7 @@
      {
       "id": "w_H7_KG_133",
       "a": [
-       11.0,
+       11,
        -10.31
       ],
       "b": [
@@ -172722,7 +169801,7 @@
        -13.09
       ],
       "b": [
-       11.0,
+       11,
        -13.09
       ],
       "t": 0.12
@@ -172970,11 +170049,11 @@
      {
       "id": "w_H7_KG_156",
       "a": [
-       13.0,
+       13,
        17.27
       ],
       "b": [
-       13.0,
+       13,
        23.98
       ],
       "t": 0.12
@@ -172982,7 +170061,7 @@
      {
       "id": "w_H7_KG_157",
       "a": [
-       13.0,
+       13,
        23.98
       ],
       "b": [
@@ -173010,7 +170089,7 @@
        17.27
       ],
       "b": [
-       13.0,
+       13,
        17.27
       ],
       "t": 0.12
@@ -174185,7 +171264,7 @@
       "x": -8.95,
       "z": -26.94,
       "w": 1.78,
-      "d": 15.0,
+      "d": 15,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
      },
      {
@@ -174646,11 +171725,11 @@
         -41.21
        ],
        [
-        -2.0,
+        -2,
         -41.21
        ],
        [
-        -2.0,
+        -2,
         -43.6
        ]
       ],
@@ -174675,11 +171754,11 @@
         -37.83
        ],
        [
-        -2.0,
+        -2,
         -37.83
        ],
        [
-        -2.0,
+        -2,
         -41.12
        ]
       ],
@@ -174704,11 +171783,11 @@
         -36.38
        ],
        [
-        -2.0,
+        -2,
         -36.38
        ],
        [
-        -2.0,
+        -2,
         -37.76
        ]
       ],
@@ -174733,11 +171812,11 @@
         -34.34
        ],
        [
-        -2.0,
+        -2,
         -34.34
        ],
        [
-        -2.0,
+        -2,
         -36.28
        ]
       ],
@@ -174783,11 +171862,11 @@
       "name": "U4.1 WC",
       "poly": [
        [
-        0.0,
+        0,
         -34.25
        ],
        [
-        0.0,
+        0,
         -33.09
        ],
        [
@@ -174820,18 +171899,18 @@
         -30.99
        ],
        [
-        -2.0,
+        -2,
         -30.99
        ],
        [
-        -2.0,
+        -2,
         -32.99
        ]
       ],
       "x": -0.16,
       "z": -31.99,
       "w": 3.68,
-      "d": 2.0,
+      "d": 2,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
      },
      {
@@ -174849,11 +171928,11 @@
         -27.41
        ],
        [
-        -2.0,
+        -2,
         -27.41
        ],
        [
-        -2.0,
+        -2,
         -30.92
        ]
       ],
@@ -175089,11 +172168,11 @@
       "name": "KG.22 Lager",
       "poly": [
        [
-        11.0,
+        11,
         -13.09
        ],
        [
-        11.0,
+        11,
         -10.31
        ],
        [
@@ -175263,11 +172342,11 @@
       "name": "KG.34 Waschküche",
       "poly": [
        [
-        13.0,
+        13,
         17.27
        ],
        [
-        13.0,
+        13,
         23.98
        ],
        [
@@ -175427,7 +172506,7 @@
       "x": 11.29,
       "z": 39.51,
       "w": 3.55,
-      "d": 5.0,
+      "d": 5,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
      },
      {
@@ -175456,7 +172535,7 @@
       "x": 7.55,
       "z": 39.51,
       "w": 3.94,
-      "d": 5.0,
+      "d": 5,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
      },
      {
@@ -175891,7 +172970,7 @@
       "x": 0.74,
       "z": 35.69,
       "w": 3.35,
-      "d": 6.0,
+      "d": 6,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert"
      },
      {
