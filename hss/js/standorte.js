@@ -412,7 +412,8 @@ HSS.transformSite = (prj, dx, dz, deg) => {
   const a = U.rad(deg || 0);
   const T = p => { const q = G.rot(p, a); return [r1(q[0] + dx), r1(q[1] + dz)]; };
   for (const b of prj.buildings) for (const pt of b.parts) { if (pt.stackOn) { const q = T([pt.x, pt.z]); pt.x = q[0]; pt.z = q[1]; pt.rot = ((pt.rot || 0) + (deg || 0)) % 360; continue; } const q = T([pt.x, pt.z]); pt.x = q[0]; pt.z = q[1]; pt.rot = ((pt.rot || 0) + (deg || 0)) % 360; }
-  for (const p of prj.paths) p.points = p.points.map(T);
+  for (const p of prj.paths) p.points = p.points.map(q => T(q).concat(q.slice(2)));
+  for (const n of prj.terrain.niveaus || []) n.poly = n.poly.map(T);
   for (const ar of prj.areas) { if (ar.poly) ar.poly = ar.poly.map(T); if (ar.x !== undefined) { const q = T([ar.x, ar.z]); ar.x = q[0]; ar.z = q[1]; ar.rot = ((ar.rot || 0) + (deg || 0)) % 360; } }
   for (const o of prj.objects) if (!o.host) { const q = T([o.x, o.z]); o.x = q[0]; o.z = q[1]; o.rot = ((o.rot || 0) + (deg || 0)) % 360; }
   for (const p of prj.places) if (p.x !== undefined) { const q = T([p.x, p.z]); p.x = q[0]; p.z = q[1]; }

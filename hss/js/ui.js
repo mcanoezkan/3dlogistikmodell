@@ -55,7 +55,7 @@ UI.describe = (h) => {
   if (h.kind === 'part') { const P = HSS.findPart(h.id); if (!P) return ''; return `<b>${U.esc(P.building.name)}</b> · ${U.esc(P.part.name)}<div class="s">${P.part.floors} Geschosse${P.part.basements && !P.part.stackOn ? ' + ' + P.part.basements + ' UG' : ''} · ${U.fmt(HSS.partArea(P.part))} m² BGF je Ebene · ${HSS.FASSADEN[P.part.facade.type]?.name || ''}</div>`; }
   if (h.kind === 'object') { const o = U.byId(prj.objects, h.id); const d = o && HSS.library.get(o.lib); if (!d) return ''; const s = o.size || d.size; return `<b>${U.esc(o.name || d.name)}</b><div class="s">${U.esc(d.category)} · ${U.fmt(s.w, 2)} × ${U.fmt(s.d, 2)} × ${U.fmt(s.h, 2)} m</div>`; }
   if (h.kind === 'path') { const p = U.byId(prj.paths, h.id); if (!p) return ''; const st = HSS.pathStats(p); return `<b>${U.esc(p.name)}</b><div class="s">${HSS.WEGARTEN[p.kind]?.name} · ${U.fmt(st.len)} m · max. ${U.fmt(st.maxSlope * 100, 1)} % Neigung</div>`; }
-  if (h.kind === 'area') { const a = U.byId(prj.areas, h.id); if (!a) return ''; return `<b>${HSS.FLAECHEN[a.kind]}</b><div class="s">${U.fmt(a.w)} × ${U.fmt(a.d)} m${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' Stellplätze' : ''}</div>`; }
+  if (h.kind === 'area') { const a = U.byId(prj.areas, h.id); if (!a) return ''; return `<b>${U.esc(a.name || HSS.FLAECHEN[a.kind])}</b><div class="s">${a.poly && a.poly.length >= 3 ? `Vieleck, ${a.poly.length} Ecken · ${U.fmt(HSS.areaM2(a))} m²` : `${U.fmt(a.w)} × ${U.fmt(a.d)} m`}${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' Stellplätze' : ''}</div>`; }
   if (h.kind === 'bridge') { const b = U.byId(prj.bridges, h.id); return `<b>${U.esc(b?.name || 'Brücke')}</b><div class="s">${b?.type === 'glas' ? 'Glasbrücke' : 'Gebäudebrücke'}</div>`; }
   if (h.kind === 'room') { const r = HSS.interior(h.part, h.floor)?.rooms.find(x => x.id === h.id); if (!r) return ''; return `<b>${U.esc(r.name || HSS.ROOMTYPES[r.use]?.name)}</b><div class="s">${U.fmt(r.w * r.d, 1)} m²${r.role ? ' · Rolle: ' + U.esc(HSS.ROLLEN[r.role] || r.role) : ''}</div>`; }
   if (h.kind === 'wall') return '<b>Wand</b><div class="s">Klicken zum Bearbeiten</div>';
@@ -83,7 +83,7 @@ UI.duplicateSelection = () => {
   HSS.change('Duplizieren', prj => {
     if (s.kind === 'object') { const o = U.clone(U.byId(prj.objects, s.id)); o.id = U.uid('obj'); o.x += 1; o.z += 1; prj.objects.push(o); ns = { kind: 'object', id: o.id }; }
     if (s.kind === 'part') { const P = HSS.findPart(s.id, prj); const n = U.clone(P.part); n.id = U.uid('part'); n.name += ' (Kopie)'; n.x += P.part.w + 8; n.stackOn = null; P.building.parts.push(n); ns = { kind: 'part', id: n.id }; }
-    if (s.kind === 'area') { const a = U.clone(U.byId(prj.areas, s.id)); a.id = U.uid('area'); a.x += a.w + 4; prj.areas.push(a); ns = { kind: 'area', id: a.id }; }
+    if (s.kind === 'area') { const a = U.clone(U.byId(prj.areas, s.id)); a.id = U.uid('area'); const dx = a.w + 4; a.x += dx; if (a.poly) a.poly = a.poly.map(q => [Math.round((q[0] + dx) * 10) / 10, q[1]]); prj.areas.push(a); ns = { kind: 'area', id: a.id }; }
     if (s.kind === 'path') { const p = U.clone(U.byId(prj.paths, s.id)); p.id = U.uid('path'); p.points = p.points.map(q => [q[0] + 6, q[1] + 6]); prj.paths.push(p); ns = { kind: 'path', id: p.id }; }
   });
   if (ns) HSS.s3.select(ns);
@@ -138,7 +138,7 @@ INSP.part = s => {
   <div class="note">${U.esc(HSS.FASSADEN[fc.type]?.info || '')}</div>
   <h3>Dach</h3>
   <div class="fg pf">${UI.fSel('Dachart', 'roof.type', pt.roof.type, opt('flach', 'Flachdach', pt.roof.type) + opt('gruen', 'Gründach', pt.roof.type))}${UI.fNum('Attika', 'roof.parapet', pt.roof.parapet, { unit: 'm', min: 0, step: 0.1 })}</div>
-  <div class="pf">${UI.fChk('Technikaufbau', 'roof.plant', pt.roof.plant)}${UI.fChk('Hubschrauberlandeplatz', 'roof.helipad', pt.roof.helipad)}</div>
+  <div class="pf">${UI.fChk('Technikaufbau', 'roof.plant', pt.roof.plant)}${UI.fChk('Hubschrauberlandeplatz', 'roof.helipad', pt.roof.helipad)}${UI.fChk('An Nachbarbauteile auf gleicher Höhe anschließen (Geschossversatz)', 'anschlussNachHoehe', !!pt.anschlussNachHoehe)}</div>
   <h3>Anordnung &amp; Verbindung</h3>
   <div class="fg pf">${UI.fSel('Aufgesetzt auf', 'stackOn', pt.stackOn || '', partOpts(pt.stackOn || '', pt.id), { full: true, t: 'ns' })}</div>
   <div class="box"><div class="note" style="margin-bottom:4px">Andocken: Bauteil bündig neben ein anderes setzen</div>
@@ -269,14 +269,15 @@ INSP.path = s => {
   ${UI.fSel('Höhenführung', 'elev', p.elev, opt('gelaende', 'folgt dem Gelände', p.elev) + opt('absolut', 'feste Höhe (Tunnel/Brücke)', p.elev))}${under ? UI.fNum('Höhe (absolut)', 'y', p.y, { unit: 'm', step: 0.1 }) : '<span></span>'}
   ${UI.fNum('Anhebung Anfang', 'ramp.0', p.ramp?.[0] ?? 0, { unit: 'm', step: 0.1 })}${UI.fNum('Anhebung Ende', 'ramp.1', p.ramp?.[1] ?? 0, { unit: 'm', step: 0.1 })}
   ${['strasse', 'zufahrt'].includes(p.kind) ? UI.fNum('Fahrzeuge (Animation)', 'traffic', p.traffic, { min: 0, step: 1 }) + UI.fNum('Tempo', 'speedKmh', p.speedKmh, { unit: 'km/h', step: 5 }) : ''}</div>
-  ${UI.fChk('Gebogen führen (Kurven glätten)', 'smooth', p.smooth)}
-  <div class="note">Gefälle/Schräge: Anhebung am Anfang/Ende erzeugt eine gleichmäßige Rampe zusätzlich zum Gelände. Punkte im 3D-Modell anklicken und mit dem Gizmo verschieben.</div>
-  <h3>Punkte (${p.points.length})</h3><div class="list" style="max-height:160px">${p.points.map((q, i) => `<div class="li ${s.point === i ? 'on' : ''}" data-pi="${i}"><span class="t">P${i + 1}: ${U.fmt(q[0], 1)} / ${U.fmt(q[1], 1)}</span><button class="mini" data-pdel="${i}">×</button></div>`).join('')}</div>
+  ${UI.fChk('Gebogen führen (Kurven glätten)', 'smooth', p.smooth)}${UI.fChk('Rampenwangen / Brüstung, wo der Weg vom Gelände abweicht', 'wangen', !!p.wangen)}${p.kind === 'grenze' ? UI.fChk('Zaun zeichnen (aus: offene Grenze, z. B. Vorfahrt)', 'zaun', p.zaun !== false) : ''}
+  <div class="note">Gefälle/Schräge: Anhebung am Anfang/Ende erzeugt eine gleichmäßige Rampe zusätzlich zum Gelände. Für Steigungen an bestimmter Stelle (z. B. erst eben, dann Rampe) in der Punktliste je Punkt eine <b>Höhe</b> eintragen: Der Weg verläuft zwischen den Punkten linear, Anfang/Ende wird dann nicht verwendet. Punkte im 3D-Modell anklicken und mit dem Gizmo verschieben.</div>
+  <h3>Punkte (${p.points.length})</h3><div class="list" style="max-height:160px">${p.points.map((q, i) => `<div class="li ${s.point === i ? 'on' : ''}" data-pi="${i}"><span class="t">P${i + 1}: ${U.fmt(q[0], 1)} / ${U.fmt(q[1], 1)}</span><input type="number" step="0.1" data-ph="${i}" value="${typeof q[2] === 'number' ? q[2] : ''}" placeholder="Höhe" title="Höhe an diesem Punkt in m (über Gelände bzw. über der festen Höhe); leer = automatisch" style="width:72px"><button class="mini" data-pdel="${i}">×</button></div>`).join('')}</div>
   <div class="actions"><button id="pCont">Punkte anfügen</button><button id="pRev">Richtung umkehren</button><button id="iDup">Duplizieren</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
 INSP_BIND.path = (el, s) => {
   UI.bind(el, prj => U.byId(prj.paths, s.id), 'Weg', 'outdoor', (p, path, v) => { if (path.startsWith('ramp.')) { const r = Array.isArray(p.ramp) ? p.ramp : [p.ramp?.[0] || 0, p.ramp?.[1] || 0]; r[+path.split('.')[1]] = v || 0; p.ramp = r; } if (path === 'kind') { const k = HSS.WEGARTEN[v]; p.width = k.w; if (v === 'tunnel' || v === 'awt') { p.elev = 'absolut'; p.y = p.y ?? -4; } } });
-  $$('[data-pi]', el).forEach(li => li.onclick = e => { if (e.target.dataset.pdel !== undefined) return; HSS.s3.select({ kind: 'path', id: s.id, point: +li.dataset.pi }); });
+  $$('[data-pi]', el).forEach(li => li.onclick = e => { if (e.target.dataset.pdel !== undefined || e.target.dataset.ph !== undefined) return; HSS.s3.select({ kind: 'path', id: s.id, point: +li.dataset.pi }); });
+  $$('[data-ph]', el).forEach(inp => inp.onchange = () => HSS.change('Wegpunkt: Höhe', prj => { const q = U.byId(prj.paths, s.id).points[+inp.dataset.ph], v = inp.value.trim().replace(',', '.'); if (v === '' || isNaN(+v)) q.length = 2; else q[2] = +v; }, { scope: 'outdoor' }));
   $$('[data-pdel]', el).forEach(b => b.onclick = () => HSS.change('Wegpunkt löschen', prj => { const p = U.byId(prj.paths, s.id); if (p.points.length > 2) p.points.splice(+b.dataset.pdel, 1); }, { scope: 'outdoor' }));
   $('#pRev', el).onclick = () => HSS.change('Weg umkehren', prj => U.byId(prj.paths, s.id).points.reverse(), { scope: 'outdoor' });
   $('#pCont', el).onclick = () => HSS.tools.drawPath(null, s.id);
@@ -286,15 +287,27 @@ INSP_BIND.path = (el, s) => {
 INSP.area = s => {
   const a = U.byId(HSS.project().areas, s.id); if (!a) return '';
   const L = a.kind === 'parkplatz' ? HSS.parkingLayout(a) : null;
-  return head('Fläche', HSS.FLAECHEN[a.kind]) + `<div class="note">${U.fmt(a.w * a.d)} m²${L ? ` · <b>${L.stalls.length} Stellplätze</b> (${L.cols} je Reihe, ${L.modules} Doppelreihen à ${U.fmt(2 * L.sd + L.aisle, 1)} m)` : ''}</div>
-  <div class="fg">${UI.fSel('Art', 'kind', a.kind, UI.opts(HSS.FLAECHEN, a.kind))}${UI.fNum('Drehung', 'rot', a.rot, { unit: '°', step: 1 })}${UI.fNum('Länge', 'w', a.w, { unit: 'm', step: 0.5 })}${UI.fNum('Tiefe', 'd', a.d, { unit: 'm', step: 0.5 })}
-  ${UI.fNum('Lage x', 'x', a.x, { step: 0.5 })}${UI.fNum('Lage z', 'z', a.z, { step: 0.5 })}
+  const vl = a.poly && a.poly.length >= 3;
+  return head('Fläche', a.name || HSS.FLAECHEN[a.kind]) + `<div class="note">${U.fmt(HSS.areaM2(a))} m²${vl ? ` · Vieleck mit ${a.poly.length} Ecken (Umfang ${U.fmt(G.perimeter(a.poly))} m)` : ''}${L ? ` · <b>${L.stalls.length} Stellplätze</b> (${L.cols} je Reihe, ${L.modules} Doppelreihen à ${U.fmt(2 * L.sd + L.aisle, 1)} m)` : ''}</div>
+  <div class="fg">${UI.fTxt('Bezeichnung', 'name', a.name || '')}${UI.fSel('Art', 'kind', a.kind, UI.opts(HSS.FLAECHEN, a.kind))}${vl ? '' : UI.fNum('Drehung', 'rot', a.rot, { unit: '°', step: 1 }) + UI.fNum('Länge', 'w', a.w, { unit: 'm', step: 0.5 }) + UI.fNum('Tiefe', 'd', a.d, { unit: 'm', step: 0.5 }) + UI.fNum('Lage x', 'x', a.x, { step: 0.5 }) + UI.fNum('Lage z', 'z', a.z, { step: 0.5 })}
   ${a.kind === 'parkplatz' ? UI.fNum('Stellplatzbreite', 'stallW', a.stallW ?? 2.5, { unit: 'm', step: 0.05 }) + UI.fNum('Stellplatztiefe', 'stallD', a.stallD ?? 5, { unit: 'm', step: 0.1 }) + UI.fNum('Fahrgasse', 'aisle', a.aisle ?? 6, { unit: 'm', step: 0.5 }) + UI.fNum('Belegung', 'occupancy', a.occupancy ?? 0.7, { min: 0, max: 1, step: 0.05 }) : ''}
-  ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}</div>
+  ${a.kind === 'gruen' ? UI.fNum('Bepflanzungsdichte', 'density', a.density ?? 1, { min: 0, max: 3, step: 0.1 }) + UI.fCol('Farbe', 'color', a.color || '#9cc07f') : ''}${a.kind === 'platz' ? UI.fCol('Belag', 'color', a.color || '#d4cfc4') : ''}${['sperrflaeche', 'wiese'].includes(a.kind) ? UI.fCol('Farbe', 'color', a.color || HSS.FLAECHEN_FARBE[a.kind]) : ''}${a.kind === 'sperrflaeche' ? UI.fNum('Streifenwinkel', 'markWinkel', a.markWinkel ?? 45, { unit: '°', step: 5 }) : ''}
+  ${UI.fNum('Erhöhung (Insel, Mauer)', 'hoehe', a.hoehe ?? 0, { unit: 'm', step: 0.05, min: 0 })}</div>
   ${a.kind === 'parkplatz' ? '<div class="note">Richtwerte: Stellplatz 2,50 × 5,00 m, Fahrgasse 6,00 m bei Senkrechtaufstellung (GaVO).</div>' : ''}
-  <div class="actions"><button id="iDup">Duplizieren</button><button class="danger" id="iDel">Löschen</button></div>`;
+  ${vl ? '<div class="note">Form ändern: Eckpunkte im 3D-Bild ziehen, ＋ an einer Kante fügt eine Ecke ein, Alt+Klick auf eine Ecke löscht sie. Ganze Fläche verschieben: in die Fläche klicken und ziehen.</div>' : ''}
+  <div class="actions">${vl ? '<button id="iRect" title="Vieleck durch das umschließende Rechteck ersetzen">▭ Als Rechteck</button>' : '<button id="iPoly" class="primary" title="Ecken einzeln verschiebbar machen, z. B. für schräge Grünflächen">⬠ In Vieleck umwandeln</button><button id="iPolyNeu" title="Diese Fläche neu als Vieleck zeichnen (Eckpunkte anklicken)">⬠ Neu als Vieleck zeichnen</button>'}<button id="iDup">Duplizieren</button><button id="iNiv" title="Gelände unter dieser Fläche absenken oder anheben (mit Böschung am Rand)">Als Geländeniveau …</button><button class="danger" id="iDel">Löschen</button></div>`;
 };
-INSP_BIND.area = (el, s) => { UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläche', 'outdoor'); $('#iDup', el).onclick = UI.duplicateSelection; $('#iDel', el).onclick = UI.deleteSelection; };
+INSP_BIND.area = (el, s) => {
+  UI.bind(el, prj => U.byId(prj.areas, s.id), 'Fläche', 'outdoor'); $('#iDup', el).onclick = UI.duplicateSelection; $('#iDel', el).onclick = UI.deleteSelection;
+  const iPoly = $('#iPoly', el); if (iPoly) iPoly.onclick = () => HSS.change('In Vieleck umwandeln', prj => { const a = U.byId(prj.areas, s.id); a.poly = HSS.areaPoly(a).map(q => [Math.round(q[0] * 10) / 10, Math.round(q[1] * 10) / 10]); HSS.areaFit(a); }, { scope: 'outdoor' });
+  const iRect = $('#iRect', el); if (iRect) iRect.onclick = () => HSS.change('Als Rechteck', prj => { const a = U.byId(prj.areas, s.id); HSS.areaFit(a); delete a.poly; }, { scope: 'outdoor' });
+  const iNeu = $('#iPolyNeu', el); if (iNeu) iNeu.onclick = () => { const a = U.byId(HSS.project().areas, s.id); if (!a) return; HSS.s3.select(null); HSS.tools.drawArea(a.kind, { poly: true }); };
+  $('#iNiv', el).onclick = async () => {
+    const v = await UI.prompt('Gelände unter der Fläche auf Höhe (m, z. B. −3,8 = ein Geschoss tiefer)', '-3.8'); if (v === null) return;
+    const h = +String(v).replace(',', '.'); if (!h) return;
+    HSS.change('Geländeniveau', prj => { const a = U.byId(prj.areas, s.id); prj.terrain.niveaus = prj.terrain.niveaus || []; prj.terrain.niveaus.push({ id: U.uid('niv'), name: a.name || HSS.FLAECHEN[a.kind], poly: (a.poly || HSS.areaPoly(a)).map(q => q.slice()), h, rand: 8 }); }, { scope: 'all' });
+  };
+};
 
 INSP.room = s => {
   const I = HSS.interior(s.part, s.floor); const r = I?.rooms.find(x => x.id === s.id); if (!r) return '';

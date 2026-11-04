@@ -19,13 +19,13 @@ HSS.WEGARTEN = {
   bach: { name: 'Bach / Fluss', color: '#6fa3c4', w: 4, info: 'Fließgewässer' },
   bahn: { name: 'Bahngleis', color: '#7d7468', w: 3.2, info: 'Eisenbahn / Straßenbahn' }
 };
-HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / Pflaster', wasser: 'Wasserfläche', acker: 'Acker / Feld', wiese: 'Wiese', wald: 'Wald', wohngebiet: 'Wohngebiet', gewerbe: 'Gewerbegebiet', park: 'Park / Garten', friedhof: 'Friedhof', sport: 'Sportplatz' };
-const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f' };
+HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / Pflaster', sperrflaeche: 'Sperrfläche (Markierung)', wasser: 'Wasserfläche', acker: 'Acker / Feld', wiese: 'Wiese', wald: 'Wald', wohngebiet: 'Wohngebiet', gewerbe: 'Gewerbegebiet', park: 'Park / Garten', friedhof: 'Friedhof', sport: 'Sportplatz' };
+const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f', sperrflaeche: '#4f5358' };
 HSS.FLAECHEN_FARBE = FL_COL;
 
 /* ---------- Gelände ---------- */
 HSS.buildTerrain = (view = {}) => {
-  const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = Math.min(160, Math.max(40, Math.round(S / 4)));
+  const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = t.niveaus?.length ? Math.min(420, Math.max(40, Math.round(S / 2.4))) : Math.min(160, Math.max(40, Math.round(S / 4)));
   const g = new THREE.PlaneGeometry(S, S, n, n); g.rotateX(-Math.PI / 2);
   const pos = g.attributes.position, col = []; let minH = 0;
   const c1 = new THREE.Color(t.color || '#c9d6b8'), c2 = new THREE.Color('#b9c8a6'), c3 = new THREE.Color('#d8d2bf');
@@ -53,6 +53,14 @@ HSS.buildTerrain = (view = {}) => {
 // Linienpunkte mit Höhe (gelände-folgend oder absolut, optional Rampe/Gefälle)
 HSS.pathLine = (p, prj = HSS.project()) => {
   if (!p.points || p.points.length < 2) return [];
+  // Höhenpunkte: dritter Wert eines Wegpunkts = Anhebung dort (m); dazwischen linear, ersetzt „Anhebung Anfang/Ende“
+  let hp = null;
+  if (p.points.some(q => typeof q[2] === 'number')) {
+    const P = p.points, cs = [0]; for (let i = 1; i < P.length; i++) cs.push(cs[i - 1] + G.dist(P[i - 1], P[i]));
+    const tot = cs[cs.length - 1] || 1, K = P.map((q, i) => (typeof q[2] === 'number' ? [cs[i] / tot, q[2]] : null)).filter(Boolean);
+    hp = t => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) return U.lerp(K[i - 1][1], K[i][1], (t - K[i - 1][0]) / ((K[i][0] - K[i - 1][0]) || 1)); return K[K.length - 1][1]; };
+  }
+  const anh = t => (hp ? hp(t) : p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
   let pts = p.smooth ? G.smooth(p.points, 10) : p.points.map(q => q.slice());
   // Verdichten für Geländeanpassung
   const dense = [];
@@ -66,8 +74,8 @@ HSS.pathLine = (p, prj = HSS.project()) => {
     if (i) s += G.dist(dense[i - 1], q);
     const t = total ? s / total : 0;
     let y;
-    if (p.elev === 'absolut') y = (p.y ?? -4) + (p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
-    else y = HSS.terrainH(q[0], q[1], prj) + 0.06 + (p.ramp ? U.lerp(p.ramp[0] || 0, p.ramp[1] || 0, t) : 0);
+    if (p.elev === 'absolut') y = (p.y ?? -4) + anh(t);
+    else y = HSS.terrainH(q[0], q[1], prj) + 0.06 + anh(t);
     return [q[0], y, q[1], s];
   });
 };
@@ -96,6 +104,24 @@ HSS.buildPath = (p, view = {}) => {
   const pof = -2 - (p.kind === 'strasse' ? 1 : 0), base = main.material;
   main.material = HSS.library.shared('weg|' + base.userData.key + '|' + pof, () => { const m = base.clone(); m.polygonOffset = true; m.polygonOffsetFactor = pof; return m; });
   grp.add(main);
+  // Rampenwangen: Stützwand bzw. Brüstung, wo der Weg vom Gelände abweicht (Rampe, Einschnitt)
+  if (p.wangen && !under) {
+    const br = p.wangenHoehe ?? 1.0, pos = [];
+    for (const sg of [-1, 1]) {
+      const E = L.map((q, i) => {
+        const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)], dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1;
+        const x = q[0] - dz / l * (w / 2 + 0.15) * sg, z = q[2] + dx / l * (w / 2 + 0.15) * sg, g = HSS.terrainH(x, z), y = q[1] - 0.06, diff = y - g;
+        if (Math.abs(diff) < 0.25) return { x, z, b: y, t: y };
+        return diff > 0 ? { x, z, b: g - 0.1, t: y + br } : { x, z, b: y - 0.1, t: g + 0.15 };
+      });
+      for (let i = 1; i < E.length; i++) { const A = E[i - 1], B = E[i]; if (A.t - A.b < 0.05 && B.t - B.b < 0.05) continue; pos.push(A.x, A.b, A.z, B.x, B.b, B.z, B.x, B.t, B.z, A.x, A.b, A.z, B.x, B.t, B.z, A.x, A.t, A.z); }
+    }
+    if (pos.length) {
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+      const m = new THREE.Mesh(g, HSS.library.shared('wange', () => new THREE.MeshStandardMaterial({ color: '#c5c2bb', roughness: 0.9, side: THREE.DoubleSide })));
+      m.castShadow = true; m.receiveShadow = true; m.userData = { kind: 'path', id: p.id }; grp.add(m);
+    }
+  }
   if (p.kind === 'strasse') {
     // Mittellinie gestrichelt, Bordsteine
     const dash = [];
@@ -104,7 +130,8 @@ HSS.buildPath = (p, view = {}) => {
     if (seg.length) grp.add(new THREE.Mesh(mergeGeometries(seg), LM('#f4f4f4', 'lack')));
     for (const s of [-1, 1]) { const off = L.map((q, i) => { const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)]; const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1; return [q[0] - dz / l * (w / 2 + 0.12) * s, q[1] + 0.07, q[2] + dx / l * (w / 2 + 0.12) * s, q[3]]; }); const c = new THREE.Mesh(ribbon(off, 0.25, 0), LM('#c8c8c4')); c.castShadow = false; grp.add(c); }
   }
-  if (p.kind === 'grenze') { main.visible = false; const posts = []; const tot = L[L.length - 1][3]; for (let s = 0; s <= tot; s += 3) { const q = HSS.sampleLine(L, s); const g = new THREE.BoxGeometry(0.08, 1.6, 0.08); g.translate(q.x, q.y + 0.8, q.z); posts.push(g); } const rail = ribbon(L.map(q => [q[0], q[1] + 1.55, q[2], q[3]]), 0.06, 0); const fence = new THREE.Mesh(HSS.ringWallGeo(L.map(q => [q[0], q[2]]), 0, 1, false), HSS.library.shared('zaun', () => new THREE.MeshStandardMaterial({ color: '#7d8a96', transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }))); { const pa = fence.geometry.attributes.position; for (let i = 0; i < pa.count; i++) { let best = 0, bd = Infinity; for (let k = 0; k < L.length; k++) { const d = (L[k][0] - pa.getX(i)) ** 2 + (L[k][2] - pa.getZ(i)) ** 2; if (d < bd) { bd = d; best = k; } } pa.setY(i, L[best][1] + pa.getY(i) * 1.5); } } fence.userData = { kind: 'path', id: p.id }; grp.add(fence); if (posts.length) { const m = new THREE.Mesh(mergeGeometries(posts), LM('#59636e', 'metall')); m.userData = { kind: 'path', id: p.id }; grp.add(m); } grp.add(new THREE.Mesh(rail, LM('#59636e', 'metall'))); return grp; }
+  if (p.kind === 'grenze') main.visible = false; // zaun: false = Grenze ohne Zaun (z. B. offene Vorfahrt), nur im Lageplan
+  if (p.kind === 'grenze' && p.zaun !== false) { const posts = []; const tot = L[L.length - 1][3]; for (let s = 0; s <= tot; s += 3) { const q = HSS.sampleLine(L, s); const g = new THREE.BoxGeometry(0.08, 1.6, 0.08); g.translate(q.x, q.y + 0.8, q.z); posts.push(g); } const rail = ribbon(L.map(q => [q[0], q[1] + 1.55, q[2], q[3]]), 0.06, 0); const fence = new THREE.Mesh(HSS.ringWallGeo(L.map(q => [q[0], q[2]]), 0, 1, false), HSS.library.shared('zaun', () => new THREE.MeshStandardMaterial({ color: '#7d8a96', transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }))); { const pa = fence.geometry.attributes.position; for (let i = 0; i < pa.count; i++) { let best = 0, bd = Infinity; for (let k = 0; k < L.length; k++) { const d = (L[k][0] - pa.getX(i)) ** 2 + (L[k][2] - pa.getZ(i)) ** 2; if (d < bd) { bd = d; best = k; } } pa.setY(i, L[best][1] + pa.getY(i) * 1.5); } } fence.userData = { kind: 'path', id: p.id }; grp.add(fence); if (posts.length) { const m = new THREE.Mesh(mergeGeometries(posts), LM('#59636e', 'metall')); m.userData = { kind: 'path', id: p.id }; grp.add(m); } grp.add(new THREE.Mesh(rail, LM('#59636e', 'metall'))); return grp; }
   if (p.kind === 'bahn') { for (const s of [-0.72, 0.72]) { const off = L.map((q, i) => { const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)]; const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1; return [q[0] - dz / l * s, q[1] + 0.12, q[2] + dx / l * s, q[3]]; }); grp.add(new THREE.Mesh(ribbon(off, 0.1, 0), LM('#9aa1aa', 'metall'))); } }
   if (p.kind === 'zufahrt') {
     const seg = []; for (const s of [-1, 1]) { const off = L.map((q, i) => { const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)]; const dx = b[0] - a[0], dz = b[2] - a[2], l = Math.hypot(dx, dz) || 1; return [q[0] - dz / l * (w / 2 - 0.3) * s, q[1], q[2] + dx / l * (w / 2 - 0.3) * s, q[3]]; }); seg.push(ribbon(off, 0.12, 0.035)); }
@@ -158,13 +185,58 @@ HSS.parkingLayout = a => {
   return { stalls, cols, modules, sw, sd, aisle };
 };
 // Fläche als Vieleck (z. B. aus OpenStreetMap): auf das Gelände gelegt, je Art mit Bepflanzung
+const verfeinern = (g, maxL = 2.5) => {
+  // Dreiecke teilen, bis keine Kante länger als maxL ist (höchstens 6 Stufen)
+  let P = Array.from(g.toNonIndexed().attributes.position.array);
+  for (let k = 0; k < 6; k++) {
+    const out = []; let geteilt = false;
+    for (let i = 0; i < P.length; i += 9) {
+      const A = P.slice(i, i + 3), B = P.slice(i + 3, i + 6), C = P.slice(i + 6, i + 9);
+      const l = (u, v) => Math.hypot(u[0] - v[0], u[2] - v[2]);
+      if (Math.max(l(A, B), l(B, C), l(C, A)) <= maxL) { out.push(...A, ...B, ...C); continue; }
+      geteilt = true; const m = (u, v) => [(u[0] + v[0]) / 2, (u[1] + v[1]) / 2, (u[2] + v[2]) / 2], ab = m(A, B), bc = m(B, C), ca = m(C, A);
+      out.push(...A, ...ab, ...ca, ...ab, ...B, ...bc, ...ca, ...bc, ...C, ...ab, ...bc, ...ca);
+    }
+    P = out; if (!geteilt) break;
+  }
+  const n = new THREE.BufferGeometry(); n.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); return n;
+};
+const uneben = () => { const t = HSS.project().terrain || {}; return !!(t.niveaus?.length || t.hills?.length || t.tilt?.pct); };
 const drapedPoly = (a, yoff, color) => {
   const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
   let g = new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI / 2);
+  if (uneben()) g = verfeinern(g);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|0.95', () => new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
+};
+// Erhöhte Fläche (Verkehrsinsel, Mauer, Podest): Vieleck um a.hoehe (m) über Gelände extrudiert
+const raisedPoly = (a, color) => {
+  const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
+  const g = new THREE.ExtrudeGeometry(sh, { depth: a.hoehe, bevelEnabled: false }); g.rotateX(-Math.PI / 2);
+  g.translate(0, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + 0.005, 0); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, LM(color)); m.castShadow = true; m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
+};
+// Schraffur einer Sperrfläche (Zeichen 298): weiße Schrägstreifen im Vieleck und Randlinie
+const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
+  const th = U.rad(ang), u = [Math.cos(th), Math.sin(th)], n = [-u[1], u[0]], P = a.poly;
+  const ds = P.map(p => p[0] * n[0] + p[1] * n[1]), lo = Math.min(...ds), hi = Math.max(...ds), geos = [];
+  for (let c = lo + step / 2; c < hi; c += step) {
+    const ts = [];
+    for (let i = 0; i < P.length; i++) {
+      const j = (i + 1) % P.length, da = ds[i] - c, db = ds[j] - c;
+      if ((da < 0) !== (db < 0)) { const t = da / (da - db), X = P[i][0] + (P[j][0] - P[i][0]) * t, Z = P[i][1] + (P[j][1] - P[i][1]) * t; ts.push(X * u[0] + Z * u[1]); }
+    }
+    ts.sort((p, q) => p - q);
+    for (let k = 0; k + 1 < ts.length; k += 2) {
+      const L = ts[k + 1] - ts[k] - 0.3; if (L < 0.2) continue;
+      const m = (ts[k] + ts[k + 1]) / 2, g = new THREE.BoxGeometry(L, 0.012, bw); g.rotateY(-th); g.translate(u[0] * m + n[0] * c, y, u[1] * m + n[1] * c); geos.push(g);
+    }
+  }
+  for (let i = 0; i < P.length; i++) { const A = P[i], B = P[(i + 1) % P.length], L = G.dist(A, B); if (L < 0.05) continue; const g = new THREE.BoxGeometry(L, 0.012, 0.12); g.rotateY(-Math.atan2(B[1] - A[1], B[0] - A[0])); g.translate((A[0] + B[0]) / 2, y, (A[1] + B[1]) / 2); geos.push(g); }
+  if (!geos.length) return null;
+  const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
 };
 function buildPolyArea(a, grp) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
@@ -175,7 +247,7 @@ function buildPolyArea(a, grp) {
   const inBau = p => hits.some(({ o, q }) => p[0] > q.x0 - 2 && p[0] < q.x1 + 2 && p[1] > q.z0 - 2 && p[1] < q.z1 + 2 && (G.pointIn(p, o) || o.some((c, i) => G.dist(p, G.closestOnSeg(p, c, o[(i + 1) % o.length]).pt) < 2.5)));
   const scatter = (lib, n, smin, smax) => { let k = 0; for (let t = 0; t < n * 4 && k < n; t++) { const p = [bb.x0 + rnd() * bb.w, bb.z0 + rnd() * bb.d]; if (!G.pointIn(p, a.poly) || inBau(p)) continue; const d = HSS.library.get(lib); if (!d) return; const s = U.lerp(smin, smax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); k++; } };
   if (a.kind === 'wald') { scatter('gruen.baum.laub', Math.min(220, area / 90), 0.8, 1.3); scatter('gruen.baum.nadel', Math.min(120, area / 200), 0.8, 1.2); }
-  else if (a.kind === 'park' || a.kind === 'gruen') { scatter('gruen.baum.laub', Math.min(60, area / 300), 0.7, 1.1); scatter('gruen.strauch', Math.min(60, area / 250), 0.6, 1.2); }
+  else if (a.kind === 'park' || a.kind === 'gruen') { const dn = a.density ?? 1; scatter('gruen.baum.laub', Math.min(60 * dn, area / 300 * dn), 0.7, 1.1); scatter('gruen.strauch', Math.min(60 * dn, area / 250 * dn), 0.6, 1.2); }
   else if (a.kind === 'friedhof') scatter('gruen.baum.saeule', Math.min(40, area / 250), 0.7, 1.0);
   else if (a.kind === 'wohngebiet') scatter('gruen.baum.klein', Math.min(40, area / 600), 0.7, 1.0);
   else if (a.kind === 'acker') { // Feldraine: wenige Bäume am Rand
@@ -185,6 +257,14 @@ function buildPolyArea(a, grp) {
 }
 HSS.buildArea = (a, view = {}) => {
   const grp = new THREE.Group(); grp.userData = { kind: 'area', id: a.id };
+  if ((a.hoehe > 0 || a.kind === 'sperrflaeche') && !(a.poly && a.poly.length >= 3)) a = Object.assign({}, a, { poly: HSS.areaPoly(a) });
+  if (a.poly && a.poly.length >= 3 && (a.hoehe > 0 || a.kind === 'sperrflaeche')) {
+    const col = a.color || FL_COL[a.kind] || '#c9d6b8', top = a.hoehe > 0 ? a.hoehe : 0;
+    // Sperrflächen liegen auf Fahrbahnen (Wege +0,08 m über Gelände) – deshalb etwas höher
+    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col));
+    if (a.kind === 'sperrflaeche') { const m = hatch(a, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + (top || 0.09) + 0.012, a.markWinkel ?? 45); if (m) grp.add(m); }
+    return grp;
+  }
   if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp);
   if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp);
   const r = U.rad(a.rot || 0);

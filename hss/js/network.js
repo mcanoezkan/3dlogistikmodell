@@ -256,9 +256,14 @@ function buildNet(prj) {
     for (const p of fa) for (let k = 0; k < fb.length; k++) { const c = G.closestOnSeg(p, fb[k], fb[(k + 1) % fb.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = p; pb = c.pt; } }
     for (const p of fb) for (let k = 0; k < fa.length; k++) { const c = G.closestOnSeg(p, fa[k], fa[(k + 1) % fa.length]); const d = G.dist(p, c.pt); if (d < bd) { bd = d; pa = c.pt; pb = p; } }
     if (bd > 1.2 && !fa.some(p => G.pointIn(p, fb)) && !fb.some(p => G.pointIn(p, fa))) continue;
+    // Bauteil mit Geschossversatz (z. B. NIZ eine Ebene höher als das Hauptgebäude): Anschluss auf gleicher Höhe statt gleicher Geschossbezeichnung
+    const nachHoehe = A.anschlussNachHoehe || B.anschlussNachHoehe;
     for (const f of HSS.partFloors(A)) {
-      const gf = HSS.globalFloor(A, f, prj), fB = HSS.localFloor(B, gf, prj); if (fB === null) continue;
-      if (Math.abs(HSS.floorY(A, f, prj) - HSS.floorY(B, fB, prj)) > 0.8) continue;
+      const gf = HSS.globalFloor(A, f, prj), yA = HSS.floorY(A, f, prj);
+      let fB = HSS.localFloor(B, gf, prj);
+      if (nachHoehe && (fB === null || Math.abs(yA - HSS.floorY(B, fB, prj)) > 0.8)) fB = HSS.partFloors(B).find(g => Math.abs(yA - HSS.floorY(B, g, prj)) <= 0.8) ?? null;
+      if (fB === null) continue;
+      if (Math.abs(yA - HSS.floorY(B, fB, prj)) > 0.8) continue;
       const ia = nearestIn(floorNodes.get(A.id + '|' + f) || [], pa[0], pa[1]), ib = nearestIn(floorNodes.get(B.id + '|' + fB) || [], pb[0], pb[1]);
       if (ia && ib) addEdge(ia.id, ib.id, 'flur', { gf, uebergang: true });
     }

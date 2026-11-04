@@ -114,6 +114,7 @@ S3.rebuild = (scope = 'all') => {
   if (!S3.scene) return;
   const prj = HSS.project(), L = S3.layers;
   if (scope === 'objects') { buildObjects(); collectPickables(); S3.showSelection(); HSS.emit('rebuilt'); return; }
+  const aus = HSS.gebAus?.hidden(prj); // „Gebäude ausblenden“ (nur Darstellung)
   S3.groups.clear();
   // Umgebung (OpenStreetMap-Bebauung, Straßen, Flächen) reduzieren: alle / nur nah am Campus / aus
   const umg = V.umgebung || 'alle'; let nah = null;
@@ -142,9 +143,9 @@ S3.rebuild = (scope = 'all') => {
   const tick = (S3._tick = (S3._tick || 0) + 1);
   // Zwischenspeicher je Element und Ansicht (Etagenwechsel hin und zurück ohne Neuaufbau)
   const bcached = (id, key, make) => { const k = id + '#' + key.length + '#' + U.hash(key); live.add(k); const c = bcache.get(k); if (c && c.key === key) { c.t = tick; return c.g; } const g = make(); bcache.set(k, { key, g, t: tick, id }); return g; };
-  for (const b of prj.buildings) for (const pt of b.parts) {
+  for (const b of prj.buildings) for (const pt of (aus && aus.has(b.id) ? [] : b.parts)) {
     if (!zeig(b.umgebung, pt.x, pt.z)) continue;
-    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color]);
+    const ptKey = JSON.stringify([pt, chain(pt), b.id, b.color, HSS.fe?.key(pt, b, prj) || '']);
     const g = bcached(pt.id, ptKey + vkey + '|' + efloor(pt) + (V.zonen && V.floor === null && HSS.zoneKey ? '|' + HSS.zoneKey(pt, prj) : ''), () => HSS.buildPart(pt, b, V)); L.build.add(g); S3.groups.set(pt.id, g);
     for (const f of HSS.partFloors(pt)) {
       const gf = HSS.globalFloor(pt, f);
@@ -153,6 +154,7 @@ S3.rebuild = (scope = 'all') => {
   }
   for (const br of prj.bridges) {
     const A = HSS.findPart(br.a?.part, prj), B = HSS.findPart(br.b?.part, prj);
+    if (aus && (aus.has(A?.building?.id) || aus.has(B?.building?.id))) continue;
     const g = bcached(br.id, JSON.stringify([br, A?.part, B?.part, A && chain(A.part), B && chain(B.part)]) + vkey, () => HSS.buildBridge(br, V)); L.build.add(g); S3.groups.set(br.id, g);
   }
   if (bcache.size > 700) { const old = [...bcache.entries()].filter(([k]) => !live.has(k)).sort((a, b) => a[1].t - b[1].t); for (const [k] of old.slice(0, bcache.size - 500)) bcache.delete(k); }
@@ -166,7 +168,7 @@ S3.rebuild = (scope = 'all') => {
   S3.sky.visible = !ug && !S3.night; S3.scene.background = new THREE.Color(ug ? '#3a4149' : S3.night ? '#0d1828' : '#dce3e8');
   // Wege-Anzeige: alle | ohne Gehwege | nur Straßen/Zufahrten | aus (nur Darstellung, das Wegenetz bleibt vollständig)
   const wegSichtbar = p => { const m = V.wege || 'alle'; if (!p) return true; if (m === 'aus') return false; if (m === 'ohneGehweg') return p.kind !== 'gehweg'; if (m === 'strassen') return ['strasse', 'zufahrt', 'tunnel', 'awt'].includes(p.kind); return true; };
-  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); }
+  for (const g of L.paths.children) { const p = U.byId(prj.paths, g.userData.id); g.visible = wegSichtbar(p) && (!ug || V.floor >= -1 || (p && (p.kind === 'tunnel' || p.kind === 'awt'))); } // Außenwege bleiben bis U1 sichtbar (ebenerdige Ebenen, z. B. NIZ)
   collectPickables();
   S3.showSelection();
   HSS.emit('rebuilt');
@@ -183,6 +185,7 @@ function objVisible(o, prj) {
 }
 function buildObjects() {
   const prj = HSS.project(), L = S3.layers.objects; clear(L);
+  const aus = HSS.gebAus?.hidden(prj);
   const groups = new Map();
   // gewähltes Objekt einzeln aufbauen, damit es sich beim Ziehen direkt mitbewegt
   const selObj = HSS.state.selection?.kind === 'object' ? HSS.state.selection.id : null;
@@ -193,6 +196,7 @@ function buildObjects() {
     const role = d.logistik?.rolle;
     const P = o.host ? HSS.findPart(o.host.part, prj) : null;
     if (o.host && !P) continue;
+    if (aus && (P ? aus.has(P.building.id) : HSS.gebAus.ueber(o, prj))) continue;
     // Aufzüge/Treppen: auf jedem Halt-Geschoss wiederholen
     let floors = null;
     if (P && (role === 'aufzug' || role === 'treppe')) {
@@ -248,8 +252,9 @@ function buildObjects() {
 function buildLabels() {
   const prj = HSS.project(), L = S3.layers.labels;
   if (!V.labels) return;
+  const aus = HSS.gebAus?.hidden(prj);
   for (const b of prj.buildings) {
-    if (!b.parts.length || (b.noLabel && !V.m2)) continue;
+    if (!b.parts.length || (b.noLabel && !V.m2) || (aus && aus.has(b.id))) continue;
     // Anker: Mitte des größten Bauteils, Höhe = Dach des höchsten Bauteils; das Kürzel sitzt genau über dem Anker
     const top = b.parts.reduce((a, pt) => HSS.partTopY(pt) > HSS.partTopY(a) ? pt : a, b.parts[0]);
     const main = b.parts.filter(pt => !pt.stackOn).reduce((a, pt) => HSS.partArea(pt) > HSS.partArea(a) ? pt : a, b.parts.find(pt => !pt.stackOn) || b.parts[0]);
@@ -261,6 +266,7 @@ function buildLabels() {
   }
   if (V.floor !== null) {
     for (const b of prj.buildings) for (const pt of b.parts) {
+      if (aus && aus.has(b.id)) continue;
       const f = HSS.localFloor(pt, V.floor); if (f === null) continue;
       const I = HSS.interior(pt.id, f); if (!I) continue;
       for (const r of I.rooms) {
@@ -372,7 +378,7 @@ S3._commitDrag = () => {
       o.rot = Math.round(((o.rot || 0) - U.deg(dr)) % 360);
     }
     if (sel.kind === 'area') { const a = U.byId(prj.areas, sel.id); a.x = snap(a.x + d.x); a.z = snap(a.z + d.z); a.rot = Math.round((a.rot || 0) - U.deg(dr)); }
-    if (sel.kind === 'path') { const p = U.byId(prj.paths, sel.id); p.points[sel.point] = [snap(p.points[sel.point][0] + d.x), snap(p.points[sel.point][1] + d.z)]; }
+    if (sel.kind === 'path') { const p = U.byId(prj.paths, sel.id); p.points[sel.point] = [snap(p.points[sel.point][0] + d.x), snap(p.points[sel.point][1] + d.z), ...p.points[sel.point].slice(2)]; }
     if (sel.kind === 'room') {
       const P = HSS.findPart(sel.part, prj), I = HSS.interior(sel.part, sel.floor, false, prj), r = I.rooms.find(x => x.id === sel.id);
       const loc = HSS.toLocal(P.part, [S3.proxy.position.x, S3.proxy.position.z]); const dx = snap(loc[0]) - r.x, dz = snap(loc[1]) - r.z;

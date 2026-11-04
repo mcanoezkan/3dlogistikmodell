@@ -75,24 +75,71 @@ T.drawPath = (kind, continueId) => {
   });
   UI.hint(`<b>${HSS.WEGARTEN[kind].name}</b> zeichnen · Punkte ins Gelände klicken · Kurven werden automatisch geglättet${under ? ' · liegt unterirdisch (Höhe im Inspektor)' : ''}`);
 };
-T.drawArea = (kind) => {
+T.drawArea = (kind, opts = {}) => {
   if (readonly()) return;
-  let a = null, b = null;
-  const redraw = () => { clearGhost(); if (!a || !b) return; const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), z0 = Math.min(a[1], b[1]), z1 = Math.max(a[1], b[1]); HSS.s3.layers.ghost.add(polyline([[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]])); UI.hint(`${HSS.FLAECHEN[kind]}: ${U.fmt(x1 - x0, 1)} × ${U.fmt(z1 - z0, 1)} m${kind === 'parkplatz' ? ' · ca. ' + HSS.parkingLayout({ w: x1 - x0, d: z1 - z0 }).stalls.length + ' Stellplätze' : ''}`); };
+  // Zwei Wege: mit gedrückter Maustaste ein Rechteck aufziehen – oder Eckpunkte nacheinander anklicken (beliebige Form, z. B. schräge Grünflächen)
+  let a = null, b = null, cur = null;
+  const pts = [], nurVieleck = !!opts.poly, name = HSS.FLAECHEN[kind];
+  const flaeche = q => Math.abs(G.area(q));
+  const redraw = () => {
+    clearGhost();
+    if (pts.length) {
+      const all = cur ? pts.concat([cur]) : pts.slice();
+      HSS.s3.layers.ghost.add(polyline(all.length >= 3 ? all.concat([all[0]]) : all));
+      UI.hint(`<b>${name} (Vieleck)</b> · ${pts.length} Ecke${pts.length === 1 ? '' : 'n'}${all.length >= 3 ? ` · ${U.fmt(flaeche(all))} m²` : ''} · Klick: Ecke · Doppelklick, Enter oder Klick auf den Startpunkt: fertig · Rücktaste: Ecke zurück · Umschalt: 15°-Winkel · Esc: abbrechen`);
+      return;
+    }
+    if (!a || !b) return;
+    const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), z0 = Math.min(a[1], b[1]), z1 = Math.max(a[1], b[1]);
+    HSS.s3.layers.ghost.add(polyline([[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]]));
+    UI.hint(`${name}: ${U.fmt(x1 - x0, 1)} × ${U.fmt(z1 - z0, 1)} m${kind === 'parkplatz' ? ' · ca. ' + HSS.parkingLayout({ w: x1 - x0, d: z1 - z0 }).stalls.length + ' Stellplätze' : ''}`);
+  };
+  const finishPoly = () => {
+    if (pts.length < 3) { UI.toast('Mindestens drei Ecken anklicken'); return; }
+    if (flaeche(pts) < 4) { UI.toast('Fläche zu klein'); return; }
+    const ar = HSS.areaFromPoly(kind, pts);
+    HSS.manip?.mark();
+    HSS.change('Fläche anlegen (Vieleck)', p => p.areas.push(ar), { scope: 'outdoor' });
+    // verzögert auswählen: Enter bestätigt sonst im selben Tastendruck die Auswahl und hebt sie auf
+    clearGhost(); HSS.s3.setTool(null); setTimeout(() => HSS.s3.select({ kind: 'area', id: ar.id }), 0);
+    UI.toast(`${name} mit ${ar.poly.length} Ecken angelegt (${U.fmt(flaeche(ar.poly))} m²) – Ecken an den Punkten verschieben, ＋ fügt Ecken ein, Alt+Klick löscht eine Ecke`, 4500);
+  };
+  const pick = ev => { const gp = HSS.s3.groundPoint(ev); if (!gp) return null; let q = [snap(gp.x), snap(gp.z)]; if (pts.length && ev.shiftKey) { const l = pts[pts.length - 1], dx = q[0] - l[0], dz = q[1] - l[1], an = Math.round(Math.atan2(dz, dx) / U.rad(15)) * U.rad(15), L = Math.hypot(dx, dz); q = [snap(l[0] + Math.cos(an) * L, 0.1), snap(l[1] + Math.sin(an) * L, 0.1)]; } if (pts.length >= 3 && G.dist(q, pts[0]) < 1.5) q = pts[0].slice(); return q; };
   HSS.s3.setTool({
     name: 'area',
-    down(ev) { if (ev.button !== 0) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; a = [snap(gp.x), snap(gp.z)]; b = a.slice(); HSS.s3.controls.enabled = false; },
-    move(ev) { if (!a) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; b = [snap(gp.x), snap(gp.z)]; redraw(); },
-    up() {
+    down(ev) { if (ev.button !== 0 || pts.length || nurVieleck) return; const gp = HSS.s3.groundPoint(ev); if (!gp) return; a = [snap(gp.x), snap(gp.z)]; b = a.slice(); HSS.s3.controls.enabled = false; },
+    move(ev) {
+      if (a) { const gp = HSS.s3.groundPoint(ev); if (!gp) return; b = [snap(gp.x), snap(gp.z)]; redraw(); return; }
+      if (pts.length) { cur = pick(ev); redraw(); }
+    },
+    up(ev) {
       HSS.s3.controls.enabled = true; if (!a || !b) return;
       const w = Math.abs(b[0] - a[0]), d = Math.abs(b[1] - a[1]);
-      if (w > 2 && d > 2) { const ar = { id: U.uid('area'), kind, x: (a[0] + b[0]) / 2, z: (a[1] + b[1]) / 2, w, d, rot: 0 }; HSS.change('Fläche anlegen', p => p.areas.push(ar), { scope: 'outdoor' }); HSS.s3.setTool(null); HSS.s3.select({ kind: 'area', id: ar.id }); }
-      a = b = null; clearGhost();
+      if (w > 2 && d > 2) { const ar = { id: U.uid('area'), kind, x: (a[0] + b[0]) / 2, z: (a[1] + b[1]) / 2, w, d, rot: 0 }; HSS.change('Fläche anlegen', p => p.areas.push(ar), { scope: 'outdoor' }); HSS.s3.setTool(null); HSS.s3.select({ kind: 'area', id: ar.id }); a = b = null; clearGhost(); return; }
+      // kurzer Klick ohne Ziehen: erste Ecke eines Vielecks
+      pts.push(a.slice()); a = b = null; cur = null; redraw();
     },
-    click() {}, cancel() { HSS.s3.controls.enabled = true; clearGhost(); UI.hint(null); }
+    click(ev) {
+      if (!pts.length && !nurVieleck) return; // erster Punkt kommt aus down/up
+      const q = pick(ev); if (!q) return;
+      if (pts.length >= 3 && G.dist(q, pts[0]) < 0.01) return finishPoly();
+      if (pts.length && G.dist(q, pts[pts.length - 1]) < 0.05) return;
+      pts.push(q); cur = null; redraw();
+    },
+    dbl() { if (pts.length >= 3) finishPoly(); },
+    key(ev) { if (ev.key === 'Enter') { finishPoly(); return true; } if (ev.key === 'Backspace') { pts.pop(); redraw(); return true; } },
+    cancel() { HSS.s3.controls.enabled = true; clearGhost(); UI.hint(null); }
   });
-  UI.hint(`<b>${HSS.FLAECHEN[kind]}</b>: Rechteck mit gedrückter Maustaste aufziehen`);
+  UI.hint(nurVieleck ? `<b>${name} als Vieleck</b>: Eckpunkte nacheinander ins Gelände klicken (beliebige Form) · Doppelklick oder Enter: fertig`
+    : `<b>${name}</b>: Rechteck mit gedrückter Maustaste aufziehen <b>oder</b> Eckpunkte nacheinander anklicken (beliebige Form) · Doppelklick oder Enter: fertig`);
 };
+// Fläche aus Eckpunkten (Weltkoordinaten): Mittelpunkt und Begrenzungsmaße werden mitgeführt
+HSS.areaFromPoly = (kind, pts, extra = {}) => {
+  const poly = G.ccw(pts.map(p => [Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10])), bb = G.bbox(poly);
+  return Object.assign({ id: U.uid('area'), kind, x: Math.round(bb.cx * 10) / 10, z: Math.round(bb.cz * 10) / 10, w: Math.round(bb.w * 10) / 10, d: Math.round(bb.d * 10) / 10, rot: 0, poly }, extra);
+};
+HSS.areaFit = a => { if (!a.poly || a.poly.length < 3) return a; const bb = G.bbox(a.poly); a.x = Math.round(bb.cx * 10) / 10; a.z = Math.round(bb.cz * 10) / 10; a.w = Math.round(bb.w * 10) / 10; a.d = Math.round(bb.d * 10) / 10; a.rot = 0; return a; };
+HSS.areaM2 = a => (a.poly && a.poly.length >= 3 ? Math.abs(G.area(a.poly)) : a.w * a.d);
 // Fläche in Standardgröße setzen (für Ziehen aus dem Panel); Größe danach an den Griffen ändern
 const AREA_STD = { parkplatz: [48, 32], gruen: [40, 30], platz: [30, 20], wasser: [24, 16], acker: [120, 80], wald: [80, 60] };
 T.placeArea = (kind) => {
@@ -220,22 +267,26 @@ W.gelaende = { name: 'Gelände & Wege', short: 'Gelände & Wege', step: '1', lea
     const geo = prj.meta.geo;
     el.innerHTML = `<h3>Standort</h3><div class="note">${geo?.lat ? `${U.esc(geo.adresse || prj.meta.standort?.id || '')} ${U.fmt(geo.lat, 5)}° N, ${U.fmt(geo.lon, 5)}° O · Nordwinkel ${U.fmt(geo.nord || 0)}°` : 'Noch nicht verortet.'}</div><div class="row" style="gap:6px;margin:6px 0 4px"><button id="gGeo">Standort verorten …</button><button id="gOsm" class="primary" title="Straßen, Felder, Wald, Wasser, Nachbargebäude und Grundstücksgrenze rund um den Standort laden">Umgebung aus OpenStreetMap …</button>${prj.meta.standort ? '<button id="gUpd" title="Geometrie und Daten des Standortmodells neu übernehmen, eigene Änderungen bleiben">Standortmodell aktualisieren</button>' : ''}</div>
     <h3>Wege zeichnen</h3><div class="tiles">${Object.entries(HSS.WEGARTEN).map(([k, v]) => tile(`data-path="${k}"`, v.name, v.info)).join('')}</div>
-    <h3>Flächen aufziehen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'mit Bäumen und Sträuchern')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}${tile('data-area="acker"', 'Acker / Feld', 'Umgebung')}${tile('data-area="wald"', 'Wald', 'dichter Baumbestand')}</div>
+    <h3>Flächen zeichnen</h3><div class="tiles">${tile('data-area="parkplatz"', 'Parkplatz', 'Stellplätze werden automatisch eingeteilt')}${tile('data-area="gruen"', 'Grünfläche', 'Rechteck aufziehen oder Ecken klicken')}${tile('data-areapoly="gruen"', '⬠ Grünfläche frei', 'beliebige Form: Eckpunkte anklicken')}${tile('data-areapoly="platz"', '⬠ Platz frei', 'beliebige Form')}${tile('data-area="platz"', 'Platz / Pflaster', 'Vorfahrt, Plätze')}${tile('data-area="wasser"', 'Wasserfläche', 'Teich, Retention')}${tile('data-area="acker"', 'Acker / Feld', 'Umgebung')}${tile('data-area="wald"', 'Wald', 'dichter Baumbestand')}</div>
     <h3>Außenausstattung</h3><div class="tiles">${[['Außenanlagen/Grün', 'Bäume & Grün'], ['Außenanlagen/Beleuchtung', 'Laternen & Leuchten'], ['Außenanlagen/ÖPNV & Verkehr', 'Haltestelle, Schranke, Landeplatz'], ['Fahrzeuge', 'Autos, Busse, RTW, LKW'], ['Außenanlagen/Stadtmobiliar', 'Bänke, Fahrradständer'], ['Außenanlagen/Ver- und Entsorgung', 'Müllplatz, Presscontainer']].map(([c, n]) => tile(`data-cat="${c}"`, n, '')).join('')}</div>
     <div class="note">Parkhäuser finden Sie unter „Gebäude“ als Baustein.</div>
     <h3>Gelände</h3>
     <div class="fg tf">${UI.fNum('Neigung', 'tilt.pct', t.tilt?.pct ?? 0, { unit: '%', step: 0.5 })}${UI.fNum('Gefällerichtung', 'tilt.dir', t.tilt?.dir ?? 0, { unit: '°', step: 15 })}${UI.fNum('Geländegröße', 'size', t.size, { unit: 'm', step: 50, min: 200 })}${UI.fCol('Farbe', 'color', t.color)}</div>
     <div class="row"><button id="gHill">+ Geländepunkt (Kuppe/Mulde/Plateau)</button></div>
     ${t.hills.length ? `<div class="list" style="margin-top:6px">${t.hills.map((h, i) => `<div class="li" data-hill="${i}"><span class="t">${h.plateau ? 'Plateau' : h.h >= 0 ? 'Kuppe' : 'Mulde'} ${U.fmt(h.h, 1)} m · r ${U.fmt(h.r)} m</span></div>`).join('')}</div>` : ''}
+    ${(t.niveaus || []).length ? `<h4>Geländeniveaus</h4><div class="list nivl">${t.niveaus.map((n, i) => `<div class="li"><span class="t" title="${U.esc(n.name || '')}">${U.esc(n.name || 'Niveau ' + (i + 1))}</span><input type="number" step="0.1" data-nh="${i}" value="${n.h}" title="Höhe gegenüber dem übrigen Gelände (m)" style="width:62px"><input type="number" step="1" min="0" data-nr="${i}" value="${n.rand ?? 8}" title="Breite der Böschung am Rand (m)" style="width:52px"><button class="mini" data-ndel="${i}" title="Niveau entfernen">×</button></div>`).join('')}</div><div class="note">Höhe (m) und Böschungsbreite (m) je Fläche. Neue Niveaus: Fläche wählen → „Als Geländeniveau …“.</div>` : ''}
     <h3>Vorhandene Wege (${prj.paths.length})</h3><div class="list">${prj.paths.map(p => `<div class="li" data-sel="path:${p.id}"><span class="sw" style="background:${HSS.WEGARTEN[p.kind]?.color}"></span><span class="t">${U.esc(p.name)}</span><span class="s">${U.fmt(HSS.pathStats(p).len)} m</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>
     <h3>Flächen (${prj.areas.length})</h3><div class="list">${prj.areas.map(a => `<div class="li" data-sel="area:${a.id}"><span class="t">${HSS.FLAECHEN[a.kind]}</span><span class="s">${U.fmt(a.w * a.d)} m²${a.kind === 'parkplatz' ? ' · ' + HSS.parkingLayout(a).stalls.length + ' St.' : ''}</span></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
     $('#gGeo', el).onclick = () => HSS.standortDialog(); $('#gOsm', el).onclick = () => HSS.osm.dialog(); $('#gUpd', el) && ($('#gUpd', el).onclick = () => HSS.standorte.aktualisierenAktuell());
     $$('[data-path]', el).forEach(b => b.onclick = () => T.drawPath(b.dataset.path));
     $$('[data-area]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.area); HSS.manip?.dragFrom(b, () => T.placeArea(b.dataset.area)); });
+  $$('[data-areapoly]', el).forEach(b => { b.onclick = () => T.drawArea(b.dataset.areapoly, { poly: true }); });
     $$('[data-cat]', el).forEach(b => b.onclick = () => { UI.libCat = b.dataset.cat; UI.setWS('bibliothek'); });
     UI.bind($('.tf', el), prj => prj.terrain, 'Gelände', 'all');
     $('#gHill', el).onclick = T.hill;
     $$('[data-hill]', el).forEach(li => li.onclick = () => HSS.s3.select({ kind: 'hill', idx: +li.dataset.hill, id: 'hill' + li.dataset.hill }, { focus: true }));
+    $$('[data-nh],[data-nr]', el).forEach(inp => inp.onchange = () => HSS.change('Geländeniveau', prj => { const n = prj.terrain.niveaus[+(inp.dataset.nh ?? inp.dataset.nr)], v = +inp.value.replace(',', '.'); if (inp.dataset.nh !== undefined) n.h = v; else n.rand = Math.max(0, v); }, { scope: 'all' }));
+    $$('[data-ndel]', el).forEach(b => b.onclick = () => HSS.change('Geländeniveau entfernen', prj => prj.terrain.niveaus.splice(+b.dataset.ndel, 1), { scope: 'all' }));
     selLinks(el);
   } };
 const selLinks = el => $$('[data-sel]', el).forEach(li => li.onclick = () => { const [kind, id] = li.dataset.sel.split(':'); HSS.s3.select({ kind, id }, { focus: true }); });

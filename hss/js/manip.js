@@ -111,7 +111,15 @@ function buildHandles() {
     addHandle('move', W(bb.x1 - Math.min(8, bb.w * 0.2), bb.z1 - Math.min(4, bb.d * 0.25), top + 1.5), { op: 'move' });
     const r = [W(bb.x0, bb.z0), W(bb.x1, bb.z0), W(bb.x1, bb.z1), W(bb.x0, bb.z1), W(bb.x0, bb.z0)]; addLine(r);
   } else if (sel.kind === 'area') {
-    const a = U.byId(p.areas, sel.id); if (!a || a.poly) return;
+    const a = U.byId(p.areas, sel.id); if (!a) return;
+    if (a.poly && a.poly.length >= 3) {
+      const yy = q => HSS.terrainH(q[0], q[1]) + 0.8 + (a.hoehe || 0), n = a.poly.length;
+      a.poly.forEach((q, i) => addHandle(M.areaVtx === i ? 'pointOn' : 'point', new V3(q[0], yy(q), q[1]), { op: 'vtx', idx: i }));
+      for (let i = 0; i < n; i++) { const A = a.poly[i], B = a.poly[(i + 1) % n]; if (G.dist(A, B) < 3) continue; const m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2]; addHandle('insert', new V3(m[0], yy(m), m[1]), { op: 'vins', idx: i + 1 }); }
+      const bb = G.bbox(a.poly); addHandle('rotate', new V3(bb.x1 + 3, yy([bb.x1, bb.z0]), bb.z0 - 3), { op: 'rot' });
+      addLine(a.poly.concat([a.poly[0]]).map(q => new V3(q[0], yy(q), q[1])));
+      HSS.perf?.invalidate(2); return;
+    }
     const y = HSS.terrainH(a.x, a.z) + 0.6, W = (lx, lz) => { const q = G.rot([lx, lz], U.rad(a.rot || 0)); return new V3(q[0] + a.x, y, q[1] + a.z); };
     addHandle('resize', W(a.w / 2 + 1.2, 0), { op: 'edge', ax: 'x', sg: 1 }); addHandle('resize', W(-a.w / 2 - 1.2, 0), { op: 'edge', ax: 'x', sg: -1 });
     addHandle('resizeV', W(0, a.d / 2 + 1.2), { op: 'edge', ax: 'z', sg: 1 }); addHandle('resizeV', W(0, -a.d / 2 - 1.2), { op: 'edge', ax: 'z', sg: -1 });
@@ -193,7 +201,8 @@ function onDown(ev) {
   if (ev.button !== 0 || S3.tool || S3.fpvActive || ro()) return;
   const sel = HSS.state.selection; if (!sel) return;
   const hd = pickHandle(ev);
-  if (hd) { start(ev, hd.userData, sel); ev.stopImmediatePropagation(); return; }
+  if (hd && sel.kind === 'area' && hd.userData.op === 'vtx' && ev.altKey) { ev.stopImmediatePropagation(); const i = hd.userData.idx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const a = U.byId(p.areas, sel.id); if (a?.poly && a.poly.length > 3) { a.poly.splice(i, 1); HSS.areaFit(a); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); return; }
+  if (hd) { if (sel.kind === 'area') M.areaVtx = hd.userData.op === 'vtx' ? hd.userData.idx : hd.userData.op === 'vins' ? hd.userData.idx : undefined; start(ev, hd.userData, sel); ev.stopImmediatePropagation(); return; }
   const h = S3.pick(ev);
   if (sameSel(h, sel) && ['part', 'area', 'object', 'path', 'room', 'bridge', 'wall'].includes(sel.kind) && sel.kind !== 'bridge') { D = { armed: true, op: 'move', sel: U.clone(sel), x0: ev.clientX, y0: ev.clientY, p0: h.point.clone(), ev0: ev }; S3.controls.enabled = false; }
 }
@@ -336,6 +345,21 @@ function magnet(pt0, dx, dz) {
 /* Fläche */
 function dragArea(hit, fine) {
   const a0 = D.a0, sel = D.sel; let n = U.clone(a0), label = '';
+  if (a0.poly && a0.poly.length >= 3 && D.op !== 'move') {
+    let poly = a0.poly.map(q => q.slice());
+    const q = fine ? [Math.round(hit.x * 10) / 10, Math.round(hit.z * 10) / 10] : [snap(hit.x), snap(hit.z)];
+    if (D.op === 'vtx') { poly[D.idx] = q; label = `<b>Ecke ${D.idx + 1}</b> verschieben`; }
+    if (D.op === 'vins') { poly.splice(D.idx, 0, q); label = `<b>Neue Ecke</b> einfügen`; }
+    if (D.op === 'rot') { const bb = G.bbox(a0.poly), c = [bb.cx, bb.cz]; if (D.ang0 === undefined) D.ang0 = Math.atan2(hit.z - c[1], hit.x - c[0]); let da = U.deg(Math.atan2(hit.z - c[1], hit.x - c[0]) - D.ang0); da = fine ? Math.round(da) : Math.round(da / 5) * 5; poly = a0.poly.map(p => { const v = G.rot([p[0] - c[0], p[1] - c[1]], U.rad(da)); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); label = `<b>Drehen</b> · ${fmt(da, 0)}°`; }
+    n.poly = poly; HSS.areaFit(n);
+    preview(sel.id, () => HSS.buildArea(n, HSS.view)); clearGhost();
+    const y = HSS.terrainH(hit.x, hit.z) + 0.9 + (a0.hoehe || 0), pts = poly.concat([poly[0]]).map(p => new V3(p[0], y, p[1]));
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: '#d9531e', depthTest: false })); l.renderOrder = 41; ghost().add(l);
+    hint(`${label} · <b>${fmt(Math.abs(G.area(poly)), 0)} m²</b> · ${poly.length} Ecken · Umschalt: ohne Raster · Alt+Klick auf eine Ecke: löschen`);
+    const lbl = D.op === 'vins' ? 'Ecke einfügen' : D.op === 'rot' ? 'Fläche drehen' : 'Ecke verschieben';
+    D.commit = () => HSS.change(lbl, p => { const a = U.byId(p.areas, sel.id); a.poly = n.poly; HSS.areaFit(a); }, { scope: 'outdoor' });
+    return;
+  }
   if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } const g = groupOf(sel.id); if (g) g.position.set(dx, 0, dz); n.x = a0.x + dx; n.z = a0.z + dz; hint(`<b>Verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); D.commit = () => HSS.change('Fläche verschieben', p => { const a = U.byId(p.areas, sel.id); a.x = Math.round(n.x * 10) / 10; a.z = Math.round(n.z * 10) / 10; if (a.poly) a.poly = a0.poly.map(q => [Math.round((q[0] + dx) * 10) / 10, Math.round((q[1] + dz) * 10) / 10]); }, { scope: 'outdoor' }); return; }
   if (D.op === 'rot') { let r = (a0.rot || 0) + U.deg(Math.atan2(hit.z - a0.z, hit.x - a0.x) - D.ang0); r = fine ? Math.round(r) : Math.round(r / 5) * 5; n.rot = r; label = `<b>Drehen</b> · ${fmt(((r % 360) + 360) % 360, 0)}°`; }
   if (D.op === 'edge') {
@@ -373,12 +397,12 @@ function dragObject(hit, fine, ev) {
 /* Weg */
 function dragPath(hit, fine, ev) {
   const pa0 = D.pa0, sel = D.sel, n = U.clone(pa0);
-  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } n.points = pa0.points.map(q => [q[0] + dx, q[1] + dz]); hint(`<b>Weg verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); }
+  if (D.op === 'move') { let dx = hit.x - D.p0.x, dz = hit.z - D.p0.z; if (!fine) { dx = snap(dx); dz = snap(dz); } n.points = pa0.points.map(q => [q[0] + dx, q[1] + dz, ...q.slice(2)]); hint(`<b>Weg verschieben</b> · ${fmt(Math.hypot(dx, dz))} m`); }
   if (D.op === 'point') {
     let q = fine ? [Math.round(hit.x * 10) / 10, Math.round(hit.z * 10) / 10] : [snap(hit.x), snap(hit.z)];
     const i = D.idx, prev = n.points[i - 1] || n.points[i + 1];
     if (ev.altKey && prev) { const dx = q[0] - prev[0], dz = q[1] - prev[1]; if (Math.abs(dx) > Math.abs(dz)) q[1] = prev[1]; else q[0] = prev[0]; }
-    n.points[i] = q;
+    n.points[i] = q.concat(pa0.points[i].slice(2));
     const len = G.polylineLength(n.points);
     hint(`<b>Punkt ${i + 1}</b> · Weglänge ${fmt(len)} m${prev ? ` · Abschnitt ${fmt(G.dist(prev, q))} m, Richtung ${fmt(((U.deg(Math.atan2(q[1] - prev[1], q[0] - prev[0])) % 360) + 360) % 360, 0)}°` : ''} · Alt: rechtwinklig`);
   }
@@ -507,7 +531,7 @@ function bar(show) {
   const B = (id, label, title, cls = '') => `<button data-m="${id}" class="${cls}" title="${U.esc(title)}">${label}</button>`;
   let h = '';
   if (sel.kind === 'part') h += B('rotL', '⟲', 'Um 15° nach links drehen (Umschalt: 90°)') + B('rotR', '⟳', 'Um 15° nach rechts drehen (Umschalt: 90°)') + B('fUp', '＋G', 'Ein Geschoss aufsetzen') + B('fDn', '－G', 'Oberstes Geschoss entfernen') + B('whole', M.moveWhole ? '▣ Ganzes Gebäude' : '▢ Nur Bauteil', 'Beim Ziehen das ganze Gebäude oder nur dieses Bauteil verschieben', M.moveWhole ? 'on' : '') + B('bridge', '⌒ Brücke', 'Brücke von diesem Gebäude zu einem anderen ziehen') + B('inside', '⌂ Innen', 'Etagen von innen ansehen');
-  if (sel.kind === 'area') h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen');
+  if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
   if (sel.kind === 'bridge') h += B('lvUp', '▲ Ebene', 'Brücke ein Geschoss höher') + B('lvDn', '▼ Ebene', 'Brücke ein Geschoss tiefer') + B('wide', '⇔ breiter', 'Brücke 1 m breiter (Umschalt: schmaler)');
@@ -556,7 +580,8 @@ function act(a, e) {
     HSS.change('Brückenebene', p => { const b = U.byId(p.bridges, sel.id); b.a.floor = fa; b.b.floor = fb; });
   }
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
-  if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id); q.rot = ((q.rot || 0) + (a === 'rotL' ? -15 : 15)) % 360; }, { scope: 'outdoor' });
+  if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
+  if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
     if (a === 'rotL' || a === 'rotR') HSS.change('Weg drehen', p => { const q = U.byId(p.paths, sel.id), c = centroid(q.points), da = U.rad(a === 'rotL' ? -15 : 15); q.points = q.points.map(t => { const v = G.rot([t[0] - c[0], t[1] - c[1]], da); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); }, { scope: 'outdoor' });

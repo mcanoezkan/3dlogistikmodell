@@ -131,11 +131,12 @@ HSS.buildPart = (pt, building, view = {}) => {
   const fc = Object.assign({ type: 'band', color: '#e9ecef', accent: '#144477', glass: '#6f8fa8' }, pt.facade);
   const transparent = view.shell === 'transparent' || view.shell === 'glas', plan = view.stil === 'plan';
   const glassMat = HSS.library.material(fc.glass, 'glas', fc.type === 'glas' || fc.type === 'lamellen' ? 0.55 : 0.7);
-  const wallBase = plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
+  const feP = HSS.fe?.of(pt, building, prj), feG = feP && feP.modus === 'gebaeude';
+  const wallBase = feG ? feP.farbe : plan ? (fc.type === 'parkhaus' ? '#d9dee3' : '#eef1f4') : fc.type === 'klinker' ? (fc.color || '#a0522d') : fc.color;
   const wallMat = transparent ? HSS.library.shared('hull-t|' + wallBase + view.shell, () => { const m = new THREE.MeshStandardMaterial({ color: view.shell === 'glas' ? '#dfe7ee' : wallBase, transparent: true, opacity: view.shell === 'glas' ? 0.14 : 0.18, depthWrite: false, side: THREE.DoubleSide }); if (view.shell === 'glas') m.userData.noToon = true; return m; }) : HSS.library.shared('hull|' + wallBase + '|' + (fc.type === 'klinker'), () => new THREE.MeshStandardMaterial({ color: wallBase, roughness: fc.type === 'klinker' ? 0.9 : 0.7, side: THREE.DoubleSide }));
   const accentMat = LM(fc.accent || '#144477'), frameMat = LM(fc.type === 'klinker' ? '#f4f1ea' : (fc.frame || '#59636e'));
   const glasHull = view.shell === 'glas', tMat = (key, c, o) => HSS.library.shared(key + c + o, () => { const m = new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }); m.userData.noToon = true; return m; });
-  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
+  const slabMat = glasHull ? tMat('glasdecke', '#c9d1d9', 0.28) : LM('#d5d8dc'), roofMat = feP ? (glasHull ? tMat('fedach', feP.farbe, 0.6) : LM(feP.farbe)) : glasHull ? tMat('glasdach', '#e6ebef', 0.22) : LM(pt.roof?.type === 'gruen' ? '#7fa36a' : plan ? '#f4f6f8' : (pt.roof?.color || '#9aa3ad'));
   // Planungsmodell: schlichte Hülle – Wand, Fensterband, Geschosslinie (keine Einzelfenster)
   const bands = [], flines = [];
   const floors = HSS.partFloors(pt);
@@ -194,7 +195,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     const yt = HSS.partTopY(pt, prj) + (topGF + 1) * ex;
     const roof = new THREE.Mesh(HSS.slabGeo(outer, holes, yt - 0.3, 0.3), roofMat); roof.castShadow = roof.receiveShadow = true; roof.userData = Object.assign({ roof: true }, meta); grp.add(roof);
     const par = pt.roof?.parapet ?? 0.9;
-    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
+    if (par > 0 || plan) { const pm = new THREE.Mesh(mergeGeometries(rings.map(({ r }) => ringWallGeo(r, yt - (plan ? 0.35 : 0), plan ? Math.max(0.9, par + 0.35) : par))), LM(feP ? feP.farbe : plan ? (building.color || '#144477') : fc.type === 'glas' ? (fc.accent || '#144477') : wallBase)); pm.castShadow = true; pm.userData = Object.assign({ parapet: true }, meta); grp.add(pm); }
     if (pt.roof?.plant && pt.use !== 'parkhaus' && view.shell !== 'aus' && !glasHull) {
       const bb = G.bbox(HSS.partFootprintLocal(pt).outer);
       const pw = Math.min(bb.w * 0.35, 18), pd = Math.min(bb.d * 0.4, 10);
@@ -203,7 +204,7 @@ HSS.buildPart = (pt, building, view = {}) => {
       box.castShadow = true; box.userData = Object.assign({}, meta); grp.add(box);
       const grill = new THREE.Mesh(new THREE.BoxGeometry(pw * 0.9, 0.5, pd * 0.9), LM('#8d959e')); grill.position.set(c[0], yt + 3.25, c[1]); grill.rotation.y = box.rotation.y; grp.add(grill);
     }
-    if (pt.roof?.type === 'gruen' && !glasHull) { // Gründach-Aufkantung
+    if (pt.roof?.type === 'gruen' && !glasHull && !feP) { // Gründach-Aufkantung
       const g = new THREE.Mesh(HSS.slabGeo(G.fillet(outer, 0), holes, yt, 0.08), LM('#88b073')); g.receiveShadow = true; grp.add(g);
     }
     if (pt.roof?.helipad) { const hp = HSS.library.build('aussen.helipad', { w: Math.min(22, G.bbox(outer).w * 0.8), d: Math.min(22, G.bbox(outer).d * 0.8), h: 0.06 }); hp.position.set(pt.x, yt + 0.02, pt.z); grp.add(hp); }

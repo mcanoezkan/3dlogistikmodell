@@ -253,6 +253,27 @@ HSS.terrainH = (x, z, prj = S.project) => {
       const inner = r * 0.6; h += d <= inner ? k.h : d >= r ? 0 : k.h * (0.5 + 0.5 * Math.cos(Math.PI * (d - inner) / (r - inner)));
     } else h += k.h * Math.exp(-(d * d) / (r * r));
   }
+  // Geländeniveaus: Fläche (Vieleck) auf Höhe h, außen weicher Übergang (Böschung) über „rand“ Meter
+  if (t.niveaus?.length) {
+    let lo = 0, hi = 0;
+    for (const n of t.niveaus) {
+      const P = n.poly; if (!P || P.length < 3 || !n.h) continue;
+      const r = n.rand ?? 8;
+      let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+      for (const q of P) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < z0) z0 = q[1]; if (q[1] > z1) z1 = q[1]; }
+      if (x < x0 - r || x > x1 + r || z < z0 - r || z > z1 + r) continue;
+      let inside = false, d2 = Infinity;
+      for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
+        const a = P[i], b = P[j];
+        if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+        const ex = b[0] - a[0], ez = b[1] - a[1], L = ex * ex + ez * ez, tt = L ? Math.max(0, Math.min(1, ((x - a[0]) * ex + (z - a[1]) * ez) / L)) : 0;
+        const dx = a[0] + ex * tt - x, dz = a[1] + ez * tt - z; d2 = Math.min(d2, dx * dx + dz * dz);
+      }
+      const d = Math.sqrt(d2), w = inside ? 1 : d >= r ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d / r), v = n.h * w;
+      if (v < lo) lo = v; if (v > hi) hi = v;
+    }
+    h += lo + hi;
+  }
   return h;
 };
 
@@ -329,7 +350,7 @@ HSS.partFloors = pt => { const a = []; const nb = pt.stackOn ? 0 : (pt.basements
 // Globale Geschossbezeichnung
 HSS.floorName = (gf) => (gf < 0 ? (gf === -1 ? 'UG' : (-gf) + '. UG') : gf === 0 ? 'EG' : gf + '. OG');
 HSS.globalFloor = (pt, f, prj = S.project) => f + (f >= 0 ? HSS.partFloorOffset(pt, prj) : 0);
-HSS.localFloor = (pt, gf, prj = S.project) => { const off = HSS.partFloorOffset(pt, prj); const f = gf >= 0 ? gf - off : gf; return HSS.partFloors(pt).includes(f) ? f : null; };
+HSS.localFloor = (pt, gf, prj = S.project) => { const off = HSS.partFloorOffset(pt, prj); const f = (gf >= 0 || off < 0) ? gf - off : gf; /* off < 0: Bauteil nur in Untergeschossen (z. B. U2) */ return HSS.partFloors(pt).includes(f) ? f : null; };
 
 HSS.interior = (partId, f, create = false, prj = S.project) => {
   const I = prj.interiors[partId];

@@ -165,13 +165,14 @@ P2.palette = () => {
     <button data-t="poly" title="Freier Grundriss (Vieleck)">⬠ Vieleck</button>
     <label title="Geschosse neuer Gebäude">Geschosse <input type="number" id="p2Fl" min="1" max="40" value="${P2.floors || 4}"></label>
     <span class="vsep"></span>
-    <button data-t="strasse">Straße</button><button data-t="weg">Weg</button><button data-t="parkplatz">Parkplatz</button><button data-t="gruen">Grün</button>
+    <button data-t="strasse">Straße</button><button data-t="weg">Weg</button><button data-t="parkplatz">Parkplatz</button><button data-t="gruen" title="Grünfläche: Rechteck aufziehen oder Eckpunkte anklicken">Grün</button><button data-t="gruenPoly" title="Grünfläche in beliebiger Form: Eckpunkte anklicken">⬠ Grün frei</button>
     <span class="vsep"></span><button data-t="3d" class="primary" title="Zurück in die 3D-Ansicht">3D ansehen</button>`;
   el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => {
     const t = b.dataset.t; b.blur();
     if (t === 'rect') P2.toolRect(); if (t === 'rect3') P2.toolRect3(); if (t === 'poly') P2.toolPoly();
     if (t === 'strasse' || t === 'weg') HSS.tools.drawPath(t);
     if (t === 'parkplatz' || t === 'gruen') HSS.tools.drawArea(t);
+    if (t === 'gruenPoly') HSS.tools.drawArea('gruen', { poly: true });
     if (t === '3d') HSS.plan2d.set(false);
   });
   el.querySelector('#p2Fl').onchange = e => { P2.floors = U.clamp(+e.target.value || 4, 1, 40); };
