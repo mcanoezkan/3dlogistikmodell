@@ -6,8 +6,8 @@
   "id": "prj_d1h6pymmm_v2",
   "name": "Klinikum Bielefeld-Mitte – Bestand (NIZ, U2, Bunker, EG Hauptgebäude)",
   "created": "2026-10-15T22:35:38.638Z",
-  "modified": "2026-11-05T09:00:00.000Z",
-  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.\n• Etagen nach Bestandsplänen bereinigt (Stand Nov. 2026): Angenommene Treppenhäuser und Aufzüge im Bereich der Pläne (Ebene E Teil 1, Haus 6/7 KG) entfernt – dort gilt die Erschließung laut Plan. Angenommene Schächte je Gebäude auf einen Kern reduziert (Haus 7, Parkhaus 2, Häuser 2, 5, 10, Nebenteile Hauptgebäude); Haus 7 hat ein angenommenes Treppenhaus und den Aufzug laut Plan KG. Aufzugstüren zeigen zum Flur (Aufzüge 1, 4, 6, 7, Ärztehaus A1). Die angenommene Radiologie auf Ebene E liegt nur noch außerhalb des Plans (363 m²). Aufzug 12 als Schacht ohne Fenster. Alle 852 Warenströme routbar.\n• Bäume auf 109 ausgedünnt (47 aus OpenStreetMap, übrige aus dem Luftbild mit mindestens 11 m Abstand).\n• Haus 6/7 Kellergeschoss: 84 Türen aus den Türbögen des Flucht- und Rettungsplans (Feb. 2023) übernommen – 64 Öffnungen, davon 12 zweiflügelige Flur-/Rauchschutztüren; wo das vereinfachte Modell keine Wand hatte (Flurtüren, Ausgang Windfang), ist eine Türwand ergänzt. Lage über die Raumnummern des Plans eingepasst (ca. ±0,5 m).",
+  "modified": "2026-11-05T12:00:00.000Z",
+  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.\n• Etagen nach Bestandsplänen bereinigt (Stand Nov. 2026): Angenommene Treppenhäuser und Aufzüge im Bereich der Pläne (Ebene E Teil 1, Haus 6/7 KG) entfernt – dort gilt die Erschließung laut Plan. Angenommene Schächte je Gebäude auf einen Kern reduziert (Haus 7, Parkhaus 2, Häuser 2, 5, 10, Nebenteile Hauptgebäude); Haus 7 hat ein angenommenes Treppenhaus und den Aufzug laut Plan KG. Aufzugstüren zeigen zum Flur (Aufzüge 1, 4, 6, 7, Ärztehaus A1). Die angenommene Radiologie auf Ebene E liegt nur noch außerhalb des Plans (363 m²). Aufzug 12 als Schacht ohne Fenster. Alle 852 Warenströme routbar.\n• Bäume auf 109 ausgedünnt (47 aus OpenStreetMap, übrige aus dem Luftbild mit mindestens 11 m Abstand).\n• Haus 6/7 Kellergeschoss: 84 Türen aus den Türbögen des Flucht- und Rettungsplans (Feb. 2023) übernommen – 64 Öffnungen, davon 12 zweiflügelige Flur-/Rauchschutztüren; wo das vereinfachte Modell keine Wand hatte (Flurtüren, Ausgang Windfang), ist eine Türwand ergänzt. Lage über die Raumnummern des Plans eingepasst (ca. ±0,5 m).\n• Parkhaus 2: Ebene UG ergänzt (Höhe Kellergeschoss Haus 6/7, 3,80 m unter Gelände) mit Fahrgasse, 51 Stellplätzen (ca. 70 % belegt), Rampen West/Ost; Aufzug und Treppenhaus halten jetzt auch im UG. Lage der Ebene und Aufteilung angenommen – OSM nennt 2,5 Geschosse (Split-Level) ohne Untergeschoss.\n• Umfahrung zwischen Haus 6/7 und Parkhaus 2 nach OpenStreetMap: Vom Ausgang U02 (Windfang Kellergeschoss) führt die Zufahrt (access=no) abgesenkt auf Ebene KG an der Ostseite von Parkhaus 2 entlang, mit Stützmauer (OSM barrier=retaining_wall), und steigt danach zur Eduard-Windthorst-Straße an; die Zufahrt Nord zwischen Parkhaus 2 und Ärztehaus steigt nach Westen an (Steigung angenommen). Im Modell als Geländeeinschnitt (Geländeniveaus) mit Stützmauer; in der Etagenansicht UG sichtbar.",
   "standort": {
    "id": "bielefeld",
    "variante": "ist",
@@ -44,7 +44,355 @@
    "dir": 0,
    "pct": 0
   },
-  "hills": []
+  "hills": [],
+  "niveaus": [
+   {
+    "id": "niv_umf_0",
+    "name": "Umfahrung Haus 6/7 – Parkhaus 2 (Vorplatz Ausgang U02, Ebene KG)",
+    "poly": [
+     [
+      -124.0,
+      -69.4
+     ],
+     [
+      -115.2,
+      -69.4
+     ],
+     [
+      -115.2,
+      -103.0
+     ],
+     [
+      -120.4,
+      -103.0
+     ],
+     [
+      -120.4,
+      -82.0
+     ],
+     [
+      -124.0,
+      -78.2
+     ]
+    ],
+    "h": -3.8,
+    "rand": 1.0,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_1",
+    "name": "Umfahrung Ost – Rampe 1/6",
+    "poly": [
+     [
+      -120.4,
+      -103.0
+     ],
+     [
+      -115.2,
+      -103.0
+     ],
+     [
+      -115.2,
+      -106.67
+     ],
+     [
+      -120.4,
+      -106.67
+     ]
+    ],
+    "h": -3.48,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_2",
+    "name": "Umfahrung Ost – Rampe 2/6",
+    "poly": [
+     [
+      -120.4,
+      -106.67
+     ],
+     [
+      -115.2,
+      -106.67
+     ],
+     [
+      -115.2,
+      -110.33
+     ],
+     [
+      -120.4,
+      -110.33
+     ]
+    ],
+    "h": -2.85,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_3",
+    "name": "Umfahrung Ost – Rampe 3/6",
+    "poly": [
+     [
+      -120.4,
+      -110.33
+     ],
+     [
+      -115.2,
+      -110.33
+     ],
+     [
+      -115.2,
+      -114.0
+     ],
+     [
+      -120.4,
+      -114.0
+     ]
+    ],
+    "h": -2.22,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_4",
+    "name": "Umfahrung Ost – Rampe 4/6",
+    "poly": [
+     [
+      -120.4,
+      -114.0
+     ],
+     [
+      -115.2,
+      -114.0
+     ],
+     [
+      -115.2,
+      -117.67
+     ],
+     [
+      -120.4,
+      -117.67
+     ]
+    ],
+    "h": -1.58,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_5",
+    "name": "Umfahrung Ost – Rampe 5/6",
+    "poly": [
+     [
+      -120.4,
+      -117.67
+     ],
+     [
+      -115.2,
+      -117.67
+     ],
+     [
+      -115.2,
+      -121.33
+     ],
+     [
+      -120.4,
+      -121.33
+     ]
+    ],
+    "h": -0.95,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_6",
+    "name": "Umfahrung Ost – Rampe 6/6",
+    "poly": [
+     [
+      -120.4,
+      -121.33
+     ],
+     [
+      -115.2,
+      -121.33
+     ],
+     [
+      -115.2,
+      -125.0
+     ],
+     [
+      -120.4,
+      -125.0
+     ]
+    ],
+    "h": -0.32,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_7",
+    "name": "Umfahrung Nord – Rampe 1/6 (angenommen)",
+    "poly": [
+     [
+      -124.0,
+      -72.9
+     ],
+     [
+      -124.0,
+      -77.4
+     ],
+     [
+      -128.67,
+      -77.4
+     ],
+     [
+      -128.67,
+      -72.9
+     ]
+    ],
+    "h": -3.48,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_8",
+    "name": "Umfahrung Nord – Rampe 2/6 (angenommen)",
+    "poly": [
+     [
+      -128.67,
+      -72.9
+     ],
+     [
+      -128.67,
+      -77.4
+     ],
+     [
+      -133.33,
+      -77.4
+     ],
+     [
+      -133.33,
+      -72.9
+     ]
+    ],
+    "h": -2.85,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_9",
+    "name": "Umfahrung Nord – Rampe 3/6 (angenommen)",
+    "poly": [
+     [
+      -133.33,
+      -72.9
+     ],
+     [
+      -133.33,
+      -77.4
+     ],
+     [
+      -138.0,
+      -77.4
+     ],
+     [
+      -138.0,
+      -72.9
+     ]
+    ],
+    "h": -2.22,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_10",
+    "name": "Umfahrung Nord – Rampe 4/6 (angenommen)",
+    "poly": [
+     [
+      -138.0,
+      -72.9
+     ],
+     [
+      -138.0,
+      -77.4
+     ],
+     [
+      -142.67,
+      -77.4
+     ],
+     [
+      -142.67,
+      -72.9
+     ]
+    ],
+    "h": -1.58,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_11",
+    "name": "Umfahrung Nord – Rampe 5/6 (angenommen)",
+    "poly": [
+     [
+      -142.67,
+      -72.9
+     ],
+     [
+      -142.67,
+      -77.4
+     ],
+     [
+      -147.33,
+      -77.4
+     ],
+     [
+      -147.33,
+      -72.9
+     ]
+    ],
+    "h": -0.95,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   },
+   {
+    "id": "niv_umf_12",
+    "name": "Umfahrung Nord – Rampe 6/6 (angenommen)",
+    "poly": [
+     [
+      -147.33,
+      -72.9
+     ],
+     [
+      -147.33,
+      -77.4
+     ],
+     [
+      -152.0,
+      -77.4
+     ],
+     [
+      -152.0,
+      -72.9
+     ]
+    ],
+    "h": -0.32,
+    "rand": 1.6,
+    "standort": true,
+    "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+   }
+  ]
  },
  "buildings": [
   {
@@ -7592,7 +7940,7 @@
   },
   {
    "id": "bie_P2",
-   "name": "Parkhaus 2 (8 Ebenen, Oelmühlenstraße)",
+   "name": "Parkhaus 2 (Split-Level, Oelmühlenstraße) mit Ebene UG",
    "kurz": "P2",
    "color": "#4b5058",
    "parts": [
@@ -7633,7 +7981,7 @@
      "floors": 4,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7689,7 +8037,7 @@
      "floors": 4,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7761,7 +8109,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7845,7 +8193,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7905,7 +8253,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7961,7 +8309,7 @@
      "floors": 3,
      "floorHeight": 3.8,
      "floorHeights": {},
-     "basements": 0,
+     "basements": 1,
      "basementHeight": 3.8,
      "facade": {
       "type": "parkhaus",
@@ -7980,7 +8328,8 @@
      },
      "use": "parkhaus"
     }
-   ]
+   ],
+   "info": " Ebene UG (Höhe Umfahrung/Kellergeschoss Haus 6/7) ergänzt – Lage der Ebene, Stellplätze und Zufahrt angenommen. Ebene UG (Höhe Umfahrung/Kellergeschoss Haus 6/7) ergänzt – Lage der Ebene, Stellplätze und Zufahrt angenommen. Ebene UG (Höhe Umfahrung/Kellergeschoss Haus 6/7) ergänzt – Lage der Ebene, Stellplätze und Zufahrt angenommen. Ebene UG (Höhe Umfahrung/Kellergeschoss Haus 6/7) ergänzt – Lage der Ebene, Stellplätze und Zufahrt angenommen."
   },
   {
    "id": "bie_H2",
@@ -43180,34 +43529,40 @@
   },
   {
    "id": "path_bie_w18",
-   "name": "Campusweg",
-   "kind": "weg",
+   "name": "Umfahrung Haus 6/7 – Parkhaus 2 (Ost): Ausgang U02 → Eduard-Windthorst-Straße, abgesenkt mit Stützmauer",
+   "kind": "zufahrt",
    "points": [
     [
      -118.2,
      -69.8
     ],
     [
-     -118,
+     -118.0,
      -77.3
     ],
     [
-     -117.4,
-     -101.5
+     -117.6,
+     -95.0
     ],
     [
-     -117.2,
-     -107.6
+     -117.4,
+     -103.0
+    ],
+    [
+     -117.3,
+     -125.0
     ]
    ],
-   "width": 3.5,
+   "width": 4.5,
    "smooth": false,
    "elev": "gelaende",
    "y": -4,
    "ramp": null,
    "traffic": 0,
-   "speedKmh": null,
-   "standort": true
+   "speedKmh": 10,
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
   },
   {
    "id": "path_bie_w19",
@@ -45133,8 +45488,8 @@
   },
   {
    "id": "path_bie_w82",
-   "name": "Campusweg",
-   "kind": "weg",
+   "name": "Umfahrung Nord zwischen Parkhaus 2 und Ärztehaus/Haus 6/7 (Feuerwehr/Rettung, access=no)",
+   "kind": "zufahrt",
    "points": [
     [
      -182.6,
@@ -45172,7 +45527,9 @@
    "ramp": null,
    "traffic": 0,
    "speedKmh": null,
-   "standort": true
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
   },
   {
    "id": "path_bie_w83",
@@ -46608,6 +46965,31 @@
    "traffic": 0,
    "speedKmh": null,
    "height": 2.8
+  },
+  {
+   "id": "path_p2ug_zugang",
+   "name": "Zufahrt Parkhaus 2 Ebene UG von der Umfahrung (angenommen)",
+   "kind": "zufahrt",
+   "points": [
+    [
+     -117.6,
+     -97.0
+    ],
+    [
+     -122.6,
+     -97.4
+    ]
+   ],
+   "width": 3.5,
+   "smooth": false,
+   "elev": "gelaende",
+   "y": 0,
+   "ramp": null,
+   "traffic": 0,
+   "speedKmh": 10,
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
   }
  ],
  "areas": [
@@ -49348,26 +49730,6 @@
    "name": "Grünfläche Campus (Luftbild DOP NRW)",
    "poly": [
     [
-     -116.93,
-     -91.54
-    ],
-    [
-     -117.13,
-     -90.13
-    ],
-    [
-     -114.69,
-     -86.8
-    ],
-    [
-     -111.36,
-     -91.28
-    ],
-    [
-     -107,
-     -91.49
-    ],
-    [
      -105.05,
      -92.91
     ],
@@ -49416,8 +49778,12 @@
      -74.92
     ],
     [
-     -115.7,
-     -73.09
+     -114.9,
+     -74.14
+    ],
+    [
+     -114.9,
+     -71.65
     ],
     [
      -113.69,
@@ -49461,7 +49827,7 @@
     ],
     [
      -103.61,
-     -42
+     -42.0
     ],
     [
      -102.04,
@@ -49493,7 +49859,7 @@
     ],
     [
      -84.31,
-     -36
+     -36.0
     ],
     [
      -81.52,
@@ -49833,7 +50199,7 @@
     ],
     [
      -49.72,
-     -67
+     -67.0
     ],
     [
      -51.35,
@@ -49992,12 +50358,32 @@
      -97.11
     ],
     [
-     -114,
+     -114.0,
      -95.7
     ],
     [
      -114.56,
      -93.85
+    ],
+    [
+     -114.9,
+     -93.52
+    ],
+    [
+     -114.9,
+     -87.09
+    ],
+    [
+     -114.69,
+     -86.8
+    ],
+    [
+     -111.36,
+     -91.28
+    ],
+    [
+     -107.0,
+     -91.49
     ]
    ],
    "x": -78.2,
@@ -51689,6 +52075,237 @@
    "density": 0,
    "standort": true,
    "quelle": "Vegetation aus Luftbild DOP NRW 10 cm (dl-de/zero-2.0), Abgleich mit OpenStreetMap, Nov. 2026"
+  },
+  {
+   "id": "area_umf_mauer_0",
+   "kind": "platz",
+   "name": "Stützmauer Umfahrung Ost (OSM barrier=retaining_wall)",
+   "poly": [
+    [
+     -115.3,
+     -103.0
+    ],
+    [
+     -115.6,
+     -103.0
+    ],
+    [
+     -115.6,
+     -69.6
+    ],
+    [
+     -115.3,
+     -69.6
+    ]
+   ],
+   "x": -115.45,
+   "z": -86.3,
+   "w": 0.3,
+   "d": 33.4,
+   "rot": 0,
+   "hoehe": 4.7,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_1",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 1",
+   "poly": [
+    [
+     -115.3,
+     -106.67
+    ],
+    [
+     -115.6,
+     -106.67
+    ],
+    [
+     -115.6,
+     -103.0
+    ],
+    [
+     -115.3,
+     -103.0
+    ]
+   ],
+   "x": -115.45,
+   "z": -104.83,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 4.38,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_2",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 2",
+   "poly": [
+    [
+     -115.3,
+     -110.33
+    ],
+    [
+     -115.6,
+     -110.33
+    ],
+    [
+     -115.6,
+     -106.67
+    ],
+    [
+     -115.3,
+     -106.67
+    ]
+   ],
+   "x": -115.45,
+   "z": -108.5,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 3.75,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_3",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 3",
+   "poly": [
+    [
+     -115.3,
+     -114.0
+    ],
+    [
+     -115.6,
+     -114.0
+    ],
+    [
+     -115.6,
+     -110.33
+    ],
+    [
+     -115.3,
+     -110.33
+    ]
+   ],
+   "x": -115.45,
+   "z": -112.17,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 3.12,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_4",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 4",
+   "poly": [
+    [
+     -115.3,
+     -117.67
+    ],
+    [
+     -115.6,
+     -117.67
+    ],
+    [
+     -115.6,
+     -114.0
+    ],
+    [
+     -115.3,
+     -114.0
+    ]
+   ],
+   "x": -115.45,
+   "z": -115.83,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 2.48,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_5",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 5",
+   "poly": [
+    [
+     -115.3,
+     -121.33
+    ],
+    [
+     -115.6,
+     -121.33
+    ],
+    [
+     -115.6,
+     -117.67
+    ],
+    [
+     -115.3,
+     -117.67
+    ]
+   ],
+   "x": -115.45,
+   "z": -119.5,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 1.85,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+  },
+  {
+   "id": "area_umf_mauer_6",
+   "kind": "platz",
+   "name": "Stützmauer Rampe Ost 6",
+   "poly": [
+    [
+     -115.3,
+     -125.0
+    ],
+    [
+     -115.6,
+     -125.0
+    ],
+    [
+     -115.6,
+     -121.33
+    ],
+    [
+     -115.3,
+     -121.33
+    ]
+   ],
+   "x": -115.45,
+   "z": -123.17,
+   "w": 0.3,
+   "d": 3.67,
+   "rot": 0,
+   "hoehe": 1.22,
+   "color": "#b7b2a8",
+   "standort": true,
+   "etage": -1,
+   "quelle": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
   }
  ],
  "objects": [
@@ -52066,7 +52683,8 @@
    "x": -1.3,
    "z": 0,
    "rot": 0,
-   "name": "Aufzug (angenommen)"
+   "name": "Aufzug (angenommen, UG–3)",
+   "vonGF": -1
   },
   {
    "id": "obj_auto_t_bie_P2_2",
@@ -52079,7 +52697,8 @@
    "x": 1.6,
    "z": 0,
    "rot": 0,
-   "name": "Treppenhaus (angenommen)"
+   "name": "Treppenhaus (angenommen, UG–3)",
+   "vonGF": -1
   },
   {
    "id": "obj_w62z8hmoy",
@@ -99957,20 +100576,6 @@
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
   },
   {
-   "id": "obj_campus_baum_193",
-   "lib": "gruen.baum.laub",
-   "x": -115,
-   "z": -90.7,
-   "rot": 301,
-   "size": {
-    "w": 8.5,
-    "d": 8.5,
-    "h": 13.3
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
    "id": "obj_campus_baum_194",
    "lib": "gruen.baum.laub",
    "x": -125.5,
@@ -100022,20 +100627,6 @@
     "w": 8.3,
     "d": 8.3,
     "h": 13.1
-   },
-   "standort": true,
-   "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
-  },
-  {
-   "id": "obj_campus_baum_203",
-   "lib": "gruen.baum.laub",
-   "x": -122.5,
-   "z": -117.7,
-   "rot": 311,
-   "size": {
-    "w": 7.6,
-    "d": 7.6,
-    "h": 11.9
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
@@ -100235,6 +100826,496 @@
    },
    "standort": true,
    "quelle": "Baumkrone aus Luftbild DOP NRW (Lage ±2 m)"
+  },
+  {
+   "id": "obj_P2UG_kfz_0",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -10.35,
+   "z": -4.85,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_1",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -7.87,
+   "z": -5.12,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_2",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -2.9,
+   "z": -5.65,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_3",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -0.41,
+   "z": -5.92,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_4",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 4.56,
+   "z": -6.45,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_5",
+   "lib": "kfz.pkw.klein",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 7.05,
+   "z": -6.72,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_6",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 9.53,
+   "z": -6.99,
+   "rot": 173.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_7",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -14.19,
+   "z": 6.22,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_8",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -11.71,
+   "z": 5.96,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_9",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -6.74,
+   "z": 5.42,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_10",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": -4.25,
+   "z": 5.16,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_11",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 0.72,
+   "z": 4.62,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_12",
+   "lib": "kfz.pkw.klein",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 3.21,
+   "z": 4.35,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_13",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 5.69,
+   "z": 4.09,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_14",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 10.66,
+   "z": 3.55,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_15",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 13.15,
+   "z": 3.28,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_16",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_3",
+    "floor": -1
+   },
+   "x": 18.12,
+   "z": 2.75,
+   "rot": 353.9,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_17",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 12.49,
+   "z": 4.71,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_18",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 7.52,
+   "z": 5.24,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_19",
+   "lib": "kfz.pkw.klein",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 5.03,
+   "z": 5.51,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_20",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 2.55,
+   "z": 5.78,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_21",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -2.43,
+   "z": 6.32,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_22",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -4.91,
+   "z": 6.59,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_23",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -9.88,
+   "z": 7.12,
+   "rot": 353.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_24",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 18.81,
+   "z": -6.64,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_25",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 13.84,
+   "z": -6.1,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_26",
+   "lib": "kfz.pkw.klein",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 11.35,
+   "z": -5.83,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_27",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 8.86,
+   "z": -5.56,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_28",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 3.89,
+   "z": -5.03,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_29",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": 1.41,
+   "z": -4.76,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_30",
+   "lib": "kfz.pkw.suv",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -3.56,
+   "z": -4.22,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_31",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -6.05,
+   "z": -3.95,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_32",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -11.02,
+   "z": -3.42,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_33",
+   "lib": "kfz.pkw.klein",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -13.51,
+   "z": -3.15,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
+  },
+  {
+   "id": "obj_P2UG_kfz_34",
+   "lib": "kfz.pkw",
+   "host": {
+    "part": "bie_P2_2",
+    "floor": -1
+   },
+   "x": -15.99,
+   "z": -2.88,
+   "rot": 173.8,
+   "standort": true,
+   "name": "PKW Parkhaus 2 Ebene UG",
+   "quelle": "Annahme (Belegung ca. 70 %)"
   }
  ],
  "interiors": {
@@ -173871,6 +174952,1840 @@
       "w": 2.62,
       "d": 4.52,
       "hinweis": "Flucht- und Rettungsplan Haus 6/7 Kellergeschoss (Stand Feb. 2023), vereinfacht digitalisiert, Raumnummer laut Plan"
+     }
+    ]
+   }
+  },
+  "bie_P2_3": {
+   "-1": {
+    "walls": [],
+    "doors": [],
+    "rooms": [
+     {
+      "id": "r_P2UG_3_0",
+      "use": "parkebene",
+      "name": "Parkhaus 2 · Ebene UG Nord (Fahrgasse)",
+      "poly": [
+       [
+        -20.86,
+        4.53
+       ],
+       [
+        20.66,
+        0.06
+       ],
+       [
+        20.05,
+        -5.59
+       ],
+       [
+        12.95,
+        -4.85
+       ],
+       [
+        12.92,
+        -4.85
+       ],
+       [
+        12.9,
+        -4.85
+       ],
+       [
+        12.87,
+        -4.85
+       ],
+       [
+        12.85,
+        -4.86
+       ],
+       [
+        12.83,
+        -4.87
+       ],
+       [
+        12.8,
+        -4.88
+       ],
+       [
+        12.78,
+        -4.89
+       ],
+       [
+        12.76,
+        -4.91
+       ],
+       [
+        12.75,
+        -4.92
+       ],
+       [
+        -14.2,
+        -2.02
+       ],
+       [
+        -14.22,
+        -2.01
+       ],
+       [
+        -14.24,
+        -1.99
+       ],
+       [
+        -14.26,
+        -1.98
+       ],
+       [
+        -14.28,
+        -1.97
+       ],
+       [
+        -14.31,
+        -1.96
+       ],
+       [
+        -14.33,
+        -1.96
+       ],
+       [
+        -14.35,
+        -1.95
+       ],
+       [
+        -21.48,
+        -1.21
+       ]
+      ],
+      "x": -0.41,
+      "z": -0.53,
+      "w": 42.14,
+      "d": 10.12,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#8f959c"
+     },
+     {
+      "id": "r_P2UG_3_1",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -11.91,
+        -7.04
+       ],
+       [
+        -11.41,
+        -2.38
+       ],
+       [
+        -13.77,
+        -2.13
+       ],
+       [
+        -14.27,
+        -6.78
+       ]
+      ],
+      "x": -12.84,
+      "z": -4.58,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_2",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -9.42,
+        -7.3
+       ],
+       [
+        -8.92,
+        -2.65
+       ],
+       [
+        -11.29,
+        -2.4
+       ],
+       [
+        -11.79,
+        -7.05
+       ]
+      ],
+      "x": -10.36,
+      "z": -4.85,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_3",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -6.94,
+        -7.57
+       ],
+       [
+        -6.43,
+        -2.92
+       ],
+       [
+        -8.8,
+        -2.66
+       ],
+       [
+        -9.3,
+        -7.32
+       ]
+      ],
+      "x": -7.87,
+      "z": -5.12,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_4",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -4.45,
+        -7.84
+       ],
+       [
+        -3.95,
+        -3.18
+       ],
+       [
+        -6.32,
+        -2.93
+       ],
+       [
+        -6.82,
+        -7.58
+       ]
+      ],
+      "x": -5.38,
+      "z": -5.38,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_5",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -1.96,
+        -8.11
+       ],
+       [
+        -1.46,
+        -3.45
+       ],
+       [
+        -3.83,
+        -3.2
+       ],
+       [
+        -4.33,
+        -7.85
+       ]
+      ],
+      "x": -2.9,
+      "z": -5.65,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_6",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        0.52,
+        -8.37
+       ],
+       [
+        1.02,
+        -3.72
+       ],
+       [
+        -1.34,
+        -3.46
+       ],
+       [
+        -1.84,
+        -8.12
+       ]
+      ],
+      "x": -0.41,
+      "z": -5.91,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_7",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        3.01,
+        -8.64
+       ],
+       [
+        3.51,
+        -3.99
+       ],
+       [
+        1.14,
+        -3.73
+       ],
+       [
+        0.64,
+        -8.39
+       ]
+      ],
+      "x": 2.07,
+      "z": -6.19,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_8",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        5.49,
+        -8.91
+       ],
+       [
+        5.99,
+        -4.25
+       ],
+       [
+        3.63,
+        -4.0
+       ],
+       [
+        3.13,
+        -8.65
+       ]
+      ],
+      "x": 4.56,
+      "z": -6.46,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_9",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        7.98,
+        -9.17
+       ],
+       [
+        8.48,
+        -4.52
+       ],
+       [
+        6.11,
+        -4.27
+       ],
+       [
+        5.61,
+        -8.92
+       ]
+      ],
+      "x": 7.04,
+      "z": -6.72,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_10",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        10.46,
+        -9.44
+       ],
+       [
+        10.96,
+        -4.79
+       ],
+       [
+        8.6,
+        -4.53
+       ],
+       [
+        8.1,
+        -9.19
+       ]
+      ],
+      "x": 9.53,
+      "z": -6.98,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_11",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -15.74,
+        4.04
+       ],
+       [
+        -15.24,
+        8.69
+       ],
+       [
+        -17.61,
+        8.94
+       ],
+       [
+        -18.11,
+        4.29
+       ]
+      ],
+      "x": -16.68,
+      "z": 6.49,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_12",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -13.26,
+        3.77
+       ],
+       [
+        -12.76,
+        8.42
+       ],
+       [
+        -15.13,
+        8.68
+       ],
+       [
+        -15.63,
+        4.02
+       ]
+      ],
+      "x": -14.2,
+      "z": 6.22,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_13",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -10.77,
+        3.5
+       ],
+       [
+        -10.27,
+        8.16
+       ],
+       [
+        -12.64,
+        8.41
+       ],
+       [
+        -13.14,
+        3.76
+       ]
+      ],
+      "x": -11.71,
+      "z": 5.96,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_14",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -8.29,
+        3.24
+       ],
+       [
+        -7.79,
+        7.89
+       ],
+       [
+        -10.15,
+        8.14
+       ],
+       [
+        -10.65,
+        3.49
+       ]
+      ],
+      "x": -9.22,
+      "z": 5.69,
+      "w": 2.86,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_15",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -5.8,
+        2.97
+       ],
+       [
+        -5.3,
+        7.62
+       ],
+       [
+        -7.67,
+        7.88
+       ],
+       [
+        -8.17,
+        3.22
+       ]
+      ],
+      "x": -6.73,
+      "z": 5.42,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_16",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -3.32,
+        2.7
+       ],
+       [
+        -2.82,
+        7.35
+       ],
+       [
+        -5.18,
+        7.61
+       ],
+       [
+        -5.68,
+        2.96
+       ]
+      ],
+      "x": -4.25,
+      "z": 5.16,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_17",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -0.83,
+        2.43
+       ],
+       [
+        -0.33,
+        7.09
+       ],
+       [
+        -2.7,
+        7.34
+       ],
+       [
+        -3.2,
+        2.69
+       ]
+      ],
+      "x": -1.77,
+      "z": 4.88,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_18",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        1.65,
+        2.17
+       ],
+       [
+        2.16,
+        6.82
+       ],
+       [
+        -0.21,
+        7.07
+       ],
+       [
+        -0.71,
+        2.42
+       ]
+      ],
+      "x": 0.73,
+      "z": 4.62,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_19",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        4.14,
+        1.9
+       ],
+       [
+        4.64,
+        6.55
+       ],
+       [
+        2.27,
+        6.81
+       ],
+       [
+        1.77,
+        2.15
+       ]
+      ],
+      "x": 3.21,
+      "z": 4.35,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_20",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        6.63,
+        1.63
+       ],
+       [
+        7.13,
+        6.29
+       ],
+       [
+        4.76,
+        6.54
+       ],
+       [
+        4.26,
+        1.89
+       ]
+      ],
+      "x": 5.7,
+      "z": 4.08,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_21",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        9.11,
+        1.37
+       ],
+       [
+        9.61,
+        6.02
+       ],
+       [
+        7.25,
+        6.27
+       ],
+       [
+        6.75,
+        1.62
+       ]
+      ],
+      "x": 8.18,
+      "z": 3.82,
+      "w": 2.86,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_22",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        11.6,
+        1.1
+       ],
+       [
+        12.1,
+        5.75
+       ],
+       [
+        9.73,
+        6.01
+       ],
+       [
+        9.23,
+        1.35
+       ]
+      ],
+      "x": 10.66,
+      "z": 3.55,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_23",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        14.08,
+        0.83
+       ],
+       [
+        14.58,
+        5.48
+       ],
+       [
+        12.22,
+        5.74
+       ],
+       [
+        11.72,
+        1.09
+       ]
+      ],
+      "x": 13.15,
+      "z": 3.29,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_24",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        16.57,
+        0.56
+       ],
+       [
+        17.07,
+        5.22
+       ],
+       [
+        14.7,
+        5.47
+       ],
+       [
+        14.2,
+        0.82
+       ]
+      ],
+      "x": 15.63,
+      "z": 3.01,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_3_25",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        19.05,
+        0.3
+       ],
+       [
+        19.55,
+        4.95
+       ],
+       [
+        17.19,
+        5.2
+       ],
+       [
+        16.69,
+        0.55
+       ]
+      ],
+      "x": 18.12,
+      "z": 2.75,
+      "w": 2.86,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     }
+    ]
+   }
+  },
+  "bie_P2_2": {
+   "-1": {
+    "walls": [],
+    "doors": [],
+    "rooms": [
+     {
+      "id": "r_P2UG_2_0",
+      "use": "parkebene",
+      "name": "Parkhaus 2 · Ebene UG Süd (Fahrgasse)",
+      "poly": [
+       [
+        20.51,
+        -4.41
+       ],
+       [
+        -20.99,
+        0.07
+       ],
+       [
+        -20.38,
+        5.72
+       ],
+       [
+        -13.28,
+        4.98
+       ],
+       [
+        -13.25,
+        4.98
+       ],
+       [
+        -13.23,
+        4.98
+       ],
+       [
+        -13.2,
+        4.98
+       ],
+       [
+        -13.18,
+        4.99
+       ],
+       [
+        -13.16,
+        5.0
+       ],
+       [
+        -13.13,
+        5.01
+       ],
+       [
+        -13.11,
+        5.02
+       ],
+       [
+        -13.09,
+        5.04
+       ],
+       [
+        -13.07,
+        5.05
+       ],
+       [
+        -13.07,
+        5.05
+       ],
+       [
+        13.88,
+        2.14
+       ],
+       [
+        13.89,
+        2.14
+       ],
+       [
+        13.91,
+        2.12
+       ],
+       [
+        13.93,
+        2.11
+       ],
+       [
+        13.95,
+        2.1
+       ],
+       [
+        13.98,
+        2.09
+       ],
+       [
+        14.0,
+        2.09
+       ],
+       [
+        14.02,
+        2.08
+       ],
+       [
+        21.13,
+        1.34
+       ]
+      ],
+      "x": 0.07,
+      "z": 0.65,
+      "w": 42.12,
+      "d": 10.13,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#8f959c"
+     },
+     {
+      "id": "r_P2UG_2_1",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        11.56,
+        7.16
+       ],
+       [
+        11.05,
+        2.51
+       ],
+       [
+        13.42,
+        2.25
+       ],
+       [
+        13.92,
+        6.91
+       ]
+      ],
+      "x": 12.48,
+      "z": 4.71,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_2",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        9.07,
+        7.43
+       ],
+       [
+        8.57,
+        2.78
+       ],
+       [
+        10.93,
+        2.52
+       ],
+       [
+        11.44,
+        7.17
+       ]
+      ],
+      "x": 10.0,
+      "z": 4.97,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_3",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        6.58,
+        7.7
+       ],
+       [
+        6.08,
+        3.05
+       ],
+       [
+        8.45,
+        2.79
+       ],
+       [
+        8.95,
+        7.44
+       ]
+      ],
+      "x": 7.51,
+      "z": 5.25,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_4",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        4.1,
+        7.97
+       ],
+       [
+        3.6,
+        3.31
+       ],
+       [
+        5.96,
+        3.06
+       ],
+       [
+        6.47,
+        7.71
+       ]
+      ],
+      "x": 5.04,
+      "z": 5.51,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_5",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        1.61,
+        8.24
+       ],
+       [
+        1.11,
+        3.58
+       ],
+       [
+        3.48,
+        3.33
+       ],
+       [
+        3.98,
+        7.98
+       ]
+      ],
+      "x": 2.54,
+      "z": 5.79,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_6",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -0.87,
+        8.5
+       ],
+       [
+        -1.37,
+        3.85
+       ],
+       [
+        0.99,
+        3.6
+       ],
+       [
+        1.49,
+        8.25
+       ]
+      ],
+      "x": 0.06,
+      "z": 6.05,
+      "w": 2.86,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_7",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -3.36,
+        8.77
+       ],
+       [
+        -3.86,
+        4.12
+       ],
+       [
+        -1.49,
+        3.86
+       ],
+       [
+        -0.99,
+        8.52
+       ]
+      ],
+      "x": -2.42,
+      "z": 6.31,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_8",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -5.84,
+        9.04
+       ],
+       [
+        -6.35,
+        4.39
+       ],
+       [
+        -3.98,
+        4.13
+       ],
+       [
+        -3.48,
+        8.78
+       ]
+      ],
+      "x": -4.92,
+      "z": 6.58,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_9",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -8.33,
+        9.31
+       ],
+       [
+        -8.83,
+        4.66
+       ],
+       [
+        -6.46,
+        4.4
+       ],
+       [
+        -5.96,
+        9.05
+       ]
+      ],
+      "x": -7.39,
+      "z": 6.86,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_10",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -10.81,
+        9.58
+       ],
+       [
+        -11.32,
+        4.92
+       ],
+       [
+        -8.95,
+        4.67
+       ],
+       [
+        -8.45,
+        9.32
+       ]
+      ],
+      "x": -9.88,
+      "z": 7.12,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_11",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        17.87,
+        -4.18
+       ],
+       [
+        17.37,
+        -8.84
+       ],
+       [
+        19.74,
+        -9.09
+       ],
+       [
+        20.24,
+        -4.44
+       ]
+      ],
+      "x": 18.8,
+      "z": -6.63,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_12",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        15.39,
+        -3.91
+       ],
+       [
+        14.89,
+        -8.57
+       ],
+       [
+        17.25,
+        -8.82
+       ],
+       [
+        17.76,
+        -4.17
+       ]
+      ],
+      "x": 16.33,
+      "z": -6.37,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_13",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        12.9,
+        -3.65
+       ],
+       [
+        12.4,
+        -8.3
+       ],
+       [
+        14.77,
+        -8.55
+       ],
+       [
+        15.27,
+        -3.9
+       ]
+      ],
+      "x": 13.84,
+      "z": -6.1,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_14",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        10.42,
+        -3.38
+       ],
+       [
+        9.92,
+        -8.03
+       ],
+       [
+        12.28,
+        -8.29
+       ],
+       [
+        12.78,
+        -3.63
+       ]
+      ],
+      "x": 11.35,
+      "z": -5.83,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_15",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        7.93,
+        -3.11
+       ],
+       [
+        7.43,
+        -7.76
+       ],
+       [
+        9.8,
+        -8.02
+       ],
+       [
+        10.3,
+        -3.36
+       ]
+      ],
+      "x": 8.87,
+      "z": -5.56,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_16",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        5.45,
+        -2.84
+       ],
+       [
+        4.94,
+        -7.49
+       ],
+       [
+        7.31,
+        -7.75
+       ],
+       [
+        7.81,
+        -3.1
+       ]
+      ],
+      "x": 6.38,
+      "z": -5.29,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_17",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        2.96,
+        -2.57
+       ],
+       [
+        2.46,
+        -7.22
+       ],
+       [
+        4.82,
+        -7.48
+       ],
+       [
+        5.33,
+        -2.83
+       ]
+      ],
+      "x": 3.9,
+      "z": -5.03,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_18",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        0.48,
+        -2.3
+       ],
+       [
+        -0.03,
+        -6.96
+       ],
+       [
+        2.34,
+        -7.21
+       ],
+       [
+        2.84,
+        -2.56
+       ]
+      ],
+      "x": 1.41,
+      "z": -4.75,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_19",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -2.01,
+        -2.04
+       ],
+       [
+        -2.51,
+        -6.69
+       ],
+       [
+        -0.15,
+        -6.94
+       ],
+       [
+        0.36,
+        -2.29
+       ]
+      ],
+      "x": -1.07,
+      "z": -4.49,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_20",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -4.5,
+        -1.77
+       ],
+       [
+        -5.0,
+        -6.42
+       ],
+       [
+        -2.63,
+        -6.68
+       ],
+       [
+        -2.13,
+        -2.02
+       ]
+      ],
+      "x": -3.56,
+      "z": -4.22,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_21",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -6.98,
+        -1.5
+       ],
+       [
+        -7.48,
+        -6.15
+       ],
+       [
+        -5.12,
+        -6.41
+       ],
+       [
+        -4.61,
+        -1.75
+       ]
+      ],
+      "x": -6.04,
+      "z": -3.96,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_22",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -9.47,
+        -1.23
+       ],
+       [
+        -9.97,
+        -5.88
+       ],
+       [
+        -7.6,
+        -6.14
+       ],
+       [
+        -7.1,
+        -1.49
+       ]
+      ],
+      "x": -8.54,
+      "z": -3.68,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_23",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -11.95,
+        -0.96
+       ],
+       [
+        -12.45,
+        -5.61
+       ],
+       [
+        -10.09,
+        -5.87
+       ],
+       [
+        -9.59,
+        -1.22
+       ]
+      ],
+      "x": -11.02,
+      "z": -3.42,
+      "w": 2.86,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_24",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -14.44,
+        -0.69
+       ],
+       [
+        -14.94,
+        -5.35
+       ],
+       [
+        -12.57,
+        -5.6
+       ],
+       [
+        -12.07,
+        -0.95
+       ]
+      ],
+      "x": -13.5,
+      "z": -3.14,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_25",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -16.92,
+        -0.42
+       ],
+       [
+        -17.43,
+        -5.08
+       ],
+       [
+        -15.06,
+        -5.33
+       ],
+       [
+        -14.56,
+        -0.68
+       ]
+      ],
+      "x": -16.0,
+      "z": -2.88,
+      "w": 2.87,
+      "d": 4.91,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     },
+     {
+      "id": "r_P2UG_2_26",
+      "use": "reserve",
+      "name": "Stellplatz",
+      "poly": [
+       [
+        -19.41,
+        -0.16
+       ],
+       [
+        -19.91,
+        -4.81
+       ],
+       [
+        -17.55,
+        -5.06
+       ],
+       [
+        -17.04,
+        -0.41
+       ]
+      ],
+      "x": -18.48,
+      "z": -2.61,
+      "w": 2.87,
+      "d": 4.9,
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG",
+      "color": "#aeb3b9"
+     }
+    ]
+   }
+  },
+  "bie_P2_4": {
+   "-1": {
+    "walls": [],
+    "doors": [],
+    "rooms": [
+     {
+      "id": "r_P2UG_4_r",
+      "use": "parkebene",
+      "name": "Parkhaus 2 · Rampe West (UG ↔ EG)",
+      "poly": [
+       [
+        3.81,
+        -0.4
+       ],
+       [
+        3.31,
+        -5.5
+       ],
+       [
+        -4.39,
+        -4.7
+       ],
+       [
+        -3.29,
+        5.5
+       ],
+       [
+        4.41,
+        4.7
+       ]
+      ],
+      "x": 0,
+      "z": 0,
+      "w": 8.8,
+      "d": 11.0,
+      "color": "#8f959c",
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
+     }
+    ]
+   }
+  },
+  "bie_P2_5": {
+   "-1": {
+    "walls": [],
+    "doors": [],
+    "rooms": [
+     {
+      "id": "r_P2UG_5_r",
+      "use": "parkebene",
+      "name": "Parkhaus 2 · Rampe Ost (UG ↔ EG, Zufahrt von der Umfahrung)",
+      "poly": [
+       [
+        -4.4,
+        -4.7
+       ],
+       [
+        -3.3,
+        5.5
+       ],
+       [
+        4.4,
+        4.7
+       ],
+       [
+        3.3,
+        -5.5
+       ]
+      ],
+      "x": 0,
+      "z": 0,
+      "w": 8.8,
+      "d": 11.0,
+      "color": "#8f959c",
+      "standort": true,
+      "hinweis": "Annahme nach OpenStreetMap (Zufahrt 27306519/734492235, Stützmauer 1387637572) und Flucht- und Rettungsplan Haus 6/7 KG"
      }
     ]
    }
