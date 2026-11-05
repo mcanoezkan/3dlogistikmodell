@@ -7,7 +7,7 @@
   "name": "Klinikum Bielefeld-Mitte – Bestand (NIZ, U2, Bunker, EG Hauptgebäude)",
   "created": "2026-10-15T22:35:38.638Z",
   "modified": "2026-11-05T09:00:00.000Z",
-  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht, Türen nicht eingetragen.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.\n• Etagen nach Bestandsplänen bereinigt (Stand Nov. 2026): Angenommene Treppenhäuser und Aufzüge im Bereich der Pläne (Ebene E Teil 1, Haus 6/7 KG) entfernt – dort gilt die Erschließung laut Plan. Angenommene Schächte je Gebäude auf einen Kern reduziert (Haus 7, Parkhaus 2, Häuser 2, 5, 10, Nebenteile Hauptgebäude); Haus 7 hat ein angenommenes Treppenhaus und den Aufzug laut Plan KG. Aufzugstüren zeigen zum Flur (Aufzüge 1, 4, 6, 7, Ärztehaus A1). Die angenommene Radiologie auf Ebene E liegt nur noch außerhalb des Plans (363 m²). Aufzug 12 als Schacht ohne Fenster. Alle 852 Warenströme routbar.\n• Bäume auf 109 ausgedünnt (47 aus OpenStreetMap, übrige aus dem Luftbild mit mindestens 11 m Abstand).",
+  "notes": "Standortmodell: Klinikum Bielefeld-Mitte (Bielefeld, Teutoburger Straße 50).\nGebäude, Ebenen U1–12, Umgebung, Straßen und Wege aus OpenStreetMap; Nutzungen, Stationen, NIZ laut Klinikum (Lageplan Juli 2026). Bereiche, Aufzüge, Warenströme, Mengen und Zeiten aus dem 3D-Logistikmodell Bielefeld (teilweise Annahmen); Soll-Variante mit getrennten Rein-/Unrein-Wegen.\n• Gebäudeumrisse, Gebäudeteile und Höhen stammen aus OpenStreetMap (Abruf 2026-10-05, © OpenStreetMap-Mitwirkende, ODbL). Geschosse im Modell = OSM-Höhe / 3,8 m bzw. OSM-Geschosszahl; für Hauptgebäude, NIZ und Parkhaus 1 gelten die Ebenen laut Klinikum.\n• Ebenen wie im Klinikum bezeichnet: U1 (Haupteingang, Niveau Teutoburger Straße), E (Notaufnahme), 1–12. Hauptgebäude (Eröffnung 1987): dreigeschossiger Breitfuß U1–1, Luftgeschoss Ebene 2, zehngeschossiger Bettenturm Ebene 3–12; oberste Etage ist Ebene 12 (Babytown).\n• Georeferenz: Das Modellraster folgt den Gebäudeachsen und ist gegenüber Nord um 115,4° gedreht (Nordpfeil). Weglängen sind maßstäblich (Lagegenauigkeit wie OSM, ca. 1–3 m).\n• Hanglage: Im Modell ist das Gelände eben auf Höhe der Ebene E (Wirtschaftshof Nord, Rampe der Liegendkrankenvorfahrt, Dach von Parkhaus 1 mit Landeplatz). Die Ebene U1 mit dem Haupteingang an der Teutoburger Straße liegt deshalb optisch unter Gelände.\n• Bettenturm: kreuzförmiger Grundriss mit vier Armen um einen zentralen Aufzugskern und vier Treppentürmen an den Armenden (OSM, Fotos). Stationen heißen „Ebene.Nummer“; die Zuordnung der Nummern 1–4 zu den Armen (1 Nord, 2 Ost, 3 Süd, 4 West) ist angenommen.\n• Recherchierte Stationen: 3.3 Integrierte Geriatrie; 4.1, 4.3, 5.1 Kardiologie; 7.1 Unfallchirurgie, 7.3 Alterstraumatologie; 8.1/8.2 (Innovationsstation) und 11.3/11.4 Allgemein- und Viszeralchirurgie; 9.1 und 9.3 Unfallchirurgie; Ebene 12 Babytown (Kreißsaal, Wochenbett). Die übrigen Arme sind als „weitere Stationen“ zusammengefasst.\n• Warenannahmen laut OSM: „Warenannahme Steri (im UG) & Küche“ an der Nordseite und „Warenannahme Zentrallager“ an der Nordostecke des Hauptgebäudes, Zufahrt für Lieferanten von der Eduard-Windthorst-Straße (Lageplan). Lage von Zentrallager, Küche und ZSVA dahinter angenommen; Abfallsammelstelle angenommen.\n• Die Küche in Mitte versorgt im Cook-&-Chill-Verfahren auch die Standorte Rosenhöhe und Halle (Klinikum); im Modell als Ausgang über die Rampe Nord abgebildet.\n• NIZ (seit 12.06.2026): U1 Eingangshalle mit Rolltreppen und Tiefgarage, E Zentrale Notaufnahme (23 Behandlungsplätze, 2 Schockräume mit CT, Aufnahmestation 16 Betten), Liegendkrankenvorfahrt über eine eigene Rampe mit Wagenhalle, Ebene 1 zwei Intensivstationen (40 Betten inkl. IMC, 32 zum Start). Brücke vom NIZ-Obergeschoss ins Ambulante OP-Zentrum (AOZ).\n• Der Hubschrauberlandeplatz auf Parkhaus 1 ist über eine Brücke durch die Eingangshalle direkt mit der Notaufnahme verbunden (Klinikum). Der frühere Soll-Vorschlag „Verbindungssteg P1–NIZ“ und der Notfall-CT im NIZ sind damit umgesetzt.\n• Ein Tunnel verbindet das Hauptgebäude mit dem Ärztehaus an der Oelmühlenstraße (Campus Gesundheit), Zugang vom Treppenhaus der Eingangshalle (Klinikum). Lage und Ebene im Modell angenommen (U1).\n• Die 2,4 m hohe überdachte Zufahrt am NIZ ist laut OSM die Tiefgarage (access=customers), nicht die Liegendkrankenvorfahrt.\n• Nutzungen der Häuser laut Lageplan Juli 2026. Haus 8 nennt nur noch Schlaflabor und Verwaltung; die Technische Abteilung (Lageplan 2023 noch in Haus 8) ist dort weiter angenommen.\n• Das Außen-Wegenetz ist aus OSM-Wegen erzeugt (Zufahrten, Fuß- und Parkwege). Zufahrten „nur Rettungsdienst“ sind nur für Patiententransporte freigegeben.\n• Bettenzahl gesamt laut Bundes-Klinik-Atlas: 674. Die Verteilung der Transporte auf die Stationen folgt der Zahl der Stationen je Klinik (Annahme).\n• Flächen, Transportmengen, Anlieferzeitfenster und Engpässe sind Demonstrationswerte, soweit nicht als belegt gekennzeichnet. Notaufnahme: ca. 35.000 Patient:innen/Jahr (Neue Westfälische).\n• Transportzeit = Weglänge / Geschwindigkeit je Wegtyp + mittlere Aufzugswartezeit. Keine Warteschlangensimulation.\n• Tagesprofile sind relative Gewichte je Stunde und werden auf die Tagesmenge normiert.\n• Kapazitäten von Fluren, Außenwegen und Rampen sind pauschale Richtwerte in Fahrten je Stunde.\n• Die Soll-Variante ist eine illustrative Optimierungsvariante, keine Planung.\n• NIZ im Detail (OSM-Abruf 2026-10-22, Architekturrenderings): Hauptbaukörper (U1–1) mit zwei Lichthöfen, Magistrale zum Hauptgebäude (Kern 1), gläserne zweigeschossige Eingangshalle (U1–E, Rolltreppen) an der Teutoburger Straße, Plattform der Liegendkrankenvorfahrt auf Ebene E über dem Kurzzeitparkplatz U1 (20 Stellplätze, Einfahrtshöhe 2,40 m, Schranken, Taxistand, Fahrradabstellanlage), Wagenhalle für 6 RTW auf der Plattform, überdachte Rettungsrampe von der Teutoburger Straße, Treppenhaus und Brücke (Ebene 1–2) zum Hauptgebäude über der Wirtschaftszufahrt.\n• Hubschrauberlandeplatz wieder auf dem Dach von Parkhaus 1 (Markierung, Hubschrauber, Befeuerung).\n• Ebene U2 (2. UG) neu: Hauptgebäude U2 nach Bestandsplan HGMI U2 (ART, 15.05.2019) mit Energiezentrale, Lüftungs-/Kältetechnik, Bettenzentrale rein/unrein, Abklinganlagen und dem „Tunnel zum Altbau“. Von dort führt der unterirdische Flur (ca. 80 m, Lage zwischen den Planständen angenommen) zum Luftschutzbunker unter dem Ärztehaus (Aufmaß 2014, das Ärztehaus ist eine Aufstockung des Bunkers). U2 liegt 4,50 m unter U1.\n• Aufzug 12 (am Kern 1) wurde für Isolationstransporte genutzt: direkte Fahrt von der Intensivebene bis zum Bunkerübergang in U2.\n• Ärztehaus (Haus 6) Ebene 0 nach Ausführungsplanung: Nordkern (Treppenhaus 3, zwei Bettenaufzüge), Südkern (Treppenhaus, Bettenaufzug, Personenaufzug), Treppenhaus Ost im massiven Bestandsbaukörper; Raumzonen zusammengefasst (Raumtexte im Plan nicht auswertbar).\n• Bauteile, die nur in U2 liegen, haben einen negativen Geschossversatz (floorOffset −2). Für Raumbeschriftung und Bearbeitung in U2 ist die Suite-Version mit Korrektur in HSS.localFloor nötig.\n• Hauptgebäude Ebene E (Teil 1) nach Bestandsplan „Grundriss Erdgeschoss Bestand / Teil 1“ (HGMI, Ebene E, ART, 10.08.2023, M 1:100): Wände aus der Wandfüllung des Plans, Räume mit Raumnummer (HGMI-E.…) aus den Raumstempeln. Georeferenz über die vier Rundkerne 1–4, die mit den Treppenkernen der Ebene U2 auf wenige Zentimeter übereinstimmen. Offene Hallen ohne geschlossenen Umriss sind als Rechteck vereinfacht.\n• Aufzüge laut Plan Ebene E: Aufzüge 1–5 (Bettenaufzüge, Reihe am Kern 5 im Turmkern), 6 und 7 (Kleinaufzüge), 8 und 9 (Bettenaufzüge an der Halle), 10 und 11 (am Kern 4) sowie Aufzug 12 am Kern 1. Lage und Schachtmaße aus dem Plan, Haltestellen (U1–12) und Nutzung angenommen. „Bettenaufzüge Turmkern“ ist jetzt Aufzug 1, „Versorgungsaufzug Nord“ jetzt Aufzug 10.\n• Die bisher angenommenen Räume Wäscheversorgung und Zentrallabor lagen auf Ebene E in Räumen, die laut Bestandsplan anders belegt sind (Unfallchirurgie-Ambulanz, Seminarräume). Sie liegen jetzt im Breitfuß Ost (Teil 2, Lage weiter angenommen); die Warenannahme Nord ist als Andockfläche vor der Nordfassade abgebildet.\n• NIZ-Vorfahrt an der Teutoburger Straße nach Fotos (Okt. 2026) und OpenStreetMap: Gehweg mit Leitstreifen und roter Radweg über die Zufahrten durchgehend, Vorfahrt Kurzzeitparkplatz in Betonpflaster, Rettungszufahrt in Asphalt, Verkehrsinsel mit Betonbrüstung und Säule, Stützmauern und Böschungen, Sperrfläche an der Einmündung der Rettungszufahrt, Zeichen 250 mit Zusatz „Rettungsdienst frei“, Zeichen 206, Hinweistafeln, drei Fahnenmasten und Mastleuchten. Die Pkw-Zufahrt zum Kurzzeitparkplatz ist ebenerdig, die Rettungszufahrt führt in der überdachten Rampe hinauf auf die Plattform.\n• Ansicht: „Gebäude ausblenden“ in der Ansichtsleiste blendet frei wählbare Gebäude aus und wieder ein (auch in der HTML-Ansicht).\n• NIZ-Höhenlage: Das NIZ steht mit Ebene U1 ebenerdig an der Teutoburger Straße (Kurzzeitparkplatz unter der Plattform, Eingangshalle). Die Liegendkrankenvorfahrt ist eine erhöhte Ebene des Gebäudes (Plattform auf Ebene E, 3,80 m über der Straße), erreichbar über die überdachte Rampe. Das Gelände bleibt eben. Weil im übrigen Modell Ebene E auf Geländehöhe liegt, sind Hauptbaukörper, Plattform und Eingangshalle des NIZ eine Ebene höher gesetzt; die Magistrale bleibt auf Höhe des Hauptgebäudes und schließt im Wegenetz auf gleicher Höhe an (Bauteiloption „Anschluss nach Höhe“).\n• Häuser 2, 5, 8, 10 und 11 aus der früheren Projektversion „Klinikum Bielefeld-Mitte – Bestand“ (15.10.2026) übernommen; über „Gebäude ausblenden“ ein- und ausblendbar (als Auswahl vorbelegt).\n• Haus 6/7 Kellergeschoss (Pathologie/Prosektur, Etage über dem Bunker): vereinfacht nach Flucht- und Rettungsplan „Haus 6/7 am Klinikum Mitte, Kellergeschoss“ (Stand Feb. 2023) als eigenes Bauteil eingetragen. Maßstab aus Raumflächen und Gebäudelänge (ca. 31 pt/m, ±5 %), Lage über die Bunkeraufzüge des Ärztehauses und den Tunnel zum Hauptgebäude eingepasst. Ausgang zur Umfahrung zwischen Haus 6/7 und Parkhaus 2 am Westende (Windfang U02), Verbindungsgang zum Neubau / Tunnel zum Hauptgebäude an der Nordseite, Aufzüge zum Bunker mit Treppenhaus an der Südseite. Wände vereinfacht.\n• Campus-Grün nach Luftbild (DOP NRW 10 cm, Nov. 2026 ausgewertet): 24 Grünflächen (ca. 1,9 ha, u. a. Park mit Teich zwischen Parkhaus 1, Hauptgebäude und Altbau, Rasen nördlich des Altbaus, Gehölz südlich des Hauptgebäudes) und 240 Bäume (79 Einzelbäume aus OpenStreetMap, 161 Baumkronen aus dem Luftbild, Lage ±2 m). Bäume halten Abstand zu Gebäuden, Wegen, Wasser- und Parkflächen.\n• Campuswege mit aktuellem OpenStreetMap abgeglichen (alle Campuswege liegen ≤ 3 m an OSM-Wegen). Vier Wegstücke, die durch oberirdische Gebäude liefen (Parkhaus 1, NIZ, Haus 9, Haus 5), sind entfallen, eines gekürzt. Alle 852 Warenströme bleiben routbar.\n• Kollisionen bereinigt: angenommene Treppenhäuser und Aufzüge stehen jetzt an wandfreien Stellen; Schächte laut Plan bleiben, Planwände im Schacht werden ausgespart. Aufzüge 8 und 9 (an der Halle) halten nur noch U1–1 (Breitfuß), nicht im Bettenturm. 28 Einrichtungsgegenstände aus Wänden/Schächten gerückt, doppelte Objekt-IDs am Ärztehaus bereinigt.\n• Etagen nach Bestandsplänen bereinigt (Stand Nov. 2026): Angenommene Treppenhäuser und Aufzüge im Bereich der Pläne (Ebene E Teil 1, Haus 6/7 KG) entfernt – dort gilt die Erschließung laut Plan. Angenommene Schächte je Gebäude auf einen Kern reduziert (Haus 7, Parkhaus 2, Häuser 2, 5, 10, Nebenteile Hauptgebäude); Haus 7 hat ein angenommenes Treppenhaus und den Aufzug laut Plan KG. Aufzugstüren zeigen zum Flur (Aufzüge 1, 4, 6, 7, Ärztehaus A1). Die angenommene Radiologie auf Ebene E liegt nur noch außerhalb des Plans (363 m²). Aufzug 12 als Schacht ohne Fenster. Alle 852 Warenströme routbar.\n• Bäume auf 109 ausgedünnt (47 aus OpenStreetMap, übrige aus dem Luftbild mit mindestens 11 m Abstand).\n• Haus 6/7 Kellergeschoss: 84 Türen aus den Türbögen des Flucht- und Rettungsplans (Feb. 2023) übernommen – 64 Öffnungen, davon 12 zweiflügelige Flur-/Rauchschutztüren; wo das vereinfachte Modell keine Wand hatte (Flurtüren, Ausgang Windfang), ist eine Türwand ergänzt. Lage über die Raumnummern des Plans eingepasst (ca. ±0,5 m).",
   "standort": {
    "id": "bielefeld",
    "variante": "ist",
@@ -171089,9 +171089,850 @@
        43.04
       ],
       "t": 0.12
+     },
+     {
+      "id": "w_kg_tuer_0",
+      "a": [
+       1.29,
+       33.38
+      ],
+      "b": [
+       1.32,
+       35.25
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_1",
+      "a": [
+       0.9,
+       16.16
+      ],
+      "b": [
+       2.06,
+       16.14
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_2",
+      "a": [
+       1.42,
+       10.06
+      ],
+      "b": [
+       1.42,
+       8.77
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_8",
+      "a": [
+       4.39,
+       13.35
+      ],
+      "b": [
+       4.43,
+       14.65
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_19",
+      "a": [
+       -5.25,
+       31.14
+      ],
+      "b": [
+       -5.23,
+       32.06
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_23",
+      "a": [
+       8.61,
+       39.21
+      ],
+      "b": [
+       8.62,
+       40.5
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_63",
+      "a": [
+       2.63,
+       -42.39
+      ],
+      "b": [
+       4.85,
+       -42.38
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_64",
+      "a": [
+       2.88,
+       -48.85
+      ],
+      "b": [
+       4.1,
+       -48.84
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_67",
+      "a": [
+       4.46,
+       -22.94
+      ],
+      "b": [
+       2.35,
+       -22.95
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_70",
+      "a": [
+       4.33,
+       -4.94
+      ],
+      "b": [
+       2.22,
+       -4.97
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_71",
+      "a": [
+       8.48,
+       -15.88
+      ],
+      "b": [
+       8.49,
+       -18.31
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_76",
+      "a": [
+       -5.91,
+       -16.34
+      ],
+      "b": [
+       -5.9,
+       -18.96
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_80",
+      "a": [
+       -12.03,
+       -20.39
+      ],
+      "b": [
+       -12.07,
+       -21.55
+      ],
+      "t": 0.2
+     },
+     {
+      "id": "w_kg_tuer_83",
+      "a": [
+       2.72,
+       37.26
+      ],
+      "b": [
+       4.01,
+       37.26
+      ],
+      "t": 0.2
      }
     ],
-    "doors": [],
+    "doors": [
+     {
+      "id": "d_kg_0",
+      "wall": "w_kg_tuer_0",
+      "t": 0.5,
+      "w": 1.63,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_1",
+      "wall": "w_kg_tuer_1",
+      "t": 0.5,
+      "w": 0.92,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_2",
+      "wall": "w_kg_tuer_2",
+      "t": 0.5,
+      "w": 1.05,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_3",
+      "wall": "w_H7_KG_145",
+      "t": 0.842,
+      "w": 0.97,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_4",
+      "wall": "w_H7_KG_151",
+      "t": 0.159,
+      "w": 0.97,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_5",
+      "wall": "w_H7_KG_174",
+      "t": 0.462,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_6",
+      "wall": "w_H7_KG_170",
+      "t": 0.211,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_7",
+      "wall": "w_H7_KG_158",
+      "t": 0.689,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_8",
+      "wall": "w_kg_tuer_8",
+      "t": 0.5,
+      "w": 1.05,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_9",
+      "wall": "w_H7_KG_237",
+      "t": 0.639,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_10",
+      "wall": "w_H7_KG_239",
+      "t": 0.311,
+      "w": 0.99,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_11",
+      "wall": "w_H7_KG_221",
+      "t": 0.932,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_12",
+      "wall": "w_H7_KG_221",
+      "t": 0.658,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_13",
+      "wall": "w_H7_KG_215",
+      "t": 0.276,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_14",
+      "wall": "w_H7_KG_224",
+      "t": 0.724,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_15",
+      "wall": "w_H7_KG_212",
+      "t": 0.172,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_16",
+      "wall": "w_H7_KG_195",
+      "t": 0.555,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_17",
+      "wall": "w_H7_KG_200",
+      "t": 0.605,
+      "w": 0.99,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_18",
+      "wall": "w_H7_KG_206",
+      "t": 0.437,
+      "w": 0.99,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_19",
+      "wall": "w_kg_tuer_19",
+      "t": 0.5,
+      "w": 0.68,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_20",
+      "wall": "w_H7_KG_218",
+      "t": 0.69,
+      "w": 0.74,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_21",
+      "wall": "w_H7_KG_227",
+      "t": 0.31,
+      "w": 0.74,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_22",
+      "wall": "w_H7_KG_228",
+      "t": 0.786,
+      "w": 1.26,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_23",
+      "wall": "w_kg_tuer_23",
+      "t": 0.5,
+      "w": 1.05,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_24",
+      "wall": "w_H7_KG_181",
+      "t": 0.701,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_25",
+      "wall": "w_H7_KG_166",
+      "t": 0.479,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_26",
+      "wall": "w_H7_KG_168",
+      "t": 0.778,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_27",
+      "wall": "w_H7_KG_187",
+      "t": 0.761,
+      "w": 1.63,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_28",
+      "wall": "w_H7_KG_183",
+      "t": 0.469,
+      "w": 2.17,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_29",
+      "wall": "w_H7_KG_60",
+      "t": 0.762,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_30",
+      "wall": "w_H7_KG_51",
+      "t": 0.37,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_31",
+      "wall": "w_H7_KG_46",
+      "t": 0.834,
+      "w": 0.84,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_32",
+      "wall": "w_H7_KG_43",
+      "t": 0.454,
+      "w": 0.98,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_33",
+      "wall": "w_H7_KG_104",
+      "t": 0.278,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_34",
+      "wall": "w_H7_KG_118",
+      "t": 0.941,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_35",
+      "wall": "w_H7_KG_100",
+      "t": 0.72,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_36",
+      "wall": "w_H7_KG_118",
+      "t": 0.697,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_37",
+      "wall": "w_H7_KG_102",
+      "t": 0.756,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_38",
+      "wall": "w_H7_KG_98",
+      "t": 0.285,
+      "w": 0.84,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_39",
+      "wall": "w_H7_KG_86",
+      "t": 0.877,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_40",
+      "wall": "w_H7_KG_82",
+      "t": 0.586,
+      "w": 1.31,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_41",
+      "wall": "w_H7_KG_74",
+      "t": 0.719,
+      "w": 0.99,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_42",
+      "wall": "w_H7_KG_88",
+      "t": 0.129,
+      "w": 0.84,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_43",
+      "wall": "w_H7_KG_118",
+      "t": 0.566,
+      "w": 0.84,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_44",
+      "wall": "w_H7_KG_84",
+      "t": 0.426,
+      "w": 1.31,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_45",
+      "wall": "w_H7_KG_118",
+      "t": 0.422,
+      "w": 1.31,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_46",
+      "wall": "w_H7_KG_31",
+      "t": 0.8,
+      "w": 0.72,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_47",
+      "wall": "w_H7_KG_36",
+      "t": 0.152,
+      "w": 0.72,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_48",
+      "wall": "w_H7_KG_2",
+      "t": 0.178,
+      "w": 0.71,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_49",
+      "wall": "w_H7_KG_29",
+      "t": 0.202,
+      "w": 0.71,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_50",
+      "wall": "w_H7_KG_2",
+      "t": 0.546,
+      "w": 0.71,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_51",
+      "wall": "w_H7_KG_29",
+      "t": 0.618,
+      "w": 0.71,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_52",
+      "wall": "w_H7_KG_31",
+      "t": 0.384,
+      "w": 0.72,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_53",
+      "wall": "w_H7_KG_36",
+      "t": 0.47,
+      "w": 0.72,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_54",
+      "wall": "w_H7_KG_31",
+      "t": 0.843,
+      "w": 0.98,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_55",
+      "wall": "w_H7_KG_36",
+      "t": 0.12,
+      "w": 0.98,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_56",
+      "wall": "w_H7_KG_76",
+      "t": 0.756,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_57",
+      "wall": "w_H7_KG_118",
+      "t": 0.057,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_58",
+      "wall": "w_H7_KG_115",
+      "t": 0.535,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_59",
+      "wall": "w_H7_KG_123",
+      "t": 0.388,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_60",
+      "wall": "w_H7_KG_46",
+      "t": 0.294,
+      "w": 0.84,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_61",
+      "wall": "w_H7_KG_38",
+      "t": 0.699,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_62",
+      "wall": "w_H7_KG_44",
+      "t": 0.714,
+      "w": 0.86,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_63",
+      "wall": "w_kg_tuer_63",
+      "t": 0.5,
+      "w": 1.98,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_64",
+      "wall": "w_kg_tuer_64",
+      "t": 0.5,
+      "w": 0.97,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_65",
+      "wall": "w_H7_KG_71",
+      "t": 0.288,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_66",
+      "wall": "w_H7_KG_77",
+      "t": 0.836,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_67",
+      "wall": "w_kg_tuer_67",
+      "t": 0.5,
+      "w": 1.88,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_68",
+      "wall": "w_H7_KG_0",
+      "t": 0.119,
+      "w": 2.68,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_69",
+      "wall": "w_H7_KG_117",
+      "t": 0.504,
+      "w": 2.68,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_70",
+      "wall": "w_kg_tuer_70",
+      "t": 0.5,
+      "w": 1.88,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_71",
+      "wall": "w_kg_tuer_71",
+      "t": 0.5,
+      "w": 2.19,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_72",
+      "wall": "w_H7_KG_68",
+      "t": 0.329,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_73",
+      "wall": "w_H7_KG_138",
+      "t": 0.535,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_74",
+      "wall": "w_H7_KG_134",
+      "t": 0.192,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_75",
+      "wall": "w_H7_KG_142",
+      "t": 0.761,
+      "w": 1.12,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_76",
+      "wall": "w_kg_tuer_76",
+      "t": 0.5,
+      "w": 2.38,
+      "lib": "erschl.tuer.brandschutz",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_77",
+      "wall": "w_H7_KG_170",
+      "t": 0.495,
+      "w": 0.97,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_78",
+      "wall": "w_H7_KG_210",
+      "t": 0.786,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_79",
+      "wall": "w_H7_KG_150",
+      "t": 0.188,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_80",
+      "wall": "w_kg_tuer_80",
+      "t": 0.5,
+      "w": 0.92,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     },
+     {
+      "id": "d_kg_81",
+      "wall": "w_H7_KG_18",
+      "t": 1.0,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_82",
+      "wall": "w_H7_KG_192",
+      "t": 1.0,
+      "w": 1.1,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Türbogen"
+     },
+     {
+      "id": "d_kg_83",
+      "wall": "w_kg_tuer_83",
+      "t": 0.5,
+      "w": 1.05,
+      "lib": "erschl.tuer.1",
+      "quelle": "Flucht- und Rettungsplan Haus 6/7 KG (Feb. 2023), Flurtür"
+     }
+    ],
     "rooms": [
      {
       "id": "r_H7_KG_U02",
