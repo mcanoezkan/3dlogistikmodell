@@ -1,0 +1,12 @@
+const {chromium}=require('playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+const p=await b.newPage({viewport:{width:1920,height:1080}});
+p.on('pageerror',e=>console.log('E:',e.message));
+await p.goto('http://127.0.0.1:8766/hss/index.html');
+await p.waitForFunction(()=>window.HSS&&HSS.booted,null,{timeout:120000});await p.waitForTimeout(1000);
+const prj=JSON.parse(fs.readFileSync('suite/Klinikum_Bielefeld-Mitte.hss.json','utf8'));
+await p.evaluate(pr=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());HSS.load(pr,{noAutosave:true});},prj);
+await p.waitForTimeout(6000);
+const html=await p.evaluate(async()=>{HSS.ui.download=null;HSS.util.download=null;return await HSS.ansicht.export({titel:'Klinikum Bielefeld-Mitte',hinweis:'Logistikmodell 3D'});});
+fs.writeFileSync('Klinikum_Bielefeld-Mitte_Ansicht.html',html);console.log('bytes',html.length);
+await b.close();})();
