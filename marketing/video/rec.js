@@ -69,7 +69,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   await setCur(1500, 760, false);
 
   /* ===== 0–4 s: Titel ===== */
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Logistikmodell 3D</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Ver- und Entsorgungslogistik</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
+  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Ver- und Entsorgungslogistik</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
   perFrame = async () => orbit(0.16, 0.9993);
   await at(S(3.6));
   perFrame = null;
@@ -171,7 +171,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   await at(S(56.4));
   await capOff(); await showCur(0);
   const tn = await ev(() => __vt());
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Logistikmodell 3D</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
+  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
   perFrame = async () => orbit(-0.12);
   await at(TOTAL);
   await b.close(); console.log('done (end)', OUT);

@@ -7,6 +7,6 @@ await p.waitForFunction(()=>window.HSS&&HSS.booted,null,{timeout:120000});await 
 const prj=JSON.parse(fs.readFileSync('suite/Klinikum_Bielefeld-Mitte.hss.json','utf8'));
 await p.evaluate(pr=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());HSS.load(pr,{noAutosave:true});},prj);
 await p.waitForTimeout(6000);
-const html=await p.evaluate(async()=>{HSS.ui.download=null;HSS.util.download=null;return await HSS.ansicht.export({titel:'Klinikum Bielefeld-Mitte',hinweis:'Logistikmodell 3D'});});
+const html=await p.evaluate(async()=>{HSS.ui.download=null;HSS.util.download=null;return await HSS.ansicht.export({titel:'Klinikum Bielefeld-Mitte',hinweis:''});});
 fs.writeFileSync('Klinikum_Bielefeld-Mitte_Ansicht.html',html);console.log('bytes',html.length);
 await b.close();})();
