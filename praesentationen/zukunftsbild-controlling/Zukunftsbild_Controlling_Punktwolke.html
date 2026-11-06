@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zukunftsbild Controlling – Workshop</title>
+<!-- Zukunftsbild Controlling · Workshop RWE · UNITY Consulting & Innovation
+     Punktwolken-Fassung: jede Folie ist eine interaktive 3D-Szene aus Lichtpunkten.
+     Einzeldatei, vollständig offline. Tasten: ←/→ bzw. Leertaste Folie · Pos1/Ende · 1–5 Kapitel · O Übersicht · F Vollbild
+     Maus: Elemente anklicken · ziehen dreht die Szene · Mausrad zoomt · Doppelklick setzt die Ansicht zurück -->
+<style>
+:root{--mid:#0A223C;--blue:#144477;--petrol:#2D7694;--green:#149678;--lg:#DCE3E8;--bgr:#BDC6D1;--accent:#2FC7A5;--pain:#E8609F;
+ --u:min(1vw,1.7778vh);--font:"Futura PT",Futura,"Century Gothic",Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--mid);font-family:var(--font);color:#fff;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+#bg{position:fixed;inset:0;background:radial-gradient(ellipse 62% 58% at 56% 48%,rgba(20,68,119,.45),rgba(20,68,119,0) 72%),var(--mid)}
+#c{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#vg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 85% 80% at 50% 50%,rgba(10,34,60,0) 55%,rgba(7,24,43,.66) 100%)}
+body.hot #c{cursor:pointer}body.drag #c{cursor:grabbing}
+#logo{position:fixed;z-index:20;top:max(18px,calc(var(--u)*2.6));right:max(20px,calc(var(--u)*3.2));width:max(96px,calc(var(--u)*8.6));pointer-events:none}
+#logo svg{display:block;width:100%;height:auto}
+/* ---------- HUD (Folientitel) ---------- */
+#hud{position:fixed;z-index:6;left:calc(var(--u)*4.4);top:calc(var(--u)*3.6);max-width:calc(var(--u)*57);pointer-events:none;transition:opacity .6s}
+#hud .idx{display:flex;align-items:center;gap:calc(var(--u)*1.2);font-weight:700;font-size:max(10px,calc(var(--u)*.86));letter-spacing:.3em;color:var(--bgr);text-transform:uppercase}
+#hud .idx::before{content:"";width:calc(var(--u)*3.2);height:max(2px,calc(var(--u)*.16));background:var(--green)}
+#hT{font-weight:700;font-size:max(17px,calc(var(--u)*2.25));letter-spacing:.012em;line-height:1.14;margin-top:calc(var(--u)*1.1);text-shadow:0 0 calc(var(--u)*1.4) rgba(10,34,60,.95)}
+#hT em{font-style:normal;color:var(--accent)}
+#hS{margin-top:calc(var(--u)*.8);font-size:max(10px,calc(var(--u)*.92));letter-spacing:.2em;text-transform:uppercase;color:var(--lg);line-height:1.5;text-shadow:0 0 calc(var(--u)*1) rgba(10,34,60,.95)}
+.fade{animation:fd .6s ease both}@keyframes fd{from{opacity:0;transform:translateY(8px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+/* ---------- Titelfolie ---------- */
+#hero{position:fixed;z-index:7;left:calc(var(--u)*6);top:50%;transform:translateY(-52%);pointer-events:none;opacity:0;transition:opacity .8s}
+#hero.on{opacity:1}body.heroOn #hud{visibility:hidden}#hero.on .btn{pointer-events:auto}
+#hero .k{font-weight:700;font-size:max(11px,calc(var(--u)*1.0));letter-spacing:.34em;color:var(--bgr);display:flex;align-items:center;gap:calc(var(--u)*1.4);text-transform:uppercase}
+#hero .k::before{content:"";width:calc(var(--u)*3.6);height:2px;background:var(--green)}
+#hero h1{font-weight:700;font-size:calc(var(--u)*5.6);letter-spacing:.05em;line-height:1.02;margin-top:calc(var(--u)*2);text-transform:uppercase;text-shadow:0 0 calc(var(--u)*3) rgba(10,34,60,.9)}
+#hero h1 em{font-style:normal;color:var(--accent)}
+#hero p{margin-top:calc(var(--u)*1.8);font-size:max(13px,calc(var(--u)*1.35));letter-spacing:.08em;color:#fff}
+#hero .d{margin-top:calc(var(--u)*.9);font-size:max(10px,calc(var(--u)*.95));letter-spacing:.3em;color:var(--lg);text-transform:uppercase}
+#hero .row{display:flex;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*3.4)}
+.btn{font-family:var(--font);font-weight:700;font-size:max(12px,calc(var(--u)*1.1));letter-spacing:.22em;text-transform:uppercase;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.55);padding:calc(var(--u)*1.05) calc(var(--u)*2.4);cursor:pointer;transition:background .25s,color .25s,border-color .25s}
+.btn:hover{background:#fff;color:var(--mid)}.btn.pri{border-color:var(--accent);color:var(--accent)}.btn.pri:hover{background:var(--accent);color:var(--mid)}
+/* ---------- Beschriftungen im Raum ---------- */
+#lab{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.lb{position:absolute;left:0;top:0;will-change:transform;opacity:0;transition:opacity .55s ease}
+.lb.in{opacity:1}.lb.dim{opacity:.32}.lb.ghost{opacity:.1}.lb.off{opacity:0!important}
+.lb>div{position:absolute;left:0;top:0;transform:translate(-50%,-50%);text-shadow:0 0 calc(var(--u)*.9) rgba(10,34,60,1),0 0 calc(var(--u)*.3) rgba(10,34,60,1)}
+.lb.l>div{transform:translate(0,-50%)}.lb.r>div{transform:translate(-100%,-50%);text-align:right}
+.lb.b>div{transform:translate(-50%,0);text-align:center}.lb.a>div{transform:translate(-50%,-100%);text-align:center}
+.lb.lt>div{transform:translate(0,0)}.lb.lb_>div{transform:translate(0,-100%)}.lb.c>div{text-align:center}
+.lb.ck{pointer-events:auto;cursor:pointer}.lb.ck>div{pointer-events:auto}
+.lb .t{font-weight:700;font-size:max(10px,calc(var(--u)*.82));letter-spacing:.16em;text-transform:uppercase;line-height:1.3;color:#fff;transition:color .3s}
+.lb .t2{font-weight:700;font-size:max(11px,calc(var(--u)*1.0));letter-spacing:.05em;line-height:1.25;color:#fff;transition:color .3s}
+.lb .d{margin-top:calc(var(--u)*.3);font-size:max(10px,calc(var(--u)*.78));letter-spacing:.02em;line-height:1.38;color:var(--lg)}
+.lb .n{font-weight:700;color:var(--accent);font-size:max(10px,calc(var(--u)*.8));letter-spacing:.14em;margin-right:calc(var(--u)*.5)}
+.lb .big{font-weight:700;font-size:max(22px,calc(var(--u)*3.6));letter-spacing:.03em;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.lb .mid{font-weight:700;font-size:max(16px,calc(var(--u)*2.0));letter-spacing:.04em;line-height:1.05;color:#fff}
+.lb .k{font-weight:700;font-size:max(9px,calc(var(--u)*.7));letter-spacing:.3em;text-transform:uppercase;color:var(--bgr)}
+.lb .q{font-size:max(12px,calc(var(--u)*1.3));line-height:1.3;color:#fff}
+.lb em{font-style:normal;color:var(--accent)}
+.lb.hv .t,.lb.hv .t2,.lb.sel .t,.lb.sel .t2{color:var(--accent)}
+.lb.pain .t,.lb.pain .t2{color:var(--pain)}.lb.pain .n{color:var(--pain)}
+.lb .ok{color:var(--accent);font-weight:700;margin-right:.5em}.lb .no{color:var(--pain);font-weight:700;margin-right:.5em}
+.lb .tag{display:inline-block;margin-top:calc(var(--u)*.35);font-size:max(9px,calc(var(--u)*.66));letter-spacing:.2em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(47,199,165,.5);padding:.15em .6em}
+.lb .bar{display:block;width:calc(var(--u)*2.4);height:2px;background:var(--green);margin:calc(var(--u)*.35) 0}
+.lb.r .bar{margin-left:auto}.lb.c .bar,.lb.b .bar,.lb.a .bar{margin-left:auto;margin-right:auto}
+/* ---------- Detailfeld unten links ---------- */
+#cap{position:fixed;z-index:6;left:calc(var(--u)*4.4);bottom:calc(var(--u)*5.6);max-width:calc(var(--u)*40);pointer-events:none}
+#cap .row{display:flex;align-items:baseline;gap:calc(var(--u)*1.3)}
+#cap .cn{font-weight:700;color:var(--accent);font-size:max(15px,calc(var(--u)*1.9));letter-spacing:.06em;font-variant-numeric:tabular-nums}
+#cap .ct{font-weight:700;font-size:max(15px,calc(var(--u)*1.75));letter-spacing:.04em;line-height:1.15;text-shadow:0 0 calc(var(--u)*1.2) rgba(10,34,60,.95)}
+#cap .ck{font-weight:700;font-size:max(9px,calc(var(--u)*.72));letter-spacing:.3em;text-transform:uppercase;color:var(--bgr);margin-bottom:calc(var(--u)*.6)}
+#cap .cs{margin-top:calc(var(--u)*.7);font-size:max(11px,calc(var(--u)*.98));letter-spacing:.03em;line-height:1.45;color:var(--lg);text-shadow:0 0 calc(var(--u)*1) rgba(10,34,60,.95)}
+#cap ul{list-style:none;margin-top:calc(var(--u)*.7)}
+#cap li{position:relative;padding-left:calc(var(--u)*1.5);font-size:max(11px,calc(var(--u)*.92));line-height:1.4;color:#fff;margin-top:calc(var(--u)*.3);text-shadow:0 0 calc(var(--u)*1) rgba(10,34,60,.95)}
+#cap li::before{content:"";position:absolute;left:0;top:.6em;width:calc(var(--u)*.6);height:2px;background:var(--accent)}
+#cap li.p::before{background:var(--pain)}#cap li b{font-weight:700}#cap li span{color:var(--lg)}
+#cap .chips{display:flex;flex-wrap:wrap;gap:calc(var(--u)*.5);margin-top:calc(var(--u)*.8)}
+#cap .chips i{font-style:normal;font-weight:700;font-size:max(9px,calc(var(--u)*.7));letter-spacing:.2em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(47,199,165,.55);padding:.3em .8em}
+#cap .chips i.o{color:var(--bgr);border-color:rgba(189,198,209,.3)}
+/* ---------- Aktionen, Hinweis, Kernaussage ---------- */
+#act{position:fixed;z-index:8;right:calc(var(--u)*3.2);top:calc(var(--u)*9.2);display:flex;flex-wrap:wrap;justify-content:flex-end;gap:max(5px,calc(var(--u)*.6));max-width:46vw}
+.ab{font-family:var(--font);font-weight:700;font-size:max(10px,calc(var(--u)*.78));letter-spacing:.18em;text-transform:uppercase;color:var(--lg);background:rgba(10,34,60,.55);border:1px solid rgba(220,227,232,.32);padding:max(6px,calc(var(--u)*.62)) max(10px,calc(var(--u)*1.1));cursor:pointer;white-space:nowrap;transition:all .25s}
+.ab:hover{border-color:#fff;color:#fff}.ab.on{border-color:var(--accent);color:var(--accent);background:rgba(47,199,165,.08)}
+#hint{position:fixed;z-index:6;right:calc(var(--u)*3.2);top:calc(var(--u)*7.0);font-weight:700;font-size:max(9px,calc(var(--u)*.68));letter-spacing:.3em;text-transform:uppercase;color:var(--bgr);pointer-events:none;display:flex;align-items:center;gap:.9em;transition:opacity .5s}
+#hint::before{content:"";width:.55em;height:.55em;border-radius:50%;background:var(--accent);box-shadow:0 0 .8em var(--accent);animation:pl 1.6s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:.35}50%{opacity:1}}
+#note{position:fixed;z-index:6;right:calc(var(--u)*3.2);bottom:calc(var(--u)*5.6);max-width:calc(var(--u)*34);text-align:right;pointer-events:none;font-size:max(10px,calc(var(--u)*.86));line-height:1.5;letter-spacing:.03em;color:var(--lg);text-shadow:0 0 calc(var(--u)*1) rgba(10,34,60,1)}
+#note b{color:#fff}#note em{font-style:normal;color:var(--accent)}
+#note::before{content:"";display:block;margin:0 0 calc(var(--u)*.7) auto;width:calc(var(--u)*2.6);height:2px;background:var(--green)}
+#note:empty::before{display:none}
+/* ---------- Steuerleiste ---------- */
+#ctl{position:fixed;z-index:15;left:calc(var(--u)*4.4);right:calc(var(--u)*3.2);bottom:max(8px,calc(var(--u)*1.6));display:flex;align-items:center;gap:max(6px,calc(var(--u)*.8));opacity:.38;transition:opacity .35s}
+#ctl:hover,body.act #ctl{opacity:1}
+.cb{font-family:var(--font);font-weight:700;font-size:max(10px,calc(var(--u)*.78));letter-spacing:.14em;text-transform:uppercase;color:var(--lg);background:rgba(10,34,60,.6);border:1px solid rgba(220,227,232,.3);padding:max(5px,calc(var(--u)*.5)) max(8px,calc(var(--u)*.9));cursor:pointer;white-space:nowrap}
+.cb:hover{border-color:#fff;color:#fff}.cb.on{border-color:var(--accent);color:var(--accent)}
+#chs{display:flex;gap:3px}
+#dots{flex:1;display:flex;align-items:center;gap:max(2px,calc(var(--u)*.25));min-width:80px}
+#dots i{display:block;flex:1;height:2px;background:rgba(189,198,209,.25);cursor:pointer;transition:background .3s;position:relative}
+#dots i::after{content:"";position:absolute;left:0;right:0;top:-7px;bottom:-7px}
+#dots i.d{background:rgba(47,199,165,.45)}#dots i.on{background:var(--accent);height:4px}#dots i.g{margin-left:max(4px,calc(var(--u)*.6))}
+#pg{font-weight:700;font-size:max(10px,calc(var(--u)*.8));letter-spacing:.14em;color:var(--bgr);font-variant-numeric:tabular-nums;min-width:4.6em;text-align:right}
+/* ---------- Übersicht ---------- */
+#ov{position:fixed;inset:0;z-index:30;background:rgba(7,24,43,.92);display:none;padding:calc(var(--u)*5) calc(var(--u)*5);overflow:auto}
+#ov.on{display:block;animation:fd .4s ease both}
+#ov h2{font-weight:700;font-size:max(16px,calc(var(--u)*2));letter-spacing:.06em;margin-bottom:calc(var(--u)*2.4);display:flex;justify-content:space-between;align-items:center}
+#ov .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:calc(var(--u)*1.6)}
+#ov .ch .h{font-weight:700;font-size:max(10px,calc(var(--u)*.8));letter-spacing:.3em;color:var(--accent);text-transform:uppercase;border-bottom:1px solid rgba(47,199,165,.4);padding-bottom:calc(var(--u)*.6);margin-bottom:calc(var(--u)*.6)}
+#ov .it{display:flex;gap:.8em;font-size:max(11px,calc(var(--u)*.92));padding:calc(var(--u)*.55) calc(var(--u)*.6);cursor:pointer;color:var(--lg);border-left:2px solid transparent}
+#ov .it:hover{color:#fff;background:rgba(20,68,119,.5)}#ov .it.on{border-left-color:var(--accent);color:#fff}
+#ov .it b{color:var(--bgr);font-variant-numeric:tabular-nums}
+#err{position:fixed;left:12px;right:12px;bottom:60px;z-index:99;font:12px monospace;color:#ff8a80;white-space:pre-wrap;pointer-events:none}
+</style></head><body>
+<div id="bg"></div><canvas id="c"></canvas><div id="vg"></div><div id="lab"></div>
+<div id="logo" role="img" aria-label="UNITY Consulting &amp; Innovation"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 296.55 103.5"><defs><style>.cls-1{fill:none;}.cls-2{clip-path:url(#clip-path);}.cls-3,.cls-4{fill:#fff;}.cls-3{fill-rule:evenodd;}.cls-4{font-size:19.1px;font-family:Arial-BoldMT, Arial;font-weight:700;}.cls-5{letter-spacing:0.02em;}.cls-6{letter-spacing:0.02em;}.cls-7{letter-spacing:-0.06em;}.cls-8{letter-spacing:0.01em;}.cls-9{letter-spacing:0.02em;}</style><clipPath id="clip-path" transform="translate(0 0)"><rect class="cls-1" width="296.55" height="103.5"/></clipPath></defs><title>UNITY_Logo_weiss</title><g id="Ebene_2" data-name="Ebene 2"><g id="Ebene_1-2" data-name="Ebene 1"><g id="UNITY_Logo_weiß" data-name="UNITY Logo weiß"><g class="cls-2"><g class="cls-2"><path class="cls-3" d="M65.13,0H43V38.45c0,6.41,0,16-10.52,16-9.47,0-9.47-9.61-9.47-16V0H1V42.72Q1,71.57,32.52,71.56c22.1,0,32.61-9.61,32.61-28.84ZM76.7,69.42h20V32l22.09,37.38h21V0h-21V37.38L98.79,0H76.7Zm75.74,0h21V0h-21Zm97.83,0h21V43.79L296.55,0H273.41L260.79,25.64,249.21,0H178.74V18.15h17.88V69.42h21V18.15h17.88l14.73,25.64Z" transform="translate(0 0)"/><text class="cls-4" transform="translate(0 96.31)"><tspan class="cls-5">C</tspan><tspan class="cls-6" x="14.08" y="0">O</tspan><tspan class="cls-5" x="29.24" y="0">N</tspan><tspan class="cls-6" x="43.31" y="0">S</tspan><tspan class="cls-5" x="56.36" y="0">U</tspan><tspan class="cls-7" x="70.44" y="0">L</tspan><tspan class="cls-6" x="80.99" y="0">TI</tspan><tspan class="cls-8" x="98.58" y="0">N</tspan><tspan class="cls-9" x="112.65" y="0">G </tspan><tspan class="cls-5" x="133.42" y="0">&amp;</tspan><tspan class="cls-6" x="147.5" y="0" xml:space="preserve"> I</tspan><tspan class="cls-5" x="158.72" y="0">NN</tspan><tspan class="cls-6" x="186.88" y="0">O</tspan><tspan class="cls-7" x="202.04" y="0">VA</tspan><tspan class="cls-6" x="226.35" y="0">TIO</tspan><tspan x="259.09" y="0">N</tspan></text></g></g></g></g></g></svg></div>
+<div id="hud"><div class="idx" id="hI"></div><div id="hT"></div><div id="hS"></div></div>
+<div id="hero"></div>
+<div id="cap"></div><div id="hint"></div><div id="act"></div><div id="note"></div>
+<div id="ctl"><button class="cb" id="pv" type="button" title="Vorherige Folie (←)">◀</button><div id="chs"></div><div id="dots"></div><span id="pg"></span><button class="cb" id="nx" type="button" title="Nächste Folie (→)">▶</button><button class="cb" id="ovb" type="button" title="Übersicht (O)">Übersicht</button><button class="cb" id="fs" type="button" title="Vollbild (F)">Vollbild</button></div>
+<div id="ov"><h2><span>Workshop-Übersicht</span><button class="cb" id="ovx" type="button">Schließen ✕</button></h2><div class="grid" id="ovg"></div></div>
+<div id="err"></div>
+<script>
+"use strict";
+/* =====================================================================
+   1 · GRUNDLAGEN
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const PI=Math.PI,TAU=PI*2;
+const cl=(x,a,b)=>x<a?a:x>b?b:x,mix=(a,b,k)=>a+(b-a)*k,ss=(a,b,t)=>{const k=cl((t-a)/(b-a),0,1);return k*k*(3-2*k)},fr=x=>x-Math.floor(x);
+const ad=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sb=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],ml=(a,k)=>[a[0]*k,a[1]*k,a[2]*k],
+ dt=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],ln3=a=>Math.hypot(a[0],a[1],a[2]),nm=a=>{const l=ln3(a)||1;return[a[0]/l,a[1]/l,a[2]/l]},lp=(a,b,k)=>[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k];
+function rng(seed){let s=(seed>>>0)||1;return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hsh(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+const hex=h=>Array.isArray(h)?h:[parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255];
+const RT=new Float32Array(8*65536);{const r=rng(99);for(let i=0;i<RT.length;i++)RT[i]=r()}
+const rr=(l,k)=>RT[(k<<16)|(l&65535)];
+/* Farben (für additive Lichtpunkte auf Dunkelblau aufgehellt) */
+const C={w:'#EAF4FA',lg:'#C9D6E2',bg:'#9FB2C6',blue:'#3D78C2',petrol:'#3A8DB4',sky:'#7CC4E4',green:'#1DB48E',acc:'#2FC7A5',mint:'#9BF0D8',pain:'#E8609F',red:'#FF4060',yel:'#FFC83D',dim:'#2E5A82',ice:'#BFE6F7'};
+const AMPC={1:C.red,2:C.yel,3:C.green,4:C.acc};
+
+/* =====================================================================
+   2 · PUNKT-BAUKASTEN (lokale Koordinaten, Welt ≈ Folie 16 × 9 Einheiten)
+   ===================================================================== */
+const TXC={};const FONT='"Futura PT",Futura,"Century Gothic",Arial,sans-serif';
+function textPix(str,wt,fam){fam=fam||FONT;const k=str+'|'+(wt||700)+fam;if(TXC[k])return TXC[k];const H=150,c=document.createElement('canvas'),g=c.getContext('2d');
+ g.font=(wt||700)+' '+H+'px '+fam;const L=str.split('\n');let w=0;for(const l of L)w=Math.max(w,g.measureText(l).width);
+ c.width=Math.ceil(w+24);c.height=Math.ceil(H*1.12*L.length+24);g.font=(wt||700)+' '+H+'px '+fam;g.fillStyle='#fff';g.textBaseline='middle';g.textAlign='center';
+ L.forEach((l,i)=>g.fillText(l,c.width/2,12+H*1.12*(i+.5)));const d=g.getImageData(0,0,c.width,c.height).data,pts=[];
+ for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++)if(d[(y*c.width+x)*4+3]>150)pts.push((x-c.width/2)/H,-(y-c.height/2)/H);
+ return TXC[k]={pts,w:c.width/H,h:c.height/H}}
+class PB{constructor(seed){this.a=[];this.r=rng(seed||7)}
+ p(x,y,z){this.a.push(x,y,z);return this}
+ get n(){return this.a.length/3}
+ gs(){let u=0;while(!u)u=this.r();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*this.r())}
+ sphere(cx,cy,cz,r,n){for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,q=Math.sqrt(1-y*y),t=i*2.39996323;this.p(cx+Math.cos(t)*q*r,cy+y*r,cz+Math.sin(t)*q*r)}return this}
+ ball(cx,cy,cz,r,n){for(let i=0;i<n;i++){const y=1-2*this.r(),q=Math.sqrt(1-y*y),t=TAU*this.r(),k=Math.cbrt(this.r())*r;this.p(cx+Math.cos(t)*q*k,cy+y*k,cz+Math.sin(t)*q*k)}return this}
+ cloud(cx,cy,cz,sx,sy,sz,n){for(let i=0;i<n;i++)this.p(cx+this.gs()*sx,cy+this.gs()*sy,cz+this.gs()*sz);return this}
+ /* Ring: pl 'xy' (zur Kamera) | 'xz' (liegend) | 'yz'; th = Banddicke */
+ ring(cx,cy,cz,r,n,th,pl,a0,a1){th=th||0;pl=pl||'xy';a0=a0===undefined?0:a0;a1=a1===undefined?TAU:a1;
+  for(let i=0;i<n;i++){const a=a0+(a1-a0)*(i+.5)/n,rr_=r+(th?this.gs()*th:0),c=Math.cos(a)*rr_,s=Math.sin(a)*rr_,e=th?this.gs()*th*.6:0;
+   if(pl=='xy')this.p(cx+c,cy+s,cz+e);else if(pl=='xz')this.p(cx+c,cy+e,cz+s);else this.p(cx+e,cy+c,cz+s)}return this}
+ disc(cx,cy,cz,r,n,pl){pl=pl||'xy';for(let i=0;i<n;i++){const k=Math.sqrt((i+.5)/n)*r,a=i*2.39996323,c=Math.cos(a)*k,s=Math.sin(a)*k;if(pl=='xy')this.p(cx+c,cy+s,cz);else if(pl=='xz')this.p(cx+c,cy,cz+s);else this.p(cx,cy+c,cz+s)}return this}
+ seg(a,b,n,j){j=j||0;for(let i=0;i<n;i++){const t=n>1?i/(n-1):.5;this.p(a[0]+(b[0]-a[0])*t+(j?this.gs()*j:0),a[1]+(b[1]-a[1])*t+(j?this.gs()*j:0),a[2]+(b[2]-a[2])*t+(j?this.gs()*j:0))}return this}
+ rect(x,y,w,h,n,z,j){z=z||0;const P=2*(w+h);for(let i=0;i<n;i++){let u=(i+.5)/n*P,px,py;if(u<w){px=x+u;py=y}else if(u<w+h){px=x+w;py=y+u-w}else if(u<2*w+h){px=x+w-(u-w-h);py=y+h}else{px=x;py=y+h-(u-2*w-h)}this.p(px+(j?this.gs()*j:0),py+(j?this.gs()*j:0),z)}return this}
+ fill(x,y,w,h,n,z,dz){z=z||0;for(let i=0;i<n;i++)this.p(x+this.r()*w,y+this.r()*h,z+(dz?(this.r()-.5)*dz:0));return this}
+ box(x0,y0,z0,x1,y1,z1,n){const dx=x1-x0,dy=y1-y0,dz=z1-z0,A=[dx*dy,dx*dy,dx*dz,dx*dz,dy*dz,dy*dz],S=A.reduce((a,b)=>a+b,0);
+  for(let i=0;i<n;i++){let u=this.r()*S,f=0;while(f<5&&u>A[f]){u-=A[f];f++}const a=this.r(),b=this.r();
+   if(f<2)this.p(x0+dx*a,y0+dy*b,f?z1:z0);else if(f<4)this.p(x0+dx*a,f==3?y1:y0,z0+dz*b);else this.p(f==5?x1:x0,y0+dy*a,z0+dz*b)}return this}
+ edges(x0,y0,z0,x1,y1,z1,n){const E=[];for(const y of[y0,y1])for(const z of[z0,z1])E.push([[x0,y,z],[x1,y,z]]);for(const x of[x0,x1])for(const z of[z0,z1])E.push([[x,y0,z],[x,y1,z]]);for(const x of[x0,x1])for(const y of[y0,y1])E.push([[x,y,z0],[x,y,z1]]);
+  const L=E.map(e=>ln3(sb(e[1],e[0]))),S=L.reduce((a,b)=>a+b,0);for(let i=0;i<n;i++){let u=(i+.5)/n*S,k=0;while(k<11&&u>L[k]){u-=L[k];k++}const q=lp(E[k][0],E[k][1],u/L[k]);this.p(q[0],q[1],q[2])}return this}
+ text(str,cx,cy,h,n,cz,dz,wt,fam){const T=textPix(str,wt,fam),P=T.pts,m=P.length/2;if(!m)return this;const jj=h/150;for(let i=0;i<n;i++){const k=(this.r()*m|0)*2;this.p(cx+P[k]*h+(this.r()-.5)*jj,cy+P[k+1]*h+(this.r()-.5)*jj,(cz||0)+(dz?this.gs()*dz:0))}return this}
+ curve(pts,n,j){const P=rs(pts,256,false);for(let i=0;i<n;i++){const q=at(P,(i+.5)/n);this.p(q[0]+(j?this.gs()*j:0),q[1]+(j?this.gs()*j:0),q[2]+(j?this.gs()*j:0))}return this}
+ f(){return new Float32Array(this.a)}}
+/* Polylinie gleichmäßig neu abtasten → Float32Array K×3 */
+function rs(pts,K,closed){const P=closed?pts.concat([pts[0]]):pts,L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+ln3(sb(P[i],P[i-1])));const T=L[L.length-1]||1,o=new Float32Array(K*3);let j=0;
+ for(let k=0;k<K;k++){const u=k/(K-1)*T;while(j<P.length-2&&L[j+1]<u)j++;const s=(u-L[j])/((L[j+1]-L[j])||1),q=lp(P[j],P[j+1]||P[j],cl(s,0,1));o[k*3]=q[0];o[k*3+1]=q[1];o[k*3+2]=q[2]}return o}
+function at(R,u){const K=R.length/3,f=cl(u,0,1)*(K-1),i=Math.min(K-2,f|0),s=f-i,k=i*3;return[R[k]+(R[k+3]-R[k])*s,R[k+1]+(R[k+4]-R[k+1])*s,R[k+2]+(R[k+5]-R[k+2])*s]}
+/* Catmull-Rom-Kurve durch Stützpunkte */
+function crv(P,seg){seg=seg||24;const o=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+ for(let s=0;s<seg;s++){const t=s/seg,t2=t*t,t3=t2*t;o.push([0,1,2].map(k=>.5*(2*p1[k]+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3)))}}o.push(P[P.length-1]);return o}
+/* Bogen zwischen zwei Punkten mit Höhe h (Richtung up) */
+function arc(a,b,h,up,n){n=n||24;up=up||[0,1,0];const o=[];for(let i=0;i<=n;i++){const t=i/n,q=lp(a,b,t),k=Math.sin(PI*t)*h;o.push([q[0]+up[0]*k,q[1]+up[1]*k,q[2]+up[2]*k])}return o}
+/* Menschliche Figur aus Punkten (Höhe ≈ 3.1, Fußpunkt y=0) */
+function figure(b,cx,cy,cz,s,n){const parts=[[0,2.72,0,.27,.27,.29,.15],[0,1.95,0,.42,.62,.24,.32],[0,2.42,0,.1,.12,.1,.02],[-.6,1.62,0,.1,.5,.11,.08],[.6,1.62,0,.1,.5,.11,.08],[-.2,.66,0,.13,.66,.14,.14],[.2,.66,0,.13,.66,.14,.14],[0,1.28,0,.38,.16,.22,.06]];
+ const W=parts.map(p=>p[6]),S=W.reduce((a,c)=>a+c,0);
+ for(let i=0;i<n;i++){let u=b.r()*S,k=0;while(k<parts.length-1&&u>W[k]){u-=W[k];k++}const p=parts[k],y=1-2*b.r(),q=Math.sqrt(1-y*y),t=TAU*b.r();
+  let x=Math.cos(t)*q*p[3],yy=y*p[4],z=Math.sin(t)*q*p[5];if(k==1){const taper=.82+.18*(yy/p[4]);x*=taper}if(k==3||k==4){x+=(k==3?1:-1)*yy*.16}
+  b.p(cx+(p[0]+x)*s,cy+(p[1]+yy)*s,cz+(p[2]+z)*s)}return b}
+
+/* =====================================================================
+   3 · PARTIKELSYSTEM
+   ===================================================================== */
+const NP=46000;
+const PX=new Float32Array(NP*3),PV=new Float32Array(NP*3),PCL=new Float32Array(NP*3),PSZ=new Float32Array(NP),SD=new Float32Array(NP),PH=new Float32Array(NP),OF=new Float32Array(NP*3),DH=new Float32Array(NP*3);
+const PG=new Uint16Array(NP),PL=new Int32Array(NP),PERM=new Uint32Array(NP),VB=new Float32Array(NP*7);
+{const r=rng(1234);for(let i=0;i<NP;i++){SD[i]=r();PH[i]=r();const gx=r()*2-1,gy=r()*2-1,gz=r()*2-1,l=Math.hypot(gx,gy,gz)||1,k=Math.pow(r(),.6);OF[i*3]=gx/l*k;OF[i*3+1]=gy/l*k;OF[i*3+2]=gz/l*k;
+ DH[i*3]=(r()*2-1)*15;DH[i*3+1]=(r()*2-1)*8.5;DH[i*3+2]=-13+r()*16;PX[i*3]=DH[i*3];PX[i*3+1]=DH[i*3+1];PX[i*3+2]=DH[i*3+2];PERM[i]=i}
+ for(let i=NP-1;i>0;i--){const j=r()*(i+1)|0,t=PERM[i];PERM[i]=PERM[j];PERM[j]=t}}
+function mkRG(spec){const g=Object.assign({kind:'pts',col:C.sky,gain:1,size:.034,pos:[0,0,0],rot:[0,0,0],spin:[0,0,0],scale:1,lo:[0,0,0],jit:0,jf:1,stiff:.055,tw:.22,speed:.06,spread:.04,fade:true,pc:null,pm:null,closed:false},spec);
+ g.c=hex(g.col);g.cc=g.c.slice();g.gainC=g.gain;g.posC=g.pos.slice();g.rotC=g.rot.slice();g.acc=[0,0,0];g.scaleC=g.scale;g.loC=g.lo.slice();g.jitC=g.jit;g.hov=0;g.hovT=0;g.m=[1,0,0,0,1,0,0,0,1];
+ if(g.kind=='path'){g.R=rs(g.path,256,g.closed)}return g}
+const DUST=mkRG({key:'~dust',kind:'dust',col:C.petrol,gain:.2,size:.024,stiff:.02});
+let GR=[DUST],GMAP=new Map();
+/* Gruppen zuweisen: gleiche Schlüssel behalten ihre Partikel (fließender Übergang), Rest wird neu gemischt */
+function applyGroups(list){const maxUse=NP-5000;let tot=0;for(const s of list)tot+=s.n;const f=tot>maxUse?maxUse/tot:1;
+ const ng=[DUST],nmap=new Map(),used=new Uint8Array(NP),need=[];
+ list.forEach(s=>{const n=Math.max(0,Math.floor(s.n*f));const old=GMAP.get(s.key);const g=mkRG(s);g.n=n;g.ratio=(s.n0||s.n)/Math.max(1,n);
+  if(old){g.gainC=old.gainC;g.posC=old.posC;g.rotC=old.rotC;g.acc=old.acc;g.scaleC=old.scaleC;g.loC=old.loC;g.jitC=old.jitC;g.hov=old.hov;g.cc=old.cc}
+  g.idx=new Int32Array(n);let k=0;if(old&&old.idx){for(let j=0;j<old.idx.length&&k<n;j++){const i=old.idx[j];if(!used[i]){used[i]=1;g.idx[k++]=i}}}g.fill=k;need.push(g);ng.push(g);nmap.set(s.key,g)});
+ let p=0;for(const g of need){while(g.fill<g.idx.length&&p<NP){const i=PERM[p++];if(!used[i]){used[i]=1;g.idx[g.fill++]=i}}}
+ PG.fill(0);for(let i=0;i<NP;i++)PL[i]=i;ng.forEach((g,gi)=>{if(!gi)return;for(let l=0;l<g.idx.length;l++){const i=g.idx[l];PG[i]=gi;PL[i]=l}});
+ GR=ng;GMAP=nmap}
+function burst(k){for(let i=0;i<NP;i++){PV[i*3]+=(SD[i]-.5)*k;PV[i*3+1]+=(PH[i]-.5)*k;PV[i*3+2]+=(fr(SD[i]*7.3)-.5)*k}}
+/* Gruppen-Transform: lokale Verschiebung → Ry(Drehung) → Rx(Neigung) → Rz → Skalierung → Position */
+function grMat(g){const ry=g.rotC[1]+g.acc[1],rx=g.rotC[0]+g.acc[0],rz=g.rotC[2]+g.acc[2],cy=Math.cos(ry),sy=Math.sin(ry),cx=Math.cos(rx),sx=Math.sin(rx),cz=Math.cos(rz),sz=Math.sin(rz);
+ const A=[cy,0,sy,0,1,0,-sy,0,cy],B=[1,0,0,0,cx,-sx,0,sx,cx],Z=[cz,-sz,0,sz,cz,0,0,0,1],m3=(P,Q)=>{const o=new Array(9);for(let r=0;r<3;r++)for(let c=0;c<3;c++)o[r*3+c]=P[r*3]*Q[c]+P[r*3+1]*Q[3+c]+P[r*3+2]*Q[6+c];return o};g.m=m3(Z,m3(B,A))}
+function toW(key,p){const g=typeof key=='string'?GMAP.get(key):key;if(!g)return p;const m=g.m,s=g.scaleC,x=p[0]+g.loC[0],y=p[1]+g.loC[1],z=p[2]+g.loC[2];return[g.posC[0]+s*(m[0]*x+m[1]*y+m[2]*z),g.posC[1]+s*(m[3]*x+m[4]*y+m[5]*z),g.posC[2]+s*(m[6]*x+m[7]*y+m[8]*z)]}
+const VV=new Float64Array(3);
+let T=0,MX=-1e4,MY=-1e4,MACT=0;
+function step(dt){const k60=Math.min(2.5,dt*60),damp=Math.pow(.84,k60),lc=1-Math.pow(.9,k60),sm=1-Math.pow(.94,k60);
+ for(const g of GR){g.gainC+=(g.gain-g.gainC)*sm;g.scaleC+=(g.scale-g.scaleC)*sm;g.jitC+=(g.jit-g.jitC)*sm;g.hov+=(g.hovT-g.hov)*sm*1.6;
+  for(let k=0;k<3;k++){g.posC[k]+=(g.pos[k]-g.posC[k])*sm;g.rotC[k]+=(g.rot[k]-g.rotC[k])*sm;g.loC[k]+=(g.lo[k]-g.loC[k])*sm;g.acc[k]+=g.spin[k]*dt;g.cc[k]+=(g.c[k]-g.cc[k])*sm}grMat(g)}
+ const proj=MACT>0;let cx=0,cy=0,cz=0,Fx=0,Fy=0,Fz=0,Rx=0,Ry=0,Rz=0,Ux=0,Uy=0,Uz=0,Fo=0,hw=0,hh=0;
+ if(proj){cx=CAMP[0];cy=CAMP[1];cz=CAMP[2];Fx=CF[0];Fy=CF[1];Fz=CF[2];Rx=CR[0];Ry=CR[1];Rz=CR[2];Ux=CU[0];Uy=CU[1];Uz=CU[2];Fo=FOC;hw=CW/2;hh=CH/2}
+ const RAD=Math.max(60,CH*.08),RAD2=RAD*RAD;
+ for(let i=0;i<NP;i++){const g=GR[PG[i]],l=PL[i],i3=i*3;let x,y,z,b=g.gainC*(1+g.hov*.75);
+  if(g.kind=='pts'){const k=(g.ratio===1?l:Math.floor(l*g.ratio))*3,P=g.pts;x=P[k];y=P[k+1];z=P[k+2]}
+  else if(g.kind=='path'){const sp=g.speed*(.82+.36*rr(l,1));let u=l/g.n+T*sp;u-=Math.floor(u);const R=g.R,f=u*255,j=Math.min(254,f|0),s=f-j,q=j*3;
+   const w=g.spread*(.4+.6*rr(l,2));x=R[q]+(R[q+3]-R[q])*s+OF[i3]*w;y=R[q+1]+(R[q+4]-R[q+1])*s+OF[i3+1]*w;z=R[q+2]+(R[q+5]-R[q+2])*s+OF[i3+2]*w;
+   if(g.fade&&!g.closed)b*=ss(0,.07,u)*(1-ss(.9,1,u))}
+  else{x=DH[i3]+Math.sin(T*.07+PH[i]*TAU)*.6;y=DH[i3+1]+Math.sin(T*.05+SD[i]*TAU)*.4;z=DH[i3+2]}
+  if(g.pm){VV[0]=x;VV[1]=y;VV[2]=z;const r=g.pm(l,VV,T,g);x=VV[0];y=VV[1];z=VV[2];if(r!==undefined)b*=r}
+  if(g.jitC>.002){const j=g.jitC,f=g.jf;x+=j*Math.sin(T*f*2.1+PH[i]*40);y+=j*Math.sin(T*f*1.7+SD[i]*40);z+=j*Math.sin(T*f*1.3+PH[i]*23)}
+  const m=g.m,s=g.scaleC;x+=g.loC[0];y+=g.loC[1];z+=g.loC[2];
+  const tx=g.posC[0]+s*(m[0]*x+m[1]*y+m[2]*z),ty=g.posC[1]+s*(m[3]*x+m[4]*y+m[5]*z),tz=g.posC[2]+s*(m[6]*x+m[7]*y+m[8]*z);
+  const kk=g.stiff*(.55+.9*SD[i])*k60;let vx=(PV[i3]+(tx-PX[i3])*kk)*damp,vy=(PV[i3+1]+(ty-PX[i3+1])*kk)*damp,vz=(PV[i3+2]+(tz-PX[i3+2])*kk)*damp;
+  if(proj){const dx=PX[i3]-cx,dy=PX[i3+1]-cy,dz=PX[i3+2]-cz,zz=dx*Fx+dy*Fy+dz*Fz;if(zz>.3){const sx=hw+(dx*Rx+dy*Ry+dz*Rz)/zz*Fo,sy=hh-(dx*Ux+dy*Uy+dz*Uz)/zz*Fo,ex=sx-MX,ey=sy-MY,d2=ex*ex+ey*ey;
+    if(d2<RAD2){const d=Math.sqrt(d2)+1,f=(1-d/RAD)*.045*MACT*zz/Fo*RAD*k60*.5/d;vx+=(Rx*ex-Ux*ey)*f;vy+=(Ry*ex-Uy*ey)*f;vz+=(Rz*ex-Uz*ey)*f;b*=1+.6*(1-d/RAD)}}}
+  PV[i3]=vx;PV[i3+1]=vy;PV[i3+2]=vz;PX[i3]+=vx;PX[i3+1]+=vy;PX[i3+2]+=vz;
+  if(g.pc)b*=g.pc(l,T,g);
+  b*=1+g.tw*Math.sin(T*(1.3+PH[i]*2.2)+SD[i]*60);
+  const c=g.cc;PCL[i3]+=(c[0]*b-PCL[i3])*lc;PCL[i3+1]+=(c[1]*b-PCL[i3+1])*lc;PCL[i3+2]+=(c[2]*b-PCL[i3+2])*lc;
+  const st=g.size*(.55+.9*fr(SD[i]*13.7))*(1+g.hov*.25);PSZ[i]+=(st-PSZ[i])*lc;
+  const o=i*7;VB[o]=PX[i3];VB[o+1]=PX[i3+1];VB[o+2]=PX[i3+2];VB[o+3]=PCL[i3];VB[o+4]=PCL[i3+1];VB[o+5]=PCL[i3+2];VB[o+6]=PSZ[i]}
+}
+
+/* =====================================================================
+   4 · KAMERA
+   ===================================================================== */
+let CAMP=[0,0,12],CF=[0,0,-1],CR=[1,0,0],CU=[0,1,0],FOC=800,CW=2,CH=2,FOV=40*PI/180;
+const CAM={t:[0,0,0],yaw:0,pitch:0,d:1,tT:[0,0,0],yawT:0,pitchT:0,dT:1,uy:0,up:0,ud:1,sway:.035};
+function camUpdate(dt){const sm=1-Math.pow(.955,dt*60);for(let k=0;k<3;k++)CAM.t[k]+=(CAM.tT[k]-CAM.t[k])*sm;CAM.yaw+=(CAM.yawT-CAM.yaw)*sm;CAM.pitch+=(CAM.pitchT-CAM.pitch)*sm;CAM.d+=(CAM.dT*CAM.ud-CAM.d)*sm;
+ const asp=CW/CH,halfH=asp>=16/9?4.5:8/asp,D0=halfH/Math.tan(FOV/2)*CAM.d;
+ const mxn=MX>-1e3?(MX/CW-.5):0,myn=MY>-1e3?(MY/CH-.5):0;
+ const yaw=CAM.yaw+CAM.uy+Math.sin(T*.11)*CAM.sway+mxn*.05,pitch=CAM.pitch+CAM.up+Math.sin(T*.083)*CAM.sway*.45-myn*.03;
+ CAMP=[CAM.t[0]+D0*Math.sin(yaw)*Math.cos(pitch),CAM.t[1]+D0*Math.sin(pitch),CAM.t[2]+D0*Math.cos(yaw)*Math.cos(pitch)];
+ CF=nm(sb(CAM.t,CAMP));CR=nm(cr(CF,[0,1,0]));CU=cr(CR,CF);FOC=(CH/2)/Math.tan(FOV/2)}
+function pj(p){const d=sb(p,CAMP),z=dt(d,CF);if(z<.2)return null;return[CW/2+dt(d,CR)/z*FOC,CH/2-dt(d,CU)/z*FOC,z]}
+function rayPlane(mx,my,z0){const dir=nm(ad(ad(CF,ml(CR,(mx-CW/2)/FOC)),ml(CU,-(my-CH/2)/FOC)));if(Math.abs(dir[2])<1e-4)return null;const t=(z0-CAMP[2])/dir[2];return ad(CAMP,ml(dir,t))}
+
+/* =====================================================================
+   5 · WEBGL-RENDERER (weiche Lichtpunkte, Linien, Glow)
+   ===================================================================== */
+const glc=$('c');const gl=glc.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false,depth:false});
+const VS_PT=`precision highp float;attribute vec3 aP;attribute vec3 aC;attribute float aS;uniform mat4 uVP;uniform float uF,uPx;varying vec3 vC;
+void main(){vec4 cp=uVP*vec4(aP,1.0);float z=cp.w;if(z<.15){gl_Position=vec4(2.,2.,2.,1.);gl_PointSize=0.;vC=vec3(0.);return;}
+ float sz=aS*uF/z,a=1.0;float mn=1.35*uPx;if(sz<mn){a=sz/mn;sz=mn;}float mx=11.0*uPx;if(sz>mx){a*=mx/sz;sz=mx;}
+ float fog=clamp(1.25-z/34.0,.25,1.0);gl_PointSize=sz;vC=aC*a*fog;gl_Position=cp;}`;
+const FS_PT=`precision mediump float;varying vec3 vC;void main(){vec2 d=gl_PointCoord-.5;float r=dot(d,d)*4.0;if(r>1.0)discard;gl_FragColor=vec4(vC*exp(-r*2.4),0.0);}`;
+const VS_LN=`precision highp float;attribute vec3 aP;attribute vec3 aC;uniform mat4 uVP;varying vec3 vC;void main(){vec4 cp=uVP*vec4(aP,1.0);vC=aC*clamp(1.25-cp.w/34.0,.25,1.0);gl_Position=cp;}`;
+const FS_LN=`precision mediump float;varying vec3 vC;void main(){gl_FragColor=vec4(vC,0.0);}`;
+const VS_F=`attribute vec2 aP;varying vec2 vT;void main(){vT=aP*.5+.5;gl_Position=vec4(aP,0.0,1.0);}`;
+const FS_BR=`precision mediump float;uniform sampler2D uT;uniform vec2 uTx;varying vec2 vT;void main(){vec3 c=(texture2D(uT,vT+uTx*vec2(-1.,-1.)).rgb+texture2D(uT,vT+uTx*vec2(1.,-1.)).rgb+texture2D(uT,vT+uTx*vec2(-1.,1.)).rgb+texture2D(uT,vT+uTx*vec2(1.,1.)).rgb)*.25;gl_FragColor=vec4(max(c-.12,0.0)*1.3,1.0);}`;
+const FS_BL=`precision mediump float;uniform sampler2D uT;uniform vec2 uD;varying vec2 vT;void main(){vec3 c=texture2D(uT,vT).rgb*.227;c+=(texture2D(uT,vT+uD*1.3846).rgb+texture2D(uT,vT-uD*1.3846).rgb)*.3162;c+=(texture2D(uT,vT+uD*3.2308).rgb+texture2D(uT,vT-uD*3.2308).rgb)*.0703;gl_FragColor=vec4(c,1.0);}`;
+const FS_CO=`precision mediump float;uniform sampler2D uA,uB;uniform float uBl;varying vec2 vT;void main(){vec3 a=texture2D(uA,vT).rgb;vec3 b=texture2D(uB,vT).rgb;vec3 c=a+b*uBl;c=c/(1.0+max(max(c.r,c.g),c.b)*.12);gl_FragColor=vec4(c,clamp(max(max(c.r,c.g),c.b)*1.4,0.0,1.0));}`;
+function gsh(tp,src){const x=gl.createShader(tp);gl.shaderSource(x,src);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x}
+function gpr(vs,fs,at){const p=gl.createProgram();gl.attachShader(p,gsh(gl.VERTEX_SHADER,vs));gl.attachShader(p,gsh(gl.FRAGMENT_SHADER,fs));at.forEach((a,i)=>gl.bindAttribLocation(p,i,a));gl.linkProgram(p);
+ if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));const u={};const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS);for(let i=0;i<n;i++){const f=gl.getActiveUniform(p,i);u[f.name]=gl.getUniformLocation(p,f.name)}return{p,u}}
+let PP,PLN,PBR,PBL,PCO,bV,bL,bF,FA,FB,FC,RES=1;const MAXL=24000,LB=new Float32Array(MAXL*12);let nL=0;
+function initGL(){PP=gpr(VS_PT,FS_PT,['aP','aC','aS']);PLN=gpr(VS_LN,FS_LN,['aP','aC']);PBR=gpr(VS_F,FS_BR,['aP']);PBL=gpr(VS_F,FS_BL,['aP']);PCO=gpr(VS_F,FS_CO,['aP']);
+ bV=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bV);gl.bufferData(gl.ARRAY_BUFFER,VB.byteLength,gl.DYNAMIC_DRAW);
+ bL=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bL);gl.bufferData(gl.ARRAY_BUFFER,LB.byteLength,gl.DYNAMIC_DRAW);
+ bF=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bF);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW)}
+const texP=()=>{[gl.TEXTURE_MIN_FILTER,gl.TEXTURE_MAG_FILTER].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.LINEAR));[gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.CLAMP_TO_EDGE))};
+function mkF(w,h){const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);texP();const f={w,h,t,f:gl.createFramebuffer()};gl.bindFramebuffer(gl.FRAMEBUFFER,f.f);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);gl.bindFramebuffer(gl.FRAMEBUFFER,null);return f}
+function freeF(f){if(f){gl.deleteTexture(f.t);gl.deleteFramebuffer(f.f)}}
+let GW=2,GH=2;
+function resize(){CW=innerWidth;CH=innerHeight;const d=Math.min(devicePixelRatio||1,1.6);GW=glc.width=Math.max(2,Math.round(CW*d*RES));GH=glc.height=Math.max(2,Math.round(CH*d*RES));
+ if(gl){[FA,FB,FC].forEach(freeF);FA=mkF(GW,GH);const bw=Math.max(2,GW>>2),bh=Math.max(2,GH>>2);FB=mkF(bw,bh);FC=mkF(bw,bh)}}
+function attr(i,b,n,st,off){gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.vertexAttribPointer(i,n,gl.FLOAT,false,st||0,off||0);gl.enableVertexAttribArray(i)}
+function fsPass(P,dst,tex,setU){gl.bindFramebuffer(gl.FRAMEBUFFER,dst?dst.f:null);gl.viewport(0,0,dst?dst.w:GW,dst?dst.h:GH);gl.useProgram(P.p);attr(0,bF,2);gl.disableVertexAttribArray(1);gl.disableVertexAttribArray(2);
+ gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);gl.uniform1i(P.u.uT,0);setU&&setU();gl.drawArrays(gl.TRIANGLES,0,3)}
+function L(a,b,col,al){if(nL>=MAXL||al<=.003)return;const c=hex(col),o=nL*12;LB[o]=a[0];LB[o+1]=a[1];LB[o+2]=a[2];LB[o+3]=c[0]*al;LB[o+4]=c[1]*al;LB[o+5]=c[2]*al;LB[o+6]=b[0];LB[o+7]=b[1];LB[o+8]=b[2];LB[o+9]=c[0]*al;LB[o+10]=c[1]*al;LB[o+11]=c[2]*al;nL++}
+function Lpoly(P,col,al,closed){for(let i=1;i<P.length;i++)L(P[i-1],P[i],col,al);if(closed)L(P[P.length-1],P[0],col,al)}
+function render(){
+ const n0=.1,f0=200,A=(f0+n0)/(f0-n0),B=-2*f0*n0/(f0-n0),sx=FOC/(CW/2),sy=FOC/(CH/2);
+ const VP=new Float32Array([sx*CR[0],sy*CU[0],A*CF[0],CF[0],sx*CR[1],sy*CU[1],A*CF[1],CF[1],sx*CR[2],sy*CU[2],A*CF[2],CF[2],-sx*dt(CR,CAMP),-sy*dt(CU,CAMP),-A*dt(CF,CAMP)+B,-dt(CF,CAMP)]);
+ gl.bindFramebuffer(gl.FRAMEBUFFER,FA.f);gl.viewport(0,0,GW,GH);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+ gl.disable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);
+ if(nL){gl.useProgram(PLN.p);gl.uniformMatrix4fv(PLN.u.uVP,false,VP);gl.bindBuffer(gl.ARRAY_BUFFER,bL);gl.bufferSubData(gl.ARRAY_BUFFER,0,LB.subarray(0,nL*12));
+  attr(0,bL,3,24,0);attr(1,bL,3,24,12);gl.disableVertexAttribArray(2);gl.drawArrays(gl.LINES,0,nL*2)}
+ gl.useProgram(PP.p);gl.uniformMatrix4fv(PP.u.uVP,false,VP);gl.uniform1f(PP.u.uF,FOC*GH/CH);gl.uniform1f(PP.u.uPx,GH/900);
+ gl.bindBuffer(gl.ARRAY_BUFFER,bV);gl.bufferSubData(gl.ARRAY_BUFFER,0,VB);attr(0,bV,3,28,0);attr(1,bV,3,28,12);attr(2,bV,1,28,24);gl.drawArrays(gl.POINTS,0,NP);
+ gl.disable(gl.BLEND);
+ fsPass(PBR,FB,FA.t,()=>gl.uniform2f(PBR.u.uTx,1.5/GW,1.5/GH));
+ for(const k of[1,2]){fsPass(PBL,FC,FB.t,()=>gl.uniform2f(PBL.u.uD,k/FB.w,0));fsPass(PBL,FB,FC.t,()=>gl.uniform2f(PBL.u.uD,0,k/FB.h))}
+ gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,GW,GH);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(PCO.p);attr(0,bF,2);gl.disableVertexAttribArray(1);gl.disableVertexAttribArray(2);
+ gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,FA.t);gl.uniform1i(PCO.u.uA,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,FB.t);gl.uniform1i(PCO.u.uB,1);gl.uniform1f(PCO.u.uBl,1.0);
+ gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.drawArrays(gl.TRIANGLES,0,3);gl.disable(gl.BLEND);gl.activeTexture(gl.TEXTURE0)}
+
+/* =====================================================================
+   6 · SZENEN-AUFBAU: Gruppen, Pfade, Beschriftungen, Hotspots
+   ===================================================================== */
+class Bld{constructor(sid){this.sid=sid;this.G=[];this.Lb=[];this.H=[];this.SL=[];this.dyn=null;this.cap=null;this.act=[];this.note='';this.hint='';this.hero=null}
+ k(key){return this.sid+':'+key}
+ g(key,pts,o){const P=pts instanceof PB?pts.f():pts;const s=Object.assign({key:this.k(key),kind:'pts',pts:P},o||{});s.n=s.n0=P.length/3;this.G.push(s);return s}
+ path(key,pts,n,o){const s=Object.assign({key:this.k(key),kind:'path',path:pts},o||{});s.n=s.n0=n;this.G.push(s);return s}
+ lab(key,pos,html,o){const s=Object.assign({key:this.k(key),pos,html},o||{});if(s.hk)s.hk=this.k(s.hk);this.Lb.push(s);return this}
+ hot(key,pos,r,o){this.H.push(Object.assign({key:this.k(key),pos,r},o||{}));return this}
+ ln(a,b,col,al){this.SL.push([a,b,col,al===undefined?.3:al]);return this}
+ gk(key){return this.k(key)}}
+function RG(key){return GMAP.get(SID+':'+key)}
+function resolve(pos){if(!pos)return null;if(typeof pos=='function')return pos(T);if(pos.g!==undefined){return toW(SID+':'+pos.g,pos.p||[0,0,0])}return pos}
+/* ---- Beschriftungen ---- */
+const LBM=new Map();let LBL=[];
+function syncLabels(list){const keep=new Set();LBL=list;
+ for(const L0 of list){keep.add(L0.key);let e=LBM.get(L0.key);
+  if(!e){const el=document.createElement('div');const inner=document.createElement('div');el.appendChild(inner);$('lab').appendChild(el);e={el,inner,html:null,cls:null,w:null};LBM.set(L0.key,e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.el.classList.add('in')))}
+  else if(e.dying){clearTimeout(e.dying);e.dying=0;e.el.classList.add('in')}
+  e.spec=L0;const h=typeof L0.html=='function'?L0.html(T):L0.html;if(h!==e.html){e.inner.innerHTML=h;e.html=h}
+  if(L0.w!==e.w){e.inner.style.width=L0.w?'calc(var(--u)*'+(L0.w*6.25).toFixed(2)+')':'';e.inner.style.whiteSpace=L0.w?'normal':'nowrap';e.w=L0.w}
+  e.click=L0.click||null;e.inner.onclick=e.click?(ev=>{ev.stopPropagation();e.click()}):null;
+  e.inner.onmouseenter=L0.click?()=>setHover(L0.hk||L0.key,true):null;e.inner.onmouseleave=L0.click?()=>setHover(null,true):null;
+  updCls(e)}
+ for(const[k,e]of LBM)if(!keep.has(k)&&!e.dying){e.el.classList.remove('in');e.dying=setTimeout(()=>{e.el.remove();LBM.delete(k)},600)}}
+function updCls(e){const L0=e.spec;let c='lb '+(L0.al||'')+(L0.cls?' '+(typeof L0.cls=='function'?L0.cls(T):L0.cls):'')+(e.click?' ck':'')+((HOV&&(HOV===L0.key||HOV===L0.hk))?' hv':'');if(e.el.classList.contains('in'))c+=' in';if(c!==e.cls){e.el.className=c;e.cls=c}}
+function frameLabels(){for(const[k,e]of LBM){if(e.dying)continue;const L0=e.spec;if(typeof L0.html=='function'){const h=L0.html(T);if(h!==e.html){e.inner.innerHTML=h;e.html=h}}
+  if(typeof L0.cls=='function'||e.click)updCls(e);
+  const w=resolve(L0.pos),p=w&&pj(w);if(!p||(L0.vis&&!L0.vis(T,w))){e.el.style.visibility='hidden';continue}e.el.style.visibility='';
+  const dx=(L0.dx||0)*CW/100,dy=(L0.dy||0)*CW/100;e.el.style.transform='translate3d('+(p[0]+dx).toFixed(1)+'px,'+(p[1]+dy).toFixed(1)+'px,0)'}}
+/* ---- Hotspots ---- */
+let HOT=[],HOV=null,DRAG=null;
+function setHover(k,fromLabel){if(k===HOV)return;HOV=k;for(const g of GR)g.hovT=0;if(k){const h=HOT.find(x=>x.key===k);if(h&&h.grp)for(const gk of h.grp){const g=GMAP.get(SID+':'+gk);if(g)g.hovT=1}}
+ document.body.classList.toggle('hot',!!k);for(const[,e]of LBM)if(!e.dying)updCls(e)}
+function hitTest(mx,my){let best=null,bd=1e9;for(const h of HOT){const w=resolve(h.pos);if(!w)continue;const p=pj(w);if(!p)continue;const rp=Math.max(h.min||16,h.r*FOC/p[2]),d=Math.hypot(p[0]-mx,p[1]-my);if(d<rp&&d/rp<bd){bd=d/rp;best=h}}return best}
+/* ---- Szenenverwaltung ---- */
+let SID=-1,SC=null,STATE=[],SL_=[],DYN=null,LFADE=0,ENTER=0;
+function build(){const B=new Bld(SID);const st=STATE[SID];SC.build(B,st);applyGroups(B.G);syncLabels(B.Lb);HOT=B.H;SL_=B.SL;DYN=B.dyn;
+ setTitle(B.t!==undefined?B.t:SC.t,B.s!==undefined?B.s:SC.s);setCap(B.cap);setAct(B.act);setNote(B.note);$('hint').textContent=B.hint||SC.hint||'';$('hint').style.opacity=(B.hint||SC.hint)?1:0;
+ const he=$('hero');if(B.hero){if(he.dataset.k!==B.hero){he.innerHTML=B.hero;he.dataset.k=B.hero;he.querySelectorAll('[data-go]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const v=b.dataset.go;if(v=='ov')toggleOv();else goTo(+v)})}he.classList.add('on');document.body.classList.add('heroOn')}
+ else{he.classList.remove('on');document.body.classList.remove('heroOn')}
+ if(HOV&&!HOT.some(h=>h.key===HOV)&&!LBL.some(l=>l.key===HOV||l.hk===HOV))setHover(null);else if(HOV){const k=HOV;HOV=null;setHover(k)}}
+function refresh(){if(SC)build()}
+let ttlKey=null;
+function setTitle(t,s){const k=(t||'')+'|'+(s||'');if(k===ttlKey)return;ttlKey=k;$('hT').innerHTML=t||'';$('hS').textContent=s||'';const h=$('hud');h.classList.remove('fade');void h.offsetWidth;h.classList.add('fade')}
+let capKey='';
+function setCap(c){const el=$('cap');if(!c){if(capKey){el.innerHTML='';capKey=''}return}
+ let h='';if(c.k)h+='<div class="ck">'+c.k+'</div>';if(c.t)h+='<div class="row">'+(c.n?'<span class="cn">'+c.n+'</span>':'')+'<span class="ct">'+c.t+'</span></div>';
+ if(c.s)h+='<div class="cs">'+c.s+'</div>';if(c.list&&c.list.length)h+='<ul>'+c.list.map(x=>typeof x=='string'?'<li>'+x+'</li>':'<li class="'+(x.c||'')+'">'+x.h+'</li>').join('')+'</ul>';
+ if(c.chips)h+='<div class="chips">'+c.chips.map(x=>typeof x=='string'?'<i>'+x+'</i>':'<i class="'+(x.c||'')+'">'+x.h+'</i>').join('')+'</div>';
+ if(h!==capKey){el.innerHTML=h;capKey=h;el.classList.remove('fade');void el.offsetWidth;el.classList.add('fade')}}
+let actKey='';
+function setAct(a){a=a||[];const el=$('act'),k=SID+JSON.stringify(a.map(x=>[x.t,!!x.on]));if(k!==actKey){actKey=k;el.innerHTML='';a.forEach(x=>{const b=document.createElement('button');b.type='button';b.className='ab'+(x.on?' on':'');b.innerHTML=x.t;el.appendChild(b)})}
+ [...el.children].forEach((b,i)=>{const x=a[i];b.onclick=ev=>{ev.stopPropagation();b.blur();x.f()}})}
+function setNote(n){const el=$('note');if(el.innerHTML!==(n||''))el.innerHTML=n||''}
+
+/* =====================================================================
+   7 · INHALTE (aus der Workshop-Fassung übernommen)
+   ===================================================================== */
+const AGD=[['01','Einführung','Vorstellung, Vision, Kontext & Leitfragen',['Vorstellungsrunde','UNITY & celver','Ausgangslage & Zielbild','7 Dimensionen'],0,7],
+ ['02','Impuls I','Kernprozesse im Controlling inkl. Target Operating Model & KI',['Prozesse & Pain Points','Governance-Pyramide','Rollen & Ownership','SAP MDM'],7,7],
+ ['03','Impuls II','Daten- & Reporting-Architektur „Next Gen“',['SAP-Toollandschaft','Data-Lake-Architektur','Single Source of Truth','Referenz-Blueprint'],14,6],
+ ['04','Impuls III','AI Readiness Check',['Reifestufen','KI-Fundament','Vom Copilot zum Agenten'],20,5],
+ ['05','Wrap-Up','Zusammenfassung & nächste Schritte',['Reifegrad-Simulator','Roadmap','Key Takeaways','Ziele & Diskussion'],25,5]];
+const QST=[['Wer bin ich?','Name, Bereich, Gesellschaft'],['Was ist meine Rolle?','Aufgaben im Controlling-, Daten- oder IT-Kontext'],['Was sind meine Erwartungen?','An den heutigen Workshop und das Zukunftsbild']];
+const DIMS=[
+ {t:'Data Foundation',d:'Datenmodelle, Konsistenz und Harmonisierung; Integration über alle Quellen hinweg (ERP, Lakes, Reporting).',i:['Impuls II','Impuls III']},
+ {t:'Datenflüsse & Schnittstellen',d:'SAP- und Azure-Setup; Datenflüsse, Integration und Skalierbarkeit.',i:['Impuls II']},
+ {t:'Prozesse',d:'Integrierte Planung, Forecasting und Reporting; Konsistenz über den gesamten E2E-Prozess.',i:['Impuls I']},
+ {t:'Governance & Ownership',d:'Data Ownership; Standards, Definitionen und KPI-Governance.',i:['Impuls I','Impuls III']},
+ {t:'Technologie & Tools',d:'SAC, BW, Databricks, Power BI; Harmonisierung der Toollandschaft.',i:['Impuls II']},
+ {t:'Operating Model',d:'Rollen und Verantwortlichkeiten; Zusammenarbeit Business ↔ IT; Service- und Delivery-Modell.',i:['Impuls I']},
+ {t:'Capabilities & Adoption',d:'Data Literacy; Nutzung von Analytics und Self-Service.',i:['Impuls III']}];
+const SQ=[['SAP S/4 als ERP-Backbone für CO','Integriertes Datenökosystem mit konsistenter Finanzlogik'],['25+ BW-Modelle und mehrere Data Lakes','Abgestimmte SAP-Azure-Architektur'],['Heterogenes Reporting (SAP, Azure, Power BI, Tableau, Excel)','Einheitliche Planung & Reporting (SAC, automatisiert)'],['Planung über BPC und Board, Quartalszyklen mit hohem Validierungsaufwand','Durchgängige E2E-Prozesse in Finance & Controlling'],['Governance & Ownership entwickeln sich über die Gesellschaften','Finance-geführtes Governance- & Ownership-Modell'],['Definierte Business-IT-Rollen mit Abstimmungspotenzial','Controlling mit Datenkompetenz und Self-Service innerhalb der Governance'],['Hohe Datenverlässlichkeit durch manuelle Abstimmung','KI & Analytics für Entscheidungen']];
+const LEIT=['Controlling als Treiber für Daten & Reporting','S/4 als finanzieller Single Point of Definition','Finance-geführte Data Governance & Ownership','Abgestimmte SAP-Azure-Architektur','Standardisiertes E2E Finance & Controlling','Gesteuerter Self-Service für das Controlling','KI & Advanced Analytics für die Steuerung'];
+const ZIELE=['Datenschicht verschlanken (BW, Lakes, Reporting)','Integrierte Planung & Reporting (Fokus SAC)','Zieldatenarchitektur (SAP + Azure)','Finance-getriebene Governance & Operating Model','E2E-Transparenz über die Performance','Phasen-Roadmap (Quick Wins → Rollout)'];
+const MGMT=['Daten- & Reporting-Standards sicherstellen','Performance überwachen & Entscheidungen steuern','Planungsannahmen & Szenarien abstimmen','Data Governance & Ownership definieren','Prozesse, Rollen & Data Ownership steuern'];
+const PLAN=['Planungsumfang, Ziele & Zyklen definieren','Inputs von OpCos & Bereichen sammeln','Pläne konsolidieren & harmonisieren','Pläne validieren & freigeben','Rollierende Forecasts erstellen','Abweichungen analysieren (Plan / FC / Ist)','Ausblicke & Szenarien aktualisieren','Ergebnisse mit Stakeholdern abstimmen'];
+const REP=['Daten sammeln & integrieren (S/4 + Non-SAP)','Finanzdaten harmonisieren & konsolidieren','Konsistente Datenmodelle & KPIs anwenden','Standardisierte Reports & Dashboards erstellen','Performance & Abweichungen analysieren','Management Reporting liefern (Konzern & OpCos)','Self-Service Analytics ermöglichen'];
+const SUPP=['Finanzstammdaten & Datenmodelle verwalten','Datenqualität & Konsistenz sicherstellen','Datenintegration (SAP + BW + Data Lakes)','Planungs- & Reporting-Plattformen betreiben','Zusammenarbeit Business & IT steuern','Daten- & Analytics-Kompetenzen aufbauen'];
+const PPM={1:1,2:2,5:3,6:4},RPM={3:1,2:2,1:3,0:4};
+const PPAIN=[['Fragmentierte Planungsumgebungen','Viele Tools und Datenquellen über Organisationseinheiten hinweg'],['Hoher Koordinations- & Abstimmungsaufwand','Iterative Konsolidierung von Annahmen und Inputs'],['Geringe Integration von Plan, Forecast & Ist','Zusatzaufwand für Konsistenz über die Zyklen'],['Wenig flexible Planungszyklen','Anpassungen und Re-Forecasts erfordern manuelle Arbeit']];
+const RPAIN=[['Mehrere Reporting-Lösungen parallel','Unterschiedliche Tools und Plattformen je Funktion'],['Unterschiedliche KPI-Definitionen & Logiken','Eingeschränkte Vergleichbarkeit zwischen Gesellschaften'],['Konsolidierung über Quellen nötig','Reporting hängt vom Zusammenführen mehrerer Systeme ab'],['Manuelle Aufbereitung & späte Datenverfügbarkeit','Reporting hängt von vorgelagerter Datenbereitschaft ab']];
+const GOV=[['Strategisch','Data Strategy','Wie nutzen wir Daten strategisch?'],['Taktisch','Data Governance','Welche Steuerungsmechanismen und Leitplanken führen zum strategischen Ziel?'],['Operativ','Data Processes','Was sind die Kernprozesse?'],['Operativ','Data Architecture','Wie ist die Architektur aufgebaut?'],['Operativ','Data Quality','Welche Tools überwachen und verbessern die Datenqualität?'],['Operativ','Data Security','Welche Maßnahmen sichern Datenschutz und Compliance?']];
+const CHAL=['Datenbestände sind isoliert (Datensilos)','Datenqualität reicht für den Use Case nicht aus','Nutzer vertrauen den Daten nicht','Verantwortlichkeiten für Aufbereitung und Pflege sind unklar','Arbeitsschritte werden redundant ausgeführt','Daten werden falsch interpretiert und genutzt','Dokumentation fehlt oder ist unvollständig'];
+const EFF=['Gemeinsames Verständnis und Vertrauen in Daten','Höhere Effizienz','Bessere Entscheidungen'];
+const RO=[{t:'Data Owner',s:'Fachliche Verantwortung',d:['Verantwortet Definition und Freigabe von Daten und KPIs','Entscheidet über Zugriff und Nutzung','Ist Eskalationsinstanz bei Qualitätsproblemen']},{t:'Data Steward',s:'Pflege & Qualität',d:['Pflegt Datenmodelle und Stammdaten','Überwacht die Datenqualität entlang des E2E-Prozesses','Setzt Governance-Regeln operativ um']},{t:'Data Consumer',s:'Nutzung & Feedback',d:['Nutzt Daten für Planung, Forecast und Reporting','Arbeitet im gesteuerten Self-Service','Meldet Qualitätsmängel an den Steward zurück']}];
+const PRIN=[['Organisatorisches Rückgrat','Klar definierte Rollen und Verantwortlichkeiten bilden das Rückgrat für die effiziente Durchführung von Planungs-, Forecast- und Reporting-Prozessen.'],['Klare Ownership','Jede Rolle verantwortet explizit Datenqualität, Modellpflege und Performance-Monitoring entlang des E2E-Prozesses.'],['Qualitätskontrolle & Governance','Definierte Governance-Regeln und Qualitätsstandards sichern konsistente, transparente und prüfbare Ergebnisse über alle Prozesse.']];
+const MDMC=[['Governance & Ownership','Definierte Rollen, Workflows'],['Datenqualität','Validierung, Standardisierung, Monitoring'],['Datenintegration','Verteilung an Folgesysteme'],['Lifecycle Management','Gesteuerte Anlage, Änderung, Löschung']];
+const MDMR=['Zentrales System für geschäftskritische Stammdaten (z. B. Kunde, Produkt, Anlage)','Sichert Konsistenz und Harmonisierung über Systeme und Prozesse','Single Source of Truth für operative und analytische Anwendungsfälle'];
+const MDML=['Hoher Implementierungs- und Wartungsaufwand','Begrenzte Flexibilität bei komplexen oder schnell wechselnden Datenmodellen','Integrationsherausforderungen in heterogenen Landschaften','Starke Abhängigkeit vom Governance-Reifegrad'];
+const M1=[['Fragmentierte & manuelle Planungsprozesse','Excel-basierte Ladungen, parallele Nutzung von BPC / Board / SAC, hoher manueller Aufwand','Integrierte E2E-Planung, Forecasting & Reporting','SAC-getrieben, ersetzt Excel-lastige Prozesse'],['Hoher Koordinationsaufwand & geringe Integration','Planung, Forecast und Reporting nicht integriert, iterative Abstimmungsschleifen','Treiberbasierte Planung & standardisierte Frameworks','Konsistente Logik über alle Gesellschaften'],['Unklare Rollen & Operating Model (Business ↔ IT)','Fehlende Ownership, Governance-Lücken, Abhängigkeit von der IT','Target Operating Model für Finance & IT','Klare Rollen, Data Ownership, Governance'],['Begrenzte Skalierbarkeit & strategische Steuerung','Stark operativer Fokus, steigende Anforderungen nicht bedienbar','Advanced Analytics & KI-gestützte Steuerung','Predictive Forecasting und Kompetenzaufbau im Controlling']];
+const M2=[['Stark fragmentierte Daten- & Reportinglandschaft','25+ BW-Modelle, mehrere Data Lakes, Silos über die OpCos','Datenintegration & Plattformarchitektur','SAP BTP, APIs, eventbasiert, hybride Architektur'],['Keine klare Zielarchitektur oder SAP-Strategie','SAP vs. Azure vs. hybrid, unklare Clean-Core- / SAC-Richtung','Ziel-Daten- & Reporting-Architektur (SAP + Azure + BI)','inkl. Clean-Core-Ausrichtung & Plattformstrategie'],['Fehlendes Governance- & Ownership-Modell','Zentrale vs. dezentrale Lakes, unklare Data Ownership und Rollen','Föderierte Data Governance & gesteuerter Self-Service','Datenprodukte, Ownership-Modell, Ablösung von Schatten-BI'],['Inkonsistentes Reporting & Parallelwelten','Fehlender Semantic Layer, KPI-Inkonsistenzen, Schatten-BI außerhalb SAP (z. B. Power BI)','Semantic Layer & KPI-Standardisierung','Single Source of Truth im gesamten Reporting']];
+const M3=[['Keine KI-fähige Datenbasis','Fehlende strukturierte Modelle, kein Semantic Layer, inkonsistente Datenlandschaft','KI-fähiges Datenfundament','Datenprodukte, semantische Modelle, standardisierte Datensätze'],['Schwache Data Governance & geringes Vertrauen','Qualitätsprobleme, unklare Standards, fragmentierte Ownership','Data-Governance- & Qualitäts-Framework','Ownership, Standards, Compliance'],['Fehlende Transparenz & Kontrolle','Keine Lineage, unklare Data Ownership, eingeschränkte Sicht','Transparenz- & Kontrollschicht','Datenkatalog, Lineage, Monitoring'],['Unklarer KI-Nutzen & fehlende Fähigkeiten','Keine priorisierten Use Cases, fehlende Skills, schwache Business-Ausrichtung','KI-Enablement & Roadmap','Use-Case-Identifikation, Priorisierung, Kompetenzaufbau & Piloten']];
+const TOOLS=[{n:'Excel',x:7,y:10,d:'Flexibel für Ad-hoc-Analysen und Reports, aber ohne ERP-Integration und anfällig für manuelle Fehler.'},{n:'S/4 Standard',x:24,y:22,d:'Standard-Reporting direkt im ERP: integriert, aber mit begrenztem Funktionsumfang.'},{n:'PCA',x:38,y:33,d:'Unterstützt Profit-Center- und Segment-Reporting mit Echtzeit-Integration in FI und CO.'},{n:'CO-PA',x:50,y:44,d:'Detaillierte Echtzeit-Profitabilitätsanalyse auf Marktsegmentebene (in S/4: Margin Analysis).'},{n:'BCS',x:62,y:55,d:'Automatisiert die Finanzkonsolidierung und liefert konforme, konsolidierte Berichte.'},{n:'BW',x:75,y:69,d:'Ermöglicht Aggregation und Analyse großer Datenmengen für mehrdimensionales Reporting.'},{n:'SAC*',x:90,y:86,d:'Echtzeit-Visualisierung, Planung, Simulation und Predictive Analytics als Teil der Business Data Cloud (BDC). *Komplexität durch SAP-BTP-Anforderung.'}];
+const TPAIN=[['Fragmentierte Datenlandschaft','Mehrere dezentrale Azure Data Lakes über die OpCos, keine zentrale Ownership','Keine Single Source of Truth'],['Keine E2E-Transparenz','Datenflüsse nicht standardisiert, eingeschränkte Nachvollziehbarkeit','Hoher Abstimmungsaufwand'],['Inkonsistente KPIs','Mehrere semantische Schichten, keine unternehmensweite KPI-Governance','Gleiche KPIs, unterschiedliche Ergebnisse'],['Parallele Plattformen','SAP (BW/SAC), Azure (Data Lake), BI-Tools ohne klare Architekturrollen','Redundante Verarbeitung & doppeltes Reporting'],['Fehlende Data Governance','Keine klare Verantwortung für Daten, Modelle & Transformationen','Skalierung einer einheitlichen Lösung schwierig'],['Unklare SAP-Zielvision (nach Sapphire 2026)','Clean-Core-Shift und Koexistenz SAC vs. Legacy schaffen Unklarheit','Unklare Reporting-Architektur & Investitionen']];
+const AIS=[{t:'Klare und funktionierende Prozesse',s:'Prozesse',d:'Ein definierter, gelebter Prozess ist die Grundlage jeder Initiative zu Digitalisierung, Daten oder künstlicher Intelligenz.'},{t:'Moderne Datenarchitektur, Data Governance und hohe Datenqualität',s:'Daten',d:'Daten werden in den Prozessen erfasst: für bessere Entscheidungen und als Basis für Effizienzsteigerungen.'},{t:'Moderne Analytics-Tools wie K4 und Power BI',s:'Analytics',d:'Erzeugte Daten werden über Analysen und Visualisierungen nutzbar, als Grundlage für Prozessoptimierung und Entscheidungsunterstützung.'},{t:'Künstliche Intelligenz als Kirsche auf der Torte',s:'KI',d:'KI unterstützt Menschen in Prozessaktivitäten und ermöglicht Automatisierung.'}];
+const FD=['Integrierte, interoperable Datenlandschaft','Semantisches Modell & gemeinsames Vokabular','Auffindbare, klar definierte Datenprodukte','Modernisierte Governance & Kostenkontrolle'];
+const AGT=[{t:'Tool-basierte Unterstützung',h:90,d:'KI als Werkzeug: Menschen führen aus, KI liefert punktuelle Hilfe.'},{t:'Copilot',h:70,d:'KI arbeitet im Dialog mit, schlägt vor und erstellt Entwürfe.'},{t:'KI-Agent',h:40,d:'Agenten führen definierte Aufgaben eigenständig aus; Menschen prüfen und steuern.'},{t:'Autonome Agentensysteme',h:15,d:'Mehrere Agenten orchestrieren Prozesse; Menschen setzen Ziele und Leitplanken.'}];
+const LVL=['Fragmentiert','Standardisiert','Integriert','Intelligent'];
+const LVLD=['Isolierte Systeme und Datensilos','Erste Standards, Integration begrenzt','E2E-Prozesse, abgestimmte Architektur','Automatisiert und KI-gestützt'];
+const RMW=[{w:'Target Operating Model',c:'#3D78C2',it:[[0,33,1,'Analyse der aktuellen E2E-Prozesse'],[33.6,66.4,2,'Definition Target Operating Model (Rollen, Governance, Workflows)']]},
+ {w:'Data & Reporting Architecture',c:'#3A8DB4',it:[[0,33,1,'Assessment der aktuellen Datenlandschaft'],[33.6,33,2,'Ziel-Daten- & Reporting-Architektur'],[67.2,32.8,3,'Design des Semantic Layer']]},
+ {w:'Data Integration & Governance',c:'#1DB48E',it:[[33.6,66.4,2,'Definition des Data-Governance-Modells']]},
+ {w:'AI Readiness & Advanced Analytics',c:'#2FC7A5',it:[[0,46,1,'AI Readiness Assessment'],[46.6,53.4,2,'Identifikation & Priorisierung von AI-Use-Cases']]},
+ {w:'Kommunikation',c:'#C9D6E2',it:[[0,33,1,'Kommunikations- & Transformationsstory'],[33.6,66.4,2,'Regelmäßige Status-Updates']]}];
+const KT=[['Fragmentierte Prozesse, Datenlandschaft & unklare Ownership','Ineffizienzen, manueller Aufwand, begrenzte Skalierbarkeit'],['Fehlende Zielarchitektur & fehlendes Governance-Modell','Parallelwelten (SAP, Azure, BI) & inkonsistentes Reporting'],['Starker operativer Fokus & geringe KI-Readiness','Begrenzte strategische Steuerung, ungenutztes KI-Potenzial']];
+const KA=[['Target Operating Model für das Controlling definieren','Rollen, Governance, Business-IT-Zusammenarbeit'],['Einheitliche Daten- & Reporting-Architektur etablieren','SAP-Azure-Alignment, Semantic Layer, Clean Core'],['Data Governance & KI-Fundament aufbauen','Ownership, Datenmodelle, priorisierte Use Cases']];
+const QW=[['Pilot: SAC-basierte Planung','Weniger Excel-Abhängigkeit, mehr Transparenz'],['KPIs harmonisieren & ersten Semantic Layer umsetzen','Sofortige Konsistenz im Reporting'],['Erste KI-Piloten starten (z. B. Forecasting)','Schneller Nutzen aus Advanced Analytics']];
+const FINQ=['Was sind Ihre Kernziele?','Welchen Herausforderungen begegnen Sie?','Welche Rolle haben Sie beim Erreichen dieser Ziele?'];
+/* UNITY · Service-Domänen (aus der Originalfolie übersetzt) */
+const DOM=[
+ {t:'Future Business',r:'CEO / CFO',d:'Gemeinsam gestalten wir Ihr Geschäft von morgen: von Strategie und Geschäftsmodell bis zum Innovationsmanagement, immer mit Blick auf das gesamte Wertschöpfungsmodell für Wachstum, Effizienz und Profitabilität.',
+  ch:['Wachstumsherausforderungen und Kostendruck','Anpassungsdruck an neue Realitäten','Langsame Umsetzung von Strategien und Transformationen','Komplexe regulatorische Anforderungen'],v:['Höherer Umsatz','Gesteigertes EBIT','Höherer Return on Investment','Kürzere Time-to-Market'],o:['Wachstums- & Profitabilitätsstrategien','Neue Geschäftsmodelle','Funktionale Strategien','Operating Model Design','Customer Experience','PMO','Circular Business']},
+ {t:'Digital R&D',r:'CTO',d:'Expertinnen und Experten für Systems Engineering, PLM, Circular Business und KI gestalten eine kundenorientierte, agile und effiziente Produktentwicklung: von der ersten Idee bis zu Nutzung und Recycling.',
+  ch:['Langwierige Entwicklungsprozesse','Steigende System- & Technologiekomplexität','Hohe Entwicklungskosten','Datenbrüche in der Entwicklung','Neue Kooperationen'],v:['Kürzere Entwicklungszeit (Time-to-Market)','Geringere F&E-Kosten','Höhere First-Time-Right-Quote'],o:['Excellence & Transformation','SE / MBSE Application','Digital Twin','PLM','Qualifizierung & Enablement','AI in Engineering']},
+ {t:'Operations Performance',r:'COO',d:'Digitale, zukunftssichere E2E-Operations: von Wertschöpfungsnetzwerken über resiliente Supply Chains bis zur Smart Factory, mit messbarer Wirkung auf Performance, Kosten und nachhaltige Wertschöpfung.',
+  ch:['Hohe Herstellkosten','Unzuverlässige Lieferketten','Lange Lieferzeiten','Hohe Bestände','Investitionsdruck bei Digitalisierung & Automatisierung'],v:['Höhere Produktivität','Kürzere Durchlaufzeiten, geringere Herstellkosten','Höhere Liefertreue','Zukunftssicherheit'],o:['Supply Chain Management','Fabrikplanung','Krankenhausplanung','Operational Excellence','Production IT & AI','Procurement']},
+ {t:'Digital Operating Model',r:'CIO, HR',d:'Wir gestalten die Transformation Ihres digitalen Operating Models für KI-getriebene Wertschöpfung, damit Menschen, Prozesse, IT und KI effizient und skalierbar zusammenarbeiten.',
+  ch:['Fachkräftemangel','Veraltete IT-Landschaft','Fehlende Digitalisierungsstrategie','Komplexe IT-Architekturen','Ins Stocken geratene Transformation'],v:['Wirksamere Belegschaft','Höherer Standardisierungsgrad','Höhere IT-Systemverfügbarkeit'],o:['IT- & Digitalstrategie','Enterprise Architecture & Interoperabilität','Hybride Organisation','HR-Strategie & Transformation','Enablement (Digital & AI Literacy)']},
+ {t:'Digital & AI Services',r:'CEO / CDO',d:'Neue Umsatz- und Effizienzpotenziale mit digitalen und KI-basierten Services und exzellenten User Experiences. Wir etablieren KI-getriebene Prozesse und neue digitale Geschäftsmodelle.',
+  ch:['Wachstumsgrenzen klassischer Produkte','Unzureichende Daten- & KI-Nutzung für Effizienz','Fehlendes Know-how für Aufbau und Skalierung digitaler Produkte & Services'],v:['Höhere Prozesseffizienz','Höherer Umsatz','Kürzere Time-to-Market','Höherer Customer Lifetime Value'],o:['Entwicklung von AI Services','Digital Service Factory','Data Platforms & Smart Data','Digital Touchpoints','Software-driven Transformation']},
+ {t:'Cyber Security',r:'CISO',d:'Klare Governance, wirksames Cyber-Security-Management und regulatorische Sicherheit auf robusten digitalen Strukturen: für beherrschbare und stabile Geschäftsmodelle.',
+  ch:['Cyber-Risiken bedrohen das Geschäftsmodell','Wachsende Bedrohungen bei begrenzten Ressourcen','Regulatorischer Druck','Innovationstempo übersteigt Cyber-Security-Tempo'],v:['Resilientere, sicherere Geschäftsprozesse','Geringere Kosten durch Cyberangriffe','Schutz der Reputation'],o:['Cyber Governance, Risk & Compliance (GRC)','IT- & OT-Security-Architektur','Product Security','Detection, Response & Resilience']},
+ {t:'SAP Business Platform',r:'CIO / CTO',d:'Eine S/4HANA-basierte Business-Plattform als steuerbares Rückgrat der Unternehmensarchitektur: E2E-Integration und konsistente Zielarchitekturen, in denen Prozesse, Daten und Systeme über SAP BTP zusammenspielen.',
+  ch:['Veraltetes oder komplexes ERP-System','Anstehende S/4HANA-Transformation','Fehlende Prozessintegration und -standardisierung'],v:['Geringere E2E-Prozesskosten','Kürzere Prozessdurchlaufzeiten','Höhere Datenqualität'],o:['SAP Advisory','SAP Architecture Consulting','S/4HANA Transformation Management','SAP Innovation Mgmt. auf SAP BTP','SAP Business AI']}];
+const CEL=[['CFO','Business Services',['Integrierte Finanzplanung','Profitabilitätsanalyse','Personalplanung','Kostenrechnung / Kalkulation','Liquiditätsplanung','Management Reporting']],['SCM','Business Services',['S&OP-Planung','Supply Chain Analytics','Sortimentsplanung','Absatz- / Bedarfsplanung','Bestandsplanung','Kapazitätsplanung']],['Sales & Marketing','Business Services',['Umsatzplanung','Marketingplanung','Sales- / Marketing-Dashboarding','Rabattmanagement','Pricing']],['Data','Technical Services',['DWH-Modernisierung','Datenplattform & -management','Expert as a Service','Forecasting Framework','GenAI']],['Cloud','Technical Services',['Cloud-Einführung','Cloud Design & Development','Operational Excellence','Infrastructure as Code','Serverless-Architekturen']]];
+const CELK=['Analytics','Cloud Engineering','Planning','AI Engineering','Data Architecture','Data Engineering'];
+/* Erdumrisse (vereinfacht, Länge/Breite) für den Punktwolken-Globus */
+const LAND=[
+ [[-168,66],[-162,70],[-140,70],[-125,72],[-110,74],[-95,72],[-82,73],[-70,67],[-62,60],[-56,52],[-66,45],[-70,42],[-76,38],[-76,35],[-81,31],[-80,26],[-82,26],[-83,29],[-89,30],[-94,29],[-97,26],[-97,21],[-94,18],[-90,19],[-87,21],[-88,16],[-84,15],[-83,11],[-80,8],[-78,9],[-82,8],[-86,12],[-92,15],[-97,16],[-105,20],[-106,23],[-110,24],[-112,29],[-115,31],[-117,32],[-121,35],[-124,40],[-124,46],[-125,49],[-130,54],[-137,58],[-145,60],[-152,59],[-158,56],[-162,58],[-165,62],[-168,66]],
+ [[-73,78],[-60,82],[-30,83],[-18,77],[-22,70],[-32,68],[-42,62],[-50,63],[-54,67],[-57,73],[-66,76],[-73,78]],
+ [[-80,9],[-75,11],[-72,12],[-64,10],[-60,8],[-52,5],[-50,1],[-44,-2],[-38,-4],[-35,-7],[-37,-12],[-39,-16],[-41,-22],[-45,-24],[-48,-27],[-52,-32],[-55,-35],[-58,-38],[-62,-40],[-65,-42],[-66,-46],[-68,-50],[-69,-53],[-72,-54],[-74,-50],[-75,-46],[-73,-40],[-73,-36],[-71,-30],[-70,-23],[-70,-18],[-75,-15],[-77,-12],[-79,-8],[-81,-5],[-80,-2],[-79,1],[-78,3],[-77,7],[-80,9]],
+ [[-10,36],[-9,39],[-9,43],[-2,43.5],[-1,46],[-4,48],[-2,49],[2,51],[4,52],[5,53],[8,54],[8,57],[10,58],[11,59],[5,61],[5,62],[8,63],[12,66],[15,68],[18,70],[24,71],[28,71],[32,70],[40,68],[44,68],[48,67],[55,68],[60,69],[68,71],[73,72],[80,73],[90,75],[100,77],[106,77],[112,75],[120,73],[130,71],[140,72],[150,71],[160,70],[170,70],[180,68],[180,65],[175,64],[170,60],[163,59],[160,54],[156,51],[157,57],[160,61],[155,59],[150,59],[143,59],[137,54],[141,52],[140,48],[136,44],[133,43],[130,42],[129,40],[129,36],[126,35],[126,38],[124,40],[121,40],[119,39],[118,37],[121,36],[120,33],[122,31],[121,28],[119,25],[116,23],[111,21],[109,22],[107,20],[106,17],[108,15],[109,12],[107,10],[105,9],[103,11],[100,13],[99,10],[101,6],[103,4],[104,1],[101,3],[99,8],[98,12],[98,16],[95,17],[94,20],[91,22],[88,22],[86,20],[84,18],[80,15],[80,10],[77,8],[75,12],[73,17],[72,21],[69,22],[66,25],[62,25],[57,26],[56,24],[59,22],[57,19],[55,17],[52,16],[48,14],[44,13],[43,16],[40,20],[38,23],[35,28],[34,28],[33,31],[35,33],[36,36],[32,36.5],[29,36.5],[27,37],[26,40],[28,41],[29,41],[32,42],[36,41.5],[41,41],[41,43],[38,44.5],[37,46],[34,46],[33,45],[30,46],[29,45],[28,44],[28,42],[26,41],[24,40],[23,39.5],[24,38],[22,37],[21,39],[19,42],[16,43.5],[13,45.5],[12,44],[14,42],[16,40],[16,38],[15.5,38],[15,40],[12,42],[10,44],[8,44],[6,43],[3,43],[3,42],[0,40],[0,38.5],[-1,37],[-2,36.7],[-5,36],[-7,37],[-9,37],[-10,36]],
+ [[-17,21],[-16,24],[-13,28],[-10,30],[-9,32],[-6,35.5],[-2,35],[3,37],[10,37],[11,35],[10,34],[11,33],[15,32],[20,31],[22,33],[25,32],[29,31],[32,31.5],[34,31],[35,28],[33,28],[36,24],[38,20],[39,17],[42,14],[43,12],[45,11],[51,12],[51,10],[49,6],[47,3],[44,0],[41,-2],[40,-4],[39,-7],[40,-11],[40,-15],[37,-18],[35,-21],[35,-24],[33,-26],[32,-29],[30,-31],[27,-33.5],[25,-34],[20,-35],[18,-33],[18,-31],[15,-27],[14,-22],[12,-18],[12,-13],[13,-10],[12,-6],[10,-3],[9,-1],[9,2],[9,4],[6,4.5],[4,6],[1,6],[-2,5],[-4,5],[-7,4.5],[-9,5],[-11,7],[-13,8],[-15,11],[-17,13],[-17,15],[-16,18],[-17,21]],
+ [[44,-25],[47,-25],[50,-16],[49,-12],[47,-14],[44,-17],[44,-25]],
+ [[114,-22],[114,-27],[115,-34],[118,-35],[121,-34],[124,-33],[128,-32],[131,-31.5],[134,-32.5],[137,-34],[138,-35],[140,-37.5],[143,-38.5],[146,-39],[148,-38],[150,-37],[151,-34],[153,-31],[153,-27],[153,-25],[150,-22],[148,-20],[146,-18],[145,-15],[143,-12],[142,-11],[141,-13],[140,-17],[137,-16],[136,-12],[133,-11],[131,-12],[129,-15],[126,-14],[124,-16],[122,-18],[119,-20],[116,-21],[114,-22]],
+ [[-5,50],[1,51],[1.8,52.8],[0,53.6],[-1,55],[-2,57],[-3,58.6],[-5,58.5],[-6,57],[-5,55],[-3,54.5],[-3,53.4],[-4.5,52.8],[-5,51.7],[-4,51.3],[-5,50]],
+ [[-10,51.5],[-6,52],[-6,54.5],[-8,55],[-10,54],[-10,51.5]],
+ [[130,31],[132,34],[135,34],[138,35],[140,36],[141,39],[142,41],[141,43],[143,44],[145,44],[142,46],[140,42],[139,39],[137,37],[134,35.5],[131,34.5],[130,31]],
+ [[95,5],[98,4],[103,-1],[106,-6],[104,-6],[101,-3],[96,2],[95,5]],[[109,1],[111,2],[114,4],[117,7],[119,5],[118,1],[116,-2],[114,-4],[110,-3],[109,1]],
+ [[131,-1],[135,-3],[138,-2],[141,-3],[145,-5],[148,-8],[150,-10],[146,-9],[141,-9],[138,-8],[135,-4],[131,-1]],[[166,-46],[172,-41],[174,-37],[178,-38],[176,-41],[171,-44],[167,-47],[166,-46]],
+ [[-24,64],[-18,63.5],[-14,65],[-16,66.5],[-22,66.5],[-24,64]],[[80,9.8],[81.8,7.5],[81,6],[79.8,7],[80,9.8]],[[120,22],[121,25],[122,25],[121,22],[120,22]]];
+const CITY=[['Paderborn',8.75,51.72,1],['Hamburg',10,53.55],['Berlin',13.4,52.5],['Braunschweig',10.52,52.27],['Köln',6.96,50.94],['Frankfurt',8.68,50.11],['Stuttgart',9.18,48.78],['Nürnberg',11.08,49.45],['München',11.58,48.14],['Zürich',8.54,47.37],['Salzburg',13.05,47.8],['Kairo',31.24,30.04,2],['Peking',116.4,39.9,2],['Shanghai',121.47,31.23,2],['Sydney',151.2,-33.87,2]];
+
+/* =====================================================================
+   8 · FOLIEN (jede Folie = eine Punktwolken-Szene)
+   ===================================================================== */
+const SLIDES=[];
+const Ht=(t,d,n)=>(n?'<span class="n">'+n+'</span>':'')+'<span class="t">'+t+'</span>'+(d?'<div class="d">'+d+'</div>':'');
+const H2=(t,d,n)=>(n?'<span class="n">'+n+'</span>':'')+'<span class="t2">'+t+'</span>'+(d?'<div class="d">'+d+'</div>':'');
+const P2=n=>String(n).padStart(2,'0');
+function rotP(p,rx,ry,rz){const cy=Math.cos(ry),sy=Math.sin(ry),cx=Math.cos(rx),sx=Math.sin(rx),cz=Math.cos(rz||0),sz=Math.sin(rz||0);
+ let x=cy*p[0]+sy*p[2],y=p[1],z=-sy*p[0]+cy*p[2];const y2=cx*y-sx*z,z2=sx*y+cx*z;return[cz*x-sz*y2,sz*x+cz*y2,z2]}
+/* Knoten: Kugel + kreisender Ring */
+function node(B,key,p,r,col,o){o=o||{};const b=new PB(hsh(key));b.sphere(0,0,0,r,o.n||Math.round(1400*r*r+160));
+ B.g(key,b,Object.assign({pos:p,col,size:.03,stiff:.06},o.g||{}));
+ if(o.ring!==false){const b2=new PB(hsh(key)+3);b2.ring(0,0,0,r*(o.rf||1.65),o.rn||Math.round(380*r+70),.01,'xy');B.g(key+'_r',b2,Object.assign({pos:p,col:o.rc||col,gain:.55,size:.022,spin:[0,0,o.rs||.3]},o.gr||{}))}}
+/* gemeinsame Bausteine: chaotische Wolke, Kristall, Datenwürfel */
+function chaosPts(seed,r,n){const b=new PB(seed);for(let i=0;i<n;i++){const k=i%5;if(k<3)b.cloud(0,0,0,r*.55,r*.45,r*.45,1);else{const a=b.r()*TAU;b.cloud(Math.cos(a)*r*.9,Math.sin(a)*r*.7,(b.r()-.5)*r,r*.18,r*.18,r*.18,1)}}return b}
+function crystalPts(seed,r,n){const b=new PB(seed),V=[];const t=(1+Math.sqrt(5))/2;[[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]].forEach(v=>V.push(ml(nm(v),r)));
+ const E=[];for(let i=0;i<12;i++)for(let j=i+1;j<12;j++)if(Math.abs(ln3(sb(V[i],V[j]))-r*1.0515)<.05*r)E.push([V[i],V[j]]);
+ const ne=Math.round(n*.62/E.length);for(const e of E)b.seg(e[0],e[1],ne);b.sphere(0,0,0,r*.55,Math.round(n*.25));for(const v of V)b.ball(v[0],v[1],v[2],r*.07,Math.round(n*.13/12));return b}
+function cubePts(seed,s,n){const b=new PB(seed);b.edges(-s,-s,-s,s,s,s,Math.round(n*.45));const g=3;for(let i=0;i<=g;i++)for(let j=0;j<=g;j++)for(let k=0;k<=g;k++)b.ball(-s+2*s*i/g,-s+2*s*j/g,-s+2*s*k/g,s*.06,Math.max(2,Math.round(n*.55/64)));return b}
+
+/* ---------- 01 · Titel ---------- */
+SLIDES.push({lab:'Titel',t:'',s:'',cam:{d:1,sway:.05},
+ build(B,st){const C0=[3.7,.25,-1.4],R0=[1.05,0,-.32];
+  const b1=new PB(11),b2=new PB(12),b3=new PB(13),rn=rng(5);
+  for(let i=0;i<16000;i++){const rad=.28+Math.pow(rn(),.85)*3.7,arm=i%3,g=b1.gs(),th=arm*TAU/3+rad*1.18+g*.34/(.45+rad*.3),y=b1.gs()*.09*(1.3-rad/4);(rad<1.15?b1:rad<2.5?b2:b3).p(Math.cos(th)*rad,y,Math.sin(th)*rad)}
+  b1.ball(0,0,0,.42,1800);
+  const o={pos:C0,rot:R0,spin:[0,.045,0],stiff:.028};
+  B.g('gx1',b1,Object.assign({col:C.w,gain:.62,size:.026},o));B.g('gx2',b2,Object.assign({col:C.acc,gain:.7,size:.026},o));B.g('gx3',b3,Object.assign({col:C.petrol,gain:.95,size:.026},o));
+  const hb=new PB(17);hb.ring(0,0,0,4.6,1400,.06,'xz');B.g('halo',hb,{pos:C0,rot:R0,spin:[0,-.02,0],col:C.dim,gain:.6,size:.022});
+  const NM=['Impuls I','Impuls II','Impuls III'],SUB=['Prozesse & TOM','Daten & Reporting','AI Readiness'];
+  const orb=k=>{const a=T*.07+k*TAU/3,p=rotP([Math.cos(a)*4.3,0,Math.sin(a)*4.3],R0[0],0,R0[2]);return ad(C0,p)};
+  for(let k=0;k<3;k++){node(B,'imp'+k,orb(k),.2,k==0?C.sky:k==1?C.acc:C.mint,{n:520,g:{gain:1.15}});
+   B.lab('il'+k,()=>ad(orb(k),[0,.42,0]),'<span class="k">'+NM[k]+'</span><div class="t2" style="margin-top:.2em">'+SUB[k]+'</div>',{al:'a',click:()=>goTo(CHS[k+1]),hk:'h'+k});
+   B.hot('h'+k,()=>orb(k),.35,{grp:['imp'+k,'imp'+k+'_r'],click:()=>goTo(CHS[k+1])})}
+  B.dyn=()=>{for(let k=0;k<3;k++){const p=orb(k);for(const s of['imp'+k,'imp'+k+'_r']){const g=RG(s);if(g){g.pos=p;g.posC=p.slice()}}L(C0,p,C.acc,.12*LFADE)}};
+  B.hero='<div class="k">Workshop · RWE</div><h1>Zukunftsbild<br><em>Controlling</em></h1><p>Daten und Reporting im SAP-Kontext bei RWE</p><div class="d">Essen · 05.11.2026</div><div class="row"><button class="btn pri" data-go="1">Workshop starten →</button><button class="btn" data-go="ov">Übersicht</button></div>';
+  B.hint='Impulse anklicken · Szene ziehen'}});
+
+/* ---------- 02 · Agenda ---------- */
+SLIDES.push({lab:'Agenda',t:'Agenda',s:'Fünf Kapitel vom Kontext über drei Impulse bis zu den nächsten Schritten',cam:{yaw:-.08,pitch:.04},init:()=>({sel:0}),
+ build(B,st){const P=[[-5.4,-.95,.6],[-2.65,.6,.1],[.1,-.7,-.3],[2.85,.8,-.7],[5.6,-.3,-1.1]];
+  const path=crv([[-9,-2,1.4],...P,[9.5,.4,-2]],22);
+  B.path('fl',path,2400,{col:C.acc,speed:.02,spread:.07,size:.025,gain:.7});B.path('fl2',path,800,{col:C.w,speed:.04,spread:.012,size:.02,gain:.55});
+  AGD.forEach((a,k)=>{const p=P[k],sel=st.sel===k;
+   const b=new PB(100+k);b.sphere(0,0,0,.34,760);b.ball(0,0,0,.16,200);B.g('c'+k,b,{pos:p,col:sel?C.acc:C.sky,gain:sel?1.3:.75,size:.03,scale:sel?1.18:1});
+   const r=new PB(110+k);r.ring(0,0,0,.68,560,.012);B.g('r'+k,r,{pos:p,col:sel?C.acc:C.petrol,gain:sel?1:.8,spin:[0,0,.2*(k%2?1:-1)]});
+   const s=new PB(120+k);for(let j=0;j<a[5];j++){const an=j/a[5]*TAU;s.ball(Math.cos(an)*1.0,Math.sin(an)*1.0,0,.07,50)}B.g('s'+k,s,{pos:p,rot:[.9,0,0],col:C.w,gain:sel?1.1:.6,size:.024,spin:[0,.35,0]});
+   const up=k%2==0;
+   B.lab('l'+k,ad(p,[0,up?1.12:-1.12,0]),'<div class="k">Kapitel '+a[0]+'</div><div class="t2" style="font-size:max(14px,calc(var(--u)*1.35));margin-top:.15em">'+a[1]+'</div><div class="d">'+a[2]+'</div>',{al:up?'a':'b',w:2.6,cls:sel?'sel c':'c',click:()=>pick(k),hk:'h'+k});
+   B.hot('h'+k,p,.8,{grp:['c'+k,'r'+k,'s'+k],click:()=>pick(k)})});
+  function pick(k){if(st.sel===k)goTo(AGD[k][4]);else{st.sel=k;refresh()}}
+  const a=AGD[st.sel];B.cap={k:'Kapitel '+a[0]+' · '+a[5]+' Folien',t:a[1],s:a[2],list:a[3]};
+  B.act=[{t:'Kapitel öffnen →',f:()=>goTo(a[4])}];B.hint='Kapitel anklicken · zweiter Klick öffnet'}});
+
+/* ---------- 03 · Vorstellungsrunde ---------- */
+SLIDES.push({lab:'Vorstellungsrunde',t:'Rollen, Kontext und Erwartungen abstimmen',s:'Interaktiver Einstieg für eine produktive Zusammenarbeit',init:()=>({left:60,run:false,p:1}),
+ leave(st){st.run=false},
+ build(B,st){const C2=[3.0,-.35,0],R=2.05;
+  const toggle=()=>{if(st.left<=0)st.left=60;st.run=!st.run;refresh()};
+  const rb=new PB(31);rb.ring(0,0,0,R,1500,.02);B.g('rb',rb,{pos:C2,col:C.petrol,gain:.35,size:.022});
+  const rl=new PB(32);for(let i=0;i<2800;i++){const a=PI/2-(i+.5)/2800*TAU,r=R+rl.gs()*.035;rl.p(Math.cos(a)*r,Math.sin(a)*r,rl.gs()*.03)}
+  B.g('rl',rl,{pos:C2,col:st.left<10?C.pain:C.acc,gain:1.15,size:.03,tw:.1,pc:(l,t,g)=>(l/g.n)<st.left/60?1:.05});
+  const tk=new PB(33);for(let k=0;k<60;k++){const a=PI/2-k/60*TAU,r0=R+.2,r1=R+(k%5?.3:.45);tk.seg([Math.cos(a)*r0,Math.sin(a)*r0,0],[Math.cos(a)*r1,Math.sin(a)*r1,0],k%5?6:12)}B.g('tk',tk,{pos:C2,col:C.bg,gain:.55,size:.02});
+  const ir=new PB(34);ir.ring(0,0,0,1.55,700,.015);ir.ring(0,0,0,1.38,300,.01);B.g('ir',ir,{pos:C2,col:C.dim,gain:.7,spin:[0,0,-.1]});
+  const sp=new PB(35);sp.cloud(0,0,0,.09,.09,.09,320);B.g('sp',sp,{pos:C2,col:C.w,gain:.5,size:.026,jit:.05,jf:2.5});
+  const act=()=>st.run?Math.min(2,Math.floor((60-st.left)/20)):-1;
+  QST.forEach((q,k)=>{const p=[-5.9,1.05-k*1.3,0];node(B,'q'+k,p,.2,C.sky,{n:420});
+   B.lab('ql'+k,ad(p,[.6,0,0]),H2(q[0],q[1],P2(k+1)),{al:'l',w:3.6,cls:()=>act()===k?'sel':''})});
+  B.lab('tm',C2,()=>{const s=Math.ceil(st.left);return'<div class="big" style="font-size:max(36px,calc(var(--u)*5.2))">'+Math.floor(s/60)+':'+P2(s%60)+'</div><div class="k" style="margin-top:.8em">Redezeit · Teilnehmer/in '+st.p+'</div>'},{al:'c'});
+  B.hot('ring',C2,2.3,{grp:['rl','sp'],click:toggle});
+  B.dyn=(t,dt)=>{if(st.run){st.left=Math.max(0,st.left-dt);if(st.left<=0){st.run=false;refresh()}}
+   const g=RG('rl');if(g)g.c=hex(st.left<10?C.pain:C.acc);
+   const a=PI/2-(st.left/60)*TAU,hp=ad(C2,[Math.cos(a)*R,Math.sin(a)*R,0]),s=RG('sp');if(s){s.pos=hp;s.gain=st.run?1.6:.55}
+   for(let k=0;k<3;k++){const q=RG('q'+k);if(q){q.gain=act()===k?1.5:.75;q.c=hex(act()===k?C.acc:C.sky)}}};
+  B.act=[{t:st.run?'Pause':'Start ▸',on:st.run,f:toggle},{t:'Zurücksetzen',f:()=>{st.run=false;st.left=60;refresh()}},{t:'Nächste Person →',f:()=>{st.run=false;st.left=60;st.p++;refresh()}}];
+  B.hint='Ring anklicken: Timer starten / pausieren'}});
+
+/* ---------- 04 · Über UNITY ---------- */
+let GLOBE=null;
+function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const xi=P[i][0],yi=P[i][1],xj=P[j][0],yj=P[j][1];if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c}return c}
+function ll(lon,lat,r){const a=lon*PI/180,b=lat*PI/180;return[Math.cos(b)*Math.sin(a)*r,Math.sin(b)*r,Math.cos(b)*Math.cos(a)*r]}
+function globePts(R){if(GLOBE&&GLOBE.R===R)return GLOBE;const land=new PB(41),sea=new PB(42),M=26000;
+ for(let i=0;i<M;i++){const y=1-2*(i+.5)/M,q=Math.sqrt(1-y*y),t=i*2.39996323,x=Math.cos(t)*q,z=Math.sin(t)*q,lat=Math.asin(y)*180/PI,lon=Math.atan2(x,z)*180/PI;
+  if(LAND.some(P=>inPoly(lon,lat,P)))land.p(x*R,y*R,z*R);else if(i%7==0)sea.p(x*R*.995,y*R*.995,z*R*.995)}
+ const gr=new PB(43);for(let la=-60;la<=60;la+=30)for(let k=0;k<160;k++){const p=ll(k/160*360,la,R*1.002);gr.p(p[0],p[1],p[2])}
+ for(let lo=0;lo<360;lo+=30)for(let k=0;k<90;k++){const p=ll(lo,-90+k/89*180,R*1.002);gr.p(p[0],p[1],p[2])}
+ return GLOBE={R,land:land.f(),sea:sea.f(),grat:gr.f()}}
+const UTAB=[['Überblick','UNITY: Managementberatung trifft tiefe Technologiekompetenz','Innovation, Integration, Transformation und Umsetzung · weltweit'],['Service-Domänen','KI als Wachstumstreiber: Wertschöpfung neu denken','Sieben Service-Domänen für die End-to-End-Transformation'],['Wertbeitrag','Wertbeitrag von UNITY über alle Service-Domänen','Herausforderungen, Angebote und Wertschöpfung je Domäne']];
+SLIDES.push({lab:'Über UNITY',t:UTAB[0][1],s:UTAB[0][2],init:()=>({tab:0,dom:0}),
+ build(B,st){const tab=st.tab;B.t=UTAB[tab][1];B.s=UTAB[tab][2];
+  B.act=UTAB.map((u,i)=>({t:u[0],on:i==tab,f:()=>{st.tab=i;refresh()}}));
+  if(tab==0){const G0=[3.15,-.2,0],R=2.35,G=globePts(R),rot=[.42,0,0];
+   const o=k=>Object.assign({pos:G0,rot,stiff:.05},k);
+   B.g('land',G.land,o({col:C.sky,gain:.9,size:.027}));B.g('sea',G.sea,o({col:C.dim,gain:.5,size:.02}));B.g('grat',G.grat,o({col:C.petrol,gain:.32,size:.017}));
+   const at=new PB(44);at.ring(0,0,0,R*1.06,1100,.035);B.g('atm',at,{pos:G0,col:C.acc,gain:.28,size:.022});
+   const cb=new PB(45),hq=CITY[0];CITY.forEach(c=>{if(c[3]===1)return;const p=ll(c[1],c[2],R*1.01);cb.ball(p[0],p[1],p[2],c[3]?.045:.028,c[3]?60:26)});B.g('cty',cb,o({col:C.w,gain:1.2,size:.024}));
+   const hb=new PB(46),hp=ll(hq[1],hq[2],R*1.01);hb.ball(hp[0],hp[1],hp[2],.06,140);B.g('hq',hb,o({col:C.acc,gain:1.6,size:.03,pc:(l,t)=>.8+.5*Math.sin(t*3)}));
+   const A=nm(ll(hq[1],hq[2],1));CITY.slice(1).forEach((c,i)=>{const Bv=nm(ll(c[1],c[2],1)),ang=Math.acos(cl(dt(A,Bv),-1,1)),pts=[];
+    for(let k=0;k<=40;k++){const u=k/40,s=Math.sin(ang)||1e-6,w1=Math.sin((1-u)*ang)/s,w2=Math.sin(u*ang)/s,q=nm(ad(ml(A,w1),ml(Bv,w2))),h=1+(.04+.22*ang/PI)*Math.sin(PI*u);pts.push(ml(q,R*h))}
+    B.path('a'+i,pts,Math.round(40+260*ang/PI),o({col:c[3]?C.acc:C.mint,speed:.22,spread:.006,size:.02,gain:1.1}))});
+   const fr_=()=>{const g=RG('land');return g?g:null};
+   const vis=(t,w)=>w[2]-G0[2]>R*.18;
+   const cl_=(nmx,lon,lat,al,txt,dy)=>B.lab('c_'+nmx,{g:'land',p:ll(lon,lat,R*1.02)},txt,{al,vis,dx:al=='l'?.6:al=='r'?-.6:0,dy:dy||0});
+   cl_('pb',8.75,51.72,'r','<span class="t" style="color:#2FC7A5">Paderborn</span><div class="d">Hauptsitz</div>',-1.4);
+   cl_('dach',11,49,'l','<span class="t">DACH</span><div class="d">10 Standorte</div>',1.0);
+   cl_('kai',31.24,30.04,'l','<span class="t">Kairo</span>');cl_('pek',116.4,39.9,'l','<span class="t">Peking</span>');cl_('sha',121.47,31.23,'l','<span class="t">Shanghai</span>');cl_('syd',151.2,-33.87,'l','<span class="t">Sydney</span>');
+   const KP=[['380+','Mitarbeitende bei UNITY · 800+ in der UNITY Innovation Alliance'],['59 Mio. €','Umsatz 2025'],['27 + 16','DAX-40- und EURO-STOXX-50-Unternehmen vertrauen auf unsere Expertise'],['Weltweit','Erfolgreiche Projekte auf allen Kontinenten']];
+   KP.forEach((k,i)=>B.lab('kp'+i,[-6.95,1.45-i*1.08,0],'<div class="big">'+k[0]+'</div><div class="d" style="margin-top:.5em">'+k[1]+'</div>',{al:'l',w:3.7}));
+   B.dyn=()=>{const ry=-.17-1.0*Math.sin(T*.085);for(const k of['land','sea','grat','cty','hq',...CITY.slice(1).map((c,i)=>'a'+i)]){const g=RG(k);if(g){g.rot[1]=ry;g.rotC[1]=ry}}};
+   B.hint='Globus ziehen · Standorte & Projekte weltweit'}
+  else if(tab==1){const D0=[2.5,-.55,-.4],R=3.0,RX=.5,phi=k=>k*TAU/7,cur=(RG('orb')||{rotC:[0,0,0]}).rotC[1],tg=-phi(st.dom)+TAU*Math.round((cur+phi(st.dom))/TAU);
+   const o=k=>Object.assign({pos:D0,rot:[RX,tg,0]},k);
+   B.path('orb',(()=>{const a=[];for(let k=0;k<64;k++)a.push([Math.sin(k/64*TAU)*R,0,Math.cos(k/64*TAU)*R]);return a})(),1400,o({closed:true,col:C.petrol,speed:.015,spread:.03,size:.022,gain:.7}));
+   DOM.forEach((d,k)=>{const lp=[Math.sin(phi(k))*R,0,Math.cos(phi(k))*R],sel=k===st.dom,b=new PB(400+k);b.sphere(lp[0],lp[1],lp[2],.3,620);b.ring(lp[0],lp[1],lp[2],.5,260,.01,'xz');
+    B.g('d'+k,b,o({col:sel?C.acc:C.sky,gain:sel?1.45:.75,size:.03}));
+    B.lab('dl'+k,{g:'d'+k,p:ad(lp,[0,.55,0])},'<span class="t">'+d.t+'</span><div class="d" style="text-align:center">'+d.r+'</div>',{al:'a',cls:t=>(sel?'sel':'')+(toW(SID+':d'+k,lp)[2]<D0[2]-1.2?' ghost':toW(SID+':d'+k,lp)[2]<D0[2]+.5?' dim':''),click:()=>{st.dom=k;refresh()},hk:'h'+k});
+    B.hot('h'+k,{g:'d'+k,p:lp},.5,{grp:['d'+k],click:()=>{st.dom=k;refresh()}})});
+   const cs=new PB(48);cs.sphere(0,0,0,.95,2200);B.g('core',cs,{pos:D0,col:C.acc,gain:.55,size:.024,spin:[0,.15,0]});
+   const ct=new PB(49);ct.text('KI',0,0,.95,1600,0,.06);B.g('ki',ct,{pos:D0,col:C.w,gain:.95,size:.026});
+   B.dyn=()=>{for(let k=0;k<7;k++){const w=toW(SID+':d'+k,[Math.sin(phi(k))*R,0,Math.cos(phi(k))*R]);L(D0,w,k===st.dom?C.acc:C.petrol,(k===st.dom?.5:.14)*LFADE)}};
+   const d=DOM[st.dom];B.cap={k:d.r,n:P2(st.dom+1),t:d.t,s:d.d};B.hint='Domäne anklicken'}
+  else{const d=DOM[st.dom],S=[[-2.1,1.0,0],[1.6,1.0,0],[5.3,1.0,0]];
+   DOM.forEach((x,k)=>B.lab('dm'+k,[-6.95,1.6-k*.5,0],'<span class="n">'+P2(k+1)+'</span><span class="t">'+x.t+'</span>',{al:'l',cls:k===st.dom?'sel':'',click:()=>{st.dom=k;refresh()}}));
+   B.g('ch',chaosPts(51+st.dom,.75,1400),{pos:S[0],col:C.pain,gain:.95,jit:.07,jf:.7,size:.028});
+   B.g('of',cubePts(52,.55,1300),{pos:S[1],col:C.blue,gain:1.1,size:.027,spin:[.1,.25,0]});
+   const hv=new PB(53);for(let i=0;i<1300;i++){const u=i/1300,a=u*TAU*3.2,r=.25+u*.45;hv.p(Math.cos(a)*r+hv.gs()*.03,-.75+u*1.5,Math.sin(a)*r+hv.gs()*.03)}B.g('va',hv,{pos:S[2],col:C.acc,gain:1.1,size:.028,spin:[0,.4,0]});
+   for(let k=0;k<2;k++){const a=ad(S[k],[.85,0,0]),b=ad(S[k+1],[-.85,0,0]);B.path('f'+k,arc(a,b,.55,[0,.3,-1],30),620,{col:k?C.acc:C.sky,speed:.2,spread:.07,size:.022,gain:.95})}
+   const HD=['Herausforderungen','Service-Angebote','Wertbeitrag'],LS=[d.ch,d.o,d.v];
+   S.forEach((p,k)=>{B.lab('h'+k,ad(p,[0,1.05,0]),'<span class="t"'+(k==0?' style="color:#E8609F"':'')+'>'+HD[k]+'</span>',{al:'a'});
+    B.lab('li'+k,ad(p,[0,-1.05,0]),'<div class="d" style="font-size:max(10px,calc(var(--u)*.8));line-height:1.55;text-align:left">'+LS[k].map(x=>'▪ '+x).join('<br>')+'</div>'+(k==2?'<div class="tag">Value Creation · EBITDA × Multiple · Capital Employed</div>':''),{al:'b',w:3.3})});
+   B.cap={k:d.r,t:d.t};B.hint='Domäne links wählen'}}});
+
+/* ---------- 05 · Über celver ---------- */
+const CTAB=[['Überblick','celver: Tiefe Expertise in Finance- und Datenberatung','Datengetriebene Management- und IT-Beratung für das digitale Unternehmen'],['Services & Kompetenzen','celver bietet End-to-End Business- und Technologie-Services','Von der CFO-Beratung über Data Engineering bis zu Cloud-Lösungen']];
+SLIDES.push({lab:'Über celver',t:CTAB[0][1],s:CTAB[0][2],init:()=>({tab:0,cel:0}),
+ build(B,st){const tab=st.tab;B.t=CTAB[tab][1];B.s=CTAB[tab][2];B.act=CTAB.map((u,i)=>({t:u[0],on:i==tab,f:()=>{st.tab=i;refresh()}}));
+  if(tab==0){const Q=[1.9,.1,0];
+   const ct=new PB(61);ct.text('celver',0,0,.62,2000,0,.05);B.g('core',ct,{pos:Q,col:C.w,gain:1,size:.026});
+   const e=new PB(62),N=100;for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,q=Math.sqrt(1-y*y),t=i*2.39996;e.ball(Math.cos(t)*q*1.35,y*1.35,Math.sin(t)*q*1.35,.04,16)}B.g('emp',e,{pos:Q,col:C.acc,gain:1.1,size:.024,spin:[0,.12,0]});
+   const c=new PB(63);for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,q=Math.sqrt(1-y*y),t=i*2.39996+1;c.ball(Math.cos(t)*q*2.1,y*2.1,Math.sin(t)*q*2.1,.05,16)}B.g('cli',c,{pos:Q,rot:[.35,0,0],col:C.sky,gain:.95,size:.024,spin:[0,-.06,0]});
+   const y=new PB(64);for(let k=0;k<20;k++)y.ring(0,0,0,.3+k*.105,46+k*12,.006,'xz');B.g('yrs',y,{pos:ad(Q,[0,-2.45,0]),col:C.petrol,gain:.9,size:.022,spin:[0,.04,0]});
+   const LOC=['Hamburg','München','Lissabon'],la=[.4,2.5,4.4];const bc=new PB(65);la.forEach(a=>{const x=Math.cos(a)*2.3,z=Math.sin(a)*2.3;bc.seg([x,0,z],[x,.75,z],60,.01);bc.ball(x,.82,z,.07,90)});B.g('loc',bc,{pos:ad(Q,[0,-2.45,0]),col:C.mint,gain:1.3,size:.026});
+   la.forEach((a,i)=>B.lab('lc'+i,ad(Q,[Math.cos(a)*2.3,-2.45+1.05,Math.sin(a)*2.3]),'<span class="t" style="font-size:max(9px,calc(var(--u)*.68))">'+LOC[i]+'</span>',{al:'a'}));
+   const F=[['emp',[-2.6,1.3,0],'r','100+','Mitarbeitende'],['cli',[2.55,1.75,0],'l','100+','aktive Kunden'],['yrs',[-2.6,-2.25,0],'r','20+ Jahre','Erfahrung in Finance & Data'],['loc',[2.75,-1.75,0],'l','3 Standorte','Hamburg · München · Lissabon']];
+   F.forEach((f,i)=>{const p=ad(Q,f[1]);B.lab('f'+i,p,'<div class="mid">'+f[3]+'</div><div class="d">'+f[4]+'</div>',{al:f[2],hk:'fh'+i,click:()=>{}});B.hot('fh'+i,p,.5,{grp:[f[0]]});
+    const to=f[0]=='emp'?ad(Q,[-.95,.95,0]):f[0]=='cli'?ad(Q,[1.5,1.45,0]):f[0]=='yrs'?ad(Q,[-1.4,-2.45,0]):ad(Q,[Math.cos(.4)*2.3,-1.65,Math.sin(.4)*2.3]);B.ln(ad(p,[f[2]=='r'?.15:-.15,0,0]),to,C.bg,.25)});
+   B.cap={k:'Key Facts',t:'Management- & IT-Beratung',s:'Fokus auf datengetriebene Entscheidungen · Mitglied der UNITY Innovation Alliance',chips:['CFO','SCM','Sales & Marketing','Smart Data','Smart Cloud']};B.hint='Kennzahlen überfahren'}
+  else{const P=[[-1.6,1.15,0],[1.4,1.15,0],[4.4,1.15,0],[-.1,-1.05,0],[2.9,-1.05,0]];
+   CEL.forEach((c,k)=>{const sel=k===st.cel,tech=k>2,p=P[k],b=new PB(70+k);b.sphere(0,0,0,.36,760);B.g('n'+k,b,{pos:p,col:tech?C.acc:C.sky,gain:sel?1.45:.7,scale:sel?1.2:1,size:.03});
+    const s=new PB(80+k);c[2].forEach((_,j)=>{const a=j/c[2].length*TAU;s.ball(Math.cos(a)*.78,Math.sin(a)*.78,0,.07,55)});s.ring(0,0,0,.78,220,.004);B.g('s'+k,s,{pos:p,rot:[1.0,0,0],col:C.w,gain:sel?1.2:.45,size:.022,spin:[0,.3,0]});
+    B.lab('l'+k,ad(p,[0,-.75,0]),'<span class="t">'+c[0]+'</span>',{al:'b',cls:sel?'sel':'',click:()=>{st.cel=k;refresh()},hk:'h'+k});B.hot('h'+k,p,.6,{grp:['n'+k,'s'+k],click:()=>{st.cel=k;refresh()}})});
+   B.lab('bs',[-2.75,1.15,0],'<span class="k">Business</span><br><span class="k">Services</span>',{al:'r'});B.lab('ts',[-1.25,-1.05,0],'<span class="k">Technical</span><br><span class="k">Services</span>',{al:'r'});
+   const kp=CELK.map((_,i)=>[-.6+i*1.38,-2.75,0]);B.path('kf',[[-1.6,-2.75,0],...kp,[7.6,-2.75,0]],900,{col:C.petrol,speed:.04,spread:.03,size:.02,gain:.7});
+   const kb=new PB(90);kp.forEach(p=>kb.ball(p[0],p[1],p[2],.07,60));B.g('kb',kb,{col:C.mint,gain:1.1,size:.024});
+   CELK.forEach((x,i)=>B.lab('k'+i,ad(kp[i],[0,.22,0]),'<span class="t" style="font-size:max(9px,calc(var(--u)*.66))">'+x+'</span>',{al:'a'}));
+   B.lab('kh',[-1.25,-2.75,0],'<span class="k">Kompetenzen</span>',{al:'r'});
+   const c=CEL[st.cel];B.cap={k:c[1],t:c[0],list:c[2]};B.note='Technologies · Project Management · Social Competence';B.hint='Service anklicken'}}});
+
+/* ---------- 06 · Ausgangslage & Zielbild ---------- */
+SLIDES.push({lab:'Ausgangslage & Zielbild',t:'Das Controlling muss sich zu einem <em>integrierten E2E-Modell</em> entwickeln',s:'Von fragmentierten Datenmodellen zu einem einheitlichen, gesteuerten Datenökosystem',init:()=>({m:0,goals:false}),
+ build(B,st){const C5=[1.75,-.42,0],m=st.m,ang=k=>PI/2-k*TAU/7,rn=rng(77);const isl=[];
+  for(let k=0;k<7;k++){const a=ang(k);isl.push([Math.cos(a)*2.75+(rn()-.5)*.8,Math.sin(a)*1.75+(rn()-.5)*.45,-1.5+rn()*2.2])}
+  const COLS=[C.sky,C.pain,C.petrol,C.sky,C.pain,C.bg,C.petrol];
+  for(let k=0;k<7;k++){const b=new PB(500+k),a=ang(k);
+   if(m==0){const c=isl[k];for(let i=0;i<700;i++){if(i%4==0){const f=(i>>2)%3,fa=f*2.1+k;b.cloud(c[0]+Math.cos(fa)*.55,c[1]+Math.sin(fa)*.4,c[2],.09,.09,.09,1)}else b.cloud(c[0],c[1],c[2],.3,.22,.22,1)}}
+   else{const sp=TAU/7*.43;for(let i=0;i<700;i++){const t=a+(b.r()*2-1)*sp,v=b.r()*TAU,R=2.05+Math.cos(v)*.17;b.p(Math.cos(t)*R,Math.sin(t)*R,Math.sin(v)*.17)}}
+   B.g('i'+k,b,{pos:C5,col:m?(k%2?C.acc:C.green):COLS[k],gain:m?1.05:.9,jit:m?0:.06,jf:.6,size:.028});
+   const lp=m?[Math.cos(a)*2.55,Math.sin(a)*2.4,0]:ad(isl[k],[Math.cos(a)*.62,Math.sin(a)*.5,0]),cx=Math.cos(a),al=m?(cx>.35?'l':cx<-.35?'r':(Math.sin(a)>0?'a':'b')):(cx>.2?'l':cx<-.2?'r':(Math.sin(a)>0?'a':'b'));
+   B.lab('l'+k,ad(C5,lp),(m?'':'<span class="n" style="color:#E8609F">'+P2(k+1)+'</span>')+H2(SQ[k][m],'',m?P2(k+1):''),{al,w:2.6})}
+  if(m){B.path('rg',(()=>{const a=[];for(let k=0;k<72;k++)a.push([Math.cos(k/72*TAU)*2.05,Math.sin(k/72*TAU)*2.05,0]);return a})(),1500,{pos:C5,closed:true,col:C.w,speed:-.03,spread:.05,size:.022,gain:.75});
+   const cb=new PB(520);cb.sphere(0,0,0,.55,900);cb.ball(0,0,0,.3,400);B.g('core',cb,{pos:C5,col:C.acc,gain:1,size:.028,spin:[0,.2,0]});
+   for(let k=0;k<7;k++){const a=ang(k);B.ln(C5,ad(C5,[Math.cos(a)*1.85,Math.sin(a)*1.85,0]),C.acc,.22)}
+   B.lab('cl',C5,'<span class="t">E2E</span>',{al:'c'})}
+  else{const nb=new PB(521);nb.cloud(0,0,-.5,2.2,1.3,1.2,1000);B.g('noise',nb,{pos:C5,col:C.dim,gain:.5,jit:.25,jf:.25,size:.022})}
+  B.hot('all',C5,3.2,{click:()=>{st.m=1-st.m;st.goals=false;refresh()}});
+  B.act=[{t:'Status quo',on:m==0,f:()=>{st.m=0;refresh()}},{t:'Zielbild',on:m==1&&!st.goals,f:()=>{st.m=1;st.goals=false;refresh()}},{t:'Ziele & Meilensteine',on:st.goals,f:()=>{st.m=1;st.goals=true;refresh()}}];
+  B.cap=m==0?{k:'Status quo',t:'Fragmentierte Datenlandschaft',s:'Sieben Inseln ohne gemeinsame Logik. Klicken, um zwischen heute und morgen zu wechseln.'}:st.goals?{k:'Zielbild',t:'Strategische Ziele & Meilensteine',list:ZIELE}:{k:'Zielbild',t:'Strategische Leitlinien',list:LEIT};
+  B.hint='Szene anklicken: heute ↔ morgen'}});
+
+/* ---------- 07 · Sieben Dimensionen ---------- */
+SLIDES.push({lab:'7 Dimensionen',t:'Integriertes Controlling erfordert Reife in <em>sieben Dimensionen</em>',s:'Daten, Plattformen, Prozesse, Governance, Tools, Rollen und Fähigkeiten',init:()=>({dim:0,auto:false,last:0}),
+ build(B,st){const C6=[2.25,-.02,0],R=2.12,TL=.32,pos=k=>{const a=PI/2-k*TAU/7;return ad(C6,[Math.cos(a)*R,Math.sin(a)*R*Math.cos(TL),-Math.sin(a)*R*Math.sin(TL)])};
+  const cs=new PB(600);cs.sphere(0,0,0,.84,2300);B.g('cs',cs,{pos:C6,col:C.acc,gain:.6,size:.024,spin:[0,.12,0]});
+  const ci=new PB(601);ci.ball(0,0,0,.42,900);B.g('ci',ci,{pos:C6,col:C.w,gain:.75,size:.026});
+  const orb=[];for(let k=0;k<=70;k++){const a=PI/2-k/70*TAU;orb.push(ad(C6,[Math.cos(a)*R,Math.sin(a)*R*Math.cos(TL),-Math.sin(a)*R*Math.sin(TL)]))}
+  B.path('orb',orb,1300,{closed:true,col:C.petrol,speed:.012,spread:.04,size:.022,gain:.7});
+  const sel_=k=>{st.dim=k;st.auto=false;refresh()};
+  DIMS.forEach((d,k)=>{const p=pos(k),sel=k===st.dim;node(B,'n'+k,p,.27,sel?C.acc:C.sky,{n:480,g:{gain:sel?1.5:.75,scale:sel?1.3:1}});
+   B.path('sp'+k,[ad(C6,ml(nm(sb(p,C6)),.95)),ad(p,ml(nm(sb(p,C6)),-.35))],sel?520:220,{col:sel?C.acc:C.petrol,speed:sel?.45:.15,spread:sel?.05:.02,size:.022,gain:sel?1.1:.6});
+   const a=PI/2-k*TAU/7,cx=Math.cos(a),al=cx>.3?'l':cx<-.3?'r':(Math.sin(a)>0?'a':'b'),lp=ad(p,[cx*.62,Math.sin(a)*.55,0]);
+   B.lab('l'+k,lp,'<span class="n">'+P2(k+1)+'</span><span class="t">'+d.t+'</span>',{al,cls:sel?'sel':'',click:()=>sel_(k),hk:'h'+k});
+   B.hot('h'+k,p,.5,{grp:['n'+k,'n'+k+'_r'],click:()=>sel_(k)})});
+  B.lab('cl',C6,'<span class="t">Integriertes</span><br><span class="t">Controlling</span>',{al:'c'});
+  const d=DIMS[st.dim];B.cap={n:P2(st.dim+1),t:d.t,s:d.d,chips:[{h:'Schwerpunkt in',c:'o'},...d.i]};
+  B.act=[{t:st.auto?'Rundgang stoppen':'Rundgang starten ▸',on:st.auto,f:()=>{st.auto=!st.auto;st.last=T;refresh()}}];
+  B.dyn=()=>{if(st.auto&&T-st.last>2.8){st.last=T;st.dim=(st.dim+1)%7;refresh()}};
+  B.note='Zunehmende Systemkomplexität und verteilte Datenlandschaften erfordern eine <b>ganzheitliche Transformation</b> über Daten, Architektur und Controlling-Prozesse, um skalierbare und konsistente Entscheidungen zu ermöglichen.';
+  B.hint='Dimension anklicken'}});
+
+/* ---------- Kapiteltrenner (Impuls I · II · III) ---------- */
+const SERIF='Georgia,"Times New Roman","DejaVu Serif",serif';
+function chapter(num,kap,title,q,focus){return{lab:'Impuls '+num,idx:'Kapitel '+kap+' · Impuls '+num,t:title,s:q,cam:{yaw:-.12,pitch:.05,sway:.05},
+ build(B,st){const N0=[3.3,-.3,0],R=3.0,RX=.34;
+  const t=new PB(hsh(num));t.text(num,0,0,4.4,8600,0,0,700,SERIF);for(let i=0;i<t.a.length;i+=3)t.a[i+2]=(t.r()-.5)*.3;B.g('num',t,{pos:N0,col:C.w,gain:.85,size:.028,tw:.3});
+  const h=new PB(hsh(num)+1);h.text(num,0,0,4.4,2600,-.3,.35,700,SERIF);B.g('halo',h,{pos:N0,col:C.acc,gain:.32,size:.03,jit:.06,jf:.5,scale:1.03});
+  const o={pos:N0,rot:[RX,0,0],spin:[0,.07,0]};
+  B.path('orb',(()=>{const a=[];for(let k=0;k<64;k++)a.push([Math.sin(k/64*TAU)*R,0,Math.cos(k/64*TAU)*R]);return a})(),1500,Object.assign({closed:true,col:C.petrol,speed:.01,spread:.03,size:.022,gain:.65},o));
+  DIMS.forEach((d,k)=>{const f=focus.includes(k),a=k*TAU/7,lp=[Math.sin(a)*R,0,Math.cos(a)*R],b=new PB(700+k);b.sphere(lp[0],lp[1],lp[2],f?.26:.13,f?620:200);
+   B.g('d'+k,b,Object.assign({col:f?C.acc:C.dim,gain:f?1.4:.7,size:.028},o));
+   if(f)B.lab('l'+k,{g:'d'+k,p:ad(lp,[0,.42,0])},'<span class="t">'+d.t+'</span>',{al:'a',cls:()=>toW(SID+':d'+k,lp)[2]<N0[2]-.8?'dim':''})});
+  B.dyn=()=>{for(const k of focus){const a=k*TAU/7,w=toW(SID+':d'+k,[Math.sin(a)*R,0,Math.cos(a)*R]);L(N0,w,C.acc,.2*LFADE)}};
+  B.cap={k:'Fokus-Dimensionen',list:DIMS.map((d,k)=>focus.includes(k)?{h:'<b>'+P2(k+1)+' '+d.t+'</b>'}:{h:'<span>'+P2(k+1)+' '+d.t+'</span>',c:'p'}).filter((x,k)=>focus.includes(k))};
+  B.note='Weitere Dimensionen: '+DIMS.filter((d,k)=>!focus.includes(k)).map(d=>d.t).join(' · ')}}}
+SLIDES.push(chapter('I','02','Kernprozesse im Controlling inkl. <em>Target Operating Model & KI</em>','Wie arbeiten Planung, Forecasting und Reporting heute zusammen, und welche Governance braucht das Zielbild?',[2,3,5]));
+
+/* ---------- 09 · Prozesslandkarte ---------- */
+SLIDES.push({lab:'Prozesslandkarte & Pain Points',t:'Controlling-Prozesse umfassen <em>Planung, Reporting und Governance</em>',s:'E2E-Prozesslandkarte mit typischen Pain Points entlang der Kernprozesse',cam:{pitch:.06},init:()=>({m:0}),
+ build(B,st){const m=st.m,YM=1.65,YP=.5,YR=-.7,YS=-1.95,X0=-4.9,X1=5.8;
+  const px=i=>X0+i*(X1-X0)/7,rx=i=>X0+i*(X1-X0)/6,mx=i=>-4.3+i*2.5,sx=i=>-4.5+i*2.06;
+  const pill=(key,c,w,h,col,o)=>{const b=new PB(hsh(key));b.rect(-w/2,-h/2,w,h,Math.round((w+h)*170),0,.008);b.fill(-w/2,-h/2,w,h,Math.round(w*h*260),0,.08);B.g(key,b,Object.assign({pos:c,col,size:.025},o||{}))};
+  const side=m==0;
+  MGMT.forEach((t,i)=>{const c=[mx(i),YM,-.2];pill('m'+i,c,1.9,.34,C.petrol,{gain:side?.85:.18});B.lab('ml'+i,ad(c,[0,-.3,0]),'<div class="d" style="color:#fff">'+t+'</div>',{al:'b',w:2.2,cls:side?'c':'ghost c'})});
+  SUPP.forEach((t,i)=>{const c=[sx(i),YS,-.2];pill('u'+i,c,1.6,.3,C.dim,{gain:side?.95:.18});B.lab('ul'+i,ad(c,[0,-.27,0]),'<div class="d">'+t+'</div>',{al:'b',w:1.9,cls:side?'c':'ghost c'})});
+  const band=(arr,X,Y,key,col,map,act)=>{arr.forEach((t,i)=>{const c=[X(i),Y,0],hit=m>0&&act&&map[i],b=new PB(hsh(key+i));
+    for(let j=0;j<300;j++){const u=b.r()*2-1,v=b.r()*2-1;b.p(u*.42+(Math.abs(v)*.12),v*.2,(b.r()-.5)*.1)}b.rect(-.45,-.22,.9,.44,180,0,.006);
+    B.g(key+i,b,{pos:c,col:hit?C.pain:col,gain:hit?1.5:(m&&!act?.25:.95),jit:hit?.05:0,jf:1.3,size:.026});
+    B.lab(key+'l'+i,ad(c,[0,-.33,0]),'<div class="d" style="color:#fff">'+t+'</div>',{al:'b',w:1.42,cls:'c'+(m&&!act?' dim':'')});
+    if(hit){B.lab(key+'b'+i,ad(c,[0,.42,0]),'<span class="mid" style="color:#E8609F">'+hit+'</span>',{al:'a'})}});
+   const pts=[[X(0)-1.2,Y,0]];arr.forEach((_,i)=>pts.push([X(i),Y,0]));pts.push([X(arr.length-1)+.9,Y,0]);
+   B.path(key+'f',pts,1600,{col:act&&m?C.pain:col,speed:.035,spread:act&&m?.16:.07,size:.022,gain:m&&!act?.25:.8,jit:act&&m?.05:0})};
+  band(PLAN,px,YP,'p',C.sky,PPM,m!=2);band(REP,rx,YR,'r',C.acc,RPM,m!=1);
+  for(let i=0;i<5;i++)B.ln([mx(i),YM-.17,-.2],[mx(i),YP+.25,0],C.petrol,side?.16:.04);
+  for(let i=0;i<6;i++)B.ln([sx(i),YS+.15,-.2],[sx(i),YR-.25,0],C.dim,side?.16:.04);
+  const BL=[['Management-','prozesse',YM],['Planung &','Forecasting',YP],['Reporting','',YR],['Unterstützungs-','prozesse',YS]];
+  BL.forEach((b,i)=>B.lab('bl'+i,[-7.4,b[2],0],'<span class="k" style="color:'+(i==1||i==2?'#2FC7A5':'#9FB2C6')+'">'+b[0]+'<br>'+b[1]+'</span>',{al:'l',cls:(m&&(i==0||i==3))?'ghost':''}));
+  if(m){const P=m==1?PPAIN:RPAIN,Y=m==1?YM+.05:YS-.05;P.forEach((p,i)=>{const x=-4.6+i*2.95;B.lab('pp'+i,[x,Y,0],'<span class="n" style="color:#E8609F">'+(i+1)+'</span><span class="t2">'+p[0]+'</span><div class="d">'+p[1]+'</div>',{al:m==1?'lb_':'lt',w:2.75,cls:'pain'})})}
+  B.act=['Prozesssicht','Pain Points Planung','Pain Points Reporting'].map((t,i)=>({t,on:i==m,f:()=>{st.m=i;refresh()}}));
+  B.note=(m==0?'<em>Diskussion:</em> Welche dieser Pain Points erleben Sie im Arbeitsalltag? Gibt es weitere?<br>':'<em>'+(m==1?'Typische Pain Points in Planung & Forecasting':'Typische Pain Points im Reporting')+'</em><br>')+'Typische Tools: <b>S/4HANA · BPC · Board · SAC · BW · Azure Data Lakes · Power BI · Excel</b>';B.hint='Ansicht oben rechts wechseln'}});
+
+/* ---------- 10 · Governance-Pyramide ---------- */
+SLIDES.push({lab:'Governance-Pyramide',t:'Eine Governance-Pyramide sichert <em>skalierbare, konsistente Steuerung</em>',s:'Von strategischen Prinzipien zu operativen Data-Governance-Regeln',cam:{pitch:.12,yaw:-.05},init:()=>({sel:1,ang:0}),
+ build(B,st){const P0=[2.3,-1.85,0],W=2.15,H=3.75,sel=st.sel;
+  const fr_=(b,h0,h1,faces,n)=>{for(let i=0;i<n;i++){const f=faces[i%faces.length],s=b.r()*2-1,t=b.r(),y=h0+(h1-h0)*t,w=W*(1-y);let x,z;
+    if(f==0){x=s*w;z=w}else if(f==1){x=w;z=-s*w}else if(f==2){x=-s*w;z=-w}else{x=-w;z=s*w}b.p(x,y*H,z)}
+   for(const f of faces){for(const y of[h0,h1]){const w=W*(1-y);const c=[[-w,w],[w,w],[w,-w],[-w,-w]];const a=c[f],q=c[(f+1)%4];b.seg([a[0],y*H,a[1]],[q[0],y*H,q[1]],70)}const w0=W*(1-h0),w1=W*(1-h1),c0=[[-1,1],[1,1],[1,-1],[-1,-1]][f];b.seg([c0[0]*w0,h0*H,c0[1]*w0],[c0[0]*w1,h1*H,c0[1]*w1],50)}return b};
+  const LV=[['top',.64,.97,[0,1,2,3],2600,0],['mid',.34,.6,[0,1,2,3],3000,1]];
+  const ang=sel>=2?-(sel-2)*PI/2:null;
+  LV.forEach(l=>{const s=l[5]===sel,b=fr_(new PB(hsh(l[0])),l[1],l[2],l[3],l[4]);B.g(l[0],b,{pos:P0,rot:[0,0,0],col:s?C.acc:l[5]?C.petrol:C.blue,gain:s?1.5:.7,lo:[0,s?.25:0,0],size:.026})});
+  for(let f=0;f<4;f++){const s=sel===f+2,b=fr_(new PB(800+f),.02,.3,[f],1500),nrm=[[0,0,1],[1,0,0],[0,0,-1],[-1,0,0]][f];B.g('f'+f,b,{pos:P0,col:s?C.acc:C.sky,gain:s?1.6:.6,lo:ml(nrm,s?.35:0),size:.026})}
+  const ap=new PB(810);ap.ball(0,H*.97,0,.09,200);B.g('apex',ap,{pos:P0,col:C.w,gain:1.4,size:.03});
+  const gb=new PB(811);gb.disc(0,0,0,3.4,1200,'xz');B.g('base',gb,{pos:ad(P0,[0,-.05,0]),col:C.dim,gain:.45,size:.02,spin:[0,.05,0]});
+  const KEYS=['top','mid','f0','f1','f2','f3','apex'];
+  B.dyn=(t,dt)=>{if(ang===null)st.ang+=dt*.16;else{let a=ang;while(a-st.ang>PI)a-=TAU;while(a-st.ang<-PI)a+=TAU;st.ang+=(a-st.ang)*Math.min(1,dt*3)}for(const k of KEYS){const g=RG(k);if(g){g.rot[1]=st.ang;g.rotC[1]=st.ang}}};
+  const LIST=[['Strategisch',[0]],['Taktisch',[1]],['Operativ',[2,3,4,5]]];let y=1.55;
+  LIST.forEach(g=>{B.lab('h'+g[0],[-6.95,y,0],'<span class="k">'+g[0]+'</span>',{al:'l'});y-=.36;g[1].forEach(i=>{B.lab('it'+i,[-6.95,y,0],'<span class="t2">'+GOV[i][1]+'</span>',{al:'l',cls:i===sel?'sel':'',click:()=>{st.sel=i;refresh()}});y-=.42});y-=.12});
+  const G=GOV[sel],ly=sel==0?.8*H:sel==1?.47*H:.18*H;B.lab('pl',ad(P0,[W*(1-ly/H)+.5,ly,0]),'<span class="t" style="color:#2FC7A5">'+G[1]+'</span>',{al:'l'});
+  B.hot('pt',ad(P0,[0,.8*H,0]),.75,{grp:['top'],click:()=>{st.sel=0;refresh()}});B.hot('pm',ad(P0,[0,.47*H,0]),1.15,{grp:['mid'],click:()=>{st.sel=1;refresh()}});
+  B.hot('pb',ad(P0,[0,.16*H,1.2]),1.3,{click:()=>{st.sel=sel>=2&&sel<5?sel+1:2;refresh()}});
+  B.cap={k:'Ebene: '+G[0],t:G[1],s:G[2]};
+  B.note='„Data Governance ist ein Rahmenwerk aus Prozessen und Standards für das effektive Management und die strategische Nutzung von Daten.“<br>Für eine konsistente, transparente und skalierbare Steuerung über alle E2E-Controlling-Prozesse ist ein <b>einheitliches Data-Governance-Rahmenwerk</b> unverzichtbar.';
+  B.hint='Ebene links oder in der Pyramide wählen'}});
+
+/* ---------- 11 · Governance-Balance ---------- */
+SLIDES.push({lab:'Governance-Balance',t:'Wirksame Governance balanciert <em>Kontrolle und Agilität</em>',s:'Den richtigen Punkt zwischen Standardisierung und Flexibilität finden',init:()=>({f:20,fs:20}),
+ build(B,st){const X0=-5.8,WX=8.4,YB=-1.75,HY=3.15,cv=p=>4*p*(1-p),wp=p=>[X0+p*WX,YB+HY*cv(p),0];
+  const F=()=>st.fs/100,val=()=>cv(F()),res=()=>Math.round(val()*7);
+  const crvP=[];for(let k=0;k<=60;k++)crvP.push(wp(k/60));
+  B.path('cv',crvP,1500,{col:C.acc,speed:.04,spread:.03,size:.026,gain:1});
+  B.path('ax',[[X0-.2,YB,0],[X0+WX+.4,YB,0]],700,{col:C.bg,speed:.05,spread:.01,size:.02,gain:.6});
+  const ay=new PB(901);ay.seg([X0-.2,YB,0],[X0-.2,YB+HY+.35,0],160);B.g('ay',ay,{col:C.bg,gain:.6,size:.02});
+  const fld=new PB(902);for(let i=0;i<5200;i++)fld.p(0,0,0);
+  B.g('fld',fld,{col:C.acc,gain:.75,size:.024,stiff:.05,tw:.1,pm:(l,V,t)=>{const p=rr(l,0),q=rr(l,1),f=F(),an=ss(.42,.06,f),bu=ss(.58,.94,f),bal=1-Math.max(an,bu);
+    let x=X0+p*WX,y=YB+q*HY*cv(p)*.97,z=(rr(l,2)-.5)*.5;
+    if(bu>0){const gx=X0+Math.round((x-X0)/.24)*.24,gy=YB+Math.round((y-YB)/.2)*.2;x=mix(x,gx,bu);y=mix(y,gy,bu);z=mix(z,0,bu)}
+    if(an>0){x+=an*.42*Math.sin(t*1.7+l*.37);y+=an*.32*Math.sin(t*1.3+l*.71);z+=an*.6*Math.sin(t*.9+l*.13)}
+    y+=bal*.06*Math.sin(t*1.6+x*1.4);V[0]=x;V[1]=Math.min(y,YB+HY*cv(p)+.05+an*.4);V[2]=z;return .45+.6*bal}});
+  const mk=new PB(903);mk.sphere(0,0,0,.17,500);mk.ring(0,0,0,.32,240,.01);B.g('mk',mk,{col:C.w,gain:1.4,size:.03,spin:[0,0,.5]});
+  CHAL.forEach((c,i)=>{const p=[3.55,1.55-i*.36,0],b=new PB(910+i);b.ball(0,0,0,.06,70);B.g('c'+i,b,{pos:p,col:C.pain,gain:1.2,size:.024});
+   B.lab('cl'+i,ad(p,[.22,0,0]),()=>'<span class="'+(i<res()?'ok':'no')+'">'+(i<res()?'✓':'✕')+'</span><span class="d" style="color:#fff">'+c+'</span>',{al:'l',w:3.9,cls:()=>i<res()?'dim':''})});
+  B.lab('chh',[3.55,1.95,0],()=>'<span class="k">Herausforderungen adressiert: <span style="color:#2FC7A5">'+res()+' von 7</span></span>',{al:'l'});
+  B.lab('efh',[3.55,-1.15,0],'<span class="k">Positive Effekte</span>',{al:'l'});
+  EFF.forEach((e,i)=>B.lab('ef'+i,[3.55,-1.5-i*.34,0],'<span class="t2">'+e+'</span>',{al:'l',cls:()=>val()>.85?'sel':'ghost'}));
+  B.lab('mkl',()=>ad(wp(F()),[0,.5,0]),()=>'<div class="mid" style="color:'+(val()>.85?'#2FC7A5':'#E8609F')+'">'+Math.round(val()*100)+' %</div><div class="k" style="text-align:center">'+(st.fs<30?'„Anarchie“':st.fs>70?'„Bürokratie“':'Balance')+'</div>',{al:'a'});
+  [['„Anarchie“',.12],['Balance',.5],['„Bürokratie“',.88]].forEach((z,i)=>B.lab('z'+i,[X0+z[1]*WX,YB-.32,0],'<span class="t">'+z[0]+'</span>',{al:'b'}));
+  B.lab('xl',[X0,YB-.75,0],'<span class="k">informell · Simplify</span>',{al:'lt'});B.lab('xr',[X0+WX,YB-.75,0],'<span class="k">formell · Structure</span>',{al:'r',dy:.55});
+  B.lab('xc',[X0+WX/2,YB-.8,0],'<span class="k" style="color:#C9D6E2">Grad an Formalisierung / Komplexität</span>',{al:'b'});
+  B.lab('yl',[X0-.2,YB+HY+.5,0],'<span class="k" style="color:#C9D6E2">Datennutzen / Wert aus Daten</span>',{al:'lb_'});
+  const setF=q=>{st.f=cl((q[0]-X0)/WX*100,0,100)};
+  B.hot('drag',[X0+WX/2,YB+HY/2,0],4.4,{drag:setF,grp:['mk']});
+  B.dyn=(t,dt)=>{st.fs+=(st.f-st.fs)*Math.min(1,dt*6);const g=RG('mk'),p=wp(F());if(g){g.pos=p;g.posC=lp(g.posC,p,.35)}
+   const v=val(),fl=RG('fld');if(fl)fl.c=hex(v>.85?C.acc:v>.55?C.sky:C.pain);const cv_=RG('cv');if(cv_)cv_.c=hex(v>.85?C.acc:C.sky);
+   for(let i=0;i<7;i++){const c=RG('c'+i);if(c)c.c=hex(i<res()?C.acc:C.pain)}L(p,[p[0],YB,0],C.w,.3*LFADE)};
+  B.act=[['Anarchie',10],['Balance',50],['Bürokratie',90]].map(a=>({t:a[0],f:()=>{st.f=a[1]}}));
+  B.note='Ziel ist ein <b>pragmatisches Minimum an Regeln</b>, das Klarheit schafft, ohne Agilität zu blockieren.';B.hint='Im Diagramm ziehen: Formalisierung einstellen'}});
+
+/* ---------- 12 · Rollen & Ownership ---------- */
+SLIDES.push({lab:'Rollen & Ownership',t:'Klare Rollen und Ownership sind das <em>Rückgrat der Governance</em>',s:'Definierte Verantwortung für Data Owner, Data Stewards und Data Consumer',cam:{pitch:.08},init:()=>({r:0}),
+ build(B,st){const X=[-.4,2.6,5.6],Y0=-2.05,sel=st.r;
+  RO.forEach((r,k)=>{const s=k===sel,b=new PB(1000+k);figure(b,0,0,0,.95,2600);B.g('fg'+k,b,{pos:[X[k],Y0,s?.9:0],col:s?C.acc:C.sky,gain:s?1.35:.7,size:.026,stiff:.05});
+   const h=new PB(1010+k);h.ring(0,0,0,.55,300,.01,'xz');B.g('hr'+k,h,{pos:[X[k],Y0+3.3,s?.9:0],rot:[.75,0,0],col:C.w,gain:s?1.2:.35,size:.022,spin:[0,.6,0]});
+   const pl=new PB(1020+k);pl.disc(0,0,0,.9,500,'xz');pl.ring(0,0,0,.95,260,.008,'xz');B.g('pl'+k,pl,{pos:[X[k],Y0,s?.9:0],col:s?C.acc:C.dim,gain:s?1:.6,size:.022,spin:[0,.15,0]});
+   B.lab('l'+k,[X[k],Y0-.25,s?.9:0],'<span class="t2" style="font-size:max(13px,calc(var(--u)*1.2))">'+r.t+'</span><div class="k" style="margin-top:.3em">'+r.s+'</div>',{al:'b',cls:s?'sel c':'c',click:()=>{st.r=k;refresh()},hk:'h'+k});
+   B.hot('h'+k,[X[k],Y0+1.5,s?.9:0],1.1,{grp:['fg'+k],click:()=>{st.r=k;refresh()}})});
+  const loop=[];for(let k=0;k<=80;k++){const a=k/80*TAU;loop.push([2.6+Math.cos(a)*3.6,-.35+Math.sin(a*2)*.12,Math.sin(a)*1.25])}
+  B.path('lp',loop,1700,{closed:true,col:C.acc,speed:.045,spread:.05,size:.022,gain:.85});
+  B.lab('vh',[-6.95,1.55,0],'<span class="k">Verantwortung</span>',{al:'l'});
+  PRIN.forEach((p,i)=>B.lab('pr'+i,[-6.95,1.05-i*1.15,0],H2(p[0],p[1],P2(i+1)),{al:'lt',w:4.1}));
+  const r=RO[sel];B.cap={k:r.s,t:r.t,list:r.d};B.hint='Rolle anklicken'}});
+
+/* ---------- 13 · SAP MDM ---------- */
+SLIDES.push({lab:'SAP MDM',t:'SAP MDM operationalisiert Governance <em>auf Unternehmensebene</em>',s:'Standards für Datenkonsistenz über alle Systeme durchsetzen',init:()=>({lim:false}),
+ build(B,st){const H0=[1.3,0,0],lim=st.lim;
+  const hb=new PB(1100);hb.sphere(0,0,0,.62,1400);B.g('hub',hb,{pos:H0,col:lim?C.pain:C.acc,gain:1.05,jit:lim?.06:0,size:.028,spin:[0,.2,0]});
+  const ht=new PB(1101);ht.ring(0,0,0,1.0,900,.03,'xy');ht.ring(0,0,0,1.15,500,.015,'xz');B.g('hr',ht,{pos:H0,col:C.w,gain:lim?.4:.75,spin:[.1,.3,0],size:.022});
+  B.lab('hl',ad(H0,[0,0,0]),'<span class="t">SAP MDM</span><div class="k" style="text-align:center">Master Data</div><div class="k" style="text-align:center">Management</div>',{al:'c'});
+  const CP=[[-1.75,1.35,0],[4.35,1.35,0],[-1.75,-1.45,0],[4.35,-1.45,0]].map((p,i)=>[i%2?2.9:-.3,p[1],0]);
+  MDMC.forEach((c,i)=>{const p=CP[i];node(B,'c'+i,p,.22,lim?C.dim:C.sky,{n:460,g:{gain:lim?.5:1,jit:lim?.04:0}});B.ln(H0,p,lim?C.dim:C.acc,lim?.1:.3);
+   B.lab('cl'+i,ad(p,[i%2?.5:-.5,0,0]),H2(c[0],c[1]),{al:i%2?'l':'r',w:2.6,cls:lim?'dim':''})});
+  const SY=[['S/4HANA',1.35],['BW',0],['BI / Reporting',-1.35]];
+  SY.forEach((s,i)=>{const p=[6.75,s[1],0],b=new PB(1110+i);b.edges(-.45,-.28,-.3,.45,.28,.3,420);b.box(-.45,-.28,-.3,.45,.28,.3,500);B.g('s'+i,b,{pos:p,col:C.blue,gain:lim?.6:1.05,jit:lim?.03:0,size:.024,rot:[.25,-.4,0]});
+   B.lab('sl'+i,ad(p,[0,-.48,0]),'<span class="t">'+s[0]+'</span>',{al:'b'});
+   B.path('fl'+i,crv([ad(H0,[.75,s[1]*.3,0]),[3.9,s[1]*.6,.6],ad(p,[-.6,0,0])],12),lim?260:620,{col:lim?C.pain:C.acc,speed:lim?.05:.26,spread:lim?.18:.05,size:.022,gain:lim?.7:1,jit:lim?.08:0})});
+  B.act=[{t:'Kernfähigkeiten',on:!lim,f:()=>{st.lim=false;refresh()}},{t:'Grenzen einblenden',on:lim,f:()=>{st.lim=true;refresh()}}];
+  B.hot('hub',H0,.9,{grp:['hub','hr'],click:()=>{st.lim=!st.lim;refresh()}});
+  B.cap=lim?{k:'Grenzen',t:'Wo SAP MDM an Grenzen stößt',list:MDML.map(x=>({h:x,c:'p'}))}:{k:'Rolle von SAP MDM',t:'Zentrales Stammdaten-Rückgrat',list:MDMR};
+  B.note='SAP MDM setzt Data Governance um, indem es einheitliche Definitionen, Ownership und Qualitätsregeln durchsetzt. Den vollen Wert entfaltet es <b>nur mit starken Governance-Strukturen</b>.';B.hint='Hub anklicken: Grenzen ein/aus'}});
+
+/* ---------- Lösungsansätze (I · II · III) ---------- */
+function solutions(lab,title,sub,M,q){return{lab,t:title,s:sub,init:()=>({rev:[false,false,false,false]}),
+ build(B,st){const XP=-6.45,XC=.95,YY=[1.2,.05,-1.1,-2.25];
+  B.lab('hp',[-6.95,1.95,0],'<span class="k" style="color:#E8609F">Mögliche Pain Points</span>',{al:'l'});B.lab('hc',[.35,1.95,0],'<span class="k" style="color:#2FC7A5">UNITY Capabilities</span>',{al:'l'});
+  M.forEach((r,i)=>{const on=st.rev[i],y=YY[i],tg=()=>{st.rev[i]=!st.rev[i];refresh()};
+   B.g('p'+i,chaosPts(1200+i,.36,700),{pos:[XP,y,0],col:C.pain,gain:on?.4:1.1,jit:on?.015:.06,jf:.8,size:.026,scale:on?.75:1});
+   B.g('c'+i,crystalPts(1210+i,.3,800),{pos:[XC,y,0],col:on?C.acc:C.dim,gain:on?1.35:.22,scale:on?1:.55,size:.026,spin:[.2,.5,0]});
+   B.path('f'+i,crv([[XP+.35,y-.12,0],[-3.4,y-.5,-1.4],[XC-.4,y-.1,0]],14),on?700:1,{col:C.acc,speed:.3,spread:.05,size:.022,gain:1});
+   B.lab('pl'+i,[XP+.55,y,0],H2(r[0],r[1],i+1),{al:'l',w:4.3,cls:on?'dim':'pain',click:tg,hk:'h'+i});
+   B.lab('cl'+i,[XC+.5,y,0],H2(r[2],r[3]),{al:'l',w:5.2,cls:on?'sel':'ghost',click:tg,hk:'h'+i});
+   B.hot('h'+i,[XP,y,0],.5,{grp:['p'+i],click:tg});B.hot('hc'+i,[XC,y,0],.45,{grp:['c'+i],click:tg})});
+  const all=st.rev.every(Boolean);B.act=[{t:all?'Zurücksetzen':'Alle Lösungen einblenden',on:all,f:()=>{st.rev=st.rev.map(()=>!all);refresh()}}];
+  B.note='<em>Diskussion:</em> '+q;B.hint='Pain Point anklicken'}}}
+SLIDES.push(solutions('Lösungsansätze Impuls I','Prozess-Pain-Points mit <em>erprobten Methoden</em> lösen','Von fragmentierter Planung zu integrierter E2E-Finanzsteuerung',M1,'Gibt es weitere relevante Pain Points in Ihren Prozessen?'));
+SLIDES.push(chapter('II','03','Daten- & Reporting-Architektur <em>„Next Gen“</em>','Wie wird aus 25+ BW-Modellen, mehreren Data Lakes und parallelen BI-Welten eine Single Source of Truth?',[0,1,4]));
+
+/* ---------- 16 · SAP-Toollandschaft ---------- */
+SLIDES.push({lab:'SAP-Toollandschaft',t:'Die SAP-Toollandschaft erzeugt <em>erhebliche Komplexität</em>',s:'S/4, BW, SAC und Non-SAP-Tools entlang der Controlling-Funktionen',cam:{yaw:-.18,pitch:.08},init:()=>({tool:6,pain:false}),
+ build(B,st){const pain=st.pain,CP=pain?[-3.1,.3,0]:[0,0,0],CS=pain?.56:1,X0=-4.9,WX=8.6,Y0=-2.15,HY=3.75,mp=(x,y)=>[X0+x/100*WX,Y0+y/100*HY,0];
+  const o=k=>Object.assign({pos:CP,scale:CS},k);
+  const gr=new PB(1300);for(let i=0;i<=5;i++){gr.seg([X0,Y0+i/5*HY,-.4],[X0+WX,Y0+i/5*HY,-.4],120);gr.seg([X0+i/5*WX,Y0,-.4],[X0+i/5*WX,Y0+HY,-.4],70)}B.g('grid',gr,o({col:C.dim,gain:.45,size:.018}));
+  B.path('ax',[[X0,Y0,0],[X0+WX+.3,Y0,0]],600,o({col:C.bg,speed:.05,spread:.01,size:.02,gain:.6}));B.path('ay',[[X0,Y0,0],[X0,Y0+HY+.3,0]],400,o({col:C.bg,speed:.05,spread:.01,size:.02,gain:.6}));
+  B.path('tr',TOOLS.map(t=>mp(t.x,t.y)),900,o({col:C.acc,speed:.05,spread:.06,size:.02,gain:.55}));
+  TOOLS.forEach((t,i)=>{const s=i===st.tool,p=mp(t.x,t.y),b=new PB(1310+i);b.sphere(p[0],p[1],p[2],.25,600);b.ring(p[0],p[1],p[2],.4,220,.008);
+   B.g('t'+i,b,o({col:s?C.acc:i==0?C.bg:C.sky,gain:pain?.5:s?1.5:.8,size:.027}));
+   B.lab('tl'+i,{g:'t'+i,p:ad(p,[.48,.1,0])},'<span class="t2">'+t.n+'</span>',{al:'l',cls:s?'sel':'',click:()=>{st.tool=i;st.pain=false;refresh()},hk:'h'+i});
+   B.hot('h'+i,{g:'t'+i,p},.4,{grp:['t'+i],click:()=>{st.tool=i;st.pain=false;refresh()}})});
+  const zr=new PB(1320),zp=mp(90,86);zr.ring(0,0,0,.62,500,.01);B.g('ziel',zr,{pos:ad(CP,ml(zp,CS)),scale:CS,col:C.acc,gain:.8,spin:[0,0,.4],size:.022});
+  B.lab('zl',{g:'ziel',p:[0,.72,0]},'<span class="t" style="color:#2FC7A5">Ziel</span>',{al:'a'});
+  B.lab('xl',{g:'grid',p:[X0+WX/2,Y0-.3,0]},'<span class="k">Funktionsumfang: gering → sehr professionell</span>',{al:'b',cls:pain?'off':''});
+  B.lab('yl',{g:'grid',p:[X0-.25,Y0+HY/2,0]},'<span class="k">Implementierungs-<br>aufwand: gering → hoch</span>',{al:'r',cls:pain?'off':''});
+  const wall=new PB(1330);for(let i=0;i<2600;i++){const u=wall.r(),v=wall.r();wall.p((u-.5)*2.6,(v-.5)*3.8,wall.gs()*.02)}wall.rect(-1.3,-1.9,2.6,3.8,600,0,.005);
+  B.g('wall',wall,{pos:pain?[6.9,-.45,-2.8]:[6.35,-.45,-.4],rot:[0,pain?.9:.55,0],col:pain?C.pain:C.petrol,gain:pain?.55:.85,jit:pain?.05:.01,size:.022});
+  B.lab('wl',pain?[6.9,1.95,-2.8]:[6.35,1.95,-.4],'<span class="t">Parallele Reporting- &<br>Controlling-Schicht</span><div class="d" style="text-align:center">Non-SAP: Azure, Power BI, Tableau</div>',{al:'a'});
+  if(pain){TPAIN.forEach((p,i)=>{const y=1.6-i*.74,pp=[.35,y,0],b=new PB(1340+i);b.cloud(0,0,0,.08,.08,.08,160);B.g('pp'+i,b,{pos:pp,col:C.pain,gain:1.3,jit:.04,size:.024});
+    B.lab('ppl'+i,ad(pp,[.3,0,0]),'<span class="n" style="color:#E8609F">'+(i+1)+'</span><span class="t2">'+p[0]+'</span><div class="d">'+p[1]+' <span style="color:#E8609F">→ '+p[2]+'</span></div>',{al:'l',w:4.4})})}
+  B.act=[{t:pain?'Tool-Details zeigen':'Pain Points einblenden',on:pain,f:()=>{st.pain=!pain;refresh()}}];
+  const t=TOOLS[st.tool];B.cap=pain?{k:'Typische Pain Points im Reporting',t:'Komplexität kostet Steuerungsfähigkeit'}:{k:'Ausgewähltes Tool',t:t.n,s:t.d};B.hint=pain?'':'Tool anklicken'}});
+
+/* ---------- 17 · Data-Lake-Architektur ---------- */
+const DLK={src:['Operative Systeme','Research','Production','Sales …','Data Dumps','API / weitere Quellen'],ing:['Data Streaming','Batch / API'],stg:['Raw','Conformed','Enriched','Curated'],dist:['Query','API','Data Sharing'],uc:['Analytics','Mobile Apps','Traditionelle Anwendungen','Microservices'],qs:['Data Quality','Access Control','Lineage','Standards']};
+const DLD={src:['Quellen','Operative Systeme, Fachbereiche und externe Daten liefern Rohdaten in unterschiedlichsten Formaten.'],ing:['Ingest','Daten werden als Stream in Echtzeit oder per Batch / API geladen.'],lake:['Data Layer · Delta Lake','Ein Lake, vier Veredelungsstufen: Raw ▸ Conformed ▸ Enriched ▸ Curated. Stammdaten über MDM, verdichtete Modelle im Modern Data Warehouse.'],
+ cat:['Presentation Layer · Semantic Data Catalog','Ontologie (RDF / SHACL): gemeinsame Bedeutung aller Datenprodukte, auffindbar und eindeutig definiert.'],dist:['Distribution','Gesteuerter Zugriff per Query, API oder Data Sharing.'],uc:['Use Cases','Analytics, mobile Apps, klassische Anwendungen und Microservices nutzen dieselbe Datenbasis.'],qs:['Querschnitt','Data Quality, Access Control, Lineage und Standards gelten über alle Schichten.']};
+SLIDES.push({lab:'Data-Lake-Architektur',t:'Ein einheitlicher Data Lake ermöglicht <em>„Next Gen“-Reporting</em>',s:'Vom operativen Quellsystem bis zum Use Case in einem gesteuerten Datenfluss',cam:{yaw:-.1,pitch:.1},init:()=>({foc:null}),
+ build(B,st){const XS=-6.5,XI=-4.75,XL0=-3.0,XL1=.7,XC=2.6,XD=4.45,XU=6.3,foc=st.foc,dim=k=>foc&&foc!==k?.3:1;
+  const sel=k=>()=>{st.foc=st.foc===k?null:k;refresh()};
+  const sy=i=>1.55-i*.62,iy=i=>.55-i*1.1,dy=i=>.85-i*.85,uy=i=>1.25-i*.83;
+  const sb_=new PB(1400);DLK.src.forEach((_,i)=>sb_.ball(XS,sy(i),0,.11,110));B.g('src',sb_,{col:C.sky,gain:1*dim('src'),size:.026});
+  DLK.src.forEach((t,i)=>B.lab('sl'+i,[XS,sy(i)-.18,0],'<span class="d" style="color:#fff">'+t+'</span>',{al:'b'}));
+  const ib=new PB(1401);DLK.ing.forEach((_,i)=>{ib.sphere(XI,iy(i),0,.2,320);ib.ring(XI,iy(i),0,.32,160,.006)});B.g('ing',ib,{col:C.mint,gain:1*dim('ing'),size:.026});
+  DLK.ing.forEach((t,i)=>B.lab('il'+i,[XI,iy(i)-.38,0],'<span class="t">'+t+'</span>',{al:'b'}));
+  DLK.src.forEach((_,i)=>B.path('fs'+i,crv([[XS+.12,sy(i),0],[XI-.8,mix(sy(i),iy(i%2),.6),0],[XI-.2,iy(i%2),0]],10),260,{col:C.sky,speed:.25,spread:.02,size:.02,gain:.8*dim('src')}));
+  const lk=new PB(1402);for(let i=0;i<2600;i++){const x=XL0+lk.r()*(XL1-XL0),a=lk.r()*TAU;lk.p(x,Math.cos(a)*.78,Math.sin(a)*.78)}for(const x of[XL0,XL1])lk.ring(x,0,0,.78,220,.004,'yz');
+  B.g('lake',lk,{col:C.petrol,gain:.75*dim('lake'),size:.022});
+  const SC_=[C.dim,C.petrol,C.sky,C.acc];DLK.stg.forEach((t,i)=>{const x=XL0+.45+i*(XL1-XL0-.9)/3,b=new PB(1410+i);b.disc(x,0,0,.62,420,'yz');b.ring(x,0,0,.66,180,.005,'yz');B.g('st'+i,b,{col:SC_[i],gain:1.1*dim('lake'),size:.022});
+   B.lab('stl'+i,[x,.95,0],'<span class="t" style="font-size:max(9px,calc(var(--u)*.68))">'+t+'</span>',{al:'a'})});
+  B.lab('ll',[(XL0+XL1)/2,1.38,0],'<span class="k" style="color:#2FC7A5">Data Layer · Delta Lake</span>',{al:'a'});
+  B.path('lf',[[XI+.2,iy(0),0],[XL0,0,0],[XL1,0,0],[XC-.55,0,0]],1500,{col:C.acc,speed:.12,spread:.28,size:.022,gain:.9*dim('lake')});
+  B.path('lf2',[[XI+.2,iy(1),0],[XL0,0,0]],250,{col:C.mint,speed:.2,spread:.04,size:.02,gain:.8});
+  [['mdm','MDM','Master Data Management',XL0+.7],['dwh','MDWH','Modern Data Warehouse',XL1-.6]].forEach((m,i)=>{node(B,m[0],[m[3],-1.55,0],.17,C.blue,{n:300,g:{gain:dim('lake')}});B.ln([m[3],-1.38,0],[m[3],-.78,0],C.petrol,.3);
+   B.lab(m[0]+'l',[m[3],-1.85,0],'<span class="t">'+m[1]+'</span><div class="d" style="text-align:center">'+m[2]+'</div>',{al:'b',w:1.6})});
+  const ct=new PB(1420),V=[];for(let i=0;i<14;i++){const y=1-2*(i+.5)/14,q=Math.sqrt(1-y*y),t=i*2.39996;V.push([XC+Math.cos(t)*q*.7,y*.7,Math.sin(t)*q*.7])}
+  V.forEach(v=>ct.ball(v[0],v[1],v[2],.06,40));for(let i=0;i<14;i++)for(let j=i+1;j<14;j++)if(ln3(sb(V[i],V[j]))<.62)ct.seg(V[i],V[j],22);B.g('cat',ct,{col:C.mint,gain:1.1*dim('cat'),size:.022,stiff:.05});
+  B.lab('catl',[XC,1.0,0],'<span class="t">Semantic Data Catalog</span><div class="d" style="text-align:center">Ontologie (RDF / SHACL)</div>',{al:'a',w:2});
+  const db=new PB(1430);DLK.dist.forEach((_,i)=>db.ball(XD,dy(i),0,.13,140));B.g('dist',db,{col:C.sky,gain:1*dim('dist'),size:.026});
+  DLK.dist.forEach((t,i)=>{B.lab('dl'+i,[XD,dy(i)-.2,0],'<span class="d" style="color:#fff">'+t+'</span>',{al:'b'});B.path('fd'+i,crv([[XC+.7,0,0],[XD-.6,dy(i)*.7,0],[XD-.15,dy(i),0]],10),240,{col:C.mint,speed:.3,spread:.02,size:.02,gain:.85*dim('dist')})});
+  const ub=new PB(1440);DLK.uc.forEach((_,i)=>{ub.sphere(XU,uy(i),0,.16,240)});B.g('uc',ub,{col:C.acc,gain:1.1*dim('uc'),size:.026});
+  DLK.uc.forEach((t,i)=>B.lab('ul'+i,[XU,uy(i)-.24,0],'<span class="d" style="color:#fff">'+t+'</span>',{al:'b',w:1.7,cls:'c'}));
+  for(let i=0;i<3;i++)for(const j of[i,i+1])B.path('fu'+i+j,[[XD+.14,dy(i),0],[XU-.18,uy(j),0]],120,{col:C.acc,speed:.35,spread:.015,size:.02,gain:.8*dim('uc')});
+  const qb=new PB(1450);qb.fill(-3.1,-2.55,6.9,.12,1400,0,.2);B.g('qs',qb,{col:C.petrol,gain:.55*dim('qs'),size:.02,jit:.01});
+  DLK.qs.forEach((t,i)=>B.lab('ql'+i,[-2.4+i*1.75,-2.75,0],'<span class="t" style="font-size:max(9px,calc(var(--u)*.66))">'+t+'</span>',{al:'b'}));B.lab('qh',[-3.25,-2.5,0],'<span class="k">Querschnitt</span>',{al:'r'});
+  const HS=[['src',[XS,0,0],1.4],['ing',[XI,0,0],1.0],['lake',[(XL0+XL1)/2,0,0],1.3],['cat',[XC,0,0],.8],['dist',[XD,0,0],.9],['uc',[XU,0,0],1.0],['qs',[.35,-2.6,0],.6]];
+  HS.forEach(h=>B.hot(h[0],h[1],h[2],{grp:[h[0]],click:sel(h[0])}));
+  const d=DLD[foc||'lake'];B.cap=foc?{k:'Fokus',t:d[0],s:d[1]}:null;
+  B.act=foc?[{t:'Gesamtsicht',f:()=>{st.foc=null;refresh()}}]:[];
+  B.note='Eine gesteuerte, skalierbare Datenplattform bündelt alle Quellen und ermöglicht <b>schnellere Erkenntnisse, weniger Komplexität und vertrauenswürdiges Reporting</b> im gesamten Unternehmen.';B.hint='Schicht anklicken für Details'}});
+
+/* ---------- 18 · Single Source of Truth ---------- */
+const SRC=['S/4HANA','BW (25+ Modelle)','Azure Data Lakes','Non-SAP-Quellen','Excel'],CON=['SAC','Power BI','Tableau','Excel-Reports'];
+SLIDES.push({lab:'Single Source of Truth',t:'Eine Data Fabric schafft die <em>Single Source of Truth</em>',s:'Von Punkt-zu-Punkt-Verbindungen zu einer gesteuerten Integrationsschicht',cam:{yaw:-.2,pitch:.08},init:()=>({m:0}),
+ build(B,st){const m=st.m,XS=-4.4,XC=4.7,sy=i=>1.95-i*.66,cy=i=>1.3-i*.87;
+  SRC.forEach((s,i)=>{const p=[XS,sy(i),0],b=new PB(1500+i);b.edges(-.28,-.2,-.2,.28,.2,.2,260);b.box(-.28,-.2,-.2,.28,.2,.2,260);B.g('s'+i,b,{pos:p,col:C.sky,gain:.95,size:.024,rot:[.3,.5,0]});
+   B.lab('sl'+i,[XS-.45,sy(i),0],'<span class="t2">'+s+'</span>',{al:'r'})});
+  CON.forEach((s,i)=>{const p=[XC,cy(i),0];node(B,'c'+i,p,.2,m?C.acc:C.pain,{n:380});B.lab('cl'+i,[XC+.5,cy(i),0],'<span class="t2">'+s+'</span>',{al:'l'})});
+  if(!m){const rn=rng(15);let k=0;for(let i=0;i<5;i++)for(let j=0;j<4;j++){const a=[XS+.3,sy(i),0],b=[XC-.3,cy(j),0],c1=[mix(a[0],b[0],.33)+(rn()-.5)*1.5,mix(a[1],b[1],.33)+(rn()-.5)*2.2,(rn()-.5)*3],c2=[mix(a[0],b[0],.66)+(rn()-.5)*1.5,mix(a[1],b[1],.66)+(rn()-.5)*2.2,(rn()-.5)*3];
+    B.path('p'+(k++),crv([a,c1,c2,b],10),300,{col:k%3?C.pain:C.sky,speed:.18+rn()*.2,spread:.012,size:.022,gain:1.25,fade:false})}
+   B.lab('cn',[.3,-2.25,0],'<div class="big" style="color:#E8609F;text-align:center">20</div><div class="k" style="text-align:center">Punkt-zu-Punkt-Verbindungen</div>',{al:'b'})}
+  else{const fb=new PB(1520);for(let r=0;r<=8;r++){const y=-1.9+r*3.8/8;fb.seg([0,y,-1.5],[0,y,1.5],90)}for(let c=0;c<=6;c++){const z=-1.5+c*.5;fb.seg([0,-1.9,z],[0,1.9,z],120)}fb.cloud(0,0,0,.05,.9,.7,900);
+   B.g('fab',fb,{col:C.acc,gain:1.0,size:.024,rot:[0,.35,0],spin:[.05,0,0]});
+   SRC.forEach((_,i)=>B.path('i'+i,crv([[XS+.3,sy(i),0],[-1.6,sy(i)*.5,0],[-.05,sy(i)*.3,0]],12),420,{col:C.sky,speed:.25,spread:.03,size:.022,gain:.95}));
+   CON.forEach((_,j)=>B.path('o'+j,crv([[.05,cy(j)*.3,0],[1.8,cy(j)*.7,0],[XC-.3,cy(j),0]],12),480,{col:C.acc,speed:.25,spread:.03,size:.022,gain:1}));
+   B.lab('fl',[0,2.1,0],'<span class="t" style="color:#2FC7A5">Data Fabric</span><div class="d" style="text-align:center">Semantic Layer · Data Catalog · Governance</div>',{al:'a'})}
+  B.hot('all',[0,0,0],2.2,{click:()=>{st.m=1-st.m;refresh()}});
+  B.act=[{t:'Heute',on:!m,f:()=>{st.m=0;refresh()}},{t:'Zielbild',on:!!m,f:()=>{st.m=1;refresh()}}];
+  B.cap=m?{k:'Zielbild',t:'Eine optimale Datenlandschaft ermöglicht',list:['Single Source of Truth über alle Quellen und OpCos','E2E-Transparenz im Daten- & Reporting-Prozess','Konsistente KPIs durch einheitlichen Semantic Layer','Standardisierte Datenmodelle und Reporting-Logik','Integrierte Architektur ohne Parallelsysteme','Self-Service-Datenzugriff für das Controlling']}
+   :{k:'Heute',t:'20 Punkt-zu-Punkt-Verbindungen',list:['Keine Single Source of Truth','Hoher Abstimmungsaufwand','Gleiche KPIs, unterschiedliche Ergebnisse','Redundante Verarbeitung & doppeltes Reporting'].map(x=>({h:x,c:'p'}))};
+  B.hint='Mitte anklicken: Heute ↔ Zielbild'}});
+
+/* ---------- 19 · Referenz-Blueprint ---------- */
+const BPC=[['Backendsysteme',[['SAP-Systeme','Moderne Datenexporte, z. B. CDS, Delta-Sharing, SLT'],['Event-Capture','Events per API-Call (Push) oder Change Data Capture'],['Legacy','Synchrone Abfrage oder Batch-Beladung als Alternative']]],
+ ['Data Hub',[['Event Stream','Topics & Queues, Event Processor (z. B. Spark Streaming)'],['Azure API Management','und API Center'],['Cache','Schneller Zugriff für operative Abfragen']]],
+ ['Datenplattform · Azure Databricks',[['Zentrale Rohdatenschicht','IT-managed'],['Consolidation & Storage','Data Lake · Data Warehouse · Operational Data Store (NoSQL)'],['Consumer Layer','nutzbar von allen'],['Unity Catalog','IT-managed, nutzbar von allen'],['Workspaces','IT & Fachbereiche: Datenprodukte im Katalog publizierbar']]],
+ ['Nutzung',[['Zero-Copy-Zugriff','auf zentrale Datenprodukte via Unity Catalog'],['Data Sharing','Bereitstellung von Tabellen'],['API- und Direktzugriff','']]]];
+SLIDES.push({lab:'Referenz-Blueprint',t:'Referenz: Erprobter <em>E2E-Datenarchitektur-Blueprint</em>',s:'Komplette Datenplattform-Implementierung für einen großen Handelskunden',cam:{yaw:-.22,pitch:.1},init:()=>({bp:0,run:false,last:0}),
+ build(B,st){const X=[-5.35,-1.85,1.65,5.15],W=2.95,YT=1.4,YB=-1.95;
+  BPC.forEach((c,k)=>{const on=st.bp===0||st.bp===k+1,tiles=c[1],n=tiles.length,gap=.14,h=(YT-YB-gap*(n-1))/n;
+   B.lab('h'+k,[X[k]-W/2,YT+.42,0],'<span class="mid" style="color:#2FC7A5">'+(k+1)+'</span> <span class="t">'+c[0].replace(' · ','</span><br><span class="k" style="margin-left:2.2em">')+'</span>',{al:'l',cls:on?'':'dim',click:()=>{st.bp=st.bp===k+1?0:k+1;st.run=false;refresh()}});
+   tiles.forEach((t,j)=>{const y=YT-j*(h+gap),key='t'+k+'_'+j,x0=X[k]-W/2,sb_=new PB(hsh(key));sb_.box(x0,y-h,-.22,x0+W,y,.0,Math.round(W*h*130));sb_.edges(x0,y-h,-.22,x0+W,y,.0,Math.round((W+h)*120));
+    B.g(key,sb_,{col:k==2?C.acc:C.sky,gain:on?.7:.14,size:.02,tw:.3});
+    B.path(key+'f',[[x0,y,.02],[x0+W,y,.02]],Math.round(W*18),{col:C.w,speed:.12+j*.02,spread:.01,size:.02,gain:on?.9:.1});
+    B.lab(key+'l',[x0+.15,y-.14,0],'<span class="t2" style="font-size:max(10px,calc(var(--u)*.86))">'+t[0]+'</span>'+(t[1]?'<div class="d">'+t[1]+'</div>':''),{al:'lt',w:W-.3,cls:on?'':'ghost'})});
+   B.hot('c'+k,[X[k],(YT+YB)/2,0],1.45,{click:()=>{st.bp=st.bp===k+1?0:k+1;st.run=false;refresh()}})});
+  for(let k=0;k<3;k++)for(let l=0;l<3;l++){const y=.9-l*1.3;B.path('w'+k+l,[[X[k]+W/2-.1,y,.2],[X[k+1]-W/2+.1,y,.2]],120,{col:C.acc,speed:.5,spread:.03,size:.022,gain:(st.bp===0||st.bp===k+1||st.bp===k+2)?1.1:.2})}
+  B.act=[{t:st.run?'Stopp':'Datenfluss abspielen ▸',on:st.run,f:()=>{if(st.run){st.run=false;st.bp=0}else{st.run=true;st.bp=1;st.last=T}refresh()}}];
+  B.dyn=()=>{if(st.run&&T-st.last>1.9){st.last=T;if(st.bp>=4){st.run=false;st.bp=0}else st.bp++;refresh()}};
+  B.cap={k:'Projektreferenz',t:'Blueprint aus einem umgesetzten Kundenprojekt',s:'Übertragbar auf SAP + Azure bei RWE'};B.hint='Spalte anklicken oder Datenfluss abspielen'}});
+
+SLIDES.push(solutions('Lösungsansätze Impuls II','Daten-Pain-Points mit <em>Architekturkompetenz</em> lösen','Auf dem Weg zu einer einheitlichen, gesteuerten Zielarchitektur',M2,'Gibt es weitere relevante Pain Points in Ihrer Daten- und Reportinglandschaft?'));
+SLIDES.push(chapter('III','04','<em>AI Readiness</em> Check','Welche Voraussetzungen braucht das Controlling, damit KI echten Steuerungsnutzen stiftet?',[0,3,6]));
+
+/* ---------- 22 · AI Readiness ---------- */
+SLIDES.push({lab:'AI Readiness',t:'AI Readiness beginnt bei den <em>Prozessen</em>, nicht bei der Technologie',s:'Digitale Reife Schritt für Schritt aufbauen: vom Fundament bis zur KI',cam:{x:.9,y:-.55,yaw:-.42,pitch:.22,d:1.05},init:()=>({ai:3}),
+ build(B,st){const XC=[-1.9,.55,3.0,5.45],HH=[1.0,1.85,2.7,3.55],Y0=-2.3,CL=[C.blue,C.petrol,C.green,C.lg];
+  AIS.forEach((a,k)=>{const s=k===st.ai,x=XC[k],h=HH[k],b=new PB(1600+k);b.box(x-1.05,Y0,-.85,x+1.05,Y0+h,.85,Math.round(1400+h*500));b.edges(x-1.05,Y0,-.85,x+1.05,Y0+h,.85,900);
+   B.g('b'+k,b,{col:CL[k],gain:s?1.35:.62,lo:[0,s?.18:0,0],size:.024});
+   B.lab('l'+k,[x,Y0+h+.35+(s?.18:0),.85],'<span class="k">Stufe '+P2(k+1)+'</span><div class="t2" style="font-size:max(13px,calc(var(--u)*1.3))">'+a.s+'</div>',{al:'a',cls:s?'sel c':'c',click:()=>{st.ai=k;refresh()},hk:'h'+k});
+   B.hot('h'+k,[x,Y0+h/2,0],1.1,{grp:['b'+k],click:()=>{st.ai=k;refresh()}})});
+  const ch=new PB(1610),cx=XC[3],cy=Y0+HH[3]+.42;ch.sphere(cx,cy,0,.3,700);ch.seg([cx,cy+.28,0],[cx+.18,cy+.68,0],50,.006);B.g('cherry',ch,{col:C.pain,gain:1.5,size:.026,lo:[0,st.ai===3?.18:0,0]});
+  B.path('ar',[[XC[0]-1.3,Y0+.2,1.6],[XC[3]+1.4,Y0+HH[3]+.9,1.6]],900,{col:C.acc,speed:.08,spread:.04,size:.022,gain:.8});
+  B.lab('arl',[XC[0]-.4,Y0+.75,1.6],'<span class="k" style="color:#2FC7A5">Digitalisierungs- & KI-Reifegrad ▸</span>',{al:'l'});
+  const a=AIS[st.ai];B.cap={k:'Stufe '+(st.ai+1)+' · '+a.s,t:a.t,s:a.d};
+  B.note='▸ Jede Stufe setzt die vorherige voraus. <b>KI entfaltet ihren Nutzen erst auf stabilen Prozessen, Daten und Analytics.</b>';B.hint='Stufe anklicken'}});
+
+/* ---------- 23 · KI-Fundament ---------- */
+SLIDES.push({lab:'KI-Fundament',t:'KI-Reife erfordert zuerst ein <em>starkes Datenfundament</em>',s:'Integration, Semantik, Datenprodukte und Governance als Voraussetzungen',cam:{x:.4,y:-.1,yaw:-.18,pitch:.12},init:()=>({f:[false,false,false,false],fr:0}),
+ build(B,st){const XB=[-2.0,.1,2.2,4.3],YB=-1.45,DC=[1.15,-.85,0],R=2.75,fc=st.f.filter(Boolean).length;
+  st.f.forEach((on,k)=>{const x=XB[k],b=new PB(1700+k);b.edges(x-.95,YB,-.8,x+.95,YB+.62,.8,700);b.box(x-.95,YB,-.8,x+.95,YB+.62,.8,on?900:250);
+   B.g('fb'+k,b,{col:on?C.acc:C.dim,gain:on?1.2:.7,jit:on?0:.03,size:.024});
+   B.lab('fl'+k,[x,YB-.2,.8],'<span class="n">'+P2(k+1)+'</span><span class="t2" style="font-size:max(10px,calc(var(--u)*.86))">'+FD[k]+'</span><div class="k" style="margin-top:.35em;color:'+(on?'#2FC7A5':'#9FB2C6')+'">'+(on?'vorhanden':'fehlt')+'</div>',{al:'b',w:2.0,cls:'c'+(on?' sel':''),click:()=>{st.f[k]=!on;refresh()},hk:'h'+k});
+   B.hot('h'+k,[x,YB+.3,0],.9,{grp:['fb'+k],click:()=>{st.f[k]=!on;refresh()}})});
+  B.lab('gf',[(XB[0]+XB[3])/2,YB-1.25,.8],'<span class="k" style="color:#2FC7A5">Governance als Fundament</span>',{al:'b'});
+  const dm=new PB(1710);for(let i=0;i<5200;i++)dm.p(0,0,0);
+  B.g('dome',dm,{pos:DC,col:C.acc,gain:1,size:.024,stiff:.045,pm:(l,V,t)=>{const fs=st.fr,u=rr(l,0);if(u<fs){const y=rr(l,1),q=Math.sqrt(1-y*y),a=l*2.39996;V[0]=Math.cos(a)*q*R;V[1]=y*R*.85;V[2]=Math.sin(a)*q*R*.55;return 1}
+    V[0]=(rr(l,2)-.5)*7+Math.sin(t*.4+l)*.5;V[1]=.6+rr(l,3)*3+Math.sin(t*.3+l*.7)*.4;V[2]=(rr(l,4)-.5)*4;return .35}});
+  const gg=new PB(1720);for(let i=0;i<1400;i++){const a=PI/2-(i+.5)/1400*TAU;gg.p(Math.cos(a)*.95+gg.gs()*.02,Math.sin(a)*.95+gg.gs()*.02,0)}
+  B.g('gauge',gg,{pos:[6.3,.9,0],col:C.acc,gain:1.2,size:.026,pc:(l,t,g)=>l/g.n<st.fr?1:.08});
+  const gb=new PB(1721);gb.ring(0,0,0,.95,600,.012);B.g('gaugeb',gb,{pos:[6.3,.9,0],col:C.dim,gain:.45,size:.02});
+  B.lab('gp',[6.3,.9,0],()=>'<div class="mid">'+Math.round(st.fr*100)+' %</div>',{al:'c'});B.lab('gk',[6.3,-.25,0],'<span class="k">KI-Reife</span>',{al:'b'});
+  B.lab('kl',ad(DC,[0,R*.85+.35,0]),'<span class="t" style="color:'+(fc==4?'#2FC7A5':'#9FB2C6')+'">KI-Reife</span>',{al:'a'});
+  B.dyn=(t,dt)=>{st.fr+=(fc/4-st.fr)*Math.min(1,dt*1.6)};
+  B.act=[{t:fc==4?'Zurücksetzen':'Alle aktivieren',on:fc==4,f:()=>{st.f=st.f.map(()=>fc!=4);refresh()}}];
+  const dg=new PB(1711);for(let i=0;i<1400;i++){const y=fr(i*.618)*.98,q=Math.sqrt(1-y*y),a=i*2.39996;dg.p(Math.cos(a)*q*R,y*R*.85,Math.sin(a)*q*R*.55)}B.g('domeg',dg,{pos:DC,col:C.dim,gain:.32,size:.018});
+  B.lab('fs',[-4.6,.9,0],'<span class="k">Status</span><div class="t2" style="margin-top:.4em">'+(fc===0?'Fragmentierte Daten-, Tool- & Konsumzonen':fc<4?'Fundament im Aufbau: '+fc+' von 4 Voraussetzungen erfüllt':'KI wird im Controlling skalierbar nutzbar')+'</div>',{al:'l',w:3.2,cls:fc==4?'sel':''});
+  B.note='Damit KI nutzbar wird, müssen Daten <b>integriert, semantisch angereichert und auffindbar</b> sein. Governance bildet das Fundament, Technologie wird zum Game Changer.';B.hint='Fundament-Bausteine anklicken'}});
+
+/* ---------- 24 · Vom Copilot zum Agenten ---------- */
+let FIGP=null,AIP=null;
+SLIDES.push({lab:'Vom Copilot zum Agenten',t:'KI verändert Arbeit von der <em>Ausführung zur Orchestrierung</em>',s:'Vom Copilot zu autonomen Agenten: die Zukunft der Wissensarbeit',init:()=>({a:0,hs:.9}),
+ build(B,st){const FP=[-2.3,-1.45,0],AP=[3.3,.45,0];
+  if(!FIGP){const b=new PB(1800);figure(b,0,0,0,1.0,3000);FIGP=b.f();const a=new PB(1801),V=[];for(let i=0;i<40;i++){const y=1-2*(i+.5)/40,q=Math.sqrt(1-y*y),t=i*2.39996;V.push([Math.cos(t)*q*1.55,y*1.55,Math.sin(t)*q*1.55])}
+   for(let i=0;i<V.length;i++){a.ball(V[i][0],V[i][1],V[i][2],.06,22);for(let j=i+1;j<V.length;j++)if(ln3(sb(V[i],V[j]))<.75)a.seg(V[i],V[j],14)}AIP=a.f()}
+  const nf=FIGP.length/3,na=AIP.length/3;
+  B.g('figB',FIGP,{pos:FP,col:C.dim,gain:.35,size:.02});B.g('aiB',AIP,{pos:AP,col:C.dim,gain:.35,size:.02,spin:[0,.12,0]});
+  const mx_=new PB(1802);for(let i=0;i<4200;i++)mx_.p(0,0,0);
+  B.g('mx',mx_,{col:C.w,gain:1,size:.027,stiff:.04,pm:(l,V,t)=>{const h=st.hs;if(rr(l,0)<h){const k=(l%nf)*3;V[0]=FP[0]+FIGP[k];V[1]=FP[1]+FIGP[k+1];V[2]=FP[2]+FIGP[k+2];return .9}
+    const k=(l%na)*3,a=t*.12,x=AIP[k],z=AIP[k+2];V[0]=AP[0]+x*Math.cos(a)+z*Math.sin(a);V[1]=AP[1]+AIP[k+1];V[2]=AP[2]-x*Math.sin(a)+z*Math.cos(a);return 1.15},
+   pc:(l)=>1});
+  const mx2=RG('mx');
+  B.lab('hp',[FP[0],FP[1]+1.95,.4],()=>'<div class="big" style="text-align:center">'+Math.round(st.hs*100)+' %</div>',{al:'c'});B.lab('hk',[FP[0],FP[1]-.28,0],'<span class="k">Anteil Mensch: Ausführung</span>',{al:'b'});
+  B.lab('ap',AP,()=>'<div class="big" style="text-align:center;color:#2FC7A5">'+(100-Math.round(st.hs*100))+' %</div>',{al:'c'});B.lab('ak',[AP[0],AP[1]-1.8,0],'<span class="k">Anteil KI: autonome Ausführung</span>',{al:'b'});
+  const SX=i=>-.2+i*1.9,SY=-2.15;B.path('tl',[[SX(0)-.5,SY,0],[SX(3)+.5,SY,0]],700,{col:C.petrol,speed:.04,spread:.015,size:.02,gain:.6});
+  AGT.forEach((g,i)=>{const on=i<=st.a,p=[SX(i),SY,0];node(B,'s'+i,p,.15,on?C.acc:C.dim,{n:240,g:{gain:on?1.3:.6}});
+   B.lab('sl'+i,[SX(i),SY-.28,0],'<span class="k">'+P2(i+1)+'</span><div class="t2" style="font-size:max(10px,calc(var(--u)*.84))">'+g.t+'</div>',{al:'b',w:1.9,cls:'c'+(i===st.a?' sel':''),click:()=>{st.a=i;refresh()},hk:'h'+i});
+   B.hot('h'+i,p,.35,{grp:['s'+i],click:()=>{st.a=i;refresh()}})});
+  B.dyn=(t,dt)=>{st.hs+=(AGT[st.a].h/100-st.hs)*Math.min(1,dt*1.5);const g=RG('mx');if(g)g.c=hex(C.w)};
+  B.act=[{t:'◀',f:()=>{st.a=Math.max(0,st.a-1);refresh()}},{t:'Nächste Stufe ▶',f:()=>{st.a=Math.min(3,st.a+1);refresh()}}];
+  const g=AGT[st.a];B.cap={k:'Stufe '+(st.a+1)+' · Illustrative Verteilung',t:g.t,s:g.d};
+  B.lab('f60',[-6.95,1.35,0],'<div class="big" style="color:#2FC7A5">60 %</div><div class="d" style="margin-top:.5em">Entwickler verbringen 60 % ihrer Zeit mit repetitiven Aufgaben. Agentic AI ermöglicht die autonome Ausführung dieser Tätigkeiten.</div>',{al:'lt',w:3.3});
+  B.note='Mit der Entwicklung hin zu autonomen Agenten müssen Organisationen ihre Reife in <b>Daten, Governance und Operating Model</b> systematisch ausbauen.';
+  B.hint='Stufe unten wählen'}});
+
+SLIDES.push(solutions('Lösungsansätze Impuls III','KI-Pain-Points mit <em>Daten- und Governance-Fundament</em> lösen','Von fehlender AI Readiness zu einer strukturierten Enablement-Roadmap',M3,'Gibt es weitere relevante Pain Points auf dem Weg zur KI-Nutzung?'));
+
+/* ---------- 26 · Kapitel Wrap-Up ---------- */
+SLIDES.push({lab:'Wrap-Up',idx:'Kapitel 05 · Wrap-Up',t:'Zusammenfassung & <em>nächste Schritte</em>',s:'Vom fragmentierten Status quo (Level 1–2) zum integrierten, KI-fähigen Zielbild (Level 3–4)',cam:{x:1.0,y:-.3,yaw:-.38,pitch:.16,sway:.05},
+ build(B,st){const X=[-.6,1.5,3.6,5.7],H=[.9,1.75,2.6,3.45],Y0=-2.2,CL=[C.red,C.yel,C.green,C.acc];
+  for(let k=0;k<4;k++){const b=new PB(1900+k);b.box(X[k]-.75,Y0,-.75,X[k]+.75,Y0+H[k],.75,1300+k*450);b.edges(X[k]-.75,Y0,-.75,X[k]+.75,Y0+H[k],.75,700);
+   B.g('l'+k,b,{col:CL[k],gain:k<2?.55:1.05,size:.024,jit:k<2?.025:0});
+   B.lab('ll'+k,[X[k],Y0-.2,.75],'<span class="mid">L'+(k+1)+'</span><div class="k" style="margin-top:.3em">'+LVL[k]+'</div>',{al:'b'})}
+  const top=X.map((x,k)=>[x,Y0+H[k]+.45,0]);B.path('up',crv([[X[0]-1.2,Y0+.3,0],...top,[X[3]+.9,Y0+H[3]+.9,0]],14),1500,{col:C.w,speed:.07,spread:.05,size:.022,gain:.8});
+  B.lab('sq',[(X[0]+X[1])/2,Y0+H[1]+1.0,0],'<span class="t" style="color:#E8609F">Status quo</span><div class="d" style="text-align:center">Level 1–2</div>',{al:'a'});
+  B.lab('zb',[(X[2]+X[3])/2+.6,Y0+H[3]+.75,0],'<span class="t" style="color:#2FC7A5">Zielbild</span><div class="d" style="text-align:center">Level 3–4</div>',{al:'a'});
+  B.note='Reifegrad-Simulator · Roadmap · Key Takeaways · Ziele & Diskussion'}});
+
+/* ---------- 27 · Reifegrad-Simulator ---------- */
+SLIDES.push({lab:'Reifegrad-Simulator',t:'Reifegrad im Controlling über <em>sieben Dimensionen</em>',s:'Gemeinsame Einschätzung des Ist-Stands gegenüber dem Zielkorridor Level 3–4',init:()=>({mat:[2,2,1,1,2,1,1],ms:[2,2,1,1,2,1,1]}),
+ build(B,st){const C0=[2.3,-.45,0],R=2.15,ang=i=>PI/2-i*TAU/7,ax=(i,v)=>ad(C0,[Math.cos(ang(i))*R*v/4,Math.sin(ang(i))*R*v/4,0]);
+  const rg=new PB(2000);for(let l=1;l<=4;l++){for(let i=0;i<7;i++){const a=ax(i,l),b=ax((i+1)%7,l);rg.seg(sb(a,C0),sb(b,C0),40+l*12)}}B.g('rings',rg,{pos:C0,col:C.petrol,gain:.6,size:.02});
+  const axb=new PB(2001);for(let i=0;i<7;i++)axb.seg([0,0,0],sb(ax(i,4.25),C0),110);B.g('axes',axb,{pos:C0,col:C.dim,gain:.7,size:.02});
+  const band=new PB(2002);for(let n=0;n<3600;n++){const i=n%7,u=band.r(),v=3+band.r(),a=ax(i,v),b=ax((i+1)%7,v);const q=lp(a,b,u);band.p(q[0]-C0[0],q[1]-C0[1],(band.r()-.5)*.1)}B.g('band',band,{pos:C0,col:C.green,gain:.7,size:.022});
+  const fl=new PB(2003);for(let n=0;n<3200;n++)fl.p(0,0,0);
+  B.g('fill',fl,{col:C.sky,gain:.8,size:.024,stiff:.06,pm:(l,V)=>{const i=l%7,j=(i+1)%7,u=rr(l,0),v=rr(l,1),s=Math.sqrt(u),A=ax(i,st.ms[i]),Bp=ax(j,st.ms[j]);
+    V[0]=C0[0]*(1-s)+s*((1-v)*A[0]+v*Bp[0]);V[1]=C0[1]*(1-s)+s*((1-v)*A[1]+v*Bp[1]);V[2]=(rr(l,2)-.5)*.12;return .55+.5*s}});
+  const ed=new PB(2004);for(let n=0;n<1400;n++)ed.p(0,0,0);
+  B.g('edge',ed,{col:C.w,gain:1.1,size:.024,pm:(l,V,t,g)=>{let u=fr(l/g.n+t*.02)*7;const i=Math.floor(u)%7,s=u-Math.floor(u),A=ax(i,st.ms[i]),Bp=ax((i+1)%7,st.ms[(i+1)%7]);V[0]=mix(A[0],Bp[0],s);V[1]=mix(A[1],Bp[1],s);V[2]=0}});
+  DIMS.forEach((d,i)=>{const b=new PB(2010+i);b.sphere(0,0,0,.13,220);B.g('v'+i,b,{col:AMPC[st.mat[i]],gain:1.5,size:.026});
+   const a=ang(i),cx=Math.cos(a),al=cx>.3?'l':cx<-.3?'r':(Math.sin(a)>0?'a':'b');
+   B.lab('dl'+i,ad(ax(i,4.55),[0,0,0]),'<span class="t">'+d.t+'</span><div class="d" style="'+(al=='r'?'text-align:right':al=='l'?'':'text-align:center')+'">Ist: L'+st.mat[i]+' · '+LVL[st.mat[i]-1]+'</div>',{al});
+   for(let l=1;l<=4;l++)B.hot('h'+i+l,ax(i,l),.2,{min:13,click:()=>{st.mat[i]=l;refresh()}})});
+  const lvd=new PB(2020);for(let i=0;i<7;i++)for(let l=1;l<=4;l++){const p=sb(ax(i,l),C0);lvd.ball(p[0],p[1],0,.045,26)}B.g('lvd',lvd,{pos:C0,col:C.bg,gain:.8,size:.02});
+  B.dyn=(t,dt)=>{for(let i=0;i<7;i++){st.ms[i]+=(st.mat[i]-st.ms[i])*Math.min(1,dt*4);const g=RG('v'+i);if(g){const p=ax(i,st.ms[i]);g.pos=p;g.posC=lp(g.posC,p,.3)}}};
+  const avg=st.mat.reduce((a,b)=>a+b,0)/7;
+  B.lab('avg',[-5.2,1.2,0],'<span class="k">Ø Reifegrad</span><div class="big" style="margin-top:.2em">'+avg.toFixed(1).replace('.',',')+'</div><div class="t" style="margin-top:.4em;color:'+(avg>=3?'#2FC7A5':avg>=2?'#FFC83D':'#FF4060')+'">'+LVL[Math.min(3,Math.max(0,Math.round(avg)-1))]+'</div>',{al:'lt'});
+  B.lab('lg',[-5.2,-.35,0],'<span class="k" style="color:#1DB48E">▬ Zielkorridor L3–L4</span><br><span class="k" style="color:#fff">▬ Ist-Stand</span>',{al:'lt'});
+  B.act=[{t:'Ist-Stand (Beispiel)',f:()=>{st.mat=[2,2,1,1,2,1,1];refresh()}},{t:'Zielbild simulieren',f:()=>{st.mat=[4,3,4,3,3,3,4];refresh()}}];
+  B.cap={k:'Reifestufen',list:LVL.map((l,i)=>'<b>L'+(i+1)+' '+l+'</b> <span>· '+LVLD[i]+'</span>')};B.hint='Punkte auf den Achsen anklicken: Level setzen'}});
+
+/* ---------- 28 · Roadmap ---------- */
+SLIDES.push({lab:'Roadmap',t:'Eine Phasen-Roadmap führt durch die <em>Transformation</em>',s:'Von der Prozessanalyse über das Target Operating Model bis zur Umsetzung',cam:{yaw:-.1,pitch:.05},init:()=>({ph:3,front:3}),
+ build(B,st){const X0=-3.4,WX=10.2,Y=i=>1.3-i*.9,ph=st.ph,PH=['Phase 1 · Analyse','Phase 2 · Zielbild','Phase 3 · Detailkonzept'];
+  PH.forEach((p,k)=>{const x=X0+(k+.5)*WX/3;B.lab('ph'+k,[x,2.05,0],'<span class="t">'+p+'</span>',{al:'a',cls:k<ph?'sel':'dim',click:()=>{st.ph=k+1;refresh()}});
+   if(k)B.ln([X0+k*WX/3,1.85,-.3],[X0+k*WX/3,-2.6,-.3],C.dim,.35)});
+  RMW.forEach((w,i)=>{const y=Y(i);B.lab('w'+i,[X0-.35,y,0],'<span class="t2" style="font-size:max(10px,calc(var(--u)*.86))">'+w.w+'</span>',{al:'r',w:3.2});
+   B.path('lane'+i,[[X0-.1,y,-.2],[X0+WX+.2,y,-.2]],380,{col:C.dim,speed:.03,spread:.02,size:.018,gain:.55});
+   w.it.forEach((it,j)=>{const x0=X0+it[0]/100*WX+.06,wx=it[1]/100*WX-.12,on=it[2]<=ph,h=i==4&&j==1?.26:.5,yy=i==4&&j==1?y-.12:y,key='b'+i+'_'+j;
+    B.path(key,[[x0,yy,0],[x0+wx,yy,0]],Math.round(wx*150*h),{col:w.c,speed:.06,spread:h*.62,size:.022,gain:on?.85:.05,fade:false,pm:(l,V)=>{V[2]*=.35;V[1]=yy+(V[1]-yy)*.55}});
+    const cp=new PB(hsh(key));cp.ball(x0,yy,0,h*.3,90);cp.ball(x0+wx,yy,0,h*.3,90);cp.seg([x0,yy+h*.42,0],[x0+wx,yy+h*.42,0],Math.round(wx*40));cp.seg([x0,yy-h*.42,0],[x0+wx,yy-h*.42,0],Math.round(wx*40));B.g(key+'f',cp,{col:w.c,gain:on?.9:.04,size:.02});
+    B.lab(key+'l',[x0+.14,yy,0],'<span class="d" style="color:#fff">'+it[3]+'</span>',{al:'l',w:wx-.25,cls:on?'':'off'})})});
+  const sw=new PB(2100);sw.seg([0,1.8,0],[0,-2.55,0],600,.03);B.g('front',sw,{pos:[X0+st.front/3*WX,0,.1],col:C.acc,gain:1.1,size:.024});
+  B.dyn=(t,dt)=>{st.front+=(ph-st.front)*Math.min(1,dt*2.2);const g=RG('front');if(g){g.pos=[X0+st.front/3*WX,0,.1];g.posC=g.pos.slice()}};
+  B.lab('bs',[X0+WX,2.5,0],'<span class="tag">Beispiel</span>',{al:'r'});
+  B.act=[{t:'Abspielen ▸',f:()=>{st.ph=1;st.front=0;refresh();setTimeout(()=>{if(SID===27){st.ph=2;refresh()}},1300);setTimeout(()=>{if(SID===27){st.ph=3;refresh()}},2600)}},...PH.map((p,k)=>({t:'Phase '+(k+1),on:ph===k+1,f:()=>{st.ph=k+1;refresh()}}))];
+  B.hint='Phase wählen oder abspielen'}});
+
+/* ---------- 29 · Key Takeaways ---------- */
+SLIDES.push({lab:'Key Takeaways',t:'Von zentralen Erkenntnissen zu <em>konkreten Maßnahmen</em>',s:'Klare Prioritäten für Controlling, Datenarchitektur und KI-Fähigkeiten',init:()=>({take:1}),
+ build(B,st){const XC=[-6.55,-1.6,3.35],Y=[1.05,-.35,-1.75],tk=st.take,COL=[[C.pain,'Key Takeaways'],[C.sky,'Key Action Areas'],[C.acc,'Potenzielle Quick Wins']],DATA=[KT,KA,QW];
+  COL.forEach((c,k)=>{const on=k<tk;B.lab('hd'+k,[XC[k]-.3,1.85,0],'<span class="k" style="color:'+c[0]+'">'+c[1]+'</span>',{al:'l',cls:on?'':'ghost'});
+   DATA[k].forEach((d,i)=>{const p=[XC[k]-.05,Y[i],0],key='g'+k+i;
+    if(k==0)B.g(key,chaosPts(2200+i,.25,520),{pos:p,col:C.pain,gain:on?1.1:.1,jit:.045,size:.024});
+    else if(k==1)B.g(key,cubePts(2210+i,.2,520),{pos:p,col:C.sky,gain:on?1.15:.06,scale:on?1:.4,size:.024,spin:[.2,.4,0]});
+    else{const b=new PB(2220+i);for(let j=0;j<520;j++){const a=b.r()*TAU,e=b.r()*2-1,q=Math.sqrt(1-e*e),r=j%3?Math.pow(b.r(),3)*.42:.08;b.p(Math.cos(a)*q*r,e*r,Math.sin(a)*q*r)}B.g(key,b,{pos:p,col:C.acc,gain:on?1.4:.06,scale:on?1:.3,size:.026,spin:[0,.6,0]})}
+    B.lab('t'+k+i,[XC[k]+.35,Y[i],0],'<span class="t2">'+d[0]+'</span><div class="d">→ '+d[1]+'</div>',{al:'l',w:3.95,cls:on?'':'off'});
+    if(k<2)B.path('f'+k+i,crv([[XC[k]+.25,Y[i]-.32,0],[(XC[k]+XC[k+1])/2,Y[i]-.62,-.8],[XC[k+1]-.3,Y[i]-.05,0]],10),k+1<tk?380:1,{col:COL[k+1][0],speed:.35,spread:.03,size:.02,gain:.9})})});
+  B.act=[{t:tk>=3?'Zurücksetzen':tk==1?'Handlungsfelder zeigen →':'Quick Wins zeigen →',f:()=>{st.take=tk>=3?1:tk+1;refresh()}}];
+  B.hot('all',[0,0,0],6,{click:()=>{st.take=tk>=3?1:tk+1;refresh()}});B.hint='Klicken: nächste Ebene'}});
+
+/* ---------- 30 · Ziele & Diskussion ---------- */
+SLIDES.push({lab:'Ziele & Diskussion',t:'Ziele, Herausforderungen und Rollen',s:'Abschließende Diskussion für die nächsten Schritte',init:()=>({q:-1,end:false}),
+ build(B,st){if(st.end){const t=new PB(2300);t.text('VIELEN DANK',0,0,1.25,16000,0,.06);B.g('vd',t,{pos:[0,.45,0],col:C.w,gain:.95,size:.026,tw:.35});
+   const h=new PB(2301);h.text('VIELEN DANK',0,0,1.25,5000,-.3,.3);B.g('vh',h,{pos:[0,.45,0],col:C.acc,gain:.35,jit:.05,jf:.4,scale:1.02,size:.03});
+   const r=new PB(2302);r.ring(0,0,0,6.2,2200,.08,'xz');B.g('vr',r,{pos:[0,-.9,-1],col:C.petrol,gain:.6,spin:[0,.05,0],rot:[.18,0,0],size:.022});
+   B.lab('vs',[0,-.75,0],'<div class="k" style="letter-spacing:.4em">Zukunftsbild Controlling · RWE · Interaktiv · 05.11.2026</div>',{al:'c'});
+   B.act=[{t:'← Zurück zur Diskussion',f:()=>{st.end=false;refresh()}}];B.t='';B.s='';return}
+  const X=[-3.9,.85,5.6];
+  FINQ.forEach((q,k)=>{const f=st.q===k,o=st.q>=0&&!f,p=[X[k],.55,f?.8:o?-.8:0],b=new PB(2310+k);b.sphere(0,0,0,.95,1900);b.ring(0,0,0,1.25,500,.015,'xz');b.ring(0,0,0,1.42,300,.01,'xy');
+   B.g('o'+k,b,{pos:p,col:f?C.acc:k==1?C.sky:C.petrol,gain:f?1.3:o?.4:.85,scale:f?1.2:o?.75:1,size:.026,spin:[.1,.25+k*.05,0]});
+   const t=new PB(2320+k);t.text(P2(k+1),0,0,.75,900,0,.04);B.g('n'+k,t,{pos:p,col:C.w,gain:o?.4:1.1,scale:f?1.2:o?.75:1,size:.026});
+   B.lab('q'+k,[X[k],-1.0,0],'<div class="q" style="text-align:center;font-weight:700">'+q+'</div>',{al:'b',w:3.6,cls:(f?'sel':o?'dim':''),click:()=>{st.q=f?-1:k;refresh()},hk:'h'+k});
+   B.hot('h'+k,p,1.2,{grp:['o'+k],click:()=>{st.q=f?-1:k;refresh()}})});
+  B.act=[{t:'Vielen Dank ✦',f:()=>{st.end=true;refresh()}}];B.hint='Frage anklicken';B.cap=st.q>=0?{k:'Frage '+P2(st.q+1),t:FINQ[st.q]}:null}});
+
+/* =====================================================================
+   9 · ABLAUF, NAVIGATION, BEDIENUNG
+   ===================================================================== */
+const CHN=['Einführung','Impuls I','Impuls II','Impuls III','Wrap-Up'];
+const CHS=[0,7,14,20,25];
+const NS=SLIDES.length;
+function chOf(i){let c=0;for(let k=0;k<CHS.length;k++)if(i>=CHS[k])c=k;return c}
+function setHud(){const S=SLIDES[SID],c=chOf(SID);$('hI').textContent=(S.idx||(String(SID+1).padStart(2,'0')+' / '+NS+' · '+CHN[c]));
+ $('pg').textContent=String(SID+1).padStart(2,'0')+' / '+NS;
+ [...$('chs').children].forEach((b,i)=>b.classList.toggle('on',i==c));[...$('dots').children].forEach((d,i)=>d.className=(i<SID?'d':i==SID?'on':'')+(CHS.includes(i)&&i?' g':''));
+ [...document.querySelectorAll('#ov .it')].forEach((e,i)=>e.classList.toggle('on',i==SID))}
+function goTo(i){i=cl(i|0,0,NS-1);if(i===SID)return;const first=SID<0;if(SC&&SC.leave)SC.leave(STATE[SID]);SID=i;SC=SLIDES[i];if(!STATE[i])STATE[i]=SC.init?SC.init():{};
+ HOV=null;document.body.classList.remove('hot');const cm=Object.assign({x:0,y:0,z:0,yaw:0,pitch:0,d:1,sway:.035},SC.cam||{});CAM.tT=[cm.x,cm.y,cm.z];CAM.yawT=cm.yaw;CAM.pitchT=cm.pitch;CAM.dT=cm.d;CAM.sway=cm.sway;CAM.uy=0;CAM.up=0;CAM.ud=1;
+ if(first){CAM.t=CAM.tT.slice();CAM.yaw=cm.yaw;CAM.pitch=cm.pitch;CAM.d=cm.d*1.6}
+ ENTER=T;LFADE=0;build();burst(first?0:.16);setHud();try{localStorage.setItem('zbc-cur',String(i))}catch(e){}closeOv()}
+function nav(d){goTo(SID+d)}
+/* ---------- Steuerleiste ---------- */
+CHN.forEach((c,i)=>{const b=document.createElement('button');b.className='cb';b.type='button';b.textContent=String(i+1).padStart(2,'0')+' '+c;b.onclick=e=>{e.target.blur();goTo(CHS[i])};$('chs').appendChild(b)});
+SLIDES.forEach((s,i)=>{const d=document.createElement('i');d.title=String(i+1).padStart(2,'0')+' '+s.lab;d.onclick=()=>goTo(i);$('dots').appendChild(d)});
+{const g=$('ovg');CHN.forEach((c,ci)=>{const col=document.createElement('div');col.className='ch';col.innerHTML='<div class="h">'+String(ci+1).padStart(2,'0')+' · '+c+'</div>';const en=ci<4?CHS[ci+1]:NS;
+ for(let k=CHS[ci];k<en;k++){const it=document.createElement('div');it.className='it';it.innerHTML='<b>'+String(k+1).padStart(2,'0')+'</b><span>'+SLIDES[k].lab+'</span>';it.onclick=()=>goTo(k);col.appendChild(it)}g.appendChild(col)})}
+function toggleOv(){$('ov').classList.toggle('on')}function closeOv(){$('ov').classList.remove('on')}
+function full(){try{const d=document,e=d.documentElement;if(d.fullscreenElement)d.exitFullscreen();else if(e.requestFullscreen){const p=e.requestFullscreen();if(p&&p.catch)p.catch(()=>{})}}catch(x){}}
+$('pv').onclick=e=>{e.target.blur();nav(-1)};$('nx').onclick=e=>{e.target.blur();nav(1)};$('ovb').onclick=e=>{e.target.blur();toggleOv()};$('ovx').onclick=closeOv;$('fs').onclick=e=>{e.target.blur();full()};
+addEventListener('keydown',e=>{const tg=e.target&&e.target.tagName;if(tg=='INPUT'||tg=='TEXTAREA')return;
+ if(e.key=='ArrowRight'||e.key=='PageDown'||e.key==' '){e.preventDefault();nav(1)}else if(e.key=='ArrowLeft'||e.key=='PageUp'){e.preventDefault();nav(-1)}
+ else if(e.key=='Home')goTo(0);else if(e.key=='End')goTo(NS-1);else if(e.key=='o'||e.key=='O')toggleOv();else if(e.key=='Escape')closeOv();else if(e.key=='f'||e.key=='F')full();
+ else if(e.key>='1'&&e.key<='5')goTo(CHS[+e.key-1])});
+/* ---------- Zeiger: Hover, Klick, Ziehen ---------- */
+let PD=null,actT=0;
+function showAct(){document.body.classList.add('act');clearTimeout(actT);actT=setTimeout(()=>document.body.classList.remove('act'),2600)}
+glc.addEventListener('pointermove',e=>{MX=e.clientX;MY=e.clientY;MACT=1;showAct();
+ if(PD){const dx=e.clientX-PD.x,dy=e.clientY-PD.y;if(Math.hypot(dx,dy)>5)PD.moved=true;
+  if(PD.h&&PD.h.drag){const w=resolve(PD.h.pos)||[0,0,0],q=rayPlane(e.clientX,e.clientY,w[2]);if(q)PD.h.drag(q)}
+  else if(PD.moved){CAM.uy=cl(PD.uy-dx/CW*2.2,-1.1,1.1);CAM.up=cl(PD.up+dy/CH*1.4,-.5,.6);document.body.classList.add('drag')}return}
+ const h=hitTest(e.clientX,e.clientY);setHover(h?h.key:null)});
+glc.addEventListener('pointerdown',e=>{glc.setPointerCapture&&glc.setPointerCapture(e.pointerId);const h=hitTest(e.clientX,e.clientY);PD={x:e.clientX,y:e.clientY,h,moved:false,uy:CAM.uy,up:CAM.up};
+ if(h&&h.drag){const w=resolve(h.pos)||[0,0,0],q=rayPlane(e.clientX,e.clientY,w[2]);if(q)h.drag(q)}});
+glc.addEventListener('pointerup',e=>{document.body.classList.remove('drag');if(PD&&!PD.moved&&PD.h&&PD.h.click)PD.h.click();PD=null});
+glc.addEventListener('pointerleave',()=>{MACT=0;MX=MY=-1e4;setHover(null)});
+glc.addEventListener('wheel',e=>{e.preventDefault();CAM.ud=cl(CAM.ud*(1+Math.sign(e.deltaY)*.08),.55,1.6)},{passive:false});
+glc.addEventListener('dblclick',()=>{CAM.uy=0;CAM.up=0;CAM.ud=1});
+/* ---------- Hauptschleife ---------- */
+let last=0,FT=[];
+function adapt(ms){FT.push(ms);if(FT.length<50)return;const a=FT.reduce((x,y)=>x+y)/FT.length;FT=[];if(a>40&&RES>.55){RES=Math.max(.55,RES-.15);resize()}else if(a<19&&RES<1){RES=Math.min(1,RES+.15);resize()}}
+function frame(now){const dt=last?Math.min(.05,(now-last)/1000):.016;if(last)adapt(now-last);last=now;T+=dt;
+ MACT=Math.max(0,MACT-dt*.35);LFADE=Math.min(1,LFADE+dt*.8);
+ camUpdate(dt);nL=0;if(DYN)DYN(T,dt,STATE[SID]);const lf=ss(.15,1,LFADE);for(const s of SL_){const a=resolve(s[0]),b=resolve(s[1]);if(a&&b)L(a,b,s[2],s[3]*lf)}
+ step(dt);render();frameLabels();requestAnimationFrame(frame)}
+window.addEventListener('error',e=>{$('err').textContent+=(e.message||e.type)+' '+(e.lineno||'')+'\n'});
+if(!gl){$('hT').textContent='WebGL ist nicht verfügbar – bitte aktuelles Edge oder Chrome verwenden.'}
+else{initGL();addEventListener('resize',resize);resize();
+ let st0=0;try{const v=parseInt(new URLSearchParams(location.search).get('s')||localStorage.getItem('zbc-cur'),10);if(v>=0&&v<NS)st0=v}catch(e){}
+ if(location.hash&&/^#\d+$/.test(location.hash))st0=cl(+location.hash.slice(1)-1,0,NS-1);
+ goTo(st0);requestAnimationFrame(frame)}
+
+</script></body></html>
