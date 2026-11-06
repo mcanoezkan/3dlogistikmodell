@@ -1,6 +1,7 @@
 // Aufnahme: node rec.js <outDir> <from> <to> [every]
 // rendert deterministisch Frame für Frame (30 fps, 1800 Frames = 60 s); nur Frames in [from,to) werden gespeichert
 const { chromium } = require('playwright'); const H = require('./harness.js'); const fs = require('fs');
+const STIL = process.env.STIL || 'cartoon';
 const OUT = process.argv[2] || 'frames', FROM = +(process.argv[3] || 0), TO = +(process.argv[4] || 1800), EVERY = +(process.argv[5] || 1);
 const FPS = 30, DT = 1000 / FPS, TOTAL = 1800;
 fs.mkdirSync(OUT, { recursive: true });
@@ -68,13 +69,40 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
 
   // Vorbereitung: Bedienhilfe schließen, Qualität hoch, Startansicht etwas näher
   await ev(() => { document.querySelector('#navHelp .x')?.click(); const q = document.getElementById('vQ'); q.value = '2'; q.dispatchEvent(new Event('change')); });
+  await ev(stil => { const s = document.getElementById('vStil'); s.value = stil; s.dispatchEvent(new Event('change', { bubbles: true })); }, STIL);
+  for (let i = 0; i < 40; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
+  // Auslastung im Video als breitere Bänder (gleiche Daten und Farben wie die Linien der Suite)
+  await ev(() => {
+    const T = window.THREEX.THREE, dn = HSS.drawNet;
+    HSS.drawNet = (mode, hour) => {
+      const r = dn(mode, hour);
+      if (mode === 'heat') {
+        const L = HSS.s3.layers.net, ls = L.children.find(o => o.isLineSegments);
+        if (ls) {
+          const P = ls.geometry.attributes.position.array, C = ls.geometry.attributes.color.array, n = P.length / 6;
+          const geo = new T.CylinderGeometry(0.6, 0.6, 1, 6, 1, true); geo.translate(0, 0.5, 0); geo.rotateX(Math.PI / 2);
+          const im = new T.InstancedMesh(geo, new T.MeshBasicMaterial({ depthTest: false, transparent: true, opacity: 0.95 }), n);
+          const o = new T.Object3D(), c = new T.Color(), a = new T.Vector3(), b = new T.Vector3(); let k = 0;
+          for (let i = 0; i < n; i++) {
+            c.setRGB(C[6 * i], C[6 * i + 1], C[6 * i + 2]);
+            if (Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 0.08) continue;
+            a.fromArray(P, 6 * i); b.fromArray(P, 6 * i + 3); const d = a.distanceTo(b); if (d < 0.01) continue;
+            o.position.copy(a); o.lookAt(b); o.scale.set(1, 1, d); o.updateMatrix(); im.setMatrixAt(k, o.matrix); im.setColorAt(k, c); k++;
+          }
+          im.count = k; im.renderOrder = 5; L.add(im);
+        }
+      }
+      HSS.perf?.invalidate?.(3);
+      return r;
+    };
+  });
   await camTo(0.62, 10);
   for (let i = 0; i < 30; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
   const logo = await ev(() => document.querySelector('#top img').src);
   await setCur(1500, 760, false);
 
   /* ===== 0–3,6 s: Titel ===== */
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Logistikmodell 3D</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Healthcare Simulation Suite</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
+  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Material-, Waren- und Personenflüsse in 3D</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
   perFrame = async () => orbit(0.16, 0.9992);
   await at(S(3.6));
   perFrame = null;
@@ -128,15 +156,24 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
 
   /* ===== Prozess-Tour ===== */
   await at(S(26.6));
-  await cap('Prozess-Tour', 'Automatische Kamerafahrt von der Quelle zur Senke');
-  await clickEl('#stroeme [data-ts]', 18, 2, false);
-  await setSel('#stroeme [data-ts]', 'patient'); await wait(6);
-  const sp = await box('#stroeme [data-tt]');
-  await moveTo(sp.x + sp.width * 0.14, sp.y + sp.height / 2, 12); await wait(1);
-  await ev(() => __ov.click()); await p.mouse.down(); await wait(1);
-  for (let i = 1; i <= 10; i++) { const e = ease(i / 10); await setCur(sp.x + sp.width * (0.14 + 0.62 * e), sp.y + sp.height / 2); await frame(); }
-  await p.mouse.up();
-  await clickEl('#stroeme [data-tgo]', 12, 4);
+  await cap('Prozess-Tour', 'Entlang der Flusslinie von der Quelle zur Senke');
+  const FID = 'fl_patient_0_pl_bielefeld_heli_0_r_zna_0_bie_NB_5_0';
+  await ev(() => { HSS.stroeme.tempo = 2.25; const t = document.querySelector('#stroeme [data-tt]'); if (t) t.value = 2.25; });
+  await clickEl('#stroeme [data-sn]', 18, 6);
+  await clickEl('#stroeme [data-s="patient"]', 12, 8);
+  const lp = await ev(fid => {
+    const hits = [];
+    for (let y = 200; y <= 900; y += 8) for (let x = 380; x <= 1560; x += 8) if (HSS.stroeme.pick({ clientX: x, clientY: y })?.id === fid) hits.push([x, y]);
+    if (!hits.length) return null;
+    const cx = hits.reduce((s, h) => s + h[0], 0) / hits.length, cy = hits.reduce((s, h) => s + h[1], 0) / hits.length;
+    return hits.sort((a, b) => Math.hypot(a[0] - cx, a[1] - cy) - Math.hypot(b[0] - cx, b[1] - cy))[0];
+  }, FID);
+  console.log('flow pos', lp);
+  if (lp) { await moveTo(lp[0], lp[1], 20); await wait(6); await click(); await wait(10); }
+  const hasCard = await ev(fid => HSS.stroeme.sel === fid && !!document.querySelector('#flKarte [data-tour]'), FID);
+  console.log('card', hasCard);
+  if (hasCard) await clickEl('#flKarte [data-tour]', 18, 4);
+  else { await ev(() => __ov.click()); await ev(fid => HSS.stroeme.startFlussTour(fid), FID); await wait(4); }
   await moveTo(1700, 820, 20, false); await showCur(0);
   await at(S(37.2));
   await showCur(1);
@@ -145,14 +182,18 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   /* ===== Tagesablauf & Auslastung ===== */
   await at(S(38.6));
   await cap('Tagesablauf & Auslastung', 'Simulation über den Tag, Engpässe erkennen');
+  await ev(() => document.querySelector('#flKarte [data-fx]')?.click());
   await clickEl('#vFlow', 18, 4);
-  await moveToEl('#vwHome', 16); await wait(2); await click(false); await homeK(0.55, 1200); await wait(8);
-  await clickEl('#vNet', 16, 2, false); await setSel('#vNet', 'heat'); await wait(6);
-  await clickEl('#vwSim', 18, 6);
-  await ev(() => { const s = document.getElementById('tSpeed'); if (s) { s.value = '600'; s.dispatchEvent(new Event('change')); } });
+  await moveToEl('#vwHome', 16); await wait(2); await click(false); await homeK(0.36, 1200); await wait(6);
+  await clickEl('#vShell', 14, 2, false); await setSel('#vShell', 'transparent'); await wait(4);
+  await clickEl('#vwSim', 16, 4);
+  await ev(() => { HSS.player.setTime(8 * 60); const s = document.getElementById('tSpeed'); if (s) { s.value = '180'; s.dispatchEvent(new Event('change')); } });
+  await clickEl('#vNet', 16, 2, false); await setSel('#vNet', 'heat'); await ev(() => HSS.drawNet('heat', null)); await wait(6);
   await moveTo(1250, 650, 26, false);
+  perFrame = async () => orbit(0.1);
   await at(S(45.6));
-  await setSel('#vNet', 'aus');
+  perFrame = null;
+  await setSel('#vNet', 'aus'); await setSel('#vShell', 'massiv');
 
   /* ===== Etagen ===== */
   await at(S(46.2));
@@ -181,7 +222,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   /* ===== Abspann ===== */
   await capOff(); await showCur(0);
   const tn = await ev(() => __vt());
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Logistikmodell 3D</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
+  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
   perFrame = async () => orbit(-0.12);
   await at(TOTAL);
   await b.close(); console.log('done (end)', OUT);
