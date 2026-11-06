@@ -214,8 +214,11 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
 
   /* ===== Flächenplan ===== */
   await cap('Flächenplan', 'Nutzungen und Flächen auf einen Blick');
-  await clickEl('#vZon', 22, 2); await homeK(0.5, 1500); await wait(4);
-  perFrame = async () => orbit(0.12);
+  await clickEl('#vZon', 22, 2);
+  // Tiefenpuffer genauer: Kamera-near 0,1 m reicht auf ~400 m Abstand nur für ~10 cm; die Farbflächen liegen 0,2–0,3 m unter Dach/Decke und flackern sonst beim Drehen
+  const nearFix = () => ev(() => { const c = HSS.s3.camera; if (c.near < 20) { c.near = 20; c.updateProjectionMatrix(); } });
+  await nearFix(); await homeK(0.5, 1500); await wait(4);
+  perFrame = async () => { await nearFix(); await orbit(0.12); };
   await moveTo(1300, 700, 24, false);
   await at(S(56.4));
   perFrame = null;
@@ -224,7 +227,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   await capOff(); await showCur(0);
   const tn = await ev(() => __vt());
   await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
-  perFrame = async () => orbit(-0.12);
+  perFrame = async () => { await nearFix(); await orbit(-0.12); };
   await at(TOTAL);
   await b.close(); console.log('done (end)', OUT);
 })();
