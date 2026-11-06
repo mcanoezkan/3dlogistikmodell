@@ -25,7 +25,8 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
     if (f >= TO) { await b.close(); console.log('done', OUT, FROM, TO, ((Date.now() - t0) / 1000).toFixed(0) + 's'); process.exit(0); }
     if (perFrame) await perFrame(f);
     const capt = f >= FROM && (f - FROM) % EVERY === 0;
-    await ev(([d, nd]) => { window.__noDraw = nd; __step(d); }, [DT, !capt]);
+    const DRAWFROM = +(process.env.DRAWFROM || FROM);
+    await ev(([d, nd]) => { window.__noDraw = nd; __step(d); }, [DT, !(capt || f >= DRAWFROM)]);
     if (capt) {
       const r = await cdp.send('Page.captureScreenshot', { format: 'png', optimizeForSpeed: true });
       fs.writeFileSync(`${OUT}/f${String(f).padStart(4, '0')}.png`, Buffer.from(r.data, 'base64'));
