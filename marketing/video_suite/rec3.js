@@ -103,7 +103,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   await setCur(1500, 760, false);
 
   /* ===== 0–3,6 s: Titel ===== */
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Material-, Waren- und Personenflüsse in 3D</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
+  if (!process.env.NOCARDS) await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Klinikum Bielefeld-Mitte · Material-, Waren- und Personenflüsse in 3D</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
   perFrame = async () => orbit(0.16, 0.9992);
   await at(S(3.6));
   perFrame = null;
@@ -226,7 +226,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   /* ===== Abspann ===== */
   await capOff(); await showCur(0);
   const tn = await ev(() => __vt());
-  await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
+  if (!process.env.NOCARDS) await ev(([logo, t]) => __ov.card(`<img src="${logo}"><div class="t">Healthcare Simulation Suite</div><div class="line"></div><div class="s">Ströme verstehen · Engpässe finden · Varianten bewerten</div><div class="s2">UNITY Consulting &amp; Innovation</div>`, t + 200, t + 99999, 700, 1), [logo, tn]);
   perFrame = async () => { await nearFix(); await orbit(-0.12); };
   await at(TOTAL);
   await b.close(); console.log('done (end)', OUT);

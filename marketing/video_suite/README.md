@@ -3,7 +3,7 @@
 Ergebnisse im Ordner `marketing/`:
 
 - `HSS_Bielefeld_Demo_60s_Cartoon.mp4` – Darstellungsstil Cartoon
-- `HSS_Bielefeld_Demo_60s_Realistisch.mp4` – Darstellungsstil Realistisch
+- `HSS_Bielefeld_Demo_60s_Realistisch.mp4` – Darstellungsstil Realistisch, ohne Titel- und Abspannkarte (neutral, ohne Werbung; erzeugt mit `NOCARDS=1`)
 
   beide 1920×1080, 30 fps, H.264, genau 60,0 s, ohne Ton
 - `Klinikum_Bielefeld-Mitte_Ansicht.html` – Kunden-HTML („HTML-Ansicht“, nur ansehen, offline per Doppelklick)
