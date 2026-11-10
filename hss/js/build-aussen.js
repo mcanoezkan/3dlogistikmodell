@@ -23,6 +23,38 @@ HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / 
 const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f', sperrflaeche: '#4f5358' };
 HSS.FLAECHEN_FARBE = FL_COL;
 
+/* ---------- Gebäudegrundrisse auf dem Gelände ----------
+   In der Etagenansicht (EG und darüber) soll im Gebäude nur der Hallen-/Geschossboden zu sehen sein:
+   Gelände und Flächen (Grün, Platz, Parkplatz …) werden unter jedem Grundriss bis knapp unter die
+   Oberkante der Bodenplatte abgesenkt, Bäume und Sträucher werden im Grundriss nie gesetzt. */
+HSS.bauGrundrisse = (prj = HSS.project()) => {
+  const out = [];
+  for (const b of prj.buildings) for (const pt of b.parts) {
+    if (pt.stackOn || (pt.floorOffset || 0) > 0) continue;
+    const o = HSS.partFootprint(pt).outer; if (!o || o.length < 3) continue;
+    const nb = pt.basements || 0;
+    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - (nb > 0 ? 0.3 : 0.08) });
+  }
+  return out;
+};
+// tiefste Bodenhöhe unter (x, z), wenn der Punkt in einem Grundriss liegt (rand: Zuschlag in m), sonst null
+HSS.unterBau = (B, x, z, rand = 0) => {
+  let y = null;
+  for (const { o, q, y: yb } of B) {
+    if (x < q.x0 - rand || x > q.x1 + rand || z < q.z0 - rand || z > q.z1 + rand) continue;
+    if (G.pointIn([x, z], o) || (rand > 0 && o.some((c, i) => G.dist([x, z], G.closestOnSeg([x, z], c, o[(i + 1) % o.length]).pt) < rand))) y = y === null ? yb : Math.min(y, yb);
+  }
+  return y;
+};
+const etagenSicht = view => view && view.floor !== null && view.floor !== undefined && view.floor >= 0;
+// Höhen einer Geländeauflage unter Gebäuden absenken (nur in der Etagenansicht)
+const absenken = (g, view, B) => {
+  if (!etagenSicht(view)) return;
+  B = B || HSS.bauGrundrisse(); if (!B.length) return;
+  const pa = g.attributes.position;
+  for (let i = 0; i < pa.count; i++) { const y = HSS.unterBau(B, pa.getX(i), pa.getZ(i)); if (y !== null && pa.getY(i) > y) pa.setY(i, y); }
+};
+
 /* ---------- Gelände ---------- */
 HSS.buildTerrain = (view = {}) => {
   const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = t.niveaus?.length ? Math.min(420, Math.max(40, Math.round(S / 2.4))) : Math.min(160, Math.max(40, Math.round(S / 4)));
@@ -34,6 +66,7 @@ HSS.buildTerrain = (view = {}) => {
     const k = (Math.sin(x * 0.05) * Math.cos(z * 0.043) + 1) / 2; const c = c1.clone().lerp(c2, k * 0.6).lerp(c3, U.clamp(h / 30, 0, 0.4));
     col.push(c.r, c.g, c.b);
   }
+  absenken(g, view, null);
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.computeVertexNormals();
   const under = view.floor !== null && view.floor !== undefined && view.floor < 0;
   const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, transparent: under, opacity: under ? 0.25 : 1, depthWrite: !under });
@@ -161,10 +194,11 @@ HSS.buildPath = (p, view = {}) => {
 
 /* ---------- Flächen ---------- */
 HSS.areaPoly = a => { const hw = a.w / 2, hd = a.d / 2, r = U.rad(a.rot || 0); return [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(p => { const q = G.rot(p, r); return [q[0] + a.x, q[1] + a.z]; }); };
-const drapedRect = (a, yoff, color, rough = 0.95) => {
+const drapedRect = (a, yoff, color, rough = 0.95, view = null) => {
   const nx = Math.max(1, Math.round(a.w / 4)), nz = Math.max(1, Math.round(a.d / 4));
   const g = new THREE.PlaneGeometry(a.w, a.d, nx, nz); g.rotateX(-Math.PI / 2); g.rotateY(-U.rad(a.rot || 0)); g.translate(a.x, 0, a.z);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
+  absenken(g, view);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|' + rough, () => new THREE.MeshStandardMaterial({ color, roughness: rough, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
@@ -202,11 +236,12 @@ const verfeinern = (g, maxL = 2.5) => {
   const n = new THREE.BufferGeometry(); n.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); return n;
 };
 const uneben = () => { const t = HSS.project().terrain || {}; return !!(t.niveaus?.length || t.hills?.length || t.tilt?.pct); };
-const drapedPoly = (a, yoff, color) => {
+const drapedPoly = (a, yoff, color, view = null) => {
   const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
   let g = new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI / 2);
   if (uneben()) g = verfeinern(g);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
+  absenken(g, view);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|0.95', () => new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
@@ -238,9 +273,9 @@ const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
   if (!geos.length) return null;
   const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
 };
-function buildPolyArea(a, grp) {
+function buildPolyArea(a, grp, view = null) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
-  grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
+  grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col, view));
   const bb = G.bbox(a.poly), area = Math.abs(G.area(a.poly)), rnd = U.rng(U.hash(a.id));
   // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
   const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
@@ -261,19 +296,20 @@ HSS.buildArea = (a, view = {}) => {
   if (a.poly && a.poly.length >= 3 && (a.hoehe > 0 || a.kind === 'sperrflaeche')) {
     const col = a.color || FL_COL[a.kind] || '#c9d6b8', top = a.hoehe > 0 ? a.hoehe : 0;
     // Sperrflächen liegen auf Fahrbahnen (Wege +0,08 m über Gelände) – deshalb etwas höher
-    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col));
+    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col, view));
     if (a.kind === 'sperrflaeche') { const m = hatch(a, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + (top || 0.09) + 0.012, a.markWinkel ?? 45); if (m) grp.add(m); }
     return grp;
   }
-  if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp);
-  if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp);
+  if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp, view);
+  if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp, view);
   const r = U.rad(a.rot || 0);
   const W = (lx, lz) => { const q = G.rot([lx, lz], r); return [q[0] + a.x, q[1] + a.z]; };
   if (a.kind === 'parkplatz') {
-    grp.add(drapedRect(a, 0.05, '#64686d', 0.9));
+    grp.add(drapedRect(a, 0.05, '#64686d', 0.9, view));
+    const B = etagenSicht(view) ? HSS.bauGrundrisse() : [], frei = (x, z) => !B.length || HSS.unterBau(B, x, z, 0.5) === null;
     const L = HSS.parkingLayout(a), lines = [];
     for (const [x, z, side] of L.stalls) {
-      for (const dx of [-L.sw / 2, L.sw / 2]) { const p = W(x + dx, z); const g = new THREE.BoxGeometry(0.12, 0.02, L.sd * 0.95); g.rotateY(-r); g.translate(p[0], HSS.terrainH(p[0], p[1]) + 0.08, p[1]); lines.push(g); }
+      for (const dx of [-L.sw / 2, L.sw / 2]) { const p = W(x + dx, z); const g = new THREE.BoxGeometry(0.12, 0.02, L.sd * 0.95); g.rotateY(-r); if (!frei(p[0], p[1])) continue; g.translate(p[0], HSS.terrainH(p[0], p[1]) + 0.08, p[1]); lines.push(g); }
     }
     if (lines.length) grp.add(new THREE.Mesh(mergeGeometries(lines), LM('#f4f4f4', 'lack')));
     // parkende Fahrzeuge nach Belegung
@@ -284,6 +320,7 @@ HSS.buildArea = (a, view = {}) => {
       if (rnd() > occ) continue;
       const id = models[Math.floor(rnd() * models.length)], p = W(x, z);
       const col = colors[Math.floor(rnd() * colors.length)];
+      if (!frei(p[0], p[1])) continue;
       const car = HSS.library.build(id, null, { noShadow: false, color: col });
       car.position.set(p[0], HSS.terrainH(p[0], p[1]) + 0.05, p[1]); car.rotation.y = -r + (side ? Math.PI : 0) + Math.PI / 2 * 0 + (rnd() - 0.5) * 0.05;
       car.rotation.y = -r + (side ? 0 : Math.PI);
@@ -291,15 +328,16 @@ HSS.buildArea = (a, view = {}) => {
     }
     a._capacity = L.stalls.length;
   } else if (a.kind === 'gruen') {
-    grp.add(drapedRect(a, 0.03, a.color || '#9cc07f'));
+    grp.add(drapedRect(a, 0.03, a.color || '#9cc07f', 0.95, view));
+    const B = HSS.bauGrundrisse(); // keine Bäume und Sträucher in Gebäuden
     const rnd = U.rng(U.hash(a.id)), dens = a.density ?? 1.0;
     const nTrees = Math.round(a.w * a.d / 220 * dens), nShrub = Math.round(a.w * a.d / 120 * dens);
-    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
+    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s0 = rnd(); if (HSS.unterBau(B, p[0], p[1], 2.5) !== null) continue; const s = U.lerp(scaleMin, scaleMax, s0); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
     place(rnd() > 0.3 ? 'gruen.baum.laub' : 'gruen.baum.klein', nTrees, 0.7, 1.15); place('gruen.strauch', nShrub, 0.6, 1.3);
   } else if (a.kind === 'wasser') {
-    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); grp.add(m);
+    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1, view); grp.add(m);
   } else {
-    grp.add(drapedRect(a, 0.04, a.color || '#d4cfc4'));
+    grp.add(drapedRect(a, 0.04, a.color || '#d4cfc4', 0.95, view));
   }
   return grp;
 };

@@ -121,16 +121,19 @@ S3.rebuild = (scope = 'all') => {
   if (umg === 'nah') { let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity; for (const b of prj.buildings) if (!b.umgebung) for (const pt of b.parts) { x0 = Math.min(x0, pt.x); x1 = Math.max(x1, pt.x); z0 = Math.min(z0, pt.z); z1 = Math.max(z1, pt.z); } nah = isFinite(x0) ? [x0 - 140, z0 - 140, x1 + 140, z1 + 140] : null; }
   const zeig = (u, x, z) => !u || umg === 'alle' || (umg === 'nah' && (!nah || (x >= nah[0] && x <= nah[2] && z >= nah[1] && z <= nah[3])));
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
-  const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor !== null && V.floor < 0 ? 'ug' : 'og') + '|' + V.shell;
+  const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor === null || V.floor === undefined ? 'og' : V.floor < 0 ? 'ug' : 'eg') + '|' + V.shell;
+  // Etagenansicht: Gelände und Flächen werden unter den Gebäuden abgesenkt – Schlüssel hängt dann von den Grundrissen ab
+  const egSicht = V.floor !== null && V.floor !== undefined && V.floor >= 0;
+  let gkey = ''; if (egSicht) { let s = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) s += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.basements || 0) + ',' + (pt.baseOffset || 0) + ',' + (pt.baseY ?? '') + ',' + (pt.shape === 'poly' ? JSON.stringify(pt.poly || []) : pt.shape) + ';'; gkey = '|g' + U.hash(s); }
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
-  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
+  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length + gkey, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
     clear(L.paths); for (const p of prj.paths) { if (!zeig(p.umgebung, p.points[0]?.[0], p.points[0]?.[1])) continue; const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
     // Bepflanzte Flächen hängen von den Gebäuden ab (keine Bäume in Gebäuden)
     let bs = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) bs += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.shape === 'poly' ? (pt.poly || []).length : pt.shape) + ';';
     const bkey = '|b' + U.hash(bs), TREES = { park: 1, gruen: 1, wald: 1, wohngebiet: 1, friedhof: 1 };
-    clear(L.areas); for (const a of prj.areas) { if (!zeig(a.umgebung, a.x, a.z)) continue; const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    clear(L.areas); for (const a of prj.areas) { if (!zeig(a.umgebung, a.x, a.z)) continue; const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : '') + gkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);

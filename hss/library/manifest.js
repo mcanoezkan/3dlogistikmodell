@@ -13,6 +13,7 @@ window.HSS_LIBRARY_FILES = [
   'einrichtung.js',
   'klinik-plus.js',
   'fabrik.js',
+  'produktionsmodule.js',
   'wohnen.js'
 ];
 (function () {

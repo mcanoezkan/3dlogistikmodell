@@ -15,6 +15,15 @@ python3 tools/build_einzeldatei.py          # baut alle drei Einzeldateien (oder
 python3 start.py fabrik                     # Entwicklungsstand im Browser (auch: home, ohne Angabe = Healthcare)
 ```
 
+**Fabric Planning Suite 1.2 – Produktionsmodule (Motorenwerk)**: Neue Bibliothekssektion **Produktionsmodule** mit Größen im Maßstab eines Motorenwerks (Horizontal-BAZ ca. 2,8 × 5,6 × 3,2 m, Taktlänge der Montagelinie 3,0 m, Werkstückträger 0,8 × 0,8 m):
+
+- **Produktionsinseln**: Fertigungsinsel Zylinderkopf (2 BAZ, Roboter, Be-/Entladeband, Schutzzaun, Waschen, SPC-Messplatz, Schaltschränke, KSS, Späne), Fertigungsinsel Kurbelwelle (Drehen, 2× Schleifen, Portallader), Montageinsel U-Form, Roboterzelle mit Wendetisch
+- **Produktionsstationen (Werkstattfertigung)**: Fräsen, Drehen, Honen, Messraum mit KMG, Motorenprüfstand (Heißtest-Zelle mit Leitwarte), Nacharbeit – jeweils mit Werkzeugschrank, Werkbank, Kran, Gitterboxen, Bodenmarkierung und Werker
+- **Produktionslinie aus Modulen**: Linienanfang, Montagestation (beid-/einseitig), Automatikstation, Prüfstation, Förderstrecken 3 m / 1,5 m, Drehmodul 90° rechts/links, Wendemodul 180° (Achsabstand 9 m mit Versorgungsgang), Linienende. Am gewählten Modul hängen **＋ Station**, **＋ Förderer**, **↱ / ↰ 90°**, **⮌ 180°** und **⏹ Ende** das nächste Modul passend an; **⚙ Linie** am Linienanfang baut eine ganze Linie (Anzahl Stationen, optional U-Form)
+- **Hardware**: Bearbeitungszentren, Drehmaschine, Schleifmaschine, KMG, Waschanlage, Roboter, Säulenschwenkkran, Durchlaufregal, Schrauber am Balancer, Motor, Motorblock, Zylinderkopf u. a.
+
+**Erdgeschoss-Ansicht korrigiert (alle Editionen)**: In der Etagenansicht zeigt jedes Gebäude seinen Boden; Gelände und Flächen (Grünfläche, Platz, Parkplatz …) unter dem Grundriss scheinen nicht mehr durch, Bäume und Sträucher werden in Gebäudegrundrissen nicht mehr gesetzt.
+
 **Besserer Import für alle Editionen** (Details und weitere Vorschläge in [`hss/docs/IMPORT.md`](hss/docs/IMPORT.md)): Multipolygone und Innenhöfe, `building:part` mit eigenen Höhen und Dachformen, begradigte und rechtwinklig gestellte Umrisse (Rechtecke mit Griffen), Hallen als hohe Eingeschosser, Dachformen aus `roof:shape`, Einzelbäume, amtliche Grundrisse und Flurstücke aus ALKIS NRW, Luftbild als Unterlage (DOP NRW/Bayern, Esri), Ersatzweg über die OSM-API, wenn Overpass ausfällt, und die Herkunft jeder Angabe im Inspektor.
 
 

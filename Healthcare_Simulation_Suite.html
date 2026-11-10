@@ -139,6 +139,8 @@ table.t input,table.t select{padding:2px 4px;font-size:11.5px}
 .cat{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
 .cat button{font-size:11px;padding:2px 8px}
 .cat button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cat.sub{margin-top:-2px;padding-left:8px;border-left:3px solid var(--accent)}
+.cat.sub button{font-size:10.5px}
 .drop{border:2px dashed var(--line);padding:12px;text-align:center;color:var(--muted);font-size:12px;margin:8px 0;cursor:pointer;background:#fbfcfd}
 .drop.over{border-color:var(--ok);background:#e6f5f1;color:#06614f}
 .months{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
@@ -4509,7 +4511,7 @@ HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
 // Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
 try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
-HSS.VERSION = '1.1.0';
+HSS.VERSION = '1.2.0';
 /* Edition: health (Healthcare Simulation Suite), fabrik (Fabric Planning Suite), home (Home Planning Suite).
    Gesetzt über window.HSS_EDITION (Einzeldatei) oder ?edition=… bzw. #fabrik/#home in der Adresse. */
 HSS.EDITION = (() => {
@@ -5253,7 +5255,7 @@ L.bootPacks = () => {
 })();
 
 </script>
-<script>window.HSS_LIBRARY_FILES = ["medizintechnik.js", "station.js", "logistik.js", "personen-fahrzeuge.js", "aussen.js", "erweiterung.js", "einrichtung.js", "klinik-plus.js", "fabrik.js", "wohnen.js"];</script>
+<script>window.HSS_LIBRARY_FILES = ["medizintechnik.js", "station.js", "logistik.js", "personen-fahrzeuge.js", "aussen.js", "erweiterung.js", "einrichtung.js", "klinik-plus.js", "fabrik.js", "produktionsmodule.js", "wohnen.js"];</script>
 <script>
 /* HSS-Bibliothekspaket · Medizintechnik
    Standardmaße: typische Außenmaße marktüblicher Geräte (gerundet, herstellerneutral).
@@ -5980,6 +5982,411 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Fabrik', ob
 
 </script>
 <script>
+/* HSS-Bibliothekspaket · Produktionsmodule (Motorenwerk)
+   Vollständig ausgestattete Produktionseinheiten im Maßstab eines Motorenwerks (Pkw-Motoren,
+   4-/6-Zylinder). Maße nach typischen Herstellerangaben gerundet:
+     Horizontal-BAZ (Kurbelgehäuse, Zylinderkopf)   ca. 2,8 × 5,6 m, 3,2 m hoch
+     Vertikal-BAZ 5-Achs                            ca. 2,8 × 3,2 m, 2,9 m hoch
+     CNC-Drehmaschine                               ca. 4,2 × 2,1 m, 2,1 m hoch
+     Kurbelwellen-Schleifmaschine                   ca. 5,0 × 3,0 m, 2,4 m hoch
+     Koordinatenmessgerät (Portal)                  ca. 2,0 × 3,4 m, 3,0 m hoch
+     Montagelinie: Taktlänge 3,0 m, Werkstückträger 0,8 × 0,8 m, Förderhöhe 0,85 m
+     Heißtest-Prüfstand (Zelle)                     ca. 7,0 × 5,0 m, 3,8 m hoch
+   Kategorien:
+     Produktionsmodule/Produktionsinseln     Fertigungs- und Montageinseln mit allem Umfeld
+     Produktionsmodule/Werkstattfertigung    Produktionsstationen (Werkstattprinzip)
+     Produktionsmodule/Linienmodule          Linie aus Modulen: gerade, Stationen, Drehmodule 90°/180°
+     Produktionsmodule/Ausrüstung            Einzelne Hardware (Motor, Kran, Regal, Schrauber …)
+   Linienmodule tragen "linie": { ein: [x, z], aus: [x, z, Richtung°] } (lokale Koordinaten, Fluss
+   in +x). Die Suite hängt damit am gewählten Modul passend das nächste an (Leiste am Objekt). */
+(function (K) {
+const WS = '#e6e9ec', HG = '#d5dade', DG = '#3b4450', AN = '#59636e', ST = '#8d969f', AL = '#c3c9d0', BL = '#2d6fa3', NV = '#144477',
+  GE = '#f2c94c', OR = '#f2994a', GR = '#0A967A', RT = '#c0392b', GU = '#2b3138', MO = '#a9b0b8', HO = '#c9a77c';
+
+/* ---------- Werkzeuge: Baugruppen verschieben/drehen, Umriss bestimmen ---------- */
+// Baugruppe um a (0/90/180/270°) drehen und nach (dx, dz) setzen – gleiche Drehrichtung wie Objekte der Suite
+const T = (parts, dx = 0, dz = 0, a = 0) => {
+  const r = a * Math.PI / 180, c = Math.round(Math.cos(r) * 1e6) / 1e6, s = Math.round(Math.sin(r) * 1e6) / 1e6;
+  const tp = q => [q[0] * c - q[2] * s + dx, q[1], q[0] * s + q[2] * c + dz];
+  return parts.map(p => { const n = Object.assign({}, p, { p: tp(p.p) }); if (p.piv) n.piv = tp(p.piv); if (a) n.ry = (p.ry || 0) - a; return n; });
+};
+// Ausdehnung eines Teils in x/z (konservativ) und Höhe
+const ext = p => {
+  let hx, hz, y0, y1;
+  if (p.t === 'box') { const ry = ((p.ry || 0) % 180 + 180) % 180; const sw = ry > 45 && ry < 135; hx = (sw ? p.s[2] : p.s[0]) / 2; hz = (sw ? p.s[0] : p.s[2]) / 2; if (ry % 90) { hx = hz = Math.hypot(p.s[0], p.s[2]) / 2; } y0 = p.p[1] - p.s[1] / 2; y1 = p.p[1] + p.s[1] / 2; }
+  else if (p.t === 'cyl' || p.t === 'cone' || p.t === 'cap') { const r = Math.max(p.r, p.rt || 0), h = p.h || 2 * p.r; if (p.ax) { const L = h / 2; const alongX = (p.ax === 'x') !== !!(p.ry && Math.abs(Math.sin(p.ry * Math.PI / 180)) > 0.7); hx = alongX ? L : r; hz = alongX ? r : L; y0 = p.p[1] - r; y1 = p.p[1] + r; } else { hx = hz = r; y0 = p.p[1] - h / 2; y1 = p.p[1] + h / 2; } }
+  else if (p.t === 'tor') { hx = hz = p.R + p.r; y0 = p.p[1] - p.R - p.r; y1 = p.p[1] + p.R + p.r; }
+  else { hx = hz = p.r || 0.1; y0 = p.p[1] - (p.r || 0.1); y1 = p.p[1] + (p.r || 0.1); }
+  return [p.p[0] - hx, p.p[0] + hx, p.p[2] - hz, p.p[2] + hz, y0, y1];
+};
+// Objekt aus Teilen: Umriss berechnen, auf die Mitte setzen (Ursprung = Mitte am Boden)
+const fit = parts => {
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, h = 0;
+  for (const p of parts) { const e = ext(p); x0 = Math.min(x0, e[0]); x1 = Math.max(x1, e[1]); z0 = Math.min(z0, e[2]); z1 = Math.max(z1, e[3]); h = Math.max(h, e[5]); }
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, R = v => Math.round(v * 100) / 100;
+  return { size: { w: R(x1 - x0), d: R(z1 - z0), h: R(h) }, parts: T(parts, -cx, -cz, 0), cx, cz };
+};
+const O = (id, name, cat, tags, parts, extra = {}) => { const f = fit(parts); return Object.assign({ id, name, category: 'Produktionsmodule/' + cat, tags, size: f.size, parts: f.parts }, extra); };
+
+/* ---------- Bausteine ---------- */
+const box = K.box, cyl = K.cyl;
+// Bodenmarkierung (Rahmen), gelb oder weiß
+const markierung = (w, d, c = GE, b = 0.08) => [box(0, 0.004, -d / 2 + b / 2, w, 0.008, b, c, 'lack'), box(0, 0.004, d / 2 - b / 2, w, 0.008, b, c, 'lack'), box(-w / 2 + b / 2, 0.004, 0, b, 0.008, d - 2 * b, c, 'lack'), box(w / 2 - b / 2, 0.004, 0, b, 0.008, d - 2 * b, c, 'lack')];
+const linie = (x0, z0, x1, z1, c = GE, b = 0.08) => { const L = Math.hypot(x1 - x0, z1 - z0); return box((x0 + x1) / 2, 0.004, (z0 + z1) / 2, L, 0.008, b, c, 'lack', { ry: -Math.atan2(z1 - z0, x1 - x0) * 180 / Math.PI }); };
+// Schutzzaun entlang einer Strecke (Pfosten ≤ 1,4 m, Gitterfelder halbtransparent)
+const zaun = (x0, z0, x1, z1, h = 2.2) => {
+  const L = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.ceil(L / 1.4)), ang = -Math.atan2(z1 - z0, x1 - x0) * 180 / Math.PI, P = [];
+  for (let i = 0; i <= n; i++) { const t = i / n; P.push(box(x0 + (x1 - x0) * t, h / 2, z0 + (z1 - z0) * t, 0.06, h, 0.06, GE, 'lack')); }
+  P.push(box((x0 + x1) / 2, 0.15 + (h - 0.3) / 2 + 0.02, (z0 + z1) / 2, L, h - 0.3, 0.02, '#3b4450', 'glas', { ry: ang, o: 0.32 }));
+  P.push(box((x0 + x1) / 2, h - 0.02, (z0 + z1) / 2, L, 0.04, 0.04, GE, 'lack', { ry: ang }));
+  return P;
+};
+const person = (top, o = {}) => K.person(Object.assign({ top, legs: '#2b3a4a', h: 1.76 }, o));
+const werker = (x, z, a = 0, o = {}) => T(person(o.top || '#2d5f8a', { vest: o.vest, cap: o.cap, hair: o.hair || '#3b2a1e', h: o.h || 1.76 }), x, z, a);
+// Bedienpult am Schwenkarm
+const pult = (x, y, z) => [box(x, y, z, 0.6, 0.48, 0.14, GU, 'kunststoff'), box(x, y + 0.04, z + 0.075, 0.5, 0.32, 0.01, '#14324f', 'bildschirm')];
+// Signalsäule (Andon) rot/gelb/grün
+const ampel = (x, z, y0 = 0, h = 2.4) => [cyl(x, y0 + h / 2, z, 0.025, h, ST, 'metall'), cyl(x, y0 + h + 0.06, z, 0.045, 0.12, GR, 'leucht'), cyl(x, y0 + h + 0.18, z, 0.045, 0.12, GE, 'leucht'), cyl(x, y0 + h + 0.30, z, 0.045, 0.12, RT, 'leucht')];
+// Schaltschrankreihe (je 0,8 × 0,6 × 2,2 m) entlang x
+const schaltschrank = (x, z, n = 3, a = 0) => { const P = []; for (let i = 0; i < n; i++) { const xi = (i - (n - 1) / 2) * 0.8; P.push(box(xi, 1.15, 0, 0.78, 2.1, 0.6, '#d5d9de', 'lack'), box(xi, 0.05, 0, 0.78, 0.1, 0.6, DG, 'matt'), box(xi + 0.3, 1.1, 0.305, 0.03, 0.18, 0.02, ST, 'chrom'), box(xi - 0.15, 1.85, 0.305, 0.06, 0.06, 0.01, GR, 'leucht')); } return T(P, x, z, a); };
+// Motorblock / Zylinderkopf / Motor komplett (Reihen-4-Zylinder)
+const motorblock = (x, y, z, a = 0) => T([box(0, y + 0.2, 0, 0.56, 0.4, 0.42, MO, 'metall', { rr: 0.03 }), ...[-0.18, -0.06, 0.06, 0.18].map(dx => cyl(dx, y + 0.405, 0, 0.042, 0.012, '#5a6573', 'metall'))], x, z, a);
+const zylinderkopf = (x, y, z, a = 0) => T([box(0, y + 0.07, 0, 0.5, 0.14, 0.26, AL, 'metall', { rr: 0.02 }), ...[-0.16, 0, 0.16].map(dx => box(dx, y + 0.145, 0, 0.06, 0.012, 0.18, '#7d8791', 'metall'))], x, z, a);
+const motor = (x, y, z, a = 0) => T([
+  box(0, y + 0.06, 0, 0.5, 0.12, 0.3, '#3b4450', 'metall'),                          // Ölwanne
+  box(0, y + 0.31, 0, 0.58, 0.38, 0.42, MO, 'metall', { rr: 0.03 }),               // Kurbelgehäuse
+  box(0, y + 0.58, 0, 0.56, 0.16, 0.36, AL, 'metall', { rr: 0.02 }),               // Zylinderkopf
+  box(0, y + 0.7, 0, 0.54, 0.08, 0.3, '#1f2328', 'kunststoff', { rr: 0.02 }),       // Ventildeckel
+  box(0, y + 0.52, 0.27, 0.46, 0.14, 0.12, '#2b3138', 'kunststoff'),                // Ansaugbrücke
+  cyl(-0.33, y + 0.3, 0, 0.11, 0.05, '#1f2328', 'metall', { ax: 'x' }),            // Riemenscheibe
+  box(-0.31, y + 0.42, 0, 0.04, 0.42, 0.34, '#4b5058', 'metall'),                   // Steuergehäuse
+  box(0, y + 0.42, -0.25, 0.4, 0.12, 0.08, '#8d6e63', 'metall')                     // Abgaskrümmer
+], x, z, a);
+// Werkstückträger mit Aufnahme
+const wt = (x, z, y = 0.85) => [box(x, y + 0.03, z, 0.8, 0.06, 0.8, '#7d8791', 'metall'), box(x - 0.25, y + 0.1, z, 0.06, 0.08, 0.5, '#2d6fa3', 'lack'), box(x + 0.25, y + 0.1, z, 0.06, 0.08, 0.5, '#2d6fa3', 'lack')];
+// Förderstrecke (Doppelgurt/Staurollen) entlang x von x0 bis x1 auf z, Breite b, Höhe h
+const foerder = (x0, x1, z = 0, b = 1.0, h = 0.85, o = {}) => {
+  const L = x1 - x0, xm = (x0 + x1) / 2, P = [];
+  for (const s of [-1, 1]) { P.push(box(xm, h - 0.06, z + s * (b / 2 - 0.05), L, 0.12, 0.1, AL, 'metall'), box(xm, h - 0.005, z + s * (b / 2 - 0.16), L, 0.03, 0.12, GU, 'gummi')); }
+  const nb = Math.max(2, Math.round(L / 1.5) + 1);
+  for (let i = 0; i < nb; i++) { const xi = x0 + 0.08 + (L - 0.16) * i / (nb - 1); for (const s of [-1, 1]) P.push(box(xi, (h - 0.12) / 2, z + s * (b / 2 - 0.05), 0.06, h - 0.12, 0.06, AL, 'metall')); P.push(box(xi, 0.12, z, 0.05, 0.05, b - 0.1, AL, 'metall')); }
+  P.push(box(xm, h - 0.17, z, L, 0.1, 0.16, '#59636e', 'metall'));
+  if (o.antrieb) P.push(box(x0 + 0.35, h - 0.3, z + b / 2 + 0.12, 0.3, 0.2, 0.2, BL, 'lack'));
+  return P;
+};
+// Durchlaufregal (Kanban, KLT) – Front in +z
+const durchlaufregal = (x, z, w = 2.6, a = 0, d = 1.0) => {
+  const P = [];
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(box(sx * (w / 2 - 0.03), 0.95, sz * (d / 2 - 0.03), 0.05, 1.9, 0.05, AL, 'metall'));
+  const n = Math.max(2, Math.round(w / 0.42));
+  [0.45, 0.95, 1.45].forEach((y, k) => {
+    P.push(box(0, y, 0, w, 0.03, d, '#9aa1aa', 'metall'));
+    for (let i = 0; i < n; i++) P.push(box(-w / 2 + (i + 0.5) * w / n, y + 0.1, 0.1, w / n - 0.04, 0.17, 0.4, k === 1 ? OR : '#2d7694', 'kunststoff'));
+  });
+  P.push(box(0, 1.85, 0.2, w, 0.06, 0.4, '#f4f6f8', 'leucht'));
+  return T(P, x, z, a);
+};
+// Schrauber am Balancer (von oben)
+const schrauber = (x, z, y0 = 2.6) => [cyl(x, y0 - 0.2, z, 0.06, 0.18, '#59636e', 'metall'), cyl(x, (y0 - 0.3 + 1.35) / 2, z, 0.006, y0 - 0.3 - 1.35, '#2b3138', 'metall'), cyl(x, 1.25, z, 0.035, 0.28, '#2b3138', 'kunststoff'), box(x, 1.42, z, 0.08, 0.08, 0.16, BL, 'kunststoff')];
+// Stationsportal über der Linie (Aluprofil, Beleuchtung, Schienen für Schrauber)
+const portal = (L = 3.0, b = 2.8, h = 2.7) => {
+  const P = [];
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(box(sx * (L / 2 - 0.1), h / 2, sz * b / 2, 0.08, h, 0.08, AL, 'metall'));
+  for (const sz of [-1, 1]) P.push(box(0, h, sz * b / 2, L - 0.1, 0.08, 0.08, AL, 'metall'));
+  for (const sx of [-1, 1]) P.push(box(sx * (L / 2 - 0.1), h, 0, 0.08, 0.08, b, AL, 'metall'));
+  P.push(box(0, h - 0.06, -0.55, L - 0.4, 0.04, 0.2, '#f4f6f8', 'leucht'), box(0, h - 0.06, 0.55, L - 0.4, 0.04, 0.2, '#f4f6f8', 'leucht'));
+  return P;
+};
+const matte = (x, z, w, d) => box(x, 0.008, z, w, 0.016, d, '#2b3138', 'gummi');
+// Gitterbox und KLT-Stapel
+const gitterbox = (x, z, voll = true, a = 0) => T([box(0, 0.08, 0, 1.24, 0.16, 0.84, '#8d969f', 'metall'), box(0, 0.55, 0, 1.2, 0.8, 0.8, '#8d969f', 'glas', { o: 0.45 }), ...(voll ? [box(0, 0.45, 0, 1.0, 0.55, 0.65, MO, 'metall')] : [])], x, z, a);
+const klt = (x, z, n = 4, c = '#2d7694') => Array.from({ length: n }, (_, i) => box(x, 0.16 + i * 0.31, z, 0.6, 0.29, 0.4, c, 'kunststoff', { rr: 0.01 }));
+// Späne-Kippbehälter
+const spaene = (x, z, a = 0) => T([box(0, 0.5, 0, 1.4, 0.8, 1.0, '#2d6fa3', 'lack'), box(0, 0.12, 0, 1.2, 0.2, 0.9, DG, 'metall'), box(0, 0.86, -0.1, 1.2, 0.08, 0.6, '#6d7680', 'metall')], x, z, a);
+// Horizontal-Bearbeitungszentrum (Front +z): 2,8 × 5,6 × 3,2 m mit Späneförderer hinten
+const hbaz = (x, z, a = 0, c = WS) => T([
+  box(0, 1.55, 0.2, 2.8, 3.1, 4.4, c, 'lack', { rr: 0.06 }), box(0, 0.05, 0.2, 2.86, 0.1, 4.46, DG, 'matt'),
+  box(0, 3.15, -0.6, 1.8, 0.15, 2.0, HG, 'lack'),
+  box(-0.3, 1.45, 2.41, 1.5, 1.6, 0.02, '#9fc4d8', 'glas'), box(-0.3, 1.45, 2.405, 1.6, 1.7, 0.01, '#4b5058', 'metall'),
+  box(0.95, 0.7, 2.42, 0.6, 1.4, 0.02, NV, 'lack'),
+  box(1.1, 1.55, 2.6, 0.06, 0.06, 0.4, AN, 'metall'), ...pult(1.1, 1.55, 2.8),
+  box(1.4, 2.95, 2.0, 0.08, 0.08, 0.08, GR, 'leucht'),
+  box(0.7, 0.55, -2.5, 0.9, 1.1, 1.0, '#59636e', 'metall'), box(0.7, 1.05, -2.75, 0.9, 0.12, 0.5, '#6d7680', 'metall'),   // Späneförderer
+  box(-0.7, 0.75, -2.35, 1.2, 1.5, 1.1, HG, 'lack'),                                                                         // KSS-/Hydraulikaggregat
+  box(-1.65, 1.2, -0.6, 0.5, 2.2, 1.6, '#d5d9de', 'lack')                                                                     // Schaltschrank an der Seite
+], x, z, a);
+// Vertikal-Bearbeitungszentrum 5-Achs (Front +z): 2,8 × 3,2 × 2,9 m
+const vbaz = (x, z, a = 0, c = WS) => T([
+  box(0, 1.4, 0, 2.6, 2.8, 2.6, c, 'lack', { rr: 0.06 }), box(0, 0.05, 0, 2.66, 0.1, 2.66, DG, 'matt'),
+  box(-0.2, 1.35, 1.31, 1.3, 1.3, 0.02, '#9fc4d8', 'glas'), box(-0.2, 1.35, 1.305, 1.4, 1.4, 0.01, '#4b5058', 'metall'),
+  ...pult(1.0, 1.5, 1.42), box(1.25, 2.75, 1.1, 0.07, 0.07, 0.07, GR, 'leucht'),
+  box(-1.55, 0.7, -0.4, 0.5, 1.4, 1.4, HG, 'lack'), box(0.6, 0.5, -1.55, 1.0, 1.0, 0.5, '#59636e', 'metall')
+], x, z, a);
+// CNC-Drehmaschine (Front +z): 4,2 × 2,1 × 2,1 m
+const drehmaschine = (x, z, a = 0) => T([
+  box(0, 1.0, 0, 3.6, 2.0, 1.8, WS, 'lack', { rr: 0.05 }), box(0, 0.05, 0, 3.66, 0.1, 1.86, DG, 'matt'),
+  box(-0.2, 1.15, 0.91, 1.8, 0.9, 0.02, '#9fc4d8', 'glas'), ...pult(1.45, 1.4, 1.02),
+  box(2.15, 0.5, 0, 0.7, 1.0, 1.4, '#59636e', 'metall'), box(1.7, 1.95, 0.7, 0.07, 0.07, 0.07, GR, 'leucht')
+], x, z, a);
+// Kurbelwellen-Schleifmaschine (Front +z): 5,0 × 3,0 × 2,4 m
+const schleifmaschine = (x, z, a = 0) => T([
+  box(0, 0.45, 0, 4.4, 0.9, 2.4, '#d5d9de', 'lack'), box(0, 1.55, -0.1, 4.4, 1.3, 2.2, WS, 'lack', { rr: 0.05 }),
+  box(0, 1.5, 1.01, 3.2, 0.8, 0.02, '#9fc4d8', 'glas'), cyl(0.9, 1.4, -0.3, 0.45, 0.12, '#9aa1aa', 'metall', { ax: 'z' }),
+  ...pult(2.0, 1.4, 1.12), box(0, 0.5, -1.45, 3.0, 1.0, 0.7, HG, 'lack'), box(2.05, 2.25, 0.9, 0.07, 0.07, 0.07, GR, 'leucht')
+], x, z, a);
+// Industrieroboter (6-Achs, ca. 120 kg Traglast) auf Sockel, Greifer zeigt nach +z
+const roboter = (x, z, a = 0, s = 1, c = OR) => T([
+  box(0, 0.25 * s, 0, 0.9 * s, 0.5 * s, 0.9 * s, DG, 'lack'), cyl(0, 0.62 * s, 0, 0.36 * s, 0.24 * s, c, 'lack'),
+  box(0, 0.95 * s, 0, 0.5 * s, 0.42 * s, 0.6 * s, c, 'lack'), box(0.18 * s, 1.55 * s, 0.05 * s, 0.22 * s, 1.1 * s, 0.3 * s, c, 'lack'),
+  box(0, 2.1 * s, 0.35 * s, 0.34 * s, 0.32 * s, 1.0 * s, c, 'lack'), box(0, 2.0 * s, 0.95 * s, 0.18 * s, 0.4 * s, 0.18 * s, c, 'lack'),
+  box(0, 1.76 * s, 0.95 * s, 0.26 * s, 0.1 * s, 0.26 * s, '#9aa1aa', 'chrom'), box(0, 1.65 * s, 0.95 * s, 0.06 * s, 0.14 * s, 0.2 * s, '#9aa1aa', 'chrom')
+], x, z, a);
+// Koordinatenmessgerät (Portal) auf Granit, 2,0 × 3,4 × 3,0 m
+const kmg = (x, z, a = 0) => T([
+  box(0, 0.4, 0, 1.6, 0.8, 3.0, '#4b5058', 'lack'), box(0, 0.85, 0, 1.5, 0.1, 2.9, '#2b2f33', 'matt'),
+  ...[-1, 1].map(s => box(s * 0.82, 1.9, 0.3, 0.16, 2.1, 0.3, WS, 'lack')), box(0, 2.95, 0.3, 1.9, 0.2, 0.3, WS, 'lack'),
+  box(0.2, 2.4, 0.3, 0.16, 1.0, 0.16, AL, 'metall'), cyl(0.2, 1.8, 0.3, 0.02, 0.2, '#9aa1aa', 'chrom'), motorblock(0, 0.9, -0.6)[0]
+], x, z, a);
+// Industrie-Waschanlage (Durchlauf, Front +z): 3,0 × 2,0 × 2,4 m
+const waschanlage = (x, z, a = 0) => T([box(0, 1.2, 0, 3.0, 2.4, 2.0, '#cfd8dc', 'lack', { rr: 0.04 }), box(0, 0.9, 1.01, 1.0, 0.8, 0.02, '#9fc4d8', 'glas'), cyl(1.1, 2.75, -0.5, 0.18, 0.7, '#9aa1aa', 'metall'), ...pult(1.1, 1.4, 1.1)], x, z, a);
+// Kühlschmierstoff-Anlage (Filter, Tank)
+const kss = (x, z, a = 0) => T([box(0, 0.75, 0, 2.6, 1.5, 1.2, BL, 'lack'), cyl(-0.8, 1.9, 0, 0.35, 0.8, '#9aa1aa', 'metall'), box(0.8, 1.6, 0, 0.6, 0.2, 0.8, '#59636e', 'metall'), box(0.6, 1.0, 0.61, 0.4, 0.3, 0.01, '#14324f', 'bildschirm')], x, z, a);
+// Messplatz (SPC) mit Messvorrichtung und Rechner
+const messplatz = (x, z, a = 0) => T([box(0, 0.88, 0, 1.6, 0.05, 0.8, '#5a6573', 'matt'), ...K.legs(1.55, 0.75, 0.86, 0.03, '#9aa1aa', 0.04), box(-0.35, 1.15, -0.05, 0.6, 0.5, 0.5, '#b8bec6', 'metall'), ...K.screen(0.45, 1.25, -0.28, 0.55, 0.36)], x, z, a);
+// Werkbank, Werkzeugschrank, Voreinstellgerät, Ablagetisch
+const werkbank = (x, z, a = 0, w = 2.0) => T([box(0, 0.9, 0, w, 0.05, 0.8, '#c9a77c', 'holz'), ...K.legs(w - 0.05, 0.75, 0.87, 0.03, BL, 0.05), box(w / 4, 0.45, 0, w * 0.4, 0.7, 0.7, BL, 'lack'), box(0, 1.45, -0.38, w, 1.0, 0.03, '#9aa1aa', 'metall')], x, z, a);
+const wzschrank = (x, z, a = 0) => T([box(0, 0.95, 0, 1.0, 1.9, 0.6, '#2d6fa3', 'lack'), ...[0.35, 0.6, 0.85, 1.1].map(y => box(0, y, 0.305, 0.94, 0.2, 0.01, '#3c80b6', 'lack')), box(0, 1.55, 0.305, 0.94, 0.6, 0.01, '#9fc4d8', 'glas')], x, z, a);
+const voreinstell = (x, z, a = 0) => T([box(0, 0.45, 0, 1.4, 0.9, 0.8, WS, 'lack'), box(0.3, 1.2, -0.2, 0.2, 0.6, 0.2, '#9aa1aa', 'metall'), ...K.screen(-0.35, 1.25, -0.1, 0.5, 0.36), cyl(0.3, 0.98, 0.1, 0.06, 0.12, '#9aa1aa', 'chrom')], x, z, a);
+const tisch = (x, z, w = 1.2, d = 0.8, a = 0) => T([box(0, 0.85, 0, w, 0.05, d, '#9aa1aa', 'metall'), ...K.legs(w - 0.05, d - 0.05, 0.83, 0.025, AN, 0.04)], x, z, a);
+// Säulenschwenkkran (500 kg, Ausladung r), Ausleger in +x
+const saeulenkran = (x, z, r = 3.0, h = 3.6, a = 0) => T([cyl(0, h / 2, 0, 0.12, h, GE, 'lack'), box(0, 0.05, 0, 0.8, 0.1, 0.8, DG, 'metall'), box(r / 2, h - 0.1, 0, r, 0.22, 0.14, GE, 'lack'), box(r * 0.65, h - 0.35, 0, 0.3, 0.3, 0.25, DG, 'lack'), cyl(r * 0.65, h - 1.05, 0, 0.01, 1.1, '#2b3138', 'metall'), box(r * 0.65, h - 1.65, 0, 0.12, 0.12, 0.12, GE, 'lack')], x, z, a);
+// Monitor auf Ständer (Werkerinformation)
+const infoTerminal = (x, z, a = 0) => T([cyl(0, 0.75, 0, 0.03, 1.5, AN, 'metall'), box(0, 0.02, 0, 0.5, 0.04, 0.4, DG, 'metall'), ...K.screen(0, 1.55, 0.03, 0.62, 0.4)], x, z, a);
+// Lichtgitter (Sicherheits-Lichtvorhang) als zwei Säulen
+const lichtgitter = (x, z, b = 1.2) => [box(x, 0.95, z - b / 2, 0.06, 1.9, 0.06, '#f2c94c', 'lack'), box(x, 0.95, z + b / 2, 0.06, 1.9, 0.06, '#f2c94c', 'lack'), ...[0.4, 0.75, 1.1, 1.45, 1.8].map(y => box(x, y, z, 0.012, 0.012, b - 0.1, '#e74c3c', 'leucht'))];
+
+/* ---------- Linienmodule (Fluss in +x, Förderer auf z = 0, Taktlänge 3,0 m) ---------- */
+const LL = 3.0;
+const motorAufWT = (x, z = 0) => [...wt(x, z), ...motor(x, 0.98, z)];
+// Linienmodul: Umriss wie bei allen Objekten auf die Mitte gesetzt, Anschlusspunkte (ein/aus) entsprechend verschoben
+const linieObj = (id, name, tags, parts, linie, extra = {}) => {
+  const f = fit(parts), R = v => Math.round(v * 1000) / 1000, mv = q => q && [R(q[0] - f.cx), R(q[1] - f.cz), ...q.slice(2)];
+  return Object.assign({ id, name, category: 'Produktionsmodule/Linienmodule', tags: ['Linie', 'Montagelinie', 'modular', ...tags], size: f.size, parts: f.parts, linie: { ein: mv(linie.ein), aus: mv(linie.aus), takt: LL } }, extra);
+};
+const stationManuell = (beid = true) => {
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0), ...portal(LL, 2.8, 2.7), ...schrauber(-0.6, -0.9), ...schrauber(0.6, 0.9)];
+  for (const s of beid ? [-1, 1] : [1]) {
+    P.push(matte(0, s * 1.25, LL - 0.2, 1.3), ...durchlaufregal(0, s * 2.45, 2.6, s > 0 ? 180 : 0), ...werker(s > 0 ? 0.3 : -0.3, s * 1.2, s > 0 ? 180 : 0, { vest: null }));
+    P.push(linie(-LL / 2, s * 1.9, LL / 2, s * 1.9, GE, 0.06));
+  }
+  P.push(...infoTerminal(1.25, 1.55, 180), ...ampel(-1.4, -1.45, 0, 2.3));
+  return P;
+};
+const stationEinseitig = () => {
+  // Förderer bei z = 0, Werker und Regal auf der +z-Seite; Modul reicht von z = −0,6 bis z = +3,0
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0), ...portal(LL, 1.6, 2.7).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] + 0.2] })), ...schrauber(0.5, 0.75)];
+  P.push(matte(0, 1.25, LL - 0.2, 1.3), ...durchlaufregal(0, 2.45, 2.6, 180), ...werker(0.2, 1.2, 180), ...ampel(-1.4, -0.45, 0, 2.3), linie(-LL / 2, 1.9, LL / 2, 1.9, GE, 0.06));
+  return P;
+};
+const stationRoboter = () => {
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0), ...roboter(0, -1.75, 0, 0.8), ...roboter(0, 1.75, 180, 0.8)];
+  for (const s of [-1, 1]) { P.push(...zaun(-LL / 2 + 0.05, s * 2.9, LL / 2 - 0.05, s * 2.9)); P.push(...zaun(-LL / 2 + 0.05, s * 0.65, -LL / 2 + 0.05, s * 2.9), ...zaun(LL / 2 - 0.05, s * 0.65, LL / 2 - 0.05, s * 2.9)); }
+  P.push(...lichtgitter(-LL / 2 + 0.05, 0, 1.25), ...lichtgitter(LL / 2 - 0.05, 0, 1.25));
+  P.push(box(1.0, 0.55, -2.4, 0.9, 1.1, 0.6, '#d5d9de', 'lack'), box(-0.9, 0.5, 2.45, 0.7, 1.0, 0.5, '#59636e', 'metall'), ...ampel(1.45, 2.95, 0, 2.2));
+  return P;
+};
+const stationPruef = () => {
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0)];
+  // Prüfglocke (Dichtheitsprüfung) über dem Motor, Hubportal
+  for (const sx of [-1, 1]) P.push(box(sx * 1.1, 1.5, 0, 0.16, 3.0, 0.5, '#d5d9de', 'lack'));
+  P.push(box(0, 2.95, 0, 2.4, 0.3, 0.6, '#d5d9de', 'lack'), box(0, 2.25, 0, 1.1, 0.8, 0.9, '#9fc4d8', 'glas', { o: 0.5 }), box(0, 2.67, 0, 1.2, 0.12, 1.0, '#59636e', 'metall'));
+  P.push(...schaltschrank(0, -1.6, 2), ...K.screen(0.9, 1.5, 1.05, 0.7, 0.45), cyl(0.9, 0.75, 1.08, 0.03, 1.5, AN, 'metall'), matte(0, 1.45, LL - 0.4, 1.0), ...werker(-0.3, 1.5, 180), ...ampel(1.4, -1.0, 0, 2.6));
+  P.push(...markierung(LL, 3.9).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] - 0.1] })));
+  return P;
+};
+const linienStart = () => {
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0, 0.85, { antrieb: true }), ...wt(0.4, 0), ...motorblock(0.4, 0.98, 0)];
+  P.push(...saeulenkran(-1.0, -1.6, 2.6, 3.8, 75), ...gitterbox(-0.6, -2.6, true), ...gitterbox(0.9, -2.6, true), ...werker(-0.5, 1.2, 180), matte(0, 1.25, LL - 0.2, 1.3), ...infoTerminal(1.2, 1.6, 180), ...ampel(-1.4, 0.65, 0, 2.3));
+  P.push(box(-1.42, 0.98, 0, 0.1, 0.3, 0.9, '#2d6fa3', 'lack'));  // Anschlag/Endplatte
+  return P;
+};
+const linienEnde = () => {
+  const P = [...foerder(-LL / 2, LL / 2, 0, 1.0, 0.85, { antrieb: true }), ...motorAufWT(-0.5)];
+  P.push(...saeulenkran(1.0, -1.6, 2.6, 3.8, 105), box(0.6, 0.35, -2.6, 1.6, 0.7, 1.2, '#59636e', 'metall'), ...motor(0.25, 0.7, -2.6), ...motor(0.95, 0.7, -2.6));
+  P.push(...werker(0.4, 1.2, 180), matte(0, 1.25, LL - 0.2, 1.3), ...ampel(1.4, 0.65, 0, 2.3), box(1.42, 0.98, 0, 0.1, 0.3, 0.9, '#2d6fa3', 'lack'));
+  return P;
+};
+// Drehmodul 90° (Hub-Dreh-Einheit / Eckumsetzer): Eingang von −x, Ausgang nach +z (rechts) oder −z (links)
+const dreh90 = s => {
+  const P = [box(0, 0.4, 0, 1.0, 0.8, 1.0, '#59636e', 'metall'), cyl(0, 0.83, 0, 0.48, 0.06, AL, 'metall', { seg: 24 }), cyl(0, 0.87, 0, 0.42, 0.02, GU, 'gummi', { seg: 24 }), ...wt(0, 0, 0.88), box(0.45, 0.6, -s * 0.45, 0.2, 0.3, 0.2, BL, 'lack'), ...ampel(0.48, -s * 0.48, 0, 1.5)];
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(box(sx * 0.48, 0.4, sz * 0.48, 0.06, 0.8, 0.06, AL, 'metall'));
+  return P;
+};
+// Wendemodul 180° (U-Umsetzer, Achsabstand 9,0 m = 3 m Versorgungsgang zwischen den Regalen): Eingang bei z = −4,5, Ausgang bei z = +4,5 nach −x
+const wende180 = () => {
+  const P = [];
+  for (const sz of [-4.5, 4.5]) P.push(box(0, 0.4, sz, 1.0, 0.8, 1.0, '#59636e', 'metall'), cyl(0, 0.83, sz, 0.48, 0.06, AL, 'metall', { seg: 24 }));
+  P.push(...T(foerder(-4.0, 4.0, 0, 1.0), 0, 0, 90), ...wt(0, 0, 0.88), ...wt(0, -4.5, 0.88), box(0.45, 0.6, -4.95, 0.2, 0.3, 0.2, BL, 'lack'), box(0.45, 0.6, 4.95, 0.2, 0.3, 0.2, BL, 'lack'));
+  return P;
+};
+
+const LINIE = [
+  linieObj('pm.linie.foerder3', 'Linienmodul Förderstrecke 3,0 m (Puffer, 1 Motor)', ['Förderband', 'Puffer', 'gerade'], [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0.6)], { ein: [-1.5, 0], aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.foerder15', 'Linienmodul Förderstrecke 1,5 m', ['Förderband', 'gerade'], foerder(-0.75, 0.75, 0, 1.0), { ein: [-0.75, 0], aus: [0.75, 0, 0] }),
+  linieObj('pm.linie.station.manuell', 'Montagestation manuell, beidseitig (Takt 3,0 m)', ['Station', 'Montage', 'Werker', 'Schrauber'], stationManuell(true), { ein: [-1.5, 0], aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.station.einseitig', 'Montagestation manuell, einseitig (Takt 3,0 m)', ['Station', 'Montage', 'Werker'], stationEinseitig(), { ein: [-1.5, 0], aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.station.roboter', 'Automatikstation Roboter-Verschraubung (eingezäunt)', ['Station', 'Roboter', 'Automation', 'Schrauben'], stationRoboter(), { ein: [-1.5, 0], aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.station.pruef', 'Prüfstation Dichtheitsprüfung (in Linie)', ['Station', 'Prüfung', 'Qualität', 'Dichtheit'], stationPruef(), { ein: [-1.5, 0], aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.start', 'Linienanfang: Aufgabe Motorblock mit Schwenkkran', ['Start', 'Aufgabe', 'Kran'], linienStart(), { ein: null, aus: [1.5, 0, 0] }),
+  linieObj('pm.linie.ende', 'Linienende: Entnahme Motor mit Schwenkkran', ['Ende', 'Entnahme', 'Kran', 'Versand'], linienEnde(), { ein: [-1.5, 0], aus: null }),
+  linieObj('pm.linie.dreh90r', 'Drehmodul 90° rechts (Hub-Dreh-Einheit)', ['Drehmodul', 'Ecke', 'Kurve', 'Umsetzer'], dreh90(1), { ein: [-0.5, 0], aus: [0, 0.5, 90] }),
+  linieObj('pm.linie.dreh90l', 'Drehmodul 90° links (Hub-Dreh-Einheit)', ['Drehmodul', 'Ecke', 'Kurve', 'Umsetzer'], dreh90(-1), { ein: [-0.5, 0], aus: [0, -0.5, -90] }),
+  linieObj('pm.linie.wende180', 'Wendemodul 180° (U-Umsetzer, Achsabstand 9 m, 3 m Versorgungsgang)', ['Drehmodul', 'Wende', 'U-Linie', 'Umsetzer'], wende180(), { ein: [-0.5, -4.5], aus: [-0.5, 4.5, 180] })
+];
+
+/* ---------- Produktionsinseln ---------- */
+// Fertigungsinsel Zylinderkopf: 2 Horizontal-BAZ, Roboter mit Be-/Entladeband, Waschen, Messen, Schaltschränke, KSS, Späne
+const inselZylinderkopf = () => {
+  const P = [...hbaz(-2.3, -3.0, 0), ...hbaz(2.3, -3.0, 0), ...roboter(0, 1.0, 0, 1.0), box(0, 0.25, 1.0, 1.2, 0.5, 1.2, DG, 'lack')];
+  P.push(...foerder(-1.6, 1.6, 3.4, 0.9, 0.85).map(p => p), ...zylinderkopf(-0.8, 0.88, 3.4), ...zylinderkopf(0.5, 0.88, 3.4));
+  // Schutzzaun um den Roboterbereich, Tür mit Verriegelung
+  P.push(...zaun(-3.9, -0.15, -3.9, 4.2), ...zaun(3.9, -0.15, 3.9, 4.2), ...zaun(-3.9, 4.2, -1.8, 4.2), ...zaun(1.8, 4.2, 3.9, 4.2), box(3.9, 1.1, 2.4, 0.1, 0.16, 0.1, RT, 'lack'));
+  P.push(...lichtgitter(-1.75, 4.2, 0.2).slice(0, 2), ...[0.5, 1.0, 1.5].map(y => box(0, y, 4.2, 3.5, 0.012, 0.012, '#e74c3c', 'leucht')));
+  // Umfeld
+  P.push(...waschanlage(-6.2, 2.4, 90), ...messplatz(5.9, 3.0, 270), ...gitterbox(-2.0, 5.9, true), ...gitterbox(-0.5, 5.9, true), ...gitterbox(1.2, 5.9, false), ...gitterbox(2.7, 5.9, true));
+  P.push(...schaltschrank(0, -6.6, 4, 180), ...kss(-5.6, -4.0, 90), ...spaene(-4.7, -6.6), ...spaene(4.7, -6.6), ...ampel(4.2, 0.2, 0, 2.6), ...infoTerminal(5.6, 0.8, 270));
+  P.push(...werker(4.9, 4.6, 200), ...werker(-4.8, 4.4, 160, { top: '#3d5a80' }));
+  P.push(...markierung(15.6, 14.4).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] - 0.2] })), linie(-7.8, 7.0, 7.8, 7.0, '#f4f6f8', 0.1));
+  return P;
+};
+// Fertigungsinsel Kurbelwelle: Drehräumen, 2 Schleifmaschinen, Portallader, Waschen, Messen, Ein-/Auslaufband
+const inselKurbelwelle = () => {
+  const P = [...drehmaschine(-7.0, 0, 0), ...schleifmaschine(-1.5, -0.3, 0), ...schleifmaschine(4.3, -0.3, 0), ...waschanlage(9.4, 0.0, 0)];
+  // Portallader über allen Maschinen (Höhe 4,6 m)
+  for (const x of [-9.6, -4.2, 1.4, 7.0, 11.4]) for (const z of [-1.6, 2.0]) P.push(box(x, 2.4, z, 0.3, 4.8, 0.3, GE, 'lack'));
+  for (const z of [-1.6, 2.0]) P.push(box(0.9, 4.8, z, 21.4, 0.4, 0.3, GE, 'lack'));
+  P.push(box(-1.5, 5.05, 0.2, 1.0, 0.5, 3.8, DG, 'lack'), box(-1.5, 3.6, 1.0, 0.2, 2.2, 0.2, AN, 'metall'), box(-1.5, 2.5, 1.0, 0.5, 0.25, 0.3, '#9aa1aa', 'chrom'));
+  P.push(box(4.0, 5.05, 0.2, 1.0, 0.5, 3.8, DG, 'lack'));
+  // Ein- und Auslaufband mit Kurbelwellen
+  P.push(...foerder(-11.6, -9.0, 2.6, 0.7, 0.9), ...foerder(10.8, 13.4, 2.6, 0.7, 0.9));
+  for (const [x0, z] of [[-11.2, 2.6], [11.2, 2.6]]) for (let i = 0; i < 4; i++) P.push(cyl(x0 + i * 0.6, 1.0, z, 0.045, 0.55, '#7d8791', 'metall', { ax: 'z' }));
+  // Zaun, Messen, Schaltschränke, KSS, Späne
+  P.push(...zaun(-10.0, 3.4, 9.0, 3.4), ...zaun(-10.0, -3.6, 11.8, -3.6), ...messplatz(12.2, 5.0, 180), ...schaltschrank(-1.5, -4.4, 6, 180), ...kss(5.5, -5.2), ...spaene(-6.0, -5.2), ...spaene(9.4, -5.2));
+  P.push(...ampel(9.2, 3.8, 0, 2.6), ...infoTerminal(-8.5, 4.4, 180), ...werker(-10.2, 4.4, 180), ...werker(11.8, 4.2, 200, { top: '#3d5a80' }));
+  P.push(...markierung(26.4, 12.6).map(p => Object.assign({}, p, { p: [p.p[0] + 0.9, p.p[1], p.p[2] - 0.3] })));
+  return P;
+};
+// Montageinsel U-Form (Vormontage Zylinderkopf): Werkbänke im U, Durchlaufregale, Schrauber, 3 Werker
+const inselMontageU = () => {
+  const P = [];
+  // U: Rückseite (3 Plätze) und zwei Schenkel (je 2 Plätze), Werkstück wandert im U
+  for (const x of [-1.6, 0, 1.6]) P.push(...tisch(x, -1.6, 1.5, 0.8), ...zylinderkopf(x, 0.88, -1.6), ...schrauber(x, -1.75, 2.4));
+  for (const s of [-1, 1]) for (const z of [-0.2, 1.4]) P.push(...tisch(s * 2.8, z, 0.8, 1.5), ...zylinderkopf(s * 2.8, 0.88, z, 90), ...schrauber(s * 2.95, z, 2.4));
+  for (const x of [-1.6, 0, 1.6]) P.push(...durchlaufregal(x, -2.75, 1.4, 0, 0.9));
+  for (const s of [-1, 1]) P.push(...durchlaufregal(s * 3.95, 0.6, 2.8, s > 0 ? 270 : 90, 0.9));
+  // Galgen für Schrauber
+  for (const sx of [-3.3, 3.3]) P.push(box(sx, 1.25, -2.1, 0.08, 2.5, 0.08, AL, 'metall'));
+  P.push(box(0, 2.5, -2.1, 6.6, 0.08, 0.08, AL, 'metall'), box(0, 2.45, -1.6, 4.8, 0.04, 0.25, '#f4f6f8', 'leucht'));
+  P.push(matte(0, -0.6, 4.6, 1.2), matte(-1.8, 0.8, 1.0, 1.6), matte(1.8, 0.8, 1.0, 1.6));
+  P.push(...werker(0, -0.7, 180), ...werker(-1.9, 0.6, 90, { top: '#3d5a80' }), ...werker(1.9, 0.6, 270), ...infoTerminal(-3.2, 2.7, 180), ...ampel(3.3, 2.7, 0, 2.2));
+  P.push(...gitterbox(-1.2, 3.3), ...gitterbox(1.2, 3.3, false), ...markierung(8.8, 7.8).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] + 0.3] })));
+  return P;
+};
+// Roboterzelle Entgraten/Beschriften: Roboter, Drehtisch mit 2 Stationen, Absaugung, Laser
+const inselRoboterzelle = () => {
+  const P = [...roboter(0, -0.6, 0, 1.0), box(0, 0.25, -0.6, 1.0, 0.5, 1.0, DG, 'lack'), cyl(0, 0.45, 1.6, 0.9, 0.9, '#59636e', 'metall', { seg: 24 }), box(0, 0.95, 1.6, 0.12, 0.6, 1.8, '#9aa1aa', 'metall'), ...motorblock(0, 0.9, 1.15), ...motorblock(0, 0.9, 2.05)];
+  P.push(box(-2.0, 1.2, -1.9, 1.2, 2.4, 1.0, '#cfd8dc', 'lack'), cyl(-2.0, 2.8, -1.9, 0.2, 0.8, '#9aa1aa', 'metall'), box(2.0, 1.0, -1.9, 1.0, 2.0, 0.8, '#d5d9de', 'lack'));
+  P.push(...zaun(-2.8, -2.5, 2.8, -2.5), ...zaun(-2.8, -2.5, -2.8, 2.5), ...zaun(2.8, -2.5, 2.8, 1.4), box(0, 1.2, 2.55, 2.0, 2.2, 0.03, '#e8a33d', 'glas', { o: 0.45 }));
+  P.push(...schaltschrank(4.0, -1.2, 2, 270), ...ampel(2.95, 2.4, 0, 2.4), ...werker(0.3, 3.4, 180), ...markierung(7.2, 6.6).map(p => Object.assign({}, p, { p: [p.p[0] + 0.5, p.p[1], p.p[2] + 0.6] })));
+  return P;
+};
+
+/* ---------- Werkstattfertigung: Produktionsstationen mit Umfeld ---------- */
+const stationFraesen = () => [
+  ...vbaz(0, 0, 0), ...voreinstell(3.2, -0.6, 270), ...wzschrank(-2.6, -0.8, 90), ...werkbank(-2.4, 1.9, 90, 1.6),
+  ...gitterbox(0.0, 3.4, true), ...gitterbox(1.6, 3.4, false), ...spaene(2.6, 1.6, 90), ...saeulenkran(2.0, 2.6, 2.8, 3.6, 200),
+  ...tisch(-0.9, 2.2, 1.0, 0.6), ...werker(0.5, 2.0, 180), ...infoTerminal(-1.5, 3.4, 180), ...ampel(1.6, -1.6, 0, 2.5),
+  ...markierung(7.4, 6.4).map(p => Object.assign({}, p, { p: [p.p[0] + 0.2, p.p[1], p.p[2] + 0.9] }))
+];
+const stationDrehen = () => [
+  ...drehmaschine(0, 0, 0), ...wzschrank(-2.9, -0.3, 90), ...werkbank(2.6, 1.9, 270, 1.6), ...gitterbox(-1.6, 2.6, true), ...gitterbox(0, 2.9, false),
+  ...spaene(2.9, -0.4, 90), ...tisch(-2.6, 1.9, 1.0, 0.6), ...messplatz(1.4, 2.9, 180), ...werker(0.6, 1.6, 180), ...ampel(-2.1, -1.0, 0, 2.4),
+  ...markierung(7.2, 5.6).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] + 0.8] }))
+];
+const stationHonen = () => [
+  // Honmaschine Zylinderbohrungen (4,0 × 3,0 × 3,2 m) mit Beladung über Rollenbahn
+  box(0, 1.6, 0, 3.6, 3.2, 2.6, WS, 'lack', { rr: 0.05 }), box(0, 0.05, 0, 3.66, 0.1, 2.66, DG, 'matt'), box(-0.4, 1.5, 1.31, 2.0, 1.2, 0.02, '#9fc4d8', 'glas'), ...pult(1.4, 1.5, 1.42),
+  box(1.9, 3.0, -0.6, 0.07, 0.07, 0.07, GR, 'leucht'), ...kss(-3.2, -0.4, 90), ...foerder(-1.6, 1.6, 2.4, 0.9, 0.85), ...motorblock(-0.7, 0.88, 2.4), ...motorblock(0.7, 0.88, 2.4),
+  ...messplatz(3.2, 2.2, 270), ...gitterbox(-3.0, 3.0, true), ...werker(1.7, 3.3, 180), ...ampel(-1.9, -1.6, 0, 2.6),
+  ...markierung(8.4, 6.0).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] + 0.9] }))
+];
+const stationMessraum = () => [
+  // Messkabine (klimatisiert) mit KMG, Rechnerplatz, Teileablage
+  ...kmg(0, -0.2, 90), ...messplatz(-0.2, 2.0, 180), ...tisch(2.4, 1.6, 1.4, 0.7), ...motorblock(2.1, 0.88, 1.6), ...zylinderkopf(2.7, 0.88, 1.6), ...wzschrank(-2.8, 1.6, 90),
+  box(-3.5, 1.5, 0, 0.06, 3.0, 5.2, '#cfe3ee', 'glas', { o: 0.35 }), box(3.5, 1.5, 0, 0.06, 3.0, 5.2, '#cfe3ee', 'glas', { o: 0.35 }), box(0, 1.5, -2.6, 7.0, 3.0, 0.06, '#cfe3ee', 'glas', { o: 0.35 }),
+  box(-1.9, 1.5, 2.6, 3.2, 3.0, 0.06, '#cfe3ee', 'glas', { o: 0.35 }), box(2.6, 1.5, 2.6, 1.8, 3.0, 0.06, '#cfe3ee', 'glas', { o: 0.35 }),
+  ...[[-3.5, -2.6], [3.5, -2.6], [-3.5, 2.6], [3.5, 2.6], [0.3, 2.6], [1.7, 2.6]].map(([x, z]) => box(x, 1.5, z, 0.1, 3.0, 0.1, AN, 'metall')),
+  box(-2.6, 2.4, -2.45, 0.8, 0.4, 0.25, '#eef1f4', 'kunststoff'), ...werker(0.6, 2.0, 180, { top: '#eef1f4' })
+];
+const stationPruefstand = () => [
+  // Heißtest-Prüfstand: Prüfzelle (schallgedämmt) mit Motor auf Palette, Bremse, Abgasabsaugung; Leitwarte davor
+  box(0, 0.06, 0, 7.0, 0.12, 5.0, '#8d969f', 'matt'),
+  box(0, 1.9, -2.5, 7.0, 3.8, 0.2, '#b8c2cc', 'lack'), box(-3.5, 1.9, 0, 0.2, 3.8, 5.0, '#b8c2cc', 'lack'), box(3.5, 1.9, 0, 0.2, 3.8, 5.0, '#b8c2cc', 'lack'),
+  box(-1.4, 1.9, 2.5, 4.2, 3.8, 0.2, '#b8c2cc', 'lack'), box(2.45, 0.6, 2.5, 2.1, 1.2, 0.2, '#b8c2cc', 'lack'), box(2.45, 3.3, 2.5, 2.1, 1.0, 0.2, '#b8c2cc', 'lack'), box(2.45, 2.0, 2.5, 2.1, 1.6, 0.06, '#9fc4d8', 'glas'),
+  box(-0.6, 0.35, -0.2, 1.4, 0.5, 1.2, '#59636e', 'metall'), ...motor(-0.6, 0.6, -0.2), box(0.8, 0.6, -0.2, 0.9, 1.0, 0.9, BL, 'lack'), cyl(0.15, 0.95, -0.2, 0.06, 0.6, '#9aa1aa', 'chrom', { ax: 'x' }),
+  cyl(-0.6, 2.6, -1.0, 0.18, 2.4, '#9aa1aa', 'metall'), box(-0.6, 3.6, -1.7, 0.4, 0.4, 1.4, '#9aa1aa', 'metall'), box(2.6, 1.0, -1.8, 1.2, 2.0, 0.6, '#d5d9de', 'lack'),
+  // Leitwarte vor der Zelle
+  box(2.45, 0.9, 3.3, 2.2, 0.06, 0.8, '#5a6573', 'matt'), ...K.legs(2.15, 0.75, 0.88, 0.03, '#9aa1aa', 0.04), ...K.screen(1.9, 1.25, 3.0, 0.6, 0.38), ...K.screen(2.6, 1.25, 3.0, 0.6, 0.38), ...K.screen(3.3, 1.25, 3.0, 0.6, 0.38),
+  ...werker(2.4, 3.9, 180), ...schaltschrank(-1.6, 3.2, 3), ...ampel(3.7, 3.0, 0, 2.6), ...markierung(7.6, 7.2).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] + 1.0] }))
+];
+const stationNacharbeit = () => [
+  ...tisch(0, 0, 2.0, 1.0), ...motor(-0.3, 0.88, 0), ...saeulenkran(-1.9, -0.9, 2.6, 3.6, 20), ...wzschrank(1.8, -0.8, 0), ...werkbank(1.9, 1.3, 270, 1.6), ...infoTerminal(-0.9, 1.5, 180),
+  ...gitterbox(-1.2, 2.3, false), ...werker(0.3, 1.0, 180), ...ampel(-2.1, 1.6, 0, 2.2),
+  ...markierung(6.0, 5.0, RT)
+];
+
+/* ---------- Ausrüstung (einzeln) ---------- */
+const AUSR = [
+  O('pm.hw.hbaz', 'Horizontal-Bearbeitungszentrum (Kurbelgehäuse/Zylinderkopf)', 'Ausrüstung', ['BAZ', 'Fräsen', 'Zerspanung', 'Maschine'], hbaz(0, 0)),
+  O('pm.hw.vbaz', 'Vertikal-Bearbeitungszentrum 5-Achs', 'Ausrüstung', ['BAZ', 'Fräsen', 'Maschine'], vbaz(0, 0)),
+  O('pm.hw.drehmaschine', 'CNC-Drehmaschine mit Stangenlader', 'Ausrüstung', ['Drehen', 'Maschine'], drehmaschine(0, 0)),
+  O('pm.hw.schleifmaschine', 'Kurbelwellen-Schleifmaschine', 'Ausrüstung', ['Schleifen', 'Kurbelwelle', 'Maschine'], schleifmaschine(0, 0)),
+  O('pm.hw.kmg', 'Koordinatenmessgerät (Portal)', 'Ausrüstung', ['Messen', 'Qualität', 'KMG'], kmg(0, 0)),
+  O('pm.hw.waschanlage', 'Teilewaschanlage (Durchlauf)', 'Ausrüstung', ['Reinigung', 'Waschen'], waschanlage(0, 0)),
+  O('pm.hw.kss', 'Kühlschmierstoff-Anlage (Filter, Tank)', 'Ausrüstung', ['KSS', 'Medien'], kss(0, 0)),
+  O('pm.hw.roboter', 'Industrieroboter 6-Achs (120 kg) auf Sockel', 'Ausrüstung', ['Roboter', 'Automation'], roboter(0, 0)),
+  O('pm.hw.saeulenkran', 'Säulenschwenkkran (500 kg, 3 m Ausladung)', 'Ausrüstung', ['Kran', 'Hebezeug'], saeulenkran(0, 0, 3.0, 3.8)),
+  O('pm.hw.durchlaufregal', 'Durchlaufregal (Kanban, KLT)', 'Ausrüstung', ['Regal', 'KLT', 'Bereitstellung'], durchlaufregal(0, 0, 2.6)),
+  O('pm.hw.schrauber', 'EC-Schrauber am Balancer mit Galgen', 'Ausrüstung', ['Schrauber', 'Montage'], [box(0, 1.3, -0.4, 0.08, 2.6, 0.08, AL, 'metall'), box(0, 2.6, 0, 0.08, 0.08, 0.9, AL, 'metall'), box(0, 0.02, -0.4, 0.5, 0.04, 0.5, DG, 'metall'), ...schrauber(0, 0.3, 2.6), box(0.4, 1.1, -0.4, 0.3, 0.4, 0.2, '#2b3138', 'kunststoff')]),
+  O('pm.hw.motor', 'Motor komplett auf Werkstückträger', 'Ausrüstung', ['Motor', 'Werkstück'], [...wt(0, 0, 0), ...motor(0, 0.13, 0)]),
+  O('pm.hw.motorblock', 'Motorblock / Kurbelgehäuse (Rohteil)', 'Ausrüstung', ['Motor', 'Werkstück', 'Rohteil'], motorblock(0, 0, 0)),
+  O('pm.hw.zylinderkopf', 'Zylinderkopf', 'Ausrüstung', ['Motor', 'Werkstück'], zylinderkopf(0, 0, 0)),
+  O('pm.hw.motorgestell', 'Transportgestell Motoren (4 Plätze)', 'Ausrüstung', ['Ladungsträger', 'Motor', 'Versand'], [box(0, 0.35, 0, 2.4, 0.7, 1.2, '#59636e', 'metall', { o: 0.9 }), ...[-0.85, -0.3, 0.3, 0.85].flatMap(x => motor(x, 0.7, 0, 90))]),
+  O('pm.hw.spaene', 'Späne-Kippbehälter', 'Ausrüstung', ['Späne', 'Entsorgung'], spaene(0, 0)),
+  O('pm.hw.schaltschrank', 'Schaltschrankreihe (3 Felder)', 'Ausrüstung', ['Elektro', 'Steuerung'], schaltschrank(0, 0, 3)),
+  O('pm.hw.voreinstell', 'Werkzeug-Voreinstellgerät', 'Ausrüstung', ['Werkzeug', 'Messen'], voreinstell(0, 0)),
+  O('pm.hw.ampel', 'Signalsäule (Andon)', 'Ausrüstung', ['Andon', 'Lean'], ampel(0, 0, 0, 2.4)),
+  O('pm.hw.lichtgitter', 'Sicherheits-Lichtgitter', 'Ausrüstung', ['Sicherheit'], lichtgitter(0, 0, 1.2))
+];
+
+HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Produktionsmodule', objects: [
+  O('pm.insel.zylinderkopf', 'Fertigungsinsel Zylinderkopf (2 BAZ, Roboter, Waschen, Messen)', 'Produktionsinseln', ['Insel', 'Zerspanung', 'BAZ', 'Roboter', 'Zylinderkopf', 'Motor'], inselZylinderkopf(), { meta: { Maschinen: '2 Horizontal-BAZ, Roboter 120 kg, Waschanlage, SPC-Messplatz', Bedienung: '1–2 Werker je Schicht', Medien: 'KSS-Anlage, Späneförderer, Druckluft' } }),
+  O('pm.insel.kurbelwelle', 'Fertigungsinsel Kurbelwelle (Drehen, 2× Schleifen, Portallader)', 'Produktionsinseln', ['Insel', 'Schleifen', 'Drehen', 'Portallader', 'Kurbelwelle', 'Motor'], inselKurbelwelle(), { meta: { Maschinen: 'Drehräummaschine, 2 Schleifmaschinen, Waschanlage', Verkettung: 'Portallader 4,8 m, Ein-/Auslaufband' } }),
+  O('pm.insel.montage.u', 'Montageinsel U-Form (Vormontage Zylinderkopf, 3 Werker)', 'Produktionsinseln', ['Insel', 'Montage', 'U-Zelle', 'Lean', 'Zylinderkopf'], inselMontageU(), { meta: { Plätze: '7 Arbeitsplätze im U', Bereitstellung: 'Durchlaufregale (KLT) von außen' } }),
+  O('pm.insel.roboterzelle', 'Roboterzelle Entgraten/Beschriften mit Wendetisch', 'Produktionsinseln', ['Insel', 'Roboter', 'Entgraten', 'Laser', 'Automation'], inselRoboterzelle()),
+  O('pm.station.fraesen', 'Werkstattstation Fräsen (5-Achs-BAZ mit Arbeitsumfeld)', 'Werkstattfertigung', ['Station', 'Werkstatt', 'Fräsen', 'BAZ'], stationFraesen(), { meta: { Ausstattung: 'BAZ, Voreinstellgerät, Werkzeugschrank, Werkbank, Säulenschwenkkran, Gitterboxen, Späne' } }),
+  O('pm.station.drehen', 'Werkstattstation Drehen (CNC-Drehmaschine mit Umfeld)', 'Werkstattfertigung', ['Station', 'Werkstatt', 'Drehen'], stationDrehen()),
+  O('pm.station.honen', 'Werkstattstation Honen Zylinderbohrungen', 'Werkstattfertigung', ['Station', 'Werkstatt', 'Honen', 'Motorblock'], stationHonen()),
+  O('pm.station.messraum', 'Messstation: Messraum mit Koordinatenmessgerät', 'Werkstattfertigung', ['Station', 'Messen', 'Qualität', 'KMG'], stationMessraum()),
+  O('pm.station.pruefstand', 'Motorenprüfstand (Heißtest-Zelle mit Leitwarte)', 'Werkstattfertigung', ['Station', 'Prüfstand', 'Heißtest', 'Motor', 'Qualität'], stationPruefstand()),
+  O('pm.station.nacharbeit', 'Nacharbeitsstation Motor (mit Schwenkkran)', 'Werkstattfertigung', ['Station', 'Nacharbeit', 'Reparatur', 'Motor'], stationNacharbeit()),
+  ...LINIE,
+  ...AUSR
+] });
+})(HSS.library.kit);
+
+</script>
+<script>
 /* HSS-Bibliothekspaket · Wohnen: Möbel und Ausstattung für Wohnhäuser
    Wohnzimmer, Essen, Küche, Schlafen, Kinderzimmer, Arbeiten, Bad, Flur, Hauswirtschaft,
    Haustechnik, Garten und Terrasse. Maße nach üblichen Handelsgrößen (DIN 18011/18022/18040
@@ -6656,6 +7063,38 @@ HSS.FLAECHEN = { parkplatz: 'Parkplatz', gruen: 'Grünfläche', platz: 'Platz / 
 const FL_COL = { acker: '#e3d29a', wiese: '#b9d39a', wald: '#7fae72', wohngebiet: '#e6e1da', gewerbe: '#ddd8e3', park: '#a9cf8c', friedhof: '#b7c9a6', sport: '#9cc98b', wasser: '#8fc0dc', parkplatz: '#8b9096', platz: '#d4cfc4', gruen: '#9cc07f', sperrflaeche: '#4f5358' };
 HSS.FLAECHEN_FARBE = FL_COL;
 
+/* ---------- Gebäudegrundrisse auf dem Gelände ----------
+   In der Etagenansicht (EG und darüber) soll im Gebäude nur der Hallen-/Geschossboden zu sehen sein:
+   Gelände und Flächen (Grün, Platz, Parkplatz …) werden unter jedem Grundriss bis knapp unter die
+   Oberkante der Bodenplatte abgesenkt, Bäume und Sträucher werden im Grundriss nie gesetzt. */
+HSS.bauGrundrisse = (prj = HSS.project()) => {
+  const out = [];
+  for (const b of prj.buildings) for (const pt of b.parts) {
+    if (pt.stackOn || (pt.floorOffset || 0) > 0) continue;
+    const o = HSS.partFootprint(pt).outer; if (!o || o.length < 3) continue;
+    const nb = pt.basements || 0;
+    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - (nb > 0 ? 0.3 : 0.08) });
+  }
+  return out;
+};
+// tiefste Bodenhöhe unter (x, z), wenn der Punkt in einem Grundriss liegt (rand: Zuschlag in m), sonst null
+HSS.unterBau = (B, x, z, rand = 0) => {
+  let y = null;
+  for (const { o, q, y: yb } of B) {
+    if (x < q.x0 - rand || x > q.x1 + rand || z < q.z0 - rand || z > q.z1 + rand) continue;
+    if (G.pointIn([x, z], o) || (rand > 0 && o.some((c, i) => G.dist([x, z], G.closestOnSeg([x, z], c, o[(i + 1) % o.length]).pt) < rand))) y = y === null ? yb : Math.min(y, yb);
+  }
+  return y;
+};
+const etagenSicht = view => view && view.floor !== null && view.floor !== undefined && view.floor >= 0;
+// Höhen einer Geländeauflage unter Gebäuden absenken (nur in der Etagenansicht)
+const absenken = (g, view, B) => {
+  if (!etagenSicht(view)) return;
+  B = B || HSS.bauGrundrisse(); if (!B.length) return;
+  const pa = g.attributes.position;
+  for (let i = 0; i < pa.count; i++) { const y = HSS.unterBau(B, pa.getX(i), pa.getZ(i)); if (y !== null && pa.getY(i) > y) pa.setY(i, y); }
+};
+
 /* ---------- Gelände ---------- */
 HSS.buildTerrain = (view = {}) => {
   const prj = HSS.project(), t = prj.terrain, S = t.size || 500, n = t.niveaus?.length ? Math.min(420, Math.max(40, Math.round(S / 2.4))) : Math.min(160, Math.max(40, Math.round(S / 4)));
@@ -6667,6 +7106,7 @@ HSS.buildTerrain = (view = {}) => {
     const k = (Math.sin(x * 0.05) * Math.cos(z * 0.043) + 1) / 2; const c = c1.clone().lerp(c2, k * 0.6).lerp(c3, U.clamp(h / 30, 0, 0.4));
     col.push(c.r, c.g, c.b);
   }
+  absenken(g, view, null);
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.computeVertexNormals();
   const under = view.floor !== null && view.floor !== undefined && view.floor < 0;
   const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, transparent: under, opacity: under ? 0.25 : 1, depthWrite: !under });
@@ -6794,10 +7234,11 @@ HSS.buildPath = (p, view = {}) => {
 
 /* ---------- Flächen ---------- */
 HSS.areaPoly = a => { const hw = a.w / 2, hd = a.d / 2, r = U.rad(a.rot || 0); return [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(p => { const q = G.rot(p, r); return [q[0] + a.x, q[1] + a.z]; }); };
-const drapedRect = (a, yoff, color, rough = 0.95) => {
+const drapedRect = (a, yoff, color, rough = 0.95, view = null) => {
   const nx = Math.max(1, Math.round(a.w / 4)), nz = Math.max(1, Math.round(a.d / 4));
   const g = new THREE.PlaneGeometry(a.w, a.d, nx, nz); g.rotateX(-Math.PI / 2); g.rotateY(-U.rad(a.rot || 0)); g.translate(a.x, 0, a.z);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
+  absenken(g, view);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|' + rough, () => new THREE.MeshStandardMaterial({ color, roughness: rough, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
@@ -6835,11 +7276,12 @@ const verfeinern = (g, maxL = 2.5) => {
   const n = new THREE.BufferGeometry(); n.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); return n;
 };
 const uneben = () => { const t = HSS.project().terrain || {}; return !!(t.niveaus?.length || t.hills?.length || t.tilt?.pct); };
-const drapedPoly = (a, yoff, color) => {
+const drapedPoly = (a, yoff, color, view = null) => {
   const sh = new THREE.Shape(a.poly.map(p => new THREE.Vector2(p[0], -p[1])));
   let g = new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI / 2);
   if (uneben()) g = verfeinern(g);
   const pa = g.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, HSS.terrainH(pa.getX(i), pa.getZ(i)) + yoff);
+  absenken(g, view);
   g.computeVertexNormals();
   const mat = HSS.library.shared('flaeche|' + color + '|0.95', () => new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1 }));
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; m.userData = { kind: 'area', id: a.id }; return m;
@@ -6871,9 +7313,9 @@ const hatch = (a, y, ang = 45, step = 1.6, bw = 0.45) => {
   if (!geos.length) return null;
   const m = new THREE.Mesh(mergeGeometries(geos), LM('#f4f4f4', 'lack')); m.userData = { kind: 'area', id: a.id }; return m;
 };
-function buildPolyArea(a, grp) {
+function buildPolyArea(a, grp, view = null) {
   const col = a.color || FL_COL[a.kind] || '#c9d6b8';
-  grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col));
+  grp.add(drapedPoly(a, a.kind === 'wasser' ? 0.06 : a.kind === 'parkplatz' ? 0.05 : 0.025 + (a.lage || 0) * 0.004, col, view));
   const bb = G.bbox(a.poly), area = Math.abs(G.area(a.poly)), rnd = U.rng(U.hash(a.id));
   // keine Bäume in Gebäuden: Grundrisse, die die Fläche berühren
   const hits = []; for (const b of HSS.project().buildings) for (const pt of b.parts) { if (pt.stackOn) continue; const o = HSS.partFootprint(pt).outer, q = G.bbox(o); if (q.x1 < bb.x0 || q.x0 > bb.x1 || q.z1 < bb.z0 || q.z0 > bb.z1) continue; hits.push({ o, q }); }
@@ -6894,19 +7336,20 @@ HSS.buildArea = (a, view = {}) => {
   if (a.poly && a.poly.length >= 3 && (a.hoehe > 0 || a.kind === 'sperrflaeche')) {
     const col = a.color || FL_COL[a.kind] || '#c9d6b8', top = a.hoehe > 0 ? a.hoehe : 0;
     // Sperrflächen liegen auf Fahrbahnen (Wege +0,08 m über Gelände) – deshalb etwas höher
-    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col));
+    grp.add(top ? raisedPoly(a, col) : drapedPoly(a, a.kind === 'sperrflaeche' ? 0.09 : 0.04, col, view));
     if (a.kind === 'sperrflaeche') { const m = hatch(a, Math.min(...a.poly.map(p => HSS.terrainH(p[0], p[1]))) + (top || 0.09) + 0.012, a.markWinkel ?? 45); if (m) grp.add(m); }
     return grp;
   }
-  if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp);
-  if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp);
+  if (a.poly && a.poly.length >= 3) return buildPolyArea(a, grp, view);
+  if (['acker', 'wiese', 'wald', 'wohngebiet', 'gewerbe', 'park', 'friedhof', 'sport'].includes(a.kind)) return buildPolyArea(Object.assign({}, a, { poly: HSS.areaPoly(a) }), grp, view);
   const r = U.rad(a.rot || 0);
   const W = (lx, lz) => { const q = G.rot([lx, lz], r); return [q[0] + a.x, q[1] + a.z]; };
   if (a.kind === 'parkplatz') {
-    grp.add(drapedRect(a, 0.05, '#64686d', 0.9));
+    grp.add(drapedRect(a, 0.05, '#64686d', 0.9, view));
+    const B = etagenSicht(view) ? HSS.bauGrundrisse() : [], frei = (x, z) => !B.length || HSS.unterBau(B, x, z, 0.5) === null;
     const L = HSS.parkingLayout(a), lines = [];
     for (const [x, z, side] of L.stalls) {
-      for (const dx of [-L.sw / 2, L.sw / 2]) { const p = W(x + dx, z); const g = new THREE.BoxGeometry(0.12, 0.02, L.sd * 0.95); g.rotateY(-r); g.translate(p[0], HSS.terrainH(p[0], p[1]) + 0.08, p[1]); lines.push(g); }
+      for (const dx of [-L.sw / 2, L.sw / 2]) { const p = W(x + dx, z); const g = new THREE.BoxGeometry(0.12, 0.02, L.sd * 0.95); g.rotateY(-r); if (!frei(p[0], p[1])) continue; g.translate(p[0], HSS.terrainH(p[0], p[1]) + 0.08, p[1]); lines.push(g); }
     }
     if (lines.length) grp.add(new THREE.Mesh(mergeGeometries(lines), LM('#f4f4f4', 'lack')));
     // parkende Fahrzeuge nach Belegung
@@ -6917,6 +7360,7 @@ HSS.buildArea = (a, view = {}) => {
       if (rnd() > occ) continue;
       const id = models[Math.floor(rnd() * models.length)], p = W(x, z);
       const col = colors[Math.floor(rnd() * colors.length)];
+      if (!frei(p[0], p[1])) continue;
       const car = HSS.library.build(id, null, { noShadow: false, color: col });
       car.position.set(p[0], HSS.terrainH(p[0], p[1]) + 0.05, p[1]); car.rotation.y = -r + (side ? Math.PI : 0) + Math.PI / 2 * 0 + (rnd() - 0.5) * 0.05;
       car.rotation.y = -r + (side ? 0 : Math.PI);
@@ -6924,15 +7368,16 @@ HSS.buildArea = (a, view = {}) => {
     }
     a._capacity = L.stalls.length;
   } else if (a.kind === 'gruen') {
-    grp.add(drapedRect(a, 0.03, a.color || '#9cc07f'));
+    grp.add(drapedRect(a, 0.03, a.color || '#9cc07f', 0.95, view));
+    const B = HSS.bauGrundrisse(); // keine Bäume und Sträucher in Gebäuden
     const rnd = U.rng(U.hash(a.id)), dens = a.density ?? 1.0;
     const nTrees = Math.round(a.w * a.d / 220 * dens), nShrub = Math.round(a.w * a.d / 120 * dens);
-    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s = U.lerp(scaleMin, scaleMax, rnd()); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
+    const place = (lib, n, scaleMin, scaleMax) => { for (let i = 0; i < n; i++) { const p = W((rnd() - 0.5) * a.w * 0.9, (rnd() - 0.5) * a.d * 0.9); const d = HSS.library.get(lib); const s0 = rnd(); if (HSS.unterBau(B, p[0], p[1], 2.5) !== null) continue; const s = U.lerp(scaleMin, scaleMax, s0); const o = HSS.library.build(lib, { w: d.size.w * s, d: d.size.d * s, h: d.size.h * s }); o.position.set(p[0], HSS.terrainH(p[0], p[1]), p[1]); o.rotation.y = rnd() * 6.28; grp.add(o); } };
     place(rnd() > 0.3 ? 'gruen.baum.laub' : 'gruen.baum.klein', nTrees, 0.7, 1.15); place('gruen.strauch', nShrub, 0.6, 1.3);
   } else if (a.kind === 'wasser') {
-    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1); grp.add(m);
+    const m = drapedRect(a, 0.08, '#6fa3c4', 0.1, view); grp.add(m);
   } else {
-    grp.add(drapedRect(a, 0.04, a.color || '#d4cfc4'));
+    grp.add(drapedRect(a, 0.04, a.color || '#d4cfc4', 0.95, view));
   }
   return grp;
 };
@@ -7617,16 +8062,19 @@ S3.rebuild = (scope = 'all') => {
   if (umg === 'nah') { let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity; for (const b of prj.buildings) if (!b.umgebung) for (const pt of b.parts) { x0 = Math.min(x0, pt.x); x1 = Math.max(x1, pt.x); z0 = Math.min(z0, pt.z); z1 = Math.max(z1, pt.z); } nah = isFinite(x0) ? [x0 - 140, z0 - 140, x1 + 140, z1 + 140] : null; }
   const zeig = (u, x, z) => !u || umg === 'alle' || (umg === 'nah' && (!nah || (x >= nah[0] && x <= nah[2] && z >= nah[1] && z <= nah[3])));
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
-  const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor !== null && V.floor < 0 ? 'ug' : 'og') + '|' + V.shell;
+  const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor === null || V.floor === undefined ? 'og' : V.floor < 0 ? 'ug' : 'eg') + '|' + V.shell;
+  // Etagenansicht: Gelände und Flächen werden unter den Gebäuden abgesenkt – Schlüssel hängt dann von den Grundrissen ab
+  const egSicht = V.floor !== null && V.floor !== undefined && V.floor >= 0;
+  let gkey = ''; if (egSicht) { let s = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) s += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.basements || 0) + ',' + (pt.baseOffset || 0) + ',' + (pt.baseY ?? '') + ',' + (pt.shape === 'poly' ? JSON.stringify(pt.poly || []) : pt.shape) + ';'; gkey = '|g' + U.hash(s); }
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
-  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length, () => HSS.buildTerrain(V))); }
+  if (scope === 'all' || scope === 'terrain') { clear(L.terrain); L.terrain.add(cached('__terrain', tkey + '|' + prj.buildings.length + gkey, () => HSS.buildTerrain(V))); }
   if (scope === 'all' || scope === 'outdoor' || scope === 'terrain') {
     clear(L.paths); for (const p of prj.paths) { if (!zeig(p.umgebung, p.points[0]?.[0], p.points[0]?.[1])) continue; const g = cached(p.id, JSON.stringify(p, noPriv) + tkey, () => HSS.buildPath(p, V)); L.paths.add(g); S3.groups.set(p.id, g); }
     // Bepflanzte Flächen hängen von den Gebäuden ab (keine Bäume in Gebäuden)
     let bs = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) bs += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.shape === 'poly' ? (pt.poly || []).length : pt.shape) + ';';
     const bkey = '|b' + U.hash(bs), TREES = { park: 1, gruen: 1, wald: 1, wohngebiet: 1, friedhof: 1 };
-    clear(L.areas); for (const a of prj.areas) { if (!zeig(a.umgebung, a.x, a.z)) continue; const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : ''), () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
+    clear(L.areas); for (const a of prj.areas) { if (!zeig(a.umgebung, a.x, a.z)) continue; const g = cached(a.id, JSON.stringify(a, noPriv) + tkey + (TREES[a.kind] ? bkey : '') + gkey, () => HSS.buildArea(a, V)); L.areas.add(g); S3.groups.set(a.id, g); }
     if (cache.size > prj.paths.length + prj.areas.length + 50) { const live = new Set(prj.paths.map(p => p.id).concat(prj.areas.map(a => a.id), ['__terrain'])); for (const k of [...cache.keys()]) if (!live.has(k)) cache.delete(k); }
   }
   clear(L.build); clear(L.interior); clear(L.labels);
@@ -12134,9 +12582,12 @@ W.bibliothek = { name: 'Objektbibliothek', short: 'Bibliothek', step: '', sep: t
     const sel = UI.libSel && HSS.library.get(UI.libSel);
     el.innerHTML = `<input type="search" id="lQ" placeholder="Suchen: Bett, CT, Aufzug, Laterne …" value="${U.esc(q)}">
     <div class="cat"><button data-c="" class="${!cur ? 'on' : ''}">Alle (${HSS.library.all().length})</button>${cats.map(([c, n]) => `<button data-c="${U.esc(c)}" class="${cur.split('/')[0] === c ? 'on' : ''}">${U.esc(c)} (${n})</button>`).join('')}</div>
+    ${(() => { const top = cur.split('/')[0]; if (!top) return ''; const subs = [...new Set(HSS.library.all().filter(o => o.category.startsWith(top + '/')).map(o => o.category.split('/').slice(0, 2).join('/')))].sort(); return subs.length > 1 ? `<div class="cat sub">${subs.map(c => `<button data-c="${U.esc(c)}" class="${cur === c || cur.startsWith(c + '/') ? 'on' : ''}">${U.esc(c.split('/')[1])}</button>`).join('')}</div>` : ''; })()}
     ${cur.includes('/') ? `<div class="note">Filter: ${U.esc(cur)} <a href="#" id="lUp">alle ${U.esc(cur.split('/')[0])}</a></div>` : ''}
     ${sel ? `<div class="box"><div class="row nw"><img src="${HSS.library.thumb(sel.id)}" style="width:64px;height:64px"><div class="grow"><b>${U.esc(sel.name)}</b><div class="note">${U.esc(sel.category)}</div><div class="note">Standard: ${U.fmt(sel.size.w, 2)} × ${U.fmt(sel.size.d, 2)} × ${U.fmt(sel.size.h, 2)} m (B × T × H)</div></div></div>
       ${sel.meta?.quelle ? `<div class="note">Maßgrundlage: ${U.esc(sel.meta.quelle)}</div>` : ''}${sel.meta?.norm ? `<div class="note">Norm: ${U.esc(sel.meta.norm)}</div>` : ''}
+      ${Object.entries(sel.meta || {}).filter(([k, v]) => !['quelle', 'norm', 'licht'].includes(k) && typeof v === 'string').map(([k, v]) => `<div class="note"><b>${U.esc(k)}:</b> ${U.esc(v)}</div>`).join('')}
+      ${sel.linie ? `<div class="note"><b>Linienmodul:</b> nach dem Platzieren am Objekt <b>＋ Station</b>, <b>＋ Förderer</b>, <b>↱ / ↰ 90°</b> oder <b>⮌ 180°</b> wählen – das nächste Modul wird passend angehängt. Am Linienanfang baut <b>⚙ Linie</b> eine ganze Linie auf.</div>` : ''}
       <div class="actions"><button class="primary" id="lPlace">Platzieren</button><button id="lExp">Exportieren</button>${sel._source !== 'standard' ? '<button class="danger" id="lDel">Entfernen</button>' : ''}<span class="pill">${sel._source === 'standard' ? 'Standard' : 'eigenes Objekt'}</span></div></div>` : ''}
     <div class="libgrid">${items.slice(0, 240).map(o => `<div class="libitem ${UI.libSel === o.id ? 'on' : ''}" data-id="${U.esc(o.id)}" title="${U.esc(o.category)}"><img loading="lazy" data-thumb="${U.esc(o.id)}" alt=""><span>${U.esc(o.name)}</span><span class="dim">${U.fmt(o.size.w, 2)}×${U.fmt(o.size.d, 2)}×${U.fmt(o.size.h, 2)} m</span></div>`).join('')}</div>
     ${items.length > 240 ? `<p class="note">${items.length - 240} weitere – Suche verfeinern.</p>` : ''}
@@ -12996,6 +13447,10 @@ function bar(show) {
   if (sel.kind === 'part') h += B('rotL', '⟲', 'Um 15° nach links drehen (Umschalt: 90°)') + B('rotR', '⟳', 'Um 15° nach rechts drehen (Umschalt: 90°)') + B('fUp', '＋G', 'Ein Geschoss aufsetzen') + B('fDn', '－G', 'Oberstes Geschoss entfernen') + B('whole', M.moveWhole ? '▣ Ganzes Gebäude' : '▢ Nur Bauteil', 'Beim Ziehen das ganze Gebäude oder nur dieses Bauteil verschieben', M.moveWhole ? 'on' : '') + B('bridge', '⌒ Brücke', 'Brücke von diesem Gebäude zu einem anderen ziehen') + B('inside', '⌂ Innen', 'Etagen von innen ansehen');
   if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
+  if (sel.kind === 'object') { const o = U.byId(prj().objects, sel.id), d = o && HSS.library.get(o.lib); if (d?.linie) {
+    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:pm.linie.station.manuell', '＋ Station', 'Montagestation (3 m) am Ausgang anhängen (Umschalt: Automatikstation)') + B('ln:pm.linie.foerder3', '＋ Förderer', 'Förderstrecke 3 m anhängen (Umschalt: 1,5 m)') + B('ln:pm.linie.dreh90r', '↱ 90°', 'Drehmodul 90° nach rechts anhängen') + B('ln:pm.linie.dreh90l', '↰ 90°', 'Drehmodul 90° nach links anhängen') + B('ln:pm.linie.wende180', '⮌ 180°', 'Wendemodul 180° anhängen (Rücklauf parallel, Achsabstand 9 m mit Versorgungsgang)') + B('ln:pm.linie.ende', '⏹ Ende', 'Linienende (Entnahme) anhängen');
+    if (!d.linie.ein) h += B('lnBau', '⚙ Linie', 'Ganze Linie ab diesem Linienanfang aufbauen (Anzahl Stationen, Wenden)');
+  } }
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
   if (sel.kind === 'bridge') h += B('lvUp', '▲ Ebene', 'Brücke ein Geschoss höher') + B('lvDn', '▼ Ebene', 'Brücke ein Geschoss tiefer') + B('wide', '⇔ breiter', 'Brücke 1 m breiter (Umschalt: schmaler)');
   if (sel.kind === 'path' && sel.point !== undefined) h += B('delPt', '✕ Punkt', 'Gewählten Wegpunkt löschen');
@@ -13045,6 +13500,8 @@ function act(a, e) {
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
   if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
   if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
+  if (sel.kind === 'object' && a.startsWith('ln:')) { let lib = a.slice(3); if (big && lib === 'pm.linie.station.manuell') lib = 'pm.linie.station.roboter'; if (big && lib === 'pm.linie.foerder3') lib = 'pm.linie.foerder15'; const id = M.linieAnhaengen(sel.id, lib); if (id) S3.select({ kind: 'object', id }); return; }
+  if (sel.kind === 'object' && a === 'lnBau') { M.linieAufbauen(sel.id); return; }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
     if (a === 'rotL' || a === 'rotR') HSS.change('Weg drehen', p => { const q = U.byId(p.paths, sel.id), c = centroid(q.points), da = U.rad(a === 'rotL' ? -15 : 15); q.points = q.points.map(t => { const v = G.rot([t[0] - c[0], t[1] - c[1]], da); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); }, { scope: 'outdoor' });
@@ -13052,6 +13509,45 @@ function act(a, e) {
     if (a === 'delPt') { HSS.change('Wegpunkt löschen', p => { const q = U.byId(p.paths, sel.id); if (q.points.length > 2) q.points.splice(sel.point, 1); }, { scope: 'outdoor' }); S3.select({ kind: 'path', id: sel.id }); }
   }
 }
+/* ---------- Produktionslinie aus Modulen ----------
+   Linienmodule (Bibliothek „Produktionsmodule/Linienmodule“) haben Anschlusspunkte linie.ein / linie.aus in lokalen
+   Koordinaten (Fluss in +x, aus[2] = Richtungsänderung in Grad). Das neue Modul wird mit seinem Eingang auf den
+   Ausgang des gewählten Moduls gesetzt und um dessen Richtung gedreht – im selben Bezug (Etage bzw. Gelände). */
+const lnPort = (o, d, q) => { const s = o.size || d.size, kx = s.w / d.size.w, kz = s.d / d.size.d; return [q[0] * kx, q[1] * kz]; };
+M.linieNaechstes = (o, lib) => {
+  const d = HSS.library.get(o.lib), n = HSS.library.get(lib); if (!d?.linie?.aus || !n?.linie?.ein) return null;
+  const r = U.rad(o.rot || 0), a = lnPort(o, d, d.linie.aus), w = G.rot(a, r), ex = o.x + w[0], ez = o.z + w[1];
+  const rot = ((((o.rot || 0) + (d.linie.aus[2] || 0)) % 360) + 360) % 360, e = G.rot(n.linie.ein, U.rad(rot));
+  const q = { id: U.uid('obj'), lib, x: Math.round((ex - e[0]) * 1000) / 1000, z: Math.round((ez - e[1]) * 1000) / 1000, rot };
+  if (o.host) q.host = U.clone(o.host); if (o.yAbs !== undefined) q.yAbs = o.yAbs; if (o.y) q.y = o.y;
+  return q;
+};
+M.linieAnhaengen = (selId, lib) => {
+  const o = U.byId(prj().objects, selId); if (!o) return null;
+  const d = HSS.library.get(o.lib); if (!d?.linie?.aus) { HSS.ui.toast('Dieses Modul hat keinen Ausgang (Linienende)'); return null; }
+  const q = M.linieNaechstes(o, lib); if (!q) return null;
+  HSS.change('Linienmodul anhängen', p => p.objects.push(q), { scope: 'objects' });
+  HSS.ui.toast(HSS.library.get(lib).name + ' angehängt', 1800);
+  return q.id;
+};
+// Ganze Linie: Anfang → n Stationen (jede 4. automatisch, vorletzte Prüfstation), bei Bedarf in U-Form gewendet → Ende
+M.linieAufbauen = async (selId) => {
+  const o0 = U.byId(prj().objects, selId); if (!o0) return;
+  const nS = await HSS.ui.prompt('Anzahl Stationen der Linie (Takt 3,0 m)', '12'); if (nS === null) return;
+  const n = U.clamp(Math.round(+nS || 12), 1, 80);
+  const proReihe = await HSS.ui.prompt('Stationen je Reihe, danach wendet die Linie um 180° (0 = gerade Linie)', n > 10 ? String(Math.ceil(n / 2)) : '0'); if (proReihe === null) return;
+  const k = Math.max(0, Math.round(+proReihe || 0));
+  const seq = []; let inReihe = 0;
+  for (let i = 0; i < n; i++) {
+    if (k && inReihe === k) { seq.push('pm.linie.foerder15', 'pm.linie.wende180', 'pm.linie.foerder15'); inReihe = 0; }
+    seq.push(i === n - 2 && n > 3 ? 'pm.linie.station.pruef' : (i % 4 === 3 ? 'pm.linie.station.roboter' : 'pm.linie.station.manuell')); inReihe++;
+  }
+  seq.push('pm.linie.ende');
+  let last = null;
+  HSS.change('Linie aufbauen', p => { let cur = U.byId(p.objects, selId); for (const lib of seq) { const q = M.linieNaechstes(cur, lib); if (!q) break; p.objects.push(q); cur = q; last = q.id; } }, { scope: 'objects' });
+  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * 3, 0)} m Taktstrecke)`, 3500);
+  if (last) S3.select({ kind: 'object', id: last });
+};
 // Sitzung: alles seit der Auswahl (bzw. seit dem Platzieren) lässt sich mit ✗ verwerfen
 M.mark = () => { M._mark = HSS.undoLen(); };
 M.revert = () => {
@@ -17667,8 +18163,8 @@ const CFG = {
     osm: ['Werk aus OpenStreetMap', 'Firma oder Adresse suchen (DE/AT/CH) – Hallen, Tanks, Silos, Werksgelände und Umgebung werden angelegt'],
     hide: ['klinik', 'station'], raum: 'produktion', tour: false,
     raumtypen: ['wareneingang', 'lager_fab', 'hochregallager', 'kommissionierung', 'produktion', 'montage', 'qualitaet', 'verpackung', 'warenausgang', 'instandhaltung', 'leitstand', 'gefahrstoff', 'wertstoff', 'sozial', 'umkleide', 'buero', 'besprechung', 'wc', 'technik', 'flur', 'kern', 'zone'],
-    kats: ['Fabrik', 'Logistik & Transport', 'Fahrzeuge', 'Außenanlagen', 'Erschließung', 'Büro & Wartebereich', 'Technik', 'Ver- und Entsorgung', 'Personen'],
-    ausstattung: [['Fabrik/Maschinen', 'Maschinen'], ['Fabrik/Fördertechnik', 'Fördertechnik & Krane'], ['Fabrik/Lager & Regale', 'Regale & Ladungsträger'], ['Fabrik/Flurförderzeuge', 'Stapler & FTS'], ['Fabrik/Arbeitsplätze', 'Arbeitsplätze'], ['Fabrik/Sicherheit', 'Sicherheit & Halle'], ['Erschließung', 'Aufzüge, Treppen, Türen'], ['Fabrik/Personen', 'Personen'], ['Büro & Wartebereich', 'Büro']] },
+    kats: ['Produktionsmodule', 'Fabrik', 'Logistik & Transport', 'Fahrzeuge', 'Außenanlagen', 'Erschließung', 'Büro & Wartebereich', 'Technik', 'Ver- und Entsorgung', 'Personen'],
+    ausstattung: [['Produktionsmodule/Produktionsinseln', 'Produktionsinseln'], ['Produktionsmodule/Werkstattfertigung', 'Produktionsstationen (Werkstatt)'], ['Produktionsmodule/Linienmodule', 'Produktionslinie (Module)'], ['Produktionsmodule/Ausrüstung', 'Hardware Motorenwerk'], ['Fabrik/Maschinen', 'Maschinen'], ['Fabrik/Fördertechnik', 'Fördertechnik & Krane'], ['Fabrik/Lager & Regale', 'Regale & Ladungsträger'], ['Fabrik/Flurförderzeuge', 'Stapler & FTS'], ['Fabrik/Arbeitsplätze', 'Arbeitsplätze'], ['Fabrik/Sicherheit', 'Sicherheit & Halle'], ['Erschließung', 'Aufzüge, Treppen, Türen'], ['Fabrik/Personen', 'Personen'], ['Büro & Wartebereich', 'Büro']] },
   home: { titel: 'Home Planning Suite', icon: '🏠', neu: 'Neues Hausprojekt', demo: 'Musterhaus',
     lead: 'Häuser und Wohnungen in 3D planen – Haus mit Dachform ins Bild ziehen oder aus OpenStreetMap übernehmen, Räume aufziehen oder vorschlagen lassen, möblieren und mit Garten, Terrasse und Garage gestalten.',
     osm: ['Haus aus OpenStreetMap', 'Adresse eingeben (DE/AT/CH) – Haus mit Dach, Garage, Grundstück, Garten und Nachbarschaft werden angelegt'],
@@ -18011,7 +18507,7 @@ if (E !== 'health') {
     const cat = el.querySelector('.cat'); if (!cat) return;
     const b = document.createElement('button'); b.textContent = UI.libAlle ? '− nur ' + (E === 'home' ? 'Wohnen' : 'Fabrik') : '+ alle Pakete (auch Klinik)'; b.title = 'Weitere Bibliothekspakete der Suite ein- oder ausblenden';
     b.onclick = () => { UI.libAlle = !UI.libAlle; UI.libCat = ''; UI.renderPanel(); }; cat.appendChild(b);
-    const q = el.querySelector('#lQ'); if (q) q.placeholder = E === 'home' ? 'Suchen: Sofa, Bett, Küche, Dusche …' : 'Suchen: Regal, Stapler, CNC, Förderband …';
+    const q = el.querySelector('#lQ'); if (q) q.placeholder = E === 'home' ? 'Suchen: Sofa, Bett, Küche, Dusche …' : 'Suchen: Insel, Linie, Drehmodul, BAZ, Regal, Stapler …';
   };
 }
 // Raum aufziehen: nur die Raumtypen der Edition anbieten

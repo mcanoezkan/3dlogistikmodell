@@ -25,8 +25,8 @@ const CFG = {
     osm: ['Werk aus OpenStreetMap', 'Firma oder Adresse suchen (DE/AT/CH) – Hallen, Tanks, Silos, Werksgelände und Umgebung werden angelegt'],
     hide: ['klinik', 'station'], raum: 'produktion', tour: false,
     raumtypen: ['wareneingang', 'lager_fab', 'hochregallager', 'kommissionierung', 'produktion', 'montage', 'qualitaet', 'verpackung', 'warenausgang', 'instandhaltung', 'leitstand', 'gefahrstoff', 'wertstoff', 'sozial', 'umkleide', 'buero', 'besprechung', 'wc', 'technik', 'flur', 'kern', 'zone'],
-    kats: ['Fabrik', 'Logistik & Transport', 'Fahrzeuge', 'Außenanlagen', 'Erschließung', 'Büro & Wartebereich', 'Technik', 'Ver- und Entsorgung', 'Personen'],
-    ausstattung: [['Fabrik/Maschinen', 'Maschinen'], ['Fabrik/Fördertechnik', 'Fördertechnik & Krane'], ['Fabrik/Lager & Regale', 'Regale & Ladungsträger'], ['Fabrik/Flurförderzeuge', 'Stapler & FTS'], ['Fabrik/Arbeitsplätze', 'Arbeitsplätze'], ['Fabrik/Sicherheit', 'Sicherheit & Halle'], ['Erschließung', 'Aufzüge, Treppen, Türen'], ['Fabrik/Personen', 'Personen'], ['Büro & Wartebereich', 'Büro']] },
+    kats: ['Produktionsmodule', 'Fabrik', 'Logistik & Transport', 'Fahrzeuge', 'Außenanlagen', 'Erschließung', 'Büro & Wartebereich', 'Technik', 'Ver- und Entsorgung', 'Personen'],
+    ausstattung: [['Produktionsmodule/Produktionsinseln', 'Produktionsinseln'], ['Produktionsmodule/Werkstattfertigung', 'Produktionsstationen (Werkstatt)'], ['Produktionsmodule/Linienmodule', 'Produktionslinie (Module)'], ['Produktionsmodule/Ausrüstung', 'Hardware Motorenwerk'], ['Fabrik/Maschinen', 'Maschinen'], ['Fabrik/Fördertechnik', 'Fördertechnik & Krane'], ['Fabrik/Lager & Regale', 'Regale & Ladungsträger'], ['Fabrik/Flurförderzeuge', 'Stapler & FTS'], ['Fabrik/Arbeitsplätze', 'Arbeitsplätze'], ['Fabrik/Sicherheit', 'Sicherheit & Halle'], ['Erschließung', 'Aufzüge, Treppen, Türen'], ['Fabrik/Personen', 'Personen'], ['Büro & Wartebereich', 'Büro']] },
   home: { titel: 'Home Planning Suite', icon: '🏠', neu: 'Neues Hausprojekt', demo: 'Musterhaus',
     lead: 'Häuser und Wohnungen in 3D planen – Haus mit Dachform ins Bild ziehen oder aus OpenStreetMap übernehmen, Räume aufziehen oder vorschlagen lassen, möblieren und mit Garten, Terrasse und Garage gestalten.',
     osm: ['Haus aus OpenStreetMap', 'Adresse eingeben (DE/AT/CH) – Haus mit Dach, Garage, Grundstück, Garten und Nachbarschaft werden angelegt'],
@@ -369,7 +369,7 @@ if (E !== 'health') {
     const cat = el.querySelector('.cat'); if (!cat) return;
     const b = document.createElement('button'); b.textContent = UI.libAlle ? '− nur ' + (E === 'home' ? 'Wohnen' : 'Fabrik') : '+ alle Pakete (auch Klinik)'; b.title = 'Weitere Bibliothekspakete der Suite ein- oder ausblenden';
     b.onclick = () => { UI.libAlle = !UI.libAlle; UI.libCat = ''; UI.renderPanel(); }; cat.appendChild(b);
-    const q = el.querySelector('#lQ'); if (q) q.placeholder = E === 'home' ? 'Suchen: Sofa, Bett, Küche, Dusche …' : 'Suchen: Regal, Stapler, CNC, Förderband …';
+    const q = el.querySelector('#lQ'); if (q) q.placeholder = E === 'home' ? 'Suchen: Sofa, Bett, Küche, Dusche …' : 'Suchen: Insel, Linie, Drehmodul, BAZ, Regal, Stapler …';
   };
 }
 // Raum aufziehen: nur die Raumtypen der Edition anbieten

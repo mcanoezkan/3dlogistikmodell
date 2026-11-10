@@ -533,6 +533,10 @@ function bar(show) {
   if (sel.kind === 'part') h += B('rotL', '⟲', 'Um 15° nach links drehen (Umschalt: 90°)') + B('rotR', '⟳', 'Um 15° nach rechts drehen (Umschalt: 90°)') + B('fUp', '＋G', 'Ein Geschoss aufsetzen') + B('fDn', '－G', 'Oberstes Geschoss entfernen') + B('whole', M.moveWhole ? '▣ Ganzes Gebäude' : '▢ Nur Bauteil', 'Beim Ziehen das ganze Gebäude oder nur dieses Bauteil verschieben', M.moveWhole ? 'on' : '') + B('bridge', '⌒ Brücke', 'Brücke von diesem Gebäude zu einem anderen ziehen') + B('inside', '⌂ Innen', 'Etagen von innen ansehen');
   if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
+  if (sel.kind === 'object') { const o = U.byId(prj().objects, sel.id), d = o && HSS.library.get(o.lib); if (d?.linie) {
+    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:pm.linie.station.manuell', '＋ Station', 'Montagestation (3 m) am Ausgang anhängen (Umschalt: Automatikstation)') + B('ln:pm.linie.foerder3', '＋ Förderer', 'Förderstrecke 3 m anhängen (Umschalt: 1,5 m)') + B('ln:pm.linie.dreh90r', '↱ 90°', 'Drehmodul 90° nach rechts anhängen') + B('ln:pm.linie.dreh90l', '↰ 90°', 'Drehmodul 90° nach links anhängen') + B('ln:pm.linie.wende180', '⮌ 180°', 'Wendemodul 180° anhängen (Rücklauf parallel, Achsabstand 9 m mit Versorgungsgang)') + B('ln:pm.linie.ende', '⏹ Ende', 'Linienende (Entnahme) anhängen');
+    if (!d.linie.ein) h += B('lnBau', '⚙ Linie', 'Ganze Linie ab diesem Linienanfang aufbauen (Anzahl Stationen, Wenden)');
+  } }
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
   if (sel.kind === 'bridge') h += B('lvUp', '▲ Ebene', 'Brücke ein Geschoss höher') + B('lvDn', '▼ Ebene', 'Brücke ein Geschoss tiefer') + B('wide', '⇔ breiter', 'Brücke 1 m breiter (Umschalt: schmaler)');
   if (sel.kind === 'path' && sel.point !== undefined) h += B('delPt', '✕ Punkt', 'Gewählten Wegpunkt löschen');
@@ -582,6 +586,8 @@ function act(a, e) {
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
   if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
   if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
+  if (sel.kind === 'object' && a.startsWith('ln:')) { let lib = a.slice(3); if (big && lib === 'pm.linie.station.manuell') lib = 'pm.linie.station.roboter'; if (big && lib === 'pm.linie.foerder3') lib = 'pm.linie.foerder15'; const id = M.linieAnhaengen(sel.id, lib); if (id) S3.select({ kind: 'object', id }); return; }
+  if (sel.kind === 'object' && a === 'lnBau') { M.linieAufbauen(sel.id); return; }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
     if (a === 'rotL' || a === 'rotR') HSS.change('Weg drehen', p => { const q = U.byId(p.paths, sel.id), c = centroid(q.points), da = U.rad(a === 'rotL' ? -15 : 15); q.points = q.points.map(t => { const v = G.rot([t[0] - c[0], t[1] - c[1]], da); return [Math.round((c[0] + v[0]) * 10) / 10, Math.round((c[1] + v[1]) * 10) / 10]; }); }, { scope: 'outdoor' });
@@ -589,6 +595,45 @@ function act(a, e) {
     if (a === 'delPt') { HSS.change('Wegpunkt löschen', p => { const q = U.byId(p.paths, sel.id); if (q.points.length > 2) q.points.splice(sel.point, 1); }, { scope: 'outdoor' }); S3.select({ kind: 'path', id: sel.id }); }
   }
 }
+/* ---------- Produktionslinie aus Modulen ----------
+   Linienmodule (Bibliothek „Produktionsmodule/Linienmodule“) haben Anschlusspunkte linie.ein / linie.aus in lokalen
+   Koordinaten (Fluss in +x, aus[2] = Richtungsänderung in Grad). Das neue Modul wird mit seinem Eingang auf den
+   Ausgang des gewählten Moduls gesetzt und um dessen Richtung gedreht – im selben Bezug (Etage bzw. Gelände). */
+const lnPort = (o, d, q) => { const s = o.size || d.size, kx = s.w / d.size.w, kz = s.d / d.size.d; return [q[0] * kx, q[1] * kz]; };
+M.linieNaechstes = (o, lib) => {
+  const d = HSS.library.get(o.lib), n = HSS.library.get(lib); if (!d?.linie?.aus || !n?.linie?.ein) return null;
+  const r = U.rad(o.rot || 0), a = lnPort(o, d, d.linie.aus), w = G.rot(a, r), ex = o.x + w[0], ez = o.z + w[1];
+  const rot = ((((o.rot || 0) + (d.linie.aus[2] || 0)) % 360) + 360) % 360, e = G.rot(n.linie.ein, U.rad(rot));
+  const q = { id: U.uid('obj'), lib, x: Math.round((ex - e[0]) * 1000) / 1000, z: Math.round((ez - e[1]) * 1000) / 1000, rot };
+  if (o.host) q.host = U.clone(o.host); if (o.yAbs !== undefined) q.yAbs = o.yAbs; if (o.y) q.y = o.y;
+  return q;
+};
+M.linieAnhaengen = (selId, lib) => {
+  const o = U.byId(prj().objects, selId); if (!o) return null;
+  const d = HSS.library.get(o.lib); if (!d?.linie?.aus) { HSS.ui.toast('Dieses Modul hat keinen Ausgang (Linienende)'); return null; }
+  const q = M.linieNaechstes(o, lib); if (!q) return null;
+  HSS.change('Linienmodul anhängen', p => p.objects.push(q), { scope: 'objects' });
+  HSS.ui.toast(HSS.library.get(lib).name + ' angehängt', 1800);
+  return q.id;
+};
+// Ganze Linie: Anfang → n Stationen (jede 4. automatisch, vorletzte Prüfstation), bei Bedarf in U-Form gewendet → Ende
+M.linieAufbauen = async (selId) => {
+  const o0 = U.byId(prj().objects, selId); if (!o0) return;
+  const nS = await HSS.ui.prompt('Anzahl Stationen der Linie (Takt 3,0 m)', '12'); if (nS === null) return;
+  const n = U.clamp(Math.round(+nS || 12), 1, 80);
+  const proReihe = await HSS.ui.prompt('Stationen je Reihe, danach wendet die Linie um 180° (0 = gerade Linie)', n > 10 ? String(Math.ceil(n / 2)) : '0'); if (proReihe === null) return;
+  const k = Math.max(0, Math.round(+proReihe || 0));
+  const seq = []; let inReihe = 0;
+  for (let i = 0; i < n; i++) {
+    if (k && inReihe === k) { seq.push('pm.linie.foerder15', 'pm.linie.wende180', 'pm.linie.foerder15'); inReihe = 0; }
+    seq.push(i === n - 2 && n > 3 ? 'pm.linie.station.pruef' : (i % 4 === 3 ? 'pm.linie.station.roboter' : 'pm.linie.station.manuell')); inReihe++;
+  }
+  seq.push('pm.linie.ende');
+  let last = null;
+  HSS.change('Linie aufbauen', p => { let cur = U.byId(p.objects, selId); for (const lib of seq) { const q = M.linieNaechstes(cur, lib); if (!q) break; p.objects.push(q); cur = q; last = q.id; } }, { scope: 'objects' });
+  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * 3, 0)} m Taktstrecke)`, 3500);
+  if (last) S3.select({ kind: 'object', id: last });
+};
 // Sitzung: alles seit der Auswahl (bzw. seit dem Platzieren) lässt sich mit ✗ verwerfen
 M.mark = () => { M._mark = HSS.undoLen(); };
 M.revert = () => {
