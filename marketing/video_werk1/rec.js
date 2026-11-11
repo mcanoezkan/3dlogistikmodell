@@ -21,14 +21,15 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   // Projekt laden, Startdialog schließen, Darstellung einstellen
   await ev(txt => { document.getElementById('dlg')?.close?.(); HSS.load(JSON.parse(txt)); }, fs.readFileSync(path.join(ROOT, 'projekte', 'RollsRoyce_Werk1', 'Werk1_Friedrichshafen.hss.json'), 'utf8'));
   for (let i = 0; i < 60; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
-  await ev(process_Q => {
+  await ev(([process_Q, process_U]) => {
     document.getElementById('dlg')?.close?.(); document.querySelector('#navHelp .x')?.click(); document.getElementById('navHelp')?.remove();
     const q = document.getElementById('vQ'); if (q) { q.value = process_Q; q.dispatchEvent(new Event('change')); }
     HSS.stil.set('real'); const st = document.getElementById('vStil'); if (st) st.value = 'real';
     HSS.view.labels = false; HSS.ui.refreshViewbar(); HSS.s3.setSun?.(10.5); const vs = document.getElementById('vSun'); if (vs) vs.value = 10.5;
     HSS.s3.select(null); document.body.classList.add('nopanel'); window.dispatchEvent(new Event('resize'));
+    if (process_U) { HSS.view.umgebung = process_U; const u = document.getElementById('vUmg'); if (u) u.value = process_U; HSS.s3.rebuild('all'); }
     HSS.runSimulation();
-  }, process.env.Q || '2');
+  }, [process.env.Q || '2', process.env.UMG || '']);
   for (let i = 0; i < 150; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
 
   let f = 0, mx = 1500, my = 700, perFrame = null;
