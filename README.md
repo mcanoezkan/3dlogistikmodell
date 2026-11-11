@@ -1,5 +1,27 @@
 # UNITY · 3D-Logistikmodelle
 
+## Circulara Production – Reifegrad-Check und Fabrikplaner in einer Datei
+
+`Circulara_Production.html` (Doppelklick, offline, ohne KI) verbindet die Circulara-Logik mit der Fabric Planning Suite:
+
+| Schritt | Inhalt |
+|---|---|
+| 1 · Pflichtangaben | Unternehmen, Produktionsbereich, Sektor, Relevanzreihenfolge der fünf Dimensionen (Startgewichtung wie in Circulara) und Planungsdaten für den Fabrikplaner: heutige Organisationsform, Varianten, Stückzahl, Losgröße, Teileähnlichkeit, Produktfamilien, Schichten, Halle, Lager, Automatisierung, Fertigungsschritte. Die Planungsdaten fließen nicht in den Reifegrad ein. „Beispiel laden“ füllt alles mit einem Musterunternehmen. |
+| 2 · Reifegrad-Check | 30 Leitfragen in 5 Dimensionen (Produkt & Programm, Prozesse & Materialfluss, Technik & Ausstattung, Organisation & Mitarbeitende, Digitalisierung & Steuerung), 14 Indikatoren, Erläuterungen mit Quellen. Aufbau, Bedienung und Rechnung wie in Circulara (Indikator = Ø Leitfragen, Dimension = Ø Indikatoren, Gesamt = gewichtetes Mittel, 5 Reifestufen). |
+| 3 · Ergebnis | Überblick (Reifegrad, Radar, Rechenweg, Reifestufen), **Produktionsform & Fabrikplaner** (Empfehlung Werkstatt / Insel / Linie aus der Produkt-Prozess-Matrix, Ampel-Befunde zu Organisationsform, Ausstattung, Prozessreife, Organisation und Steuerung, Kapazitätsrechnung mit Takt und Engpass, Umsetzungsfahrplan), Dimensionen, Indikatoren, Leitfragen, Handlungsempfehlungen, Export (Historie, Drucken/PDF, JSON, CSV). |
+| 4 · Fabrikplaner | Erst nach allen Leitfragen freigeschaltet. Die eingebettete Fabric Planning Suite richtet eine leere Halle als Zielbild ein: Zonen nach Materialfluss (Wareneingang → Lager/Supermarkt → Fertigung → Montage → Qualität/Verpackung → Versand), Servicestreifen, Hauptverkehrsweg, Maschinen aus der Kapazitätsrechnung (neue Anlage am Engpass grün), Montage, Werker, Materialflüsse; überschneidungsfrei geprüft. Reicht die Halle nicht, wird die nächstgrößere vorgeschlagen. Alles bleibt bearbeitbar und speicherbar. |
+
+Zweiter Modus „Kreislauf“: das Original-Circulara-Modell (Zirkularitätsreife, 36 Leitfragen) mit derselben Oberfläche.
+
+```bash
+python3 tools/build_einzeldatei.py fabrik    # Fabric Planning Suite (mit Werkplaner)
+python3 tools/build_reifegrad.py             # Circulara_Production.html
+node tools/video_circulara_production.js     # Demo-Video aufnehmen (Playwright)
+```
+
+Quellen: `reifegrad/` (Oberfläche `index.html`, Modell `modell-produktion.js`, Circulara-Daten in `daten/circulara/`), Layout-Generator `hss/js/werkplaner.js`. Demo-Video: [`reifegrad/video/Circulara_Production_Demo.mp4`](reifegrad/video/Circulara_Production_Demo.mp4).
+
+
 ## Drei Suiten aus einem Baukasten
 
 | Datei (Doppelklick, offline) | Edition | Schwerpunkt |

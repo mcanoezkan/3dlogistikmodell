@@ -32,6 +32,8 @@ function boot() {
   HSS.library.loadUserObjects();
   // Exportierte HTML-Ansicht: Projekt nur anzeigen
   if (window.HSS_VIEWER && HSS.ansicht) { HSS.ansicht.boot(); refreshHeader(); $('#loading').hidden = true; HSS.booted = true; return; }
+  // Eingebettet in die Reifegrad-App: kein Wiederherstellen, kein Startfenster – das Layout kommt per Nachricht
+  if (window.HSS_EMBED) { HSS.s3.rebuild('all'); HSS.s3.home(); refreshHeader(); UI.refreshViewbar(); $('#loading').hidden = true; HSS.booted = true; return; }
   const auto = HSS.autosaved();
   let restored = false;
   if (auto) { try { HSS.load(auto, { noAutosave: true }); restored = true; } catch (e) { console.warn(e); } }

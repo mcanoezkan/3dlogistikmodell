@@ -1,0 +1,42 @@
+[
+  {
+    "min_score": 0.0,
+    "max_score": 0.25,
+    "name": "Stufe 1",
+    "label": "Inert",
+    "emoji": "🔴",
+    "description": "Es liegen keine Erfahrungen und nur minimales Wissen zur systematischen Umsetzung zirkulärer Prinzipien vor; der Nutzen der Integration zirkulärer Prinzipien in die Produktgestaltung wird nicht erkannt."
+  },
+  {
+    "min_score": 0.25,
+    "max_score": 0.5,
+    "name": "Stufe 2",
+    "label": "Conversant",
+    "emoji": "🟠",
+    "description": "Erste Aktivitäten bzgl. Kreislaufwirtschaft sind vorhanden und die Relevanz zirkulärer Prinzipien wird grundsätzlich anerkannt; die Umsetzung erfolgt jedoch punktuell und mit geringer Ausprägung externer Zusammenarbeit entlang der Wertschöpfungskette."
+  },
+  {
+    "min_score": 0.5,
+    "max_score": 0.75,
+    "name": "Stufe 3",
+    "label": "Applied",
+    "emoji": "🟡",
+    "description": "Zirkuläre Strategien werden in konkreten Entwicklungsprojekten angewandt und über Lebenszyklusphasen hinweg berücksichtigt; Daten werden als Entscheidungsinput genutzt, einschließlich lebenszyklusbezogener Bewertungen; die Zusammenarbeit mit Anspruchsgruppen nimmt zu."
+  },
+  {
+    "min_score": 0.75,
+    "max_score": 1.0,
+    "name": "Stufe 4",
+    "label": "Monitored",
+    "emoji": "🟢",
+    "description": "Die Integration zirkulärer Prinzipien ist proaktiv und in einer etablierten Struktur verankert; die Bewertung erfolgt mittels Indikatoren und quantitativer Metriken, um die Leistungsfähigkeit der zirkulären Strategien zu messen und zu steuern."
+  },
+  {
+    "min_score": 1.0,
+    "max_score": 1.01,
+    "name": "Stufe 5",
+    "label": "Optimized",
+    "emoji": "🟣",
+    "description": "Zirkuläre Leistungsfähigkeit wird kontinuierlich verbessert; Ergebnisse aus Indikatoren werden systematisch als Input für Optimierungen genutzt; die Zusammenarbeit mit Anspruchsgruppen wird fortlaufend weiterentwickelt; Reife wird als dynamischer Entwicklungszustand verstanden."
+  }
+]

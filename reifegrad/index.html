@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circulara Production</title>
+<!-- =====================================================================
+     CIRCULARA PRODUCTION · Produktionsreife-Check & Fabrikplaner
+     Circulara-Logik (Pflichtangaben → Gewichtung → Dimensionen/Indikatoren/
+     Leitfragen → Reifegrad, Radar, Handlungsempfehlungen, Export, Historie)
+     übertragen auf die Produktion. Am Ende leitet die App die passende
+     Organisationsform ab (Werkstatt / Insel / Linie) und erzeugt in der
+     eingebetteten Fabric Planning Suite ein Zielbild-Layout in einer leeren Halle.
+     Alles läuft lokal im Browser – ohne KI, ohne Server, ohne Internet.
+     Entwicklung: diese Datei direkt öffnen (Fabrikplaner aus ../Fabric_Planning_Suite.html).
+     Einzeldatei: python3 tools/build_reifegrad.py → Circulara_Production.html
+     ===================================================================== -->
+<style>
+:root{--ink:#0F172A;--ink2:rgba(15,23,42,.65);--line:rgba(15,23,42,.08);--card:rgba(255,255,255,.78);--bg:#F6F7FB;--accent:#1F7E8A;--pill:#D8F6EE;--navy:#144477;--ok:#0A967A;--warn:#d98a1e;--bad:#c0392b;--sideW:258px}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:"Source Sans 3","Source Sans Pro",Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}input,select{font:inherit;color:inherit}
+#app{display:flex;min-height:100vh}
+/* Sidebar */
+#side{position:fixed;inset:0 auto 0 0;width:var(--sideW);background:#EEF1F5;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:26px 16px 16px;z-index:20;backdrop-filter:blur(10px)}
+#side .logo{display:block;width:190px;margin:4px auto 0}
+#side hr{border:none;border-top:1px solid #e0e0e0;margin:16px 0 12px}
+#side h5{margin:4px 2px 8px;font-size:13px;font-weight:800;color:var(--ink2);text-transform:none}
+.mode{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;margin-bottom:6px}
+.mode button{border:0;background:transparent;border-radius:9px;padding:7px 6px;font-size:12.5px;font-weight:800;color:var(--ink2)}
+.mode button.on{background:var(--navy);color:#fff}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid rgba(15,23,42,.12);background:#fff;border-radius:10px;padding:9px 12px;margin-bottom:7px;font-weight:700;font-size:14.5px;transition:all .15s}
+.nav button:hover:not(:disabled){border-color:rgba(15,23,42,.25)}
+.nav button.on{background:#ff4b4b;border-color:#ff4b4b;color:#fff}
+.nav button:disabled{opacity:.45;cursor:not-allowed}
+.nav button .ic{width:18px;text-align:center;opacity:.8}
+.nav button.planer{background:linear-gradient(90deg,#144477,#1F7E8A);color:#fff;border:0}
+.nav button.planer.on{box-shadow:0 0 0 3px rgba(20,68,119,.25)}
+#side .cap{font-size:12.5px;color:var(--ink2);margin-top:4px;line-height:1.45}
+#side .foot{margin-top:auto;font-size:11.5px;color:var(--ink2);line-height:1.5;border-top:1px solid #e0e0e0;padding-top:10px}
+#side .foot b{color:var(--ink)}
+/* Main */
+#main{margin-left:var(--sideW);flex:1;min-width:0;transition:background .4s}
+.wrap{max-width:1220px;margin:0 auto;padding:28px 26px 48px}
+h1,h2,h3{color:var(--ink);letter-spacing:-.3px}
+h2{font-size:30px;font-weight:900;margin:6px 0 14px}
+h3{font-size:24px;font-weight:900;margin:22px 0 12px}
+h4{font-size:17px;font-weight:900;margin:14px 0 8px}
+.muted{color:var(--ink2)}.small{font-size:13px}
+.btn{border:1px solid rgba(15,23,42,.14);background:#fff;border-radius:10px;padding:10px 16px;font-weight:800;box-shadow:0 6px 16px rgba(15,23,42,.05);transition:transform .15s,box-shadow .15s}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(15,23,42,.08)}
+.btn.primary{background:#ff4b4b;border-color:#ff4b4b;color:#fff}
+.btn.navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.go{background:linear-gradient(90deg,#144477,#0A967A);border:0;color:#fff;font-size:17px;padding:15px 22px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{display:block;width:100%}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.sp{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 26px rgba(15,23,42,.05);padding:18px}
+/* Welcome */
+.hero{text-align:center;padding:10px 0 8px;margin:8px 0 18px}
+.hero .title{font-size:64px;font-weight:900;font-style:italic;letter-spacing:-1px;line-height:1}
+.hero .title small{display:block;font-size:20px;font-style:normal;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);margin-top:10px;font-weight:800}
+.hero .subtitle{margin:14px auto 0;color:rgba(15,23,42,.72);font-size:18px;line-height:1.7;max-width:860px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.badge{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:rgba(15,23,42,.72)}
+.home-card{text-align:center;transition:transform .18s,box-shadow .18s}.home-card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(15,23,42,.08)}
+.home-card .t{font-weight:900;font-size:17px;margin-bottom:6px}.home-card .x{color:rgba(15,23,42,.68);line-height:1.65}
+.flowstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 4px}
+.flowstrip div{background:rgba(15,23,42,.04);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:800}
+.flowstrip span{display:block;font-weight:600;color:var(--ink2);margin-top:2px}
+label.f{display:block;font-weight:700;font-size:14px;margin-bottom:5px}
+.inp,select.inp{width:100%;border:1px solid rgba(15,23,42,.15);border-radius:10px;padding:10px 12px;background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.inp:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(20,68,119,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid rgba(15,23,42,.15);background:#fff;border-radius:999px;padding:7px 12px;font-weight:700;font-size:13.5px}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.formbox{background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:0 10px 26px rgba(15,23,42,.05)}
+.msg{border-radius:10px;padding:11px 14px;margin:12px 0;font-weight:600}
+.msg.ok{background:#e3f6ee;color:#0b5d47}.msg.err{background:#fde8e8;color:#8f1d1d}.msg.info{background:#e8f0fb;color:#1e3f6e}.msg.warn{background:#fff3df;color:#7a4b06}
+.sec{display:flex;align-items:center;gap:10px;margin:22px 0 10px}.sec .n{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}.sec h4{margin:0}
+/* Assessment */
+.topbar{background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(15,23,42,.06);padding:20px 20px 24px;text-align:center;margin:0 0 18px}
+.topbar .t{font-size:22px;font-weight:900}.topbar .s{font-size:15px;color:var(--ink2);margin-top:2px}
+.rail{height:8px;background:rgba(15,23,42,.08);border-radius:999px;overflow:hidden;margin-top:10px}.rail i{display:block;height:8px;background:var(--accent);border-radius:999px;transition:width .35s}
+.acols{display:grid;grid-template-columns:34% 1fr;gap:28px;align-items:start}
+.dim-card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 32px rgba(15,23,42,.06),0 2px 10px rgba(15,23,42,.04);padding:16px;margin:0 0 12px;backdrop-filter:blur(8px);transition:transform .18s,box-shadow .18s,outline-color .18s}
+.dim-card:hover{transform:translateY(-2px)}
+.dim-card.on{outline:2px solid var(--accent)}
+.dim-row{display:flex;gap:12px;align-items:flex-start}
+.dim-icon{width:44px;height:44px;border-radius:14px;background:rgba(15,23,42,.04);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.dim-icon svg{width:22px;height:22px;stroke:rgba(15,23,42,.7);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.dim-title{font-weight:800;font-size:19px;line-height:1.15;margin:0}.dim-meta{margin-top:4px;font-size:14px;font-weight:800;color:rgba(15,23,42,.55)}
+.dim-desc{color:rgba(15,23,42,.62);font-size:15px;margin-top:10px;line-height:1.5}
+.dim-bar{height:5px;background:rgba(15,23,42,.06);border-radius:9px;margin-top:10px;overflow:hidden}.dim-bar i{display:block;height:5px;border-radius:9px}
+.dim-open{margin-top:10px;width:100%;height:38px;border-radius:12px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.92);color:rgba(15,23,42,.65);font-weight:900;box-shadow:0 8px 18px rgba(15,23,42,.06)}
+.dim-open:hover{border-color:rgba(15,23,42,.22)}
+.exp{background:#fff;border-radius:16px;box-shadow:0 10px 24px rgba(15,23,42,.06);padding:8px 10px}
+.exp summary{font-weight:700;font-size:20px;padding:12px;cursor:pointer;list-style:none}.exp summary::-webkit-details-marker{display:none}.exp summary:before{content:'▾';margin-right:8px;font-size:14px;color:var(--ink2)}
+.ind-btn{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;border-radius:10px;border:1px solid rgba(15,23,42,.14);background:#fff;font-weight:900;font-size:18px;text-align:left;padding:8px 12px;margin:0 0 8px;box-shadow:0 6px 14px rgba(15,23,42,.05)}
+.ind-btn.on{background:var(--pill);border-color:var(--accent)}
+.ind-btn .ck{margin-left:auto;font-size:13px;font-weight:800;color:var(--ok)}
+.q-card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 32px rgba(15,23,42,.06),0 2px 10px rgba(15,23,42,.04);padding:16px;margin:0 0 16px;backdrop-filter:blur(8px)}
+.q-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+.q-num{width:38px;height:38px;border-radius:999px;background:rgba(15,23,42,.92);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto;margin-top:2px}
+.q-text{font-weight:900;font-size:18px;line-height:1.35;flex:1}
+.q-info{position:relative;display:inline-flex;flex:0 0 auto}
+.q-info .i{width:22px;height:22px;border-radius:999px;border:1px solid rgba(15,23,42,.18);background:rgba(255,255,255,.94);color:var(--accent);font-size:13px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;cursor:help;box-shadow:0 6px 14px rgba(15,23,42,.06)}
+.q-info .b{position:absolute;top:30px;right:0;width:min(380px,calc(100vw - 80px));padding:12px 14px;border-radius:14px;background:#0F172A;color:#F8FAFC;font-size:13px;line-height:1.5;box-shadow:0 18px 38px rgba(15,23,42,.22);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .16s,transform .16s;z-index:50;font-weight:500}
+.q-info:hover .b,.q-info:focus-within .b{opacity:1;visibility:visible;transform:none}
+.opt{display:block;width:100%;text-align:left;border-radius:10px;border:1px solid rgba(15,23,42,.12);background:#fff;color:rgba(15,23,42,.85);padding:9px 14px;margin-bottom:5px;box-shadow:0 6px 18px rgba(15,23,42,.04);font-weight:600;line-height:1.4;transition:border-color .12s,background .12s}
+.opt:hover{border-color:rgba(15,23,42,.24)}
+.opt.on{background:var(--pill);border-color:var(--accent);color:var(--ink)}
+.opt b{font-variant-numeric:tabular-nums;margin-right:4px}
+.anav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;border-top:1px solid var(--line);padding-top:18px;margin-top:10px}
+/* Results */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:8px 0 18px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:10px 14px;font-weight:800;color:var(--ink2);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{color:#ff4b4b;border-bottom-color:#ff4b4b}
+.tabs button.star{color:var(--navy)}.tabs button.star.on{color:var(--navy);border-bottom-color:var(--navy)}
+.reife{max-width:560px;margin:0 auto;text-align:center}
+.reife .emo{font-size:3em;margin:6px 0}.reife .lvl{font-size:1.4em;font-weight:800;margin:4px 0}
+.reife hr{border:none;border-top:1px solid rgba(15,23,42,.10);margin:10px 0}.reife hr.d{border-top-style:dashed}
+.scale{text-align:left;font-size:.92em;color:rgba(15,23,42,.8);line-height:1.6}
+.stage{margin-bottom:12px;padding:16px 18px}.stage .z{font-size:13px;color:rgba(15,23,42,.56);margin:4px 0 8px}
+.formula{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;overflow-x:auto;font-family:"Cambria Math","Times New Roman",serif;font-size:18px;text-align:center;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 6px}.frac>span:first-child{border-bottom:1.5px solid var(--ink);padding:0 6px 2px}.frac>span:last-child{padding:2px 6px 0}
+table.t{width:100%;border-collapse:collapse;background:#fff;font-size:14px;border-radius:12px;overflow:hidden}
+table.t th{text-align:left;background:#F1F4F8;font-weight:800;padding:9px 10px;font-size:13px;color:var(--ink2);position:sticky;top:0}
+table.t td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tbox{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+.rec{margin-bottom:14px;padding:18px}.rec .d{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}.rec .i{margin-top:4px;font-size:18px;font-weight:900}.rec .s{margin:6px 0 10px;color:rgba(15,23,42,.62);font-weight:700}.rec .x{color:#334155;line-height:1.6}
+details.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin:12px 0}details.box summary{font-weight:800;padding:8px 0;cursor:pointer}
+.verdict{border-radius:20px;padding:24px 26px;color:#fff;background:linear-gradient(120deg,#0f2a4a 0%,#144477 55%,#0A967A 140%);box-shadow:0 20px 44px rgba(20,68,119,.25);position:relative;overflow:hidden}
+.verdict:after{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;border:38px solid rgba(255,255,255,.06)}
+.verdict .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8fe0cc;font-weight:800}
+.verdict .h{font-size:30px;font-weight:900;margin:6px 0 8px;line-height:1.15;max-width:900px}
+.verdict .p{color:#d7e3ef;font-size:16px;line-height:1.6;max-width:900px}
+.forms{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.forms .f{padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);font-weight:800}
+.forms .f.soll{background:#fff;color:var(--navy)}.forms .arr{font-size:22px;opacity:.8}
+.befund{display:flex;gap:14px;padding:14px 16px;margin-bottom:10px;align-items:flex-start}
+.amp{width:14px;height:14px;border-radius:50%;flex:0 0 auto;margin-top:5px;box-shadow:0 0 0 4px rgba(0,0,0,.04)}
+.befund .t{font-weight:900;font-size:16px}.befund .st{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-left:6px}.befund .x{color:#334155;line-height:1.55;margin-top:3px;font-size:14.5px}.befund .lay{margin-top:6px;font-size:13px;color:var(--navy);font-weight:700}
+.phase{position:relative;padding:16px 16px 16px 18px;border-left:4px solid var(--navy)}
+.phase .k{font-size:12px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em}.phase .t{font-weight:900;font-size:16px;margin:2px 0 6px}.phase ul{margin:0;padding-left:18px;color:#334155;line-height:1.55;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{padding:14px 16px}.kpi b{display:block;font-size:24px;font-weight:900}.kpi span{font-size:13px;color:var(--ink2);font-weight:700}
+.cta{margin:22px 0 4px;padding:22px;border-radius:20px;background:#fff;border:2px solid #0A967A;display:flex;align-items:center;gap:20px;box-shadow:0 14px 34px rgba(10,150,122,.15)}
+.cta .t{font-weight:900;font-size:20px}.cta .x{color:var(--ink2);margin-top:4px;line-height:1.5}
+/* Planner */
+#planner{position:fixed;left:var(--sideW);right:0;top:0;bottom:0;display:none;flex-direction:column;background:#0f2a4a;z-index:10}
+#planner.on{display:flex}
+#planner .pbar{height:52px;flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:0 16px;color:#fff;background:linear-gradient(90deg,#0f2a4a,#144477)}
+#planner .pbar b{font-size:16px}#planner .pbar .s{color:#b9c7d6;font-size:13px}
+#planner .pbar .btn{padding:7px 11px;font-size:13px;box-shadow:none;white-space:nowrap}#planner .pbar .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+#planner .pbar .btn.ghost{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff}
+#planner iframe{flex:1;border:0;width:100%;background:#eef1f5}
+#planner .load{position:absolute;inset:52px 0 0 0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;background:#0f2a4a;font-weight:700}
+#planner .spin{width:44px;height:44px;border-radius:50%;border:4px solid rgba(255,255,255,.2);border-top-color:#0A967A;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+/* Presenter caption (Video) */
+#cap{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:rgba(15,23,42,.92);color:#fff;border-radius:14px;padding:12px 20px;font-size:17px;font-weight:700;box-shadow:0 18px 40px rgba(0,0,0,.25);opacity:0;transition:opacity .35s,transform .35s;z-index:100;max-width:80vw;text-align:center;pointer-events:none}
+#cap.on{opacity:1;transform:translate(-50%,0)}#cap small{display:block;color:#8fe0cc;font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.toast{position:fixed;right:22px;bottom:22px;background:#0F172A;color:#fff;padding:12px 16px;border-radius:12px;font-weight:700;z-index:120;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+svg text{font-family:inherit}
+@media (max-width:1100px){.grid3{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.acols{grid-template-columns:1fr}}
+@media (max-width:760px){:root{--sideW:0px}#side{position:static;width:auto}#app{display:block}#main{margin-left:0}.grid2,.grid3,.flowstrip{grid-template-columns:1fr}.wrap{padding:16px}.hero .title{font-size:44px}#planner{left:0}}
+@media print{#side,#planner,.tabs,.btn,.nav,#cap{display:none!important}#main{margin:0}.wrap{max-width:none;padding:0}.card,.q-card{box-shadow:none;break-inside:avoid}body{background:#fff!important}.printonly{display:block!important}}
+.printonly{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <img class="logo" src="circulara-logo.png" alt="Circulara">
+    <hr>
+    <h5>Reifegradmodell</h5>
+    <div class="mode" id="mode"><button data-m="produktion">Produktion</button><button data-m="circulara">Kreislauf</button></div>
+    <div class="cap" id="modeCap"></div>
+    <hr>
+    <h5>Navigation</h5>
+    <div class="nav" id="nav"></div>
+    <div class="cap" id="navCap"></div>
+    <div class="foot"><b>Läuft vollständig lokal</b> – ohne KI, ohne Server, ohne Internet. Bewertung, Organisationsform und Layout werden regelbasiert in der App berechnet.</div>
+  </aside>
+  <main id="main"><div class="wrap" id="view"></div></main>
+  <section id="planner"><div class="pbar"><b>Fabrikplaner</b><span class="s" id="pSub">Fabric Planning Suite · Zielbild-Layout</span><span class="sp"></span><button class="btn ghost" data-v="persp">Perspektive</button><button class="btn ghost" data-v="top">Draufsicht</button><button class="btn ghost" data-v="flow">Materialflüsse</button><button class="btn ghost" data-v="out">Außen</button><button class="btn ghost" id="pRedo">↻ Neu</button><button class="btn navy" id="pBack">← Ergebnisse</button></div><div class="load" id="pLoad"><div class="spin"></div><div id="pLoadT">Fabric Planning Suite wird geladen …</div></div></section>
+</div>
+<div id="cap"></div>
+<script src="modell-produktion.js"></script>
+<script src="modell-circulara.js"></script>
+<script>
+/* ===================================================================== */
+(function () {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (v, d = 0) => Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = v => fmt((v || 0) * 100) + ' %';
+const MODELS = { produktion: window.PRS_MODEL_PROD, circulara: window.PRS_MODEL_CIRC };
+const RAHMEN = window.PRS_RAHMEN;
+const FORM = { werkstatt: 'Werkstattfertigung', insel: 'Inselfertigung', linie: 'Linienfertigung', gemischt: 'gemischte Fertigung' };
+const STORE = 'circulara-production-v1', HIST = 'circulara-production-historie-v1';
+
+/* ---------- Zustand ---------- */
+const neu = (model = 'produktion') => ({ model, page: 'welcome', company: '', sector: '', product: '', prio: Object.keys(MODELS[model].model), intakeDone: false, weights: Object.assign({}, MODELS[model].weights), answers: {}, theme: 0, ind: 0, tab: 'overview', rahmen: { formIst: '', varianten: '', stueck: '', los: '', aehnlich: '', familien: '2', schichten: '2', halle: '96x48', lager: 'regal', auto: 'teil', schritte: [] }, filters: {} });
+let S = (() => { try { const j = JSON.parse(localStorage.getItem(STORE)); if (j && MODELS[j.model]) return Object.assign(neu(j.model), j); } catch (e) { /* */ } return neu(); })();
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { /* */ } };
+const M = () => MODELS[S.model], MODEL = () => M().model, THEMES = () => Object.keys(MODEL());
+const UIc = t => M().ui[t] || Object.values(M().ui)[0];
+
+/* ---------- Rechnen (wie Circulara: Indikator = Ø Leitfragen, Dimension = Ø Indikatoren, Gesamt = gewichtetes Mittel) ---------- */
+const calcScores = () => { const out = {}; for (const [t, inds] of Object.entries(MODEL())) { out[t] = {}; for (const [i, d] of Object.entries(inds)) { const v = d.questions.map(q => S.answers[t]?.[i]?.[q.code]).filter(x => x !== null && x !== undefined); out[t][i] = v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; } } return out; };
+const themeScores = sc => Object.fromEntries(THEMES().map(t => { const v = Object.values(sc[t] || {}).filter(x => x !== null); return [t, v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0]; }));
+const total01 = ts => { const W = S.weights, ws = THEMES().reduce((a, t) => a + (W[t] || 0), 0); return ws > 0 ? THEMES().reduce((a, t) => a + ts[t] * (W[t] || 0), 0) / ws : 0; };
+const level = sc => { for (const l of M().levels) if (l.min_score <= sc && sc < l.max_score) return l; return M().levels[M().levels.length - 1]; };
+const weightsFromPrio = order => { const pts = order.map((_, i) => order.length - i), sum = pts.reduce((a, b) => a + b, 0); return Object.fromEntries(order.map((t, i) => [t, pts[i] / sum])); };
+const intPct = (w, themes) => { const raw = Object.fromEntries(themes.map(t => [t, Math.max(0, (w[t] || 0) * 100)])), fl = Object.fromEntries(themes.map(t => [t, Math.floor(raw[t])])); let rem = 100 - themes.reduce((a, t) => a + fl[t], 0); themes.slice().sort((a, b) => (raw[b] - fl[b]) - (raw[a] - fl[a]) || raw[b] - raw[a]).slice(0, Math.max(0, rem)).forEach(t => fl[t]++); return fl; };
+const allQ = () => { const out = []; for (const [t, inds] of Object.entries(MODEL())) for (const [i, d] of Object.entries(inds)) for (const q of d.questions) out.push({ t, i, q }); return out; };
+const answered = () => allQ().filter(x => S.answers[x.t]?.[x.i]?.[x.q.code] != null).length;
+const ans = code => { for (const x of allQ()) if (x.q.code === code) return S.answers[x.t]?.[x.i]?.[code]; return null; };
+const isProd = () => S.model === 'produktion';
+const intakeOk = () => !!(S.company.trim() && S.sector.trim() && S.product.trim() && S.intakeDone);
+const done = () => answered() === allQ().length;
+
+/* ---------- Produktionsform ableiten (regelbasiert) ---------- */
+const rv = (k) => { const o = RAHMEN[k].opts.find(o => o[0] === S.rahmen[k]); return o ? o[2] : null; };
+const STEPTZ = { saege: ['Zuschnitt', 'Sägerei', 1.2, 3], laser: ['Laserschneiden', 'Laserzentrum', 1.8, 2], pressen: ['Umformen', 'Presserei', 0.8, 3], spritzguss: ['Spritzgießen', 'Spritzgießerei', 2.0, 3], biegen: ['Biegen', 'Biegerei', 1.5, 3], drehen: ['Drehen', 'Dreherei', 3.5, 4], fraesen: ['Fräsen', 'Fräserei', 5.5, 4], schweissen: ['Schweißen', 'Schweißerei', 4.5, 3], waschen: ['Waschen', 'Teilereinigung', 1.0, 2], lackieren: ['Lackieren', 'Lackiererei', 2.5, 2] };
+const ORDER = ['saege', 'laser', 'pressen', 'spritzguss', 'biegen', 'drehen', 'fraesen', 'schweissen', 'waschen', 'lackieren'];
+const diagnose = () => {
+  const sc = calcScores(), ts = themeScores(sc), th = THEMES();
+  const d = { prog: ts[th[0]], proz: ts[th[1]], tech: ts[th[2]], org: ts[th[3]], dig: ts[th[4]] };
+  const vol = ((rv('stueck') ?? 0.5) + (rv('los') ?? 0.5)) / 2, std = ((rv('varianten') ?? 0.5) + (rv('aehnlich') ?? 0.5) + d.prog) / 3;
+  const S0 = 0.5 * vol + 0.5 * std, soll = S0 < 0.38 ? 'werkstatt' : S0 < 0.66 ? 'insel' : 'linie', ist = S.rahmen.formIst || 'gemischt';
+  const oeeA = ans('3.1.1'), oee = [0.45, 0.55, 0.65, 0.75, 0.85][Math.round((oeeA ?? 0.25) * 4)];
+  const kap = ans('3.1.2'), foe = ans('3.2.2');
+  const bef = { ausstattung: d.tech < 0.5 || (kap ?? 1) <= 0.25, prozess: d.proz < 0.5, organisation: d.org < 0.5, digital: d.dig < 0.5, foerdertechnik: (foe ?? 1) < 0.5 };
+  const stueck = (RAHMEN.stueck.opts.find(o => o[0] === S.rahmen.stueck) || [0, 0, 0, 5000])[3], schichten = +S.rahmen.schichten || 2;
+  const minJahr = 220 * schichten * 7.5 * 60, takt = minJahr * oee / stueck, taktZ = minJahr * 0.8 / stueck;
+  const rows = ORDER.filter(k => S.rahmen.schritte.includes(k)).map(k => { const [name, bereich, tz, mx] = STEPTZ[k]; let n = Math.min(mx, Math.max(1, Math.ceil(tz / takt - 1e-9))); const nZ = Math.min(mx, Math.max(1, Math.ceil(tz / taktZ - 1e-9))); if (soll === 'werkstatt' && ['drehen', 'fraesen', 'schweissen', 'saege', 'biegen'].includes(k)) n = Math.max(n, 2); return { k, name, bereich, tz, n, nZ, ausl: tz / (n * takt) }; });
+  const eng = rows.slice().sort((a, b) => b.ausl - a.ausl)[0];
+  const ampel = v => v >= 0.75 ? ['#0A967A', 'ausreichend'] : v >= 0.5 ? ['#d98a1e', 'ausbaufähig'] : ['#c0392b', 'nicht ausreichend'];
+  const why = [];
+  why.push(`${RAHMEN.varianten.opts.find(o => o[0] === S.rahmen.varianten)?.[1] || '–'} Varianten`, `${RAHMEN.stueck.opts.find(o => o[0] === S.rahmen.stueck)?.[1] || '–'} Stück/Jahr`, `Losgröße ${RAHMEN.los.opts.find(o => o[0] === S.rahmen.los)?.[1] || '–'}`, `${RAHMEN.aehnlich.opts.find(o => o[0] === S.rahmen.aehnlich)?.[1] || '–'} gleiche Arbeitsfolge`);
+  const schwach = [bef.ausstattung && 'die Ausstattung', bef.prozess && 'die Prozessreife', bef.organisation && 'die Organisation', bef.digital && 'die Steuerung'].filter(Boolean);
+  const liste = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' und ' + a[a.length - 1];
+  let head;
+  if (ist === soll) head = schwach.length ? `${FORM[soll]} ist die richtige Organisationsform – aber ${liste(schwach)} ${schwach.length > 1 ? 'reichen' : 'reicht'} dafür noch nicht aus.` : `${FORM[soll]} ist die richtige Organisationsform – jetzt Layout und Fluss feinoptimieren.`;
+  else if (ist === 'gemischt') head = `Neuordnung der Fertigung zur ${FORM[soll]} empfohlen.`;
+  else head = `Umstellung von ${FORM[ist]} auf ${FORM[soll]} empfohlen.`;
+  const pos = soll === 'linie' ? 'stabile Mengen und große Teilefamilien mit gleicher Arbeitsfolge' : soll === 'insel' ? 'mittlere Mengen mit klar abgrenzbaren Produktfamilien' : 'hohe Variantenvielfalt und kleine Lose mit wechselnden Arbeitsfolgen';
+  const text = `Ihr Programm (${why.join(', ')}) erreicht eine Fließeignung von ${fmt(S0 * 100)} %. Das spricht für ${pos}.` + (schwach.length ? ` Der Reifegrad-Check zeigt jedoch, dass ${liste(schwach)} vor bzw. mit der Umstellung gestärkt werden ${schwach.length > 1 ? 'müssen' : 'muss'}.` : ' Die Reife in Prozessen, Technik und Organisation trägt die Umstellung.');
+  return { d, vol, std, S0, soll, ist, oee, bef, rows, eng, takt, taktZ, stueck, schichten, ampel, head, text, schwach };
+};
+const plannerCfg = () => { const D = diagnose(), tot = total01(themeScores(calcScores())); return { firma: S.company, produkt: S.product, form: D.soll, formIst: D.ist, halle: S.rahmen.halle, schritte: S.rahmen.schritte.slice(), familien: +S.rahmen.familien || 2, schichten: D.schichten, stueck: D.stueck, oee: D.oee, lager: S.rahmen.lager, auto: S.rahmen.auto, befunde: D.bef, score: tot }; };
+
+/* ---------- Icons ---------- */
+const ICON = { cube: '<svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>', flow: '<svg viewBox="0 0 24 24"><path d="M3 7h12l-3-3M21 17H9l3 3"/></svg>', gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>', team: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 5.5 2 5.5 5"/></svg>', net: '<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 11l7-4M8.5 13l7 4"/></svg>',
+  design: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>', star: '<svg viewBox="0 0 24 24"><path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>', trend: '<svg viewBox="0 0 24 24"><path d="M4 14l4-4 4 3 6-7"/><path d="M14 6h6v6"/></svg>', shield: '<svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3.1 7.7-7 9-3.9-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>' };
+
+/* ---------- Rahmen: Sidebar, Navigation ---------- */
+const NAV = [['welcome', 'Start', '⌂'], ['assessment', 'Assessment', '✎'], ['settings', 'Einstellungen', '⚙'], ['results', 'Ergebnisse', '▤'], ['history', 'Historie', '↺']];
+function renderSide() {
+  $$('#mode button').forEach(b => { b.classList.toggle('on', b.dataset.m === S.model); b.onclick = () => switchModel(b.dataset.m); });
+  $('#modeCap').textContent = isProd() ? 'Produktionsreife mit Ableitung der Organisationsform und Zielbild-Layout im Fabrikplaner.' : 'Original-Circulara-Modell: Zirkularitätsreife eines Produkts (Kreislaufwirtschaft).';
+  const nav = NAV.map(([p, l, ic]) => `<button data-p="${p}" class="${S.page === p ? 'on' : ''}" ${p !== 'welcome' && !intakeOk() ? 'disabled' : ''}><span class="ic">${ic}</span>${l}</button>`).join('') + (isProd() ? `<button data-p="planner" class="planer ${S.page === 'planner' ? 'on' : ''}" ${!intakeOk() || !done() ? 'disabled' : ''} title="${done() ? 'Zielbild-Layout im Fabrikplaner' : 'Nach Abschluss des Reifegrad-Checks verfügbar'}"><span class="ic">▦</span>Fabrikplaner${done() ? '' : ' 🔒'}</button>` : '');
+  $('#nav').innerHTML = nav; $$('#nav button').forEach(b => b.onclick = () => go(b.dataset.p));
+  $('#navCap').textContent = !intakeOk() ? 'Bitte vervollständigen Sie zuerst die Angaben auf der Startseite.' : isProd() && !done() ? `Fabrikplaner wird nach allen ${allQ().length} Leitfragen freigeschaltet (${answered()}/${allQ().length}).` : '';
+}
+function switchModel(m) { if (m === S.model) return; const keep = { company: S.company, sector: S.sector, product: S.product }; S = Object.assign(neu(m), keep); save(); go('welcome'); }
+function go(p, o = {}) {
+  if (p !== 'welcome' && !intakeOk()) p = 'welcome';
+  if (p === 'planner' && (!done() || !isProd())) p = 'results';
+  S.page = p; save(); render(); preload(); if (!o.keepScroll) window.scrollTo({ top: 0, behavior: o.smooth ? 'smooth' : 'auto' });
+}
+function setBg(theme) {
+  const m = $('#main');
+  if (theme) { const u = UIc(theme); m.style.background = `linear-gradient(180deg, ${u.bg} 0%, ${u.bg2} 65%, #FFFFFF 100%)`; document.documentElement.style.setProperty('--accent', u.accent); document.documentElement.style.setProperty('--pill', u.pill); }
+  else { m.style.background = 'radial-gradient(800px 360px at 12% -8%, rgba(31,126,138,.14) 0%, rgba(31,126,138,0) 60%), radial-gradient(900px 380px at 50% -6%, rgba(43,108,176,.12) 0%, rgba(43,108,176,0) 60%), radial-gradient(900px 380px at 90% -6%, rgba(183,121,31,.12) 0%, rgba(183,121,31,0) 60%), radial-gradient(900px 420px at 15% 10%, rgba(107,70,193,.10) 0%, rgba(107,70,193,0) 65%), radial-gradient(900px 420px at 85% 12%, rgba(192,38,211,.10) 0%, rgba(192,38,211,0) 65%), #F6F7FB'; document.documentElement.style.setProperty('--accent', '#1F7E8A'); document.documentElement.style.setProperty('--pill', '#D8F6EE'); }
+}
+function render() {
+  renderSide();
+  $('#planner').classList.toggle('on', S.page === 'planner');
+  const v = $('#view');
+  if (S.page === 'welcome') { setBg(null); v.innerHTML = pWelcome(); bindWelcome(); }
+  else if (S.page === 'assessment') { const t = THEMES()[S.theme]; setBg(t); v.innerHTML = pAssessment(); bindAssessment(); }
+  else if (S.page === 'settings') { setBg(null); v.innerHTML = pSettings(); bindSettings(); }
+  else if (S.page === 'results') { setBg(null); v.innerHTML = pResults(); bindResults(); }
+  else if (S.page === 'history') { setBg(null); v.innerHTML = pHistory(); bindHistory(); }
+  else if (S.page === 'planner') { openPlanner(); }
+}
+const toast = (t, ms = 2600) => { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), ms); };
+
+/* ---------- Seite: Start ---------- */
+function pWelcome() {
+  const P = isProd(), th = THEMES();
+  const cards = P ? [['Einfache Bedienung', `Beantworte ${allQ().length} Leitfragen in ${th.length} Dimensionen. Keine Setup-Hürden.`], ['Klare Visualisierung', 'Radar, Dimensionen und Detailanalysen machen Stärken und Schwächen sofort sichtbar.'], ['Konkrete Ableitung', 'Top-Handlungsfelder und die passende Organisationsform: Werkstatt, Insel oder Linie.'], ['Gewichtete Bewertung', 'Relevanzreihenfolge der Dimensionen – der Gesamtscore wird automatisch gewichtet.'], ['Zielbild-Layout', 'Der Fabrikplaner richtet eine leere Halle nach dem Ergebnis ein – mit Maschinen, Zonen und Flüssen.'], ['Sofort nutzbar', 'Eine Datei, läuft offline und ohne KI. Ergebnisse speichern, drucken und exportieren.']]
+    : [['Einfache Bedienung', 'Beantworte Leitfragen pro Indikator. Keine Setup-Hürden.'], ['Klare Visualisierung', 'Radar & Detailanalysen machen Stärken/Schwächen sofort sichtbar.'], ['Konkrete Ableitung', 'Identifiziere Top-Verbesserungsfelder und exportiere einen Report für Stakeholder.'], ['Gewichtete Bewertung', 'Passe Dimensionen an – der Gesamtscore wird automatisch gewichtet berechnet.'], ['Detailtiefe', 'Ergebnisse bis auf Leitfragen-Ebene für Auditierbarkeit und Vergleich.'], ['Sofort nutzbar', 'Keine Integration nötig – direkt starten und Ergebnisse sichern.']];
+  const sel = (k, cls = '') => `<label class="f">${esc(RAHMEN[k].label)}</label><select class="inp ${cls}" data-r="${k}"><option value="">Bitte wählen</option>${RAHMEN[k].opts.map(o => `<option value="${o[0]}" ${S.rahmen[k] === o[0] ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select>`;
+  return `<div class="hero"><div class="title">Circulara${P ? '<small>Production · Fabrikplanung</small>' : ''}</div><div class="subtitle">${M().untertitel}</div>
+    <div class="badges">${(P ? ['Reifegrad in 5 Stufen', `${allQ().length} Leitfragen · ${th.length} Dimensionen`, 'Werkstatt · Insel · Linie', 'Zielbild-Layout in 3D', 'ohne KI · offline'] : ['Circularity Fit Check', `${allQ().length} Leitfragen`, '5 Dimensionen', 'Reifegrad in 5 Stufen']).map(b => `<span class="badge">${b}</span>`).join('')}</div></div>
+   ${P ? `<div class="flowstrip"><div>1 · Pflichtangaben<span>Unternehmen, Gewichtung, Planungsdaten</span></div><div>2 · Reifegrad-Check<span>${allQ().length} Leitfragen in ${th.length} Dimensionen</span></div><div>3 · Ergebnis<span>Reifegrad, Befunde, Organisationsform</span></div><div>4 · Fabrikplaner<span>Zielbild-Layout in der leeren Halle</span></div></div>` : ''}
+   <div class="grid3" style="margin-top:14px">${cards.map(([t, x]) => `<div class="card home-card"><div class="t">${t}</div><div class="x">${x}</div></div>`).join('')}</div>
+   <h3>Pflichtangaben vor dem Assessment</h3><p class="muted">Bitte beantworten Sie die folgenden Fragen vollständig. Erst danach können Sie mit dem Assessment starten.${P ? ' Die Planungsdaten fließen nicht in den Reifegrad ein – sie bestimmen Kapazität und Layout im Fabrikplaner.' : ''}</p>
+   <div class="formbox" id="intake">
+    <div class="sec"><span class="n">1</span><h4>Unternehmen</h4><span class="sp"></span>${P ? '<button class="btn" id="bDemo" title="Füllt alle Angaben mit einem Beispielunternehmen">Beispiel laden</button>' : ''}</div>
+    <div class="grid2"><div><label class="f">Unternehmensname</label><input class="inp" id="iCo" value="${esc(S.company)}" placeholder="z. B. Muster GmbH"></div><div><label class="f">${P ? 'Produktionsbereich / Produkt' : 'Bezeichnung des Produkts'}</label><input class="inp" id="iPr" value="${esc(S.product)}" placeholder="${P ? esc(M().objektBeispiel) : 'z. B. Kreiselpumpe X200'}"></div><div><label class="f">Sektor</label><input class="inp" id="iSe" value="${esc(S.sector)}" placeholder="z. B. Maschinenbau, Elektronik, Medizintechnik"></div></div>
+    <div class="sec"><span class="n">2</span><h4>Relevanzreihenfolge der Dimensionen</h4></div>
+    <p class="muted small" style="margin-top:-4px">1 = höchste Relevanz für Ihr Unternehmen. Die Reihenfolge wird als Startgewichtung in die Einstellungen übernommen.</p>
+    <div class="grid2">${th.map((_, i) => `<div><label class="f">Priorität ${i + 1}</label><select class="inp" data-p="${i}"><option value="">Bitte wählen</option>${th.map(t => `<option ${S.prio[i] === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></div>`).join('')}</div>
+    ${P ? `<div class="sec"><span class="n">3</span><h4>Planungsdaten für den Fabrikplaner</h4></div>
+    <div class="grid2"><div>${sel('formIst')}</div><div>${sel('varianten')}</div><div>${sel('stueck')}</div><div>${sel('los')}</div><div>${sel('aehnlich')}</div><div>${sel('familien')}</div><div>${sel('schichten')}</div><div>${sel('halle')}</div><div>${sel('lager')}</div><div>${sel('auto')}</div></div>
+    <label class="f" style="margin-top:16px">${esc(RAHMEN.schritte.label)}</label><div class="chips" id="steps">${RAHMEN.schritte.opts.map(o => `<button class="chip ${S.rahmen.schritte.includes(o[0]) ? 'on' : ''}" data-s="${o[0]}">${esc(o[1])}</button>`).join('')}</div>
+    <p class="muted small">Montage, Qualitätssicherung, Verpackung, Lager, Wareneingang und Versand plant der Fabrikplaner immer mit ein.</p>` : ''}
+    <div id="iMsg"></div>
+    <button class="btn primary block" id="bSave" style="margin-top:14px">Angaben speichern und Gewichtung vorbereiten</button>
+   </div>
+   <button class="btn primary block" id="bStart" style="margin-top:12px" ${intakeOk() ? '' : 'disabled'}>Assessment starten</button>`;
+}
+function bindWelcome() {
+  const v = $('#view');
+  const sync = () => { S.company = $('#iCo').value; S.product = $('#iPr').value; S.sector = $('#iSe').value; $$('[data-p]', $('#intake')).forEach(s => { S.prio[+s.dataset.p] = s.value; }); $$('[data-r]', v).forEach(s => { S.rahmen[s.dataset.r] = s.value; }); };
+  $$('input,select', $('#intake')).forEach(e => e.onchange = () => { sync(); if (S.intakeDone) { S.intakeDone = false; $('#bStart').disabled = true; renderSide(); } save(); });
+  $$('#steps .chip').forEach(c => c.onclick = () => { const k = c.dataset.s, a = S.rahmen.schritte; const i = a.indexOf(k); if (i >= 0) a.splice(i, 1); else a.push(k); c.classList.toggle('on', i < 0); S.intakeDone = false; $('#bStart').disabled = true; save(); renderSide(); });
+  const bd = $('#bDemo'); if (bd) bd.onclick = () => { beispiel(); render(); toast('Beispielunternehmen geladen'); };
+  $('#bSave').onclick = () => {
+    sync(); const th = THEMES(), msg = (c, t) => { $('#iMsg').innerHTML = `<div class="msg ${c}">${t}</div>`; };
+    S.company = S.company.trim(); S.sector = S.sector.trim(); S.product = S.product.trim();
+    if (!S.company || !S.sector || !S.product) { S.intakeDone = false; msg('err', 'Bitte füllen Sie Unternehmensname, Sektor und ' + (isProd() ? 'Produktionsbereich' : 'Produktbezeichnung') + ' vollständig aus.'); }
+    else if (!S.prio.every(p => th.includes(p))) { S.intakeDone = false; msg('err', `Bitte vergeben Sie für alle ${th.length} Prioritäten jeweils eine Dimension.`); }
+    else if (new Set(S.prio).size !== th.length) { S.intakeDone = false; msg('err', 'Jede Dimension darf in der Relevanzreihenfolge nur einmal vorkommen.'); }
+    else if (isProd() && ['formIst', 'varianten', 'stueck', 'los', 'aehnlich', 'familien', 'schichten', 'halle', 'lager', 'auto'].some(k => !S.rahmen[k])) { S.intakeDone = false; msg('err', 'Bitte beantworten Sie alle Planungsdaten für den Fabrikplaner.'); }
+    else if (isProd() && S.rahmen.schritte.length < 2) { S.intakeDone = false; msg('err', 'Bitte wählen Sie mindestens zwei Fertigungsschritte.'); }
+    else { S.weights = weightsFromPrio(S.prio); S.intakeDone = true; msg('ok', 'Pflichtangaben gespeichert. Die vorgeschlagenen Gewichtungen wurden in die Einstellungen übernommen.'); }
+    $('#bStart').disabled = !intakeOk(); save(); renderSide();
+  };
+  $('#bStart').onclick = () => { if (!intakeOk()) return; S.theme = S.theme || 0; go('assessment'); };
+}
+function beispiel() {
+  Object.assign(S, { company: 'Muster Antriebstechnik GmbH', sector: 'Maschinenbau', product: 'Getriebegehäuse-Baureihe G200' });
+  S.prio = ['Technik & Ausstattung', 'Prozesse & Materialfluss', 'Organisation & Mitarbeitende', 'Produkt & Programm', 'Digitalisierung & Steuerung'];
+  Object.assign(S.rahmen, { formIst: 'werkstatt', varianten: 'v2', stueck: 's3', los: 'l3', aehnlich: 'a3', familien: '2', schichten: '2', halle: '96x48', lager: 'regal', auto: 'teil', schritte: ['saege', 'drehen', 'fraesen', 'schweissen', 'waschen', 'lackieren'] });
+  S.intakeDone = false; save();
+}
+
+/* ---------- Seite: Assessment ---------- */
+function pAssessment() {
+  const th = THEMES(), t = th[S.theme], inds = Object.keys(MODEL()[t]); S.ind = Math.min(S.ind, inds.length - 1);
+  const n = allQ().length, a = answered(), p = n ? Math.round(a / n * 100) : 0;
+  const dimProg = tt => { const q = allQ().filter(x => x.t === tt); return q.filter(x => S.answers[x.t]?.[x.i]?.[x.q.code] != null).length / q.length; };
+  const left = th.map((tt, i) => { const u = UIc(tt), qn = allQ().filter(x => x.t === tt).length, teaser = (M().summaries[tt] || '').slice(0, 120); return `<div class="dim-card ${i === S.theme ? 'on' : ''}" style="${i === S.theme ? `outline-color:${u.accent}` : ''}"><div class="dim-row"><div class="dim-icon">${ICON[u.icon] || ''}</div><div><p class="dim-title">${esc(tt)}</p><div class="dim-meta">${qn} Fragen</div></div></div><div class="dim-desc">${esc(teaser)}</div><div class="dim-bar"><i style="width:${dimProg(tt) * 100}%;background:${u.accent}"></i></div><button class="dim-open" data-th="${i}">Dimension öffnen</button></div>`; }).join('');
+  const indBtns = inds.map((nm, i) => { const qs = MODEL()[t][nm].questions, ok = qs.every(q => S.answers[t]?.[nm]?.[q.code] != null), part = qs.filter(q => S.answers[t]?.[nm]?.[q.code] != null).length; const p2 = nm.split(' '), lab = /^\d/.test(p2[0]) ? `${p2[0]} — ${p2.slice(1).join(' ')}` : nm; return `<button class="ind-btn ${i === S.ind ? 'on' : ''}" data-ind="${i}">${esc(lab)}<span class="ck">${ok ? '✓' : part ? part + '/' + qs.length : ''}</span></button>`; }).join('');
+  const ind = inds[S.ind], qs = MODEL()[t][ind].questions;
+  const qHtml = qs.map((q, k) => { const prev = S.answers[t]?.[ind]?.[q.code]; const f = v => (Math.round(v * 100) / 100).toString(); return `<div class="q-card" id="q-${q.code}"><div class="q-head"><div class="q-num">${k + 1}</div><div class="q-text">${esc(q.code)}: ${esc(q.text)}</div>${q.explanation ? `<span class="q-info" tabindex="0"><span class="i">i</span><span class="b">${esc(q.explanation)}</span></span>` : ''}</div>
+    <button class="opt ${prev == null ? 'on' : ''}" data-q="${q.code}" data-v="">Keine Auswahl</button>${q.options.map(o => `<button class="opt ${prev === o.score ? 'on' : ''}" data-q="${q.code}" data-v="${o.score}"><b>${f(o.score)}</b> — ${esc(o.label)}</button>`).join('')}</div>`; }).join('');
+  const last = S.theme === th.length - 1 && S.ind === inds.length - 1, first = S.theme === 0 && S.ind === 0;
+  return `<div class="topbar" id="progress-top"><div class="t">${esc(M().statusTitel)}</div><div class="s">Aktuell: <b>${esc(t)}</b> • ${a} von ${n} Fragen</div><div class="rail"><i style="width:${p}%"></i></div></div>
+   <div class="acols"><div><h3 style="margin-top:0">Dimensionen</h3>${left}</div>
+    <div><h3 style="margin-top:0">Indikatoren</h3><details class="exp" open><summary>Indikatorauswahl</summary>${indBtns}</details>
+     <h3>Leitfragen</h3><div class="muted small" style="margin:-6px 0 12px">${esc(MODEL()[t][ind].description || '')}</div>${qHtml}</div></div>
+   <div class="anav"><div>${first ? '' : '<button class="btn block" id="aPrev">◀ Zurück</button>'}</div><div></div><div>${last ? `<button class="btn primary block" id="aRes">Ergebnisse anzeigen ▶</button>` : '<button class="btn block" id="aNext">Weiter ▶</button>'}</div></div>`;
+}
+function bindAssessment() {
+  const th = THEMES(), t = th[S.theme], inds = Object.keys(MODEL()[t]);
+  $$('.dim-open').forEach(b => b.onclick = () => { S.theme = +b.dataset.th; S.ind = 0; save(); render(); $('#progress-top').scrollIntoView({ behavior: 'smooth' }); });
+  $$('.ind-btn').forEach(b => b.onclick = () => { S.ind = +b.dataset.ind; save(); render(); $('#progress-top').scrollIntoView({ behavior: 'smooth' }); });
+  $$('.opt').forEach(b => b.onclick = () => {
+    const ind = inds[S.ind], code = b.dataset.q, v = b.dataset.v === '' ? null : +b.dataset.v;
+    S.answers[t] = S.answers[t] || {}; S.answers[t][ind] = S.answers[t][ind] || {}; S.answers[t][ind][code] = v; save();
+    const y = window.scrollY; render(); window.scrollTo(0, y);
+    const qs = MODEL()[t][ind].questions, k = qs.findIndex(q => q.code === code), nx = qs[k + 1];
+    if (v != null && nx) setTimeout(() => $('#q-' + nx.code.replace(/\./g, '\\.'))?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+  });
+  const prev = () => { if (S.ind > 0) S.ind--; else { S.theme--; S.ind = Object.keys(MODEL()[th[S.theme]]).length - 1; } save(); render(); window.scrollTo({ top: 0 }); };
+  const next = () => { if (S.ind < inds.length - 1) S.ind++; else { S.theme++; S.ind = 0; } save(); render(); window.scrollTo({ top: 0 }); };
+  $('#aPrev') && ($('#aPrev').onclick = prev); $('#aNext') && ($('#aNext').onclick = next);
+  $('#aRes') && ($('#aRes').onclick = () => { S.tab = isProd() ? 'form' : 'overview'; go('results'); });
+}
+
+/* ---------- Seite: Einstellungen ---------- */
+function pSettings() {
+  const th = THEMES(), dw = intPct(S.weights, th), ex = th.map((t, i) => [[0.6, 0.35], [0.4, 0.2], [0.5, 0.15], [0.7, 0.15], [0.3, 0.15]][i]);
+  return `<h2>Gewichtungen anpassen</h2>${S.prio?.length ? `<p class="muted">Ausgangsbasis aus der Startseite: ${S.prio.map(esc).join(' &gt; ')}. Die Gewichtungen bleiben hier frei anpassbar.</p>` : ''}
+   <div class="msg info">Hier definieren Sie, wie stark jede Dimension in den Gesamtscore einfließt. Jede Dimension darf maximal 100 % Gewicht haben.</div>
+   <div class="card"><b>So gehen Sie bei der Bewertung vor:</b><ol style="line-height:1.7"><li>Wählen Sie pro Leitfrage eine Antwort. Leitfragen mit <b>„Keine Auswahl“</b> werden <b>nicht</b> bewertet.</li><li>Pro Indikator wird der Durchschnitt der bewerteten Leitfragen berechnet.</li><li>Pro Dimension wird der Durchschnitt der bewerteten Indikatoren berechnet.</li><li>Der <b>Gesamtscore</b> ist der gewichtete Durchschnitt aller Dimensionen (nur mit aktiven Gewichten).</li></ol>
+   <b>Beispielrechnung:</b><ul style="line-height:1.7">${th.map((t, i) => `<li>${esc(t)} ${ex[i][0].toFixed(2)} bei Gewicht ${ex[i][1].toFixed(2)}</li>`).join('')}</ul></div>
+   <div class="grid2" style="margin:16px 0"><div class="formula">Allgemein: Gesamtscore = <span class="frac"><span>∑<sub>d=1</sub><sup>n</sup> (Score<sub>d</sub> × Gewicht<sub>d</sub>)</span><span>∑<sub>d=1</sub><sup>n</sup> Gewicht<sub>d</sub></span></span></div><div class="formula">Beispiel: <span class="frac"><span>${ex.map(e => e[0].toFixed(2) + '·' + e[1].toFixed(2)).join(' + ')}</span><span>∑ Gewicht</span></span></div></div>
+   <div class="grid2">${th.map(t => `<div><label class="f">${esc(t)}</label><input class="inp" type="number" min="0" max="100" step="1" data-w="${esc(t)}" value="${dw[t] || 0}"></div>`).join('')}</div>
+   <div class="card" style="margin-top:16px;display:inline-block;min-width:260px"><div class="muted small" style="font-weight:700">Summe Gewichtungen</div><div style="font-size:34px;font-weight:900" id="wSum">100%</div><div class="small" style="color:#0b5d47;font-weight:700">↑ Ziel: 100%</div></div><div id="wMsg"></div>`;
+}
+function bindSettings() {
+  const upd = () => { const th = THEMES(), raw = Object.fromEntries($$('[data-w]').map(i => [i.dataset.w, Math.max(0, Math.min(100, +i.value || 0))])), tot = Object.values(raw).reduce((a, b) => a + b, 0); S.weights = Object.fromEntries(th.map(t => [t, tot ? raw[t] / tot : 0])); $('#wSum').textContent = tot + '%'; $('#wMsg').innerHTML = tot !== 100 ? '<div class="msg warn">Die Gewichtungen werden automatisch auf 100% normalisiert.</div>' : ''; save(); };
+  $$('[data-w]').forEach(i => i.oninput = upd); upd();
+}
+
+/* ---------- SVG-Diagramme ---------- */
+function radar(ts, size = 460) {
+  const th = THEMES(), n = th.length, c = size / 2, r = size * 0.33, ang = i => -Math.PI / 2 + i * 2 * Math.PI / n, P = (i, v) => [c + Math.cos(ang(i)) * r * v, c + Math.sin(ang(i)) * r * v];
+  let g = ''; for (const k of [0.25, 0.5, 0.75, 1]) g += `<polygon points="${th.map((_, i) => P(i, k).join(',')).join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="1"/><text x="${c + 4}" y="${c - r * k + 12}" font-size="11" fill="#94A3B8">${k * 100}%</text>`;
+  th.forEach((_, i) => { const [x, y] = P(i, 1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#E2E8F0"/>`; });
+  const pts = th.map((t, i) => P(i, Math.max(0.02, ts[t])));
+  g += `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="rgba(31,126,138,.18)" stroke="#1F7E8A" stroke-width="2.5" stroke-linejoin="round"/>`;
+  th.forEach((t, i) => { const [x, y] = pts[i], u = UIc(t), [lx, ly] = P(i, 1.2), anc = Math.abs(lx - c) < 8 ? 'middle' : lx > c ? 'start' : 'end'; g += `<circle cx="${x}" cy="${y}" r="6" fill="${u.accent}" stroke="#fff" stroke-width="2"/><text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="13.5" font-weight="800" fill="#0F172A">${esc(t)}</text><text x="${lx}" y="${ly + 16}" text-anchor="${anc}" font-size="12.5" font-weight="700" fill="${u.accent}">${fmt(ts[t] * 100)} %</text>`; });
+  return `<svg viewBox="-110 -10 ${size + 220} ${size + 20}" style="width:100%;max-width:760px;display:block;margin:0 auto">${g}</svg>`;
+}
+function gauge(v, color, title) {
+  const a = Math.PI * (1 - v), x = 100 + 78 * Math.cos(a), y = 100 - 78 * Math.sin(a);
+  return `<svg viewBox="0 0 200 128" style="width:100%"><text x="100" y="16" text-anchor="middle" font-size="12.5" font-weight="800" fill="#0F172A">${esc(title)}</text><path d="M22 100 A78 78 0 0 1 178 100" fill="none" stroke="#F1F5F9" stroke-width="18"/>${v > 0.001 ? `<path d="M22 100 A78 78 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="${color}" stroke-width="18" opacity=".72"/>` : ''}<text x="100" y="98" text-anchor="middle" font-size="28" font-weight="900" fill="${color}">${fmt(v * 100)}%</text><text x="22" y="122" font-size="10" fill="#94A3B8" text-anchor="middle">0</text><text x="178" y="122" font-size="10" fill="#94A3B8" text-anchor="middle">100</text></svg>`;
+}
+function hbars(rows, o = {}) { // rows: [{label, v (0..1|null), color}]
+  const lw = o.lw || 290, W = 860, bh = 24, gap = 10, H = rows.length * (bh + gap) + 24;
+  let g = ''; for (const k of [0, 25, 50, 75, 100]) { const x = lw + (W - lw - 60) * k / 100; g += `<line x1="${x}" y1="0" x2="${x}" y2="${H - 18}" stroke="#EEF2F6"/><text x="${x}" y="${H - 4}" font-size="11" fill="#94A3B8" text-anchor="middle">${k}%</text>`; }
+  rows.forEach((r, i) => { const y = i * (bh + gap), w = (W - lw - 60) * (r.v || 0); g += `<text x="${lw - 10}" y="${y + bh / 2 + 4.5}" text-anchor="end" font-size="13" fill="#0F172A" font-weight="600">${esc(r.label.length > 44 ? r.label.slice(0, 43) + '…' : r.label)}</text><rect x="${lw}" y="${y}" width="${Math.max(0, w)}" height="${bh}" rx="5" fill="${r.color}"/><text x="${lw + w + 6}" y="${y + bh / 2 + 4.5}" font-size="12.5" font-weight="800" fill="#0F172A">${r.v == null ? 'n. b.' : fmt(r.v * 100) + '%'}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%">${g}</svg>`;
+}
+const soft = (hex, mix = 0.28) => { const h = hex.replace('#', ''), c = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)).map(v => Math.round(v + (255 - v) * mix)); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); };
+function matrix(D) {
+  const W = 520, H = 400, l = 64, b = 54, w = W - l - 20, h = H - b - 20, X = v => l + v * w, Y = v => 20 + (1 - v) * h;
+  // Bereiche nach Fließeignung (x + y) / 2: Werkstatt < 0,38 ≤ Insel < 0,66 ≤ Linie
+  const reg = (s0, s1, col) => { const P = [], corners = [[0, 0], [1, 0], [1, 1], [0, 1]]; const f = p => (p[0] + p[1]) / 2; for (let i = 0; i < 4; i++) { const p = corners[i], q = corners[(i + 1) % 4]; const fp = f(p), fq = f(q); const inP = fp >= s0 && fp <= s1; if (inP) P.push(p); for (const s of [s0, s1]) { if ((fp - s) * (fq - s) < 0) { const t = (s - fp) / (fq - fp); P.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); } } } const cx = P.reduce((a, p) => a + p[0], 0) / P.length, cy = P.reduce((a, p) => a + p[1], 0) / P.length; P.sort((a, c) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(c[1] - cy, c[0] - cx)); return `<polygon points="${P.map(p => X(p[0]) + ',' + Y(p[1])).join(' ')}" fill="${col}"/>`; };
+  let g = reg(0, 0.38, '#F3EEFF') + reg(0.38, 0.66, '#EAF3FF') + reg(0.66, 1, '#E9FBF5');
+  g += `<text x="${X(0.12)}" y="${Y(0.1)}" font-size="14" font-weight="900" fill="#6B46C1">Werkstatt</text><text x="${X(0.40)}" y="${Y(0.42)}" font-size="14" font-weight="900" fill="#2B6CB0">Insel</text><text x="${X(0.70)}" y="${Y(0.86)}" font-size="14" font-weight="900" fill="#1F7E8A">Linie</text>`;
+  g += `<rect x="${l}" y="20" width="${w}" height="${h}" fill="none" stroke="#CBD5E1"/>`;
+  const ist = { werkstatt: [0.18, 0.2], insel: [0.5, 0.5], linie: [0.84, 0.84], gemischt: null }[D.ist];
+  if (ist && D.ist !== D.soll) g += `<circle cx="${X(ist[0])}" cy="${Y(ist[1])}" r="9" fill="#fff" stroke="#94A3B8" stroke-width="3" stroke-dasharray="3 3"/><text x="${X(ist[0]) + 14}" y="${Y(ist[1]) + 5}" font-size="12.5" font-weight="800" fill="#64748B">heute: ${FORM[D.ist]}</text><line x1="${X(ist[0])}" y1="${Y(ist[1])}" x2="${X(D.vol)}" y2="${Y(D.std)}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#ar)"/>`;
+  g += `<circle cx="${X(D.vol)}" cy="${Y(D.std)}" r="12" fill="#144477" stroke="#fff" stroke-width="4"/><text x="${X(D.vol) - 16}" y="${Y(D.std) - 18}" font-size="13" font-weight="900" fill="#144477" text-anchor="end">Ihr Programm</text>`;
+  g += `<text x="${l + w / 2}" y="${H - 16}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#475569">Stückzahl &amp; Losgröße →</text><text transform="translate(18 ${20 + h / 2}) rotate(-90)" text-anchor="middle" font-size="12.5" font-weight="800" fill="#475569">Standardisierung &amp; Teileähnlichkeit →</text><text x="${l}" y="${H - 34}" font-size="11" fill="#94A3B8">gering</text><text x="${l + w}" y="${H - 34}" font-size="11" fill="#94A3B8" text-anchor="end">hoch</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#94A3B8"/></marker></defs>${g}</svg>`;
+}
+
+/* ---------- Seite: Ergebnisse ---------- */
+function pResults() {
+  const P = isProd(), tabs = [['overview', 'Überblick'], ...(P ? [['form', '★ Produktionsform & Fabrikplaner']] : []), ['themes', 'Dimensionen'], ['indicators', 'Indikatoren'], ['questions', 'Leitfragen'], ['recs', 'Handlungsempfehlungen'], ['export', 'Export']];
+  if (!tabs.some(t => t[0] === S.tab)) S.tab = 'overview';
+  return `<h2>Ergebnisse &amp; Dashboard</h2><div class="muted" style="margin-top:-8px">${esc(S.company)} · ${esc(S.product)} · ${esc(S.sector)}</div>${!done() ? `<div class="msg warn">${answered()} von ${allQ().length} Leitfragen bewertet – nicht bewertete Leitfragen fließen nicht in den Score ein.${P ? ' Der Fabrikplaner wird nach allen Leitfragen freigeschaltet.' : ''}</div>` : ''}
+   <div class="tabs">${tabs.map(([k, l]) => `<button data-tab="${k}" class="${S.tab === k ? 'on' : ''} ${k === 'form' ? 'star' : ''}">${l}</button>`).join('')}</div><div id="tab">${tabHtml()}</div>`;
+}
+function tabHtml() {
+  const sc = calcScores(), ts = themeScores(sc), tot = total01(ts), lv = level(tot), th = THEMES(), col = Object.fromEntries(th.map(t => [t, UIc(t).accent]));
+  const rngs = ['0–25%', '>25–50%', '>50–75%', '>75–<100%', '100%'];
+  if (S.tab === 'overview') return `<h3>${esc(M().reifeTitel)}</h3>
+    <div class="card reife"><h4 style="margin-top:0">Reifegrad</h4><div class="emo">${lv.emoji}</div><div class="lvl">${lv.name} (${esc(lv.label)})</div><p class="muted">${esc(lv.description)}</p><hr><p><b>Gewichteter Score:</b> ${(tot * 5).toFixed(2)}/5.0</p><p><b>Gewichteter Prozentwert:</b> ${fmt(tot * 100)}%</p><hr class="d"><div class="scale"><b>Reifegrad-Skala</b><br>${M().levels.map((m, i) => `${m.emoji} ${m.name} (${esc(m.label)}) (${rngs[i]})`).join('<br>')}</div></div>
+    <h3>Radar-Chart</h3><div class="card">${radar(ts)}</div>
+    <h3>Detaillierte Berechnung mit Gewichtungen</h3><div class="formula">Gesamtscore = <span class="frac"><span>${th.map(t => `${ts[t].toFixed(2)}·${(S.weights[t] || 0).toFixed(2)}`).join(' + ')}</span><span>${th.map(t => (S.weights[t] || 0).toFixed(2)).join(' + ')}</span></span> = ${tot.toFixed(2)}</div>
+    <h3>Reifestufen im Überblick</h3>${M().levels.map((m, i) => `<div class="card stage"><div style="font-weight:900">${m.emoji} ${m.name} (${esc(m.label)})</div><div class="z">Zuordnung: ${rngs[i]}</div><div style="color:#334155;line-height:1.55">${esc(m.description)}</div></div>`).join('')}`;
+  if (S.tab === 'form') return formTab(ts, tot, lv);
+  if (S.tab === 'themes') return `<h3>Dimensionenübersicht</h3><div class="grid3">${th.map(t => `<div class="card">${gauge(ts[t], col[t], t)}</div>`).join('')}</div><h3>Dimensionen-Ranking</h3><div class="card">${hbars(th.map(t => ({ label: t, v: ts[t], color: soft(col[t]) })), { lw: 230 })}</div>`;
+  if (S.tab === 'indicators') { const f = S.filters.ind || 'Alle', rows = []; for (const t of th) if (f === 'Alle' || f === t) for (const i of Object.keys(MODEL()[t])) rows.push({ t, i, v: sc[t][i] }); return `<h3>Indikator-Details</h3><label class="f">Thema filtern</label><select class="inp" id="fInd" style="max-width:360px">${['Alle', ...th].map(x => `<option ${x === f ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select><div class="card" style="margin-top:12px;max-height:540px;overflow:auto">${hbars(rows.map(r => ({ label: r.i, v: r.v ?? 0, color: soft(col[r.t]) })), { lw: 330 })}</div><div class="tbox" style="margin-top:14px"><table class="t"><tr><th>Thema</th><th>Indikator</th><th class="n">Aggregierter Score</th></tr>${rows.slice().sort((a, b) => (a.v ?? -1) - (b.v ?? -1)).map(r => `<tr><td>${esc(r.t)}</td><td>${esc(r.i)}</td><td class="n">${r.v == null ? '–' : r.v.toFixed(2)}</td></tr>`).join('')}</table></div>`; }
+  if (S.tab === 'questions') {
+    const fT = S.filters.qt || 'Alle', fI = S.filters.qi || 'Alle', inds = fT !== 'Alle' ? Object.keys(MODEL()[fT]) : [...new Set(allQ().map(x => x.i))].sort();
+    const q = allQ().filter(x => (fT === 'Alle' || x.t === fT) && (fI === 'Alle' || x.i === fI)).map(x => ({ ...x, v: S.answers[x.t]?.[x.i]?.[x.q.code] ?? null }));
+    const un = q.filter(x => x.v == null), cnt = {}; q.filter(x => x.v != null).forEach(x => cnt[x.v] = (cnt[x.v] || 0) + 1);
+    const ks = [0, 0.25, 0.5, 0.75, 1], mx = Math.max(1, ...Object.values(cnt)), c1 = fT !== 'Alle' ? col[fT] : '#B7791F';
+    const dist = `<svg viewBox="0 0 620 230" style="width:100%">${ks.map((k, i) => { const h = 160 * (cnt[k] || 0) / mx, x = 60 + i * 110; return `<rect x="${x}" y="${190 - h}" width="70" height="${h}" rx="6" fill="${soft(c1, 0.75 - k * 0.6)}"/><text x="${x + 35}" y="${184 - h}" text-anchor="middle" font-size="13" font-weight="800">${cnt[k] || 0}</text><text x="${x + 35}" y="210" text-anchor="middle" font-size="12" fill="#475569">${k}</text>`; }).join('')}<text x="310" y="228" text-anchor="middle" font-size="12" font-weight="800" fill="#475569">Score</text></svg>`;
+    const tbl = rows => `<div class="tbox"><table class="t"><tr><th>Thema</th><th>Indikator</th><th>Frage-Code</th><th>Frage</th><th class="n">Score</th><th>Bewertet</th></tr>${rows.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.i)}</td><td>${x.q.code}</td><td>${esc(x.q.text)}</td><td class="n">${x.v == null ? '–' : x.v}</td><td>${x.v == null ? 'Nein' : 'Ja'}</td></tr>`).join('')}</table></div>`;
+    return `<h3>Leitfragen-Details</h3><div class="grid2"><div><label class="f">Dimension</label><select class="inp" id="fQt">${['Alle', ...th].map(x => `<option ${x === fT ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div><div><label class="f">Indikator</label><select class="inp" id="fQi">${['Alle', ...inds].map(x => `<option ${x === fI ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div></div>
+     <div style="margin:16px 0"><div style="font-weight:900">Nicht bewertet</div><div style="font-weight:900;font-size:28px">${un.length}/${q.length}</div></div>${q.length - un.length ? `<div class="card">${dist}</div>` : '<div class="msg info">Noch keine bewerteten Leitfragen vorhanden.</div>'}
+     ${un.length ? `<details class="box" open><summary>Nicht bewertete Leitfragen anzeigen</summary>${tbl(un)}</details>` : ''}<details class="box"><summary>Alle Leitfragen anzeigen</summary>${tbl(q)}</details>`;
+  }
+  if (S.tab === 'recs') { const rows = []; for (const t of th) for (const i of Object.keys(MODEL()[t])) if (sc[t][i] != null && sc[t][i] < 0.5) rows.push({ t, i, v: sc[t][i] }); return `<h3>Handlungsempfehlungen</h3><p class="muted small">Angezeigt werden nur Indikatoren mit einer Einzelbewertung unter 50 %.</p>${rows.length ? rows.map(r => `<div class="card rec"><div class="d" style="color:${col[r.t]}">${esc(r.t)}</div><div class="i">${esc(r.i)}</div><div class="s">Einzelbewertung: ${Math.round(r.v * 100)} %</div><div class="x">${esc(M().recommendations[r.i] || 'Für diesen Indikator ist keine Handlungsempfehlung hinterlegt.')}</div></div>`).join('') : '<div class="msg ok">Aktuell liegt kein Indikator unter 50 %. Es werden daher keine Handlungsempfehlungen angezeigt.</div>'}`; }
+  if (S.tab === 'export') return `<h3>Export &amp; Speicherung</h3><div class="grid2"><div><label class="f">${isProd() ? 'Produktionsbereich' : 'Produktname'}</label><input class="inp" id="eP" value="${esc(S.product)}"><label class="f" style="margin-top:10px">Unternehmensname</label><input class="inp" id="eC" value="${esc(S.company)}"><label class="f" style="margin-top:10px">Sektor</label><input class="inp" id="eS" value="${esc(S.sector)}"><button class="btn primary block" id="eSave" style="margin-top:14px">Assessment speichern</button></div>
+    <div><button class="btn block" id="ePdf">PDF-Report (Drucken → Als PDF speichern)</button><button class="btn block" id="eJson" style="margin-top:10px">Ergebnisse als JSON herunterladen</button><button class="btn block" id="eCsv" style="margin-top:10px">Leitfragen als CSV herunterladen</button><p class="muted small">Gespeicherte Assessments erscheinen unter „Historie“ (lokal in diesem Browser).</p></div></div>`;
+  return '';
+}
+function formTab(ts, tot, lv) {
+  const D = diagnose(), th = THEMES(), cfg = plannerCfg();
+  const bef = [
+    ['Organisationsform', D.ist === D.soll ? 1 : 0.2, D.ist === D.soll ? `${FORM[D.soll]} passt zum Produktionsprogramm.` : `Heute ${FORM[D.ist]}, das Programm verlangt ${FORM[D.soll]}.`, `Layout: ${FORM[D.soll]}${D.soll === 'linie' ? ' (verkettete I- bzw. U-Linie)' : D.soll === 'insel' ? ` (${S.rahmen.familien} Fertigungsinseln)` : ' (Bereiche nach Verrichtung)'}`],
+    ['Ausstattung & Kapazität', D.d.tech, D.bef.ausstattung ? `Maschinen und Anlagen reichen nicht aus: OEE rund ${fmt(D.oee * 100)} %, Engpass ${D.eng ? D.eng.bereich : '–'}.` : 'Maschinenpark und Kapazität tragen die Zielstruktur.', D.bef.ausstattung ? `Layout: +1 Anlage am Engpass ${D.eng ? D.eng.bereich : ''} (grün markiert)` : 'Layout: Anlagen nach Kapazitätsrechnung'],
+    ['Prozessreife & Materialfluss', D.d.proz, D.bef.prozess ? 'Standardarbeit, Rüstzeiten und Austaktung sind noch nicht stabil genug für einen verketteten Fluss.' : 'Prozesse sind stabil genug für einen gerichteten, getakteten Fluss.', D.bef.foerdertechnik ? 'Layout: Fördertechnik und FTS ergänzt, Supermarkt am Lager' : 'Layout: Rollenbahnen zwischen den Schritten, Supermarkt am Lager'],
+    ['Organisation & Mitarbeitende', D.d.org, D.bef.organisation ? 'Qualifikation und Teamverantwortung reichen für die Zielstruktur noch nicht aus.' : 'Teams können Verantwortung für Inseln bzw. Linien übernehmen.', 'Layout: Kennzahlentafeln je Bereich, Meisterbüro am Hauptgang'],
+    ['Steuerung & Digitalisierung', D.d.dig, D.bef.digital ? 'Planung und Datenerfassung sind nicht ausreichend für eine Pull-Steuerung.' : 'Planung und Daten unterstützen eine Steuerung im Takt.', D.bef.digital ? 'Layout: BDE-Terminals an Linien/Inseln und Leitstand' : 'Layout: Leitstand im Meisterbüro']
+  ];
+  const ph1 = [], ph3 = [];
+  const sc = calcScores(); const weakI = []; for (const t of th) for (const i of Object.keys(MODEL()[t])) if (sc[t][i] != null) weakI.push({ t, i, v: sc[t][i] }); weakI.sort((a, b) => a.v - b.v);
+  weakI.slice(0, 3).forEach(w => ph1.push(`${w.i.replace(/^\d+\.\d+ /, '')} stärken (${fmt(w.v * 100)} %)`));
+  ph3.push('Shopfloor-Management mit täglichen Kennzahlen', 'KVP und Standardarbeit fortschreiben', `Reifegrad-Check wiederholen – Ziel ${level(Math.min(1, tot + 0.25)).name} (${level(Math.min(1, tot + 0.25)).label})`);
+  const F = +S.rahmen.familien || 2, plus = D.bef.ausstattung ? 1 : 0, nSum = D.soll === 'insel' ? D.rows.reduce((a, r) => a + Math.min(2, Math.max(1, Math.ceil(r.n / F))) * F, 0) + plus * F : D.rows.reduce((a, r) => a + r.n, 0) + plus, nZ = D.rows.reduce((a, r) => a + r.nZ, 0);
+  return `<div class="verdict"><div class="k">Ergebnis des Reifegrad-Checks · ${lv.emoji} ${lv.name} (${esc(lv.label)}) · ${fmt(tot * 100)} %</div><div class="h">${esc(D.head)}</div><div class="p">${esc(D.text)}</div>
+     <div class="forms">${D.ist !== D.soll ? `<span class="f">heute: ${FORM[D.ist]}</span><span class="arr">→</span>` : ''}<span class="f soll">Ziel: ${FORM[D.soll]}</span>${D.schwach.length ? `<span class="f">Voraussetzungen: ${D.schwach.join(', ')}</span>` : ''}</div></div>
+   <div class="grid2" style="margin-top:18px;align-items:start"><div><h4>Produkt-Prozess-Matrix</h4><div class="card">${matrix(D)}<div class="muted small">Fließeignung ${fmt(D.S0 * 100)} % aus Stückzahl, Losgröße, Varianten, Teileähnlichkeit und Standardisierung (Dimension „${esc(th[0])}“). Grenzen: Werkstatt &lt; 38 % ≤ Insel &lt; 66 % ≤ Linie.</div></div></div>
+    <div><h4>Befunde für das Zielbild</h4>${bef.map(([t, v, x, lay]) => { const [c, l] = t === 'Organisationsform' ? (v >= 1 ? ['#0A967A', 'passt'] : ['#c0392b', 'Umstellung nötig']) : D.ampel(v); return `<div class="card befund"><span class="amp" style="background:${c}"></span><div><div class="t">${t}<span class="st" style="color:${c}">${l}${t !== 'Organisationsform' ? ' · ' + fmt(v * 100) + ' %' : ''}</span></div><div class="x">${esc(x)}</div><div class="lay">${esc(lay)}</div></div></div>`; }).join('')}</div></div>
+   <h4>Kapazitätsrechnung für das Layout</h4>
+   <div class="kpis"><div class="card kpi"><b>${fmt(D.stueck)}</b><span>Stück je Jahr</span></div><div class="card kpi"><b>${fmt(D.takt, 2)} min</b><span>Takt bei OEE ${fmt(D.oee * 100)} %</span></div><div class="card kpi"><b>${nSum}</b><span>Anlagen im Zielbild</span></div><div class="card kpi"><b>${nZ}</b><span>Anlagen bei OEE 80 %</span></div></div>
+   <div class="tbox" style="margin-top:12px"><table class="t"><tr><th>Fertigungsschritt</th><th>Bereich</th><th class="n">Bearbeitungszeit je Stück</th><th class="n">Anlagen</th><th class="n">Auslastung</th><th class="n">bei OEE 80 %</th></tr>${D.rows.map(r => `<tr><td>${esc(r.name)}${D.eng && D.eng.k === r.k ? ' <b style="color:#c0392b">⚑ Engpass</b>' : ''}</td><td>${esc(r.bereich)}</td><td class="n">${fmt(r.tz, 1)} min</td><td class="n">${r.n}${D.bef.ausstattung && D.eng && D.eng.k === r.k ? ' + 1 neu' : ''}</td><td class="n">${fmt(Math.min(1, r.ausl) * 100)} %</td><td class="n">${r.nZ}</td></tr>`).join('')}</table></div>
+   <p class="muted small">Takt = 220 Arbeitstage × ${D.schichten} Schicht(en) × 7,5 h × OEE ÷ Stückzahl. Anlagen je Schritt = ⌈Bearbeitungszeit ÷ Takt⌉ (Richtwerte je Erzeugnis, im Fabrikplaner anpassbar).</p>
+   <h4>Umsetzungsfahrplan</h4><div class="grid3"><div class="card phase"><div class="k">Phase 1 · 0–3 Monate</div><div class="t">Voraussetzungen schaffen</div><ul>${ph1.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div><div class="card phase"><div class="k">Phase 2 · 3–9 Monate</div><div class="t">${esc(FORM[D.soll])} umsetzen</div><ul><li>Zielbild-Layout im Fabrikplaner detaillieren</li><li>${D.soll === 'linie' ? 'Linie austakten, Rollenbahnen und Supermarkt einrichten' : D.soll === 'insel' ? 'Inseln je Produktfamilie bilden, Teams zuordnen' : 'Bereiche nach Verrichtung ordnen, Puffer begrenzen'}</li><li>${D.bef.ausstattung ? `Engpass ${D.eng ? D.eng.bereich : ''}: zusätzliche Anlage beschaffen` : 'Umzug in Etappen ohne Lieferunterbrechung planen'}</li></ul></div><div class="card phase"><div class="k">Phase 3 · ab 9 Monaten</div><div class="t">Stabilisieren &amp; steuern</div><ul>${ph3.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>
+   <div class="cta"><div style="font-size:42px">▦</div><div style="flex:1"><div class="t">Optimales Layout im Fabrikplaner erzeugen</div><div class="x">Die Fabric Planning Suite richtet eine leere Halle (${esc(S.rahmen.halle.replace('x', ' × '))} m) als ${esc(FORM[D.soll])} ein: Zonen nach Materialfluss, ${nSum} Anlagen, Montage, Lager, Versand und Materialflüsse – bearbeitbar und speicherbar.</div></div><button class="btn go" id="toPlanner" ${done() ? '' : 'disabled'}>Zum Fabrikplaner →</button></div>`;
+}
+function bindResults() {
+  $$('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; save(); $$('.tabs button').forEach(x => x.classList.toggle('on', x === b)); $('#tab').innerHTML = tabHtml(); bindTab(); });
+  bindTab();
+}
+function bindTab() {
+  const f = (id, k) => { const e = $(id); if (e) e.onchange = () => { S.filters[k] = e.value; if (k === 'qt') S.filters.qi = 'Alle'; save(); $('#tab').innerHTML = tabHtml(); bindTab(); }; };
+  f('#fInd', 'ind'); f('#fQt', 'qt'); f('#fQi', 'qi');
+  const tp = $('#toPlanner'); if (tp) tp.onclick = () => go('planner');
+  const es = $('#eSave'); if (es) es.onclick = () => { S.product = $('#eP').value; S.company = $('#eC').value; S.sector = $('#eS').value; const sc = calcScores(), ts = themeScores(sc); const rec = { Timestamp: new Date().toISOString(), Modell: S.model, Produkt: S.product, Unternehmen: S.company, Sektor: S.sector, Dimensionen_Prioritaet: S.prio, answers: S.answers, scores: sc, theme_scores: ts, total: total01(ts), weights: S.weights, rahmen: isProd() ? S.rahmen : undefined, form: isProd() ? diagnose().soll : undefined }; let h = []; try { h = JSON.parse(localStorage.getItem(HIST)) || []; } catch (e) { /* */ } h.push(rec); try { localStorage.setItem(HIST, JSON.stringify(h)); toast('Assessment lokal gespeichert (Historie)'); } catch (e) { toast('Speichern im Browser nicht möglich – bitte JSON herunterladen'); } save(); };
+  const dl = (name, txt, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+  const ej = $('#eJson'); if (ej) ej.onclick = () => { const sc = calcScores(), ts = themeScores(sc); dl(`Circulara_${S.model}_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ unternehmen: S.company, produkt: S.product, sektor: S.sector, modell: M().name, gewichte: S.weights, antworten: S.answers, indikatoren: sc, dimensionen: ts, gesamt: total01(ts), reifegrad: level(total01(ts)), planung: isProd() ? { rahmen: S.rahmen, diagnose: diagnose(), fabrikplaner: plannerCfg() } : undefined }, null, 2), 'application/json'); };
+  const ec = $('#eCsv'); if (ec) ec.onclick = () => dl(`Circulara_Leitfragen_${new Date().toISOString().slice(0, 10)}.csv`, '﻿Thema;Indikator;Frage-Code;Frage;Score\n' + allQ().map(x => [x.t, x.i, x.q.code, x.q.text, S.answers[x.t]?.[x.i]?.[x.q.code] ?? ''].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv');
+  const ep = $('#ePdf'); if (ep) ep.onclick = () => { S.tab = 'overview'; render(); setTimeout(() => window.print(), 300); };
+}
+
+/* ---------- Seite: Historie ---------- */
+function pHistory() {
+  let h = []; try { h = JSON.parse(localStorage.getItem(HIST)) || []; } catch (e) { /* */ }
+  if (!h.length) return '<h2>Assessment-Historie (lokal)</h2><div class="msg info">Noch keine gespeicherten Assessments. Speichern Sie ein Assessment unter Ergebnisse → Export.</div>';
+  const th = THEMES();
+  return `<h2>Assessment-Historie (lokal)</h2><div class="card">${hbars(h.map((r, i) => ({ label: `${new Date(r.Timestamp).toLocaleDateString('de-DE')} · ${r.Unternehmen} · ${r.Produkt}`, v: r.total ?? 0, color: '#9cc6cf' })), { lw: 380 })}</div>
+   <div class="tbox" style="margin-top:14px"><table class="t"><tr><th>Zeitpunkt</th><th>Modell</th><th>Unternehmen</th><th>Produkt / Bereich</th><th>Sektor</th>${th.map(t => `<th class="n">${esc(t)}</th>`).join('')}<th class="n">Gesamt</th><th></th></tr>${h.map((r, i) => `<tr><td>${new Date(r.Timestamp).toLocaleString('de-DE')}</td><td>${r.Modell === 'circulara' ? 'Kreislauf' : 'Produktion'}${r.form ? ' · ' + FORM[r.form] : ''}</td><td>${esc(r.Unternehmen)}</td><td>${esc(r.Produkt)}</td><td>${esc(r.Sektor)}</td>${th.map(t => `<td class="n">${r.theme_scores?.[t] != null ? fmt(r.theme_scores[t] * 100) + '%' : '–'}</td>`).join('')}<td class="n"><b>${fmt((r.total || 0) * 100)}%</b></td><td><button class="btn" data-load="${i}" style="padding:5px 10px">Laden</button> <button class="btn" data-del="${i}" style="padding:5px 10px">✕</button></td></tr>`).join('')}</table></div>`;
+}
+function bindHistory() {
+  let h = []; try { h = JSON.parse(localStorage.getItem(HIST)) || []; } catch (e) { /* */ }
+  $$('[data-load]').forEach(b => b.onclick = () => { const r = h[+b.dataset.load]; if (!r) return; const m = r.Modell && MODELS[r.Modell] ? r.Modell : 'produktion'; S = Object.assign(neu(m), { company: r.Unternehmen, product: r.Produkt, sector: r.Sektor, prio: r.Dimensionen_Prioritaet || Object.keys(MODELS[m].model), weights: r.weights, answers: r.answers, intakeDone: true, rahmen: Object.assign(neu(m).rahmen, r.rahmen || {}) }); save(); go('results'); toast('Assessment geladen'); });
+  $$('[data-del]').forEach(b => b.onclick = () => { h.splice(+b.dataset.del, 1); try { localStorage.setItem(HIST, JSON.stringify(h)); } catch (e) { /* */ } render(); });
+}
+
+/* ---------- Fabrikplaner (eingebettete Fabric Planning Suite) ---------- */
+let frame = null, ready = false, pending = null;
+function suiteSrc() { // Einzeldatei: Suite liegt eingebettet vor; Entwicklung: Nachbardatei
+  const el = document.getElementById('fps-b64');
+  if (el) { const bin = atob(el.textContent.trim()), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return { doc: new TextDecoder('utf-8').decode(u8).replace('<script>', '<script>window.HSS_EMBED = true;<\/script>\n<script>') }; }
+  return { url: '../Fabric_Planning_Suite.html?embed' };
+}
+function ensureFrame() {
+  if (frame) return;
+  frame = document.createElement('iframe'); frame.title = 'Fabric Planning Suite'; frame.setAttribute('allow', 'fullscreen');
+  const src = suiteSrc(); if (src.doc) frame.srcdoc = src.doc; else frame.src = src.url;
+  $('#planner').appendChild(frame);
+}
+window.addEventListener('message', e => {
+  const m = e.data; if (!m || typeof m !== 'object' || !frame || e.source !== frame.contentWindow) return;
+  if (m.type === 'prs:ready') { ready = true; if (pending) { send(pending); pending = null; } }
+  if (m.type === 'prs:shown') { $('#pLoad').style.display = 'none'; }
+  if (m.type === 'prs:back') { S.tab = 'form'; go('results'); }
+});
+const send = cfg => { $('#pLoadT').textContent = 'Zielbild-Layout wird erzeugt …'; frame.contentWindow.postMessage({ type: 'prs:plan', payload: cfg, opts: window.PRS_PLAN_OPTS || {} }, '*'); setTimeout(() => { $('#pLoad').style.display = 'none'; }, 900); };
+let planned = null;
+function openPlanner(force) {
+  ensureFrame(); const cfg = plannerCfg(), key = JSON.stringify(cfg);
+  $('#pSub').textContent = `Zielbild ${FORM[cfg.form]} · ${S.company}`;
+  if (planned === key && !force) return;
+  planned = key; $('#pLoad').style.display = 'flex';
+  if (ready) send(cfg); else pending = cfg;
+}
+$$('#planner [data-v]').forEach(b => b.onclick = () => frame?.contentWindow.postMessage({ type: 'prs:view', view: b.dataset.v }, '*'));
+$('#pBack').onclick = () => { S.tab = 'form'; go('results'); };
+$('#pRedo').onclick = () => openPlanner(true);
+// Fabrikplaner im Hintergrund vorladen, sobald das Assessment läuft (schnellerer Wechsel)
+const preload = () => { if (isProd() && intakeOk() && !frame) setTimeout(ensureFrame, 1200); };
+
+/* ---------- Präsentationshilfe (z. B. für Videos): Untertitel ---------- */
+window.PRS = { caption(t, k) { const c = $('#cap'); if (!t) { c.classList.remove('on'); return; } c.innerHTML = (k ? `<small>${esc(k)}</small>` : '') + esc(t); c.classList.add('on'); }, state: () => S, go, render, beispiel, diagnose, plannerCfg };
+
+render(); preload();
+})();
+</script>
+</body>
+</html>
