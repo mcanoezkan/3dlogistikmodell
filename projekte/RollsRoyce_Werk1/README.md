@@ -20,6 +20,10 @@ Modell auf Basis **öffentlich verfügbarer Informationen**. Es ist kein Abbild 
 
 Wichtig: Nach Unternehmensangaben liegen die **Montage der Baureihe 4000 und die Lackiererei in Werk 2 (Manzell)**; das **Materialwirtschaftszentrum** liegt in Kluftern. Im Modell sind Werk 2, MWZ Kluftern, Rohteil-Lieferanten und Kunden als externe Orte angebunden. Die Montage in G 43 und die Lackiererei in G 30/1 sind ein Szenario für die angekündigte „Neuaufstellung von Werk 1 und 2“ (Pressemitteilung 02.03.2026).
 
+## Hallenausbau & Intralogistik (Szenario)
+
+Alle 40 Hallen sind mit dem Hallenausbau der Suite ausgestattet: Hauptfahrweg mit gelber Begrenzung und Richtungspfeilen, grüner Gehweg mit Geländer und Überwegen, Querwege zu jedem Bereich, FTS-Leitlinien mit Stichstrecken und Ladestation, Rollenbahnen zum Übergabeplatz, Brückenkran bzw. Hängebahn, Stützenraster, Bereitstellzonen sowie Sicherheits- und Sozialausstattung. Stapler, Routenzüge, FTS (auch Schwerlast-FTS mit Großmotor) und Werker bewegen sich auf diesen Wegen; der Fahrzeugmix je Halle folgt den 30 Materialflüssen. Lage und Ausführung der Wege sind **Planungsannahmen** (ASR A1.8, ASR A1.3, VDI 2510), keine Angaben des Unternehmens.
+
 ## Mengen (Szenario)
 
 - 1.700 Motoren je Jahr (≈ Mittelwert aus „über 26.000 Motoren der Baureihe 4000 in 15 Jahren“), 230 Arbeitstage
@@ -37,7 +41,7 @@ python3 tools/build_einzeldatei.py fabrik
 node tools/werk1_bauen.js projekte/RollsRoyce_Werk1/osm_werk1_quelldaten.json
 ```
 
-`tools/werk1_aufbau.js` enthält Belegung, Mengen, Außenanlagen und die 30 Materialflüsse.
+`tools/werk1_aufbau.js` enthält Belegung, Mengen, Außenanlagen, die 30 Materialflüsse und den Hallenausbau.
 
 ## Quellen
 

@@ -138,16 +138,21 @@ HSS.prodCalc = (inp, prj = HSS.project()) => {
 };
 
 /* ---------- Belegung der Halle (u entlang der Hallenlänge, v quer) ---------- */
-const frame = (pt, R) => {
+// Hauptverkehrsband längs der Halle (ASR A1.8): Fahrweg 4,5 m für Begegnungsverkehr Stapler/Routenzug/FTS,
+// Gehweg 1,4 m, 0,9 m Sicherheitsabstand – in Hallen ab 20 m Breite bleibt dieses Band frei von Maschinen.
+HSS.HALLE_BAND = { fahrweg: [0.3, 4.8], gehweg: [4.8, 6.2], frei: 7.1, abBreite: 20 };
+const frame = (pt, R, raw) => {
   const e = 0.6, x0 = R.x0 + e, x1 = R.x1 - e, z0 = R.z0 + e, z1 = R.z1 - e, alongX = (x1 - x0) >= (z1 - z0);
-  const L = alongX ? x1 - x0 : z1 - z0, Q = alongX ? z1 - z0 : x1 - x0, ang = alongX ? 0 : 90, O = alongX ? [x0, z0] : [x1, z0];
-  const toLoc = (u, v) => { const q = G.rot([u, v], U.rad(ang)); return [O[0] + q[0], O[1] + q[1]]; };
-  const toUV = (x, z) => G.rot([x - O[0], z - O[1]], -U.rad(ang));
-  return { L, Q, ang, toLoc, toUV };
+  const L = alongX ? x1 - x0 : z1 - z0, Q0 = alongX ? z1 - z0 : x1 - x0, ang = alongX ? 0 : 90, O = alongX ? [x0, z0] : [x1, z0];
+  const res = raw || Q0 < HSS.HALLE_BAND.abBreite ? 0 : HSS.HALLE_BAND.frei, Q = Q0 - res;
+  const toLoc = (u, v) => { const q = G.rot([u, v + res], U.rad(ang)); return [O[0] + q[0], O[1] + q[1]]; };
+  const toUV = (x, z) => { const q = G.rot([x - O[0], z - O[1]], -U.rad(ang)); return [q[0], q[1] - res]; };
+  return { L, Q, Q0, res, ang, toLoc, toUV };
 };
+HSS.prodFrame = (pt, raw = true) => frame(pt, HSS.innenRechteck(HSS.partFootprintLocal(pt).outer), raw);
 function prodFrei(prj, pt, f, R) {
   const F = frame(pt, R); let u0 = 0;
-  for (const e of prj.produktion || []) if (e.part === pt.id && e.floor === f) u0 = Math.max(u0, e.u1 + 3);
+  for (const e of prj.produktion || []) if (e.part === pt.id && e.floor === f) u0 = Math.max(u0, e.u1 + 4);
   return { L: Math.max(0, F.L - u0), Q: F.Q, flaeche: Math.max(0, F.L - u0) * F.Q, belegt: u0 > 0, u0 };
 }
 // Umriss eines Objekts im (u, v)-Rahmen

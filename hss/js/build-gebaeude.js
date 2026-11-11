@@ -40,6 +40,26 @@ const ringWallGeo = (ring, y0, h, closed = true) => {
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); return g;
 };
 HSS.ringWallGeo = ringWallGeo;
+// Ring parallel versetzen (d > 0 nach außen, d < 0 nach innen); inside(p) sagt, ob ein Punkt im Gebäude liegt.
+// Gegen Flackern: Wände liegen 3 cm innerhalb des Grundrisses, Fensterbänder und Geschosslinien 2 cm davor –
+// so teilen sich weder aneinanderstoßende Hallen noch Wand und Band eine Ebene.
+const offRing = (ring, d, inside) => {
+  const n = ring.length; if (n < 3 || !d) return ring;
+  const nrm = [];
+  for (let i = 0; i < n; i++) {
+    const a = ring[i], b = ring[(i + 1) % n], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1;
+    let nx = dz / l, nz = -dx / l; const mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2;
+    if (inside([mx + nx * 0.05, mz + nz * 0.05])) { nx = -nx; nz = -nz; }
+    nrm.push([nx, nz]);
+  }
+  return ring.map((p, i) => {
+    const n0 = nrm[(i - 1 + n) % n], n1 = nrm[i]; let mx = n0[0] + n1[0], mz = n0[1] + n1[1]; const ml = Math.hypot(mx, mz);
+    if (ml < 1e-6) return [p[0] + n1[0] * d, p[1] + n1[1] * d];
+    mx /= ml; mz /= ml; const k = Math.min(3, 1 / Math.max(0.3, mx * n1[0] + mz * n1[1]));
+    return [p[0] + mx * d * k, p[1] + mz * d * k];
+  });
+};
+HSS.offRing = offRing;
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
 class Inst {
@@ -141,7 +161,9 @@ HSS.buildPart = (pt, building, view = {}) => {
   const bands = [], flines = [];
   const floors = HSS.partFloors(pt);
   const ex = view.explode || 0;
-  const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))];
+  const inBld = q => G.pointIn(q, outer) && !holes.some(h => G.pointIn(q, h));
+  const rings = [{ r: outer, side: 1 }, ...holes.map(h => ({ r: G.cw(h), side: 1 }))].map(o => ({ r: offRing(o.r, -0.03, inBld), r0: o.r, side: o.side }));
+  const vor = r => offRing(r, 0.025, inBld); // Bänder/Linien 2,5 cm vor der Wand
   const meta = { kind: 'part', id: pt.id, building: building.id };
   const inst = new Inst();
   const walls = [];
@@ -167,8 +189,8 @@ HSS.buildPart = (pt, building, view = {}) => {
       const park = fc.type === 'parkhaus' || pt.use === 'parkhaus';
       for (const { r } of rings) {
         walls.push(ringWallGeo(r, y0, park && !isCut ? Math.min(wh, 1.1) : wh));
-        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(ringWallGeo(r, y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
-        if (!isCut && f > 0) flines.push(ringWallGeo(r, y0 - 0.14, 0.16));
+        if (!isCut && !park && wh > 2.4 && f >= 0) bands.push(ringWallGeo(vor(r), y0 + 0.95, Math.min(wh - 1.45, fc.type === 'glas' || fc.type === 'lamellen' ? wh - 1.2 : 1.55)));
+        if (!isCut && f > 0) flines.push(ringWallGeo(vor(r), y0 - 0.14, 0.16));
       }
       continue;
     }
@@ -197,7 +219,7 @@ HSS.buildPart = (pt, building, view = {}) => {
     // Geneigtes Dach (Sattel, Walm, Zelt, Pult, Shed): Dachflächen, Giebel, Glasbänder
     const geneigt = HSS.dachGeneigt?.(pt) && !holes.length;
     if (geneigt) {
-      const dg = HSS.dachGeo(pt, HSS.partFootprintLocal(pt).outer, yt);
+      const lo = HSS.partFootprintLocal(pt).outer, dg = HSS.dachGeo(pt, offRing(lo, -0.03, q => G.pointIn(q, lo)), yt);
       const dc = feP ? feP.farbe : plan ? '#e3e6ea' : (pt.roof?.color && pt.roof.color !== '#9aa3ad' ? pt.roof.color : pt.roof.type === 'shed' ? '#a9b1b9' : '#9b4a32');
       const dm = glasHull ? tMat('glasdach2', '#e6ebef', 0.22) : HSS.library.shared('dach2|' + dc, () => new THREE.MeshStandardMaterial({ color: dc, roughness: 0.85, side: THREE.DoubleSide }));
       if (dg.dach) { const m = new THREE.Mesh(dg.dach, dm); m.castShadow = m.receiveShadow = true; m.userData = Object.assign({ roof: true }, meta); grp.add(m); }

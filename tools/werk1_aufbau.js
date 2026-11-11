@@ -187,7 +187,11 @@
   F('Späne Kurbelwellen → Wertstoffhof', 'm_spaene', id(rKW), wst, 5, 't_stapler', [[8, 9], [13, 14], [20, 21]]);
   F('Leergut Montage → Leergutlager', 'm_leergut', id(rMontage), id(rLG), 260, 't_routenzug');
 
-  /* ---------- 4 · Projektangaben ---------- */
+  /* ---------- 4 · Hallenausbau & Intralogistik ---------- */
+  // Fahr- und Gehwege mit Bodenmarkierung, FTS-Leitlinien, Rollenbahnen, Stützen, Kran/Hängebahn, Ausstattung
+  log.push(`Hallenausbau: ${HSS.alleHallenAusbauen(prj)} Hallen mit Wegen, Markierungen und Intralogistik`);
+
+  /* ---------- 5 · Projektangaben ---------- */
   prj.meta.name = 'Rolls-Royce Power Systems – Werk 1 Friedrichshafen (Planungsmodell)';
   prj.meta.notes = [
     'Planungsmodell auf Basis öffentlich verfügbarer Informationen. Grundrisse aller Gebäude aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL 1.0); Gebäudehöhen angenommen.',

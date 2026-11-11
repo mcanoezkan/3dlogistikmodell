@@ -44,6 +44,12 @@ S3.frame = () => {
   if (cont === 'traffic' && !moved && P.inv <= 0 && now - lastTrafficT < 33) { HSS.emit('frame', dt); return; }
   if (P.trafficAnim || !HSS.traffic.agents.length) HSS.traffic.update(cont === 'traffic' ? Math.min(0.1, (now - (lastTrafficT || now)) / 1000) : dt);
   HSS.emit('frame', dt);
+  // Gegen Flackern (Z-Fighting): Nahebene mit dem Abstand zum Blickziel mitführen. Die Tiefenauflösung
+  // hängt fast nur von der Nahebene ab – 0,1 m reicht bei 300 m Abstand nur für ~5 cm, so flimmern
+  // Fassadenbänder, Fensterrahmen, Bodenmarkierungen und aneinanderstoßende Hallenwände.
+  { const cam = S3.camera, d = S3.fpvActive ? 0 : cam.position.distanceTo(S3.controls.target);
+    const nr = S3.fpvActive ? 0.05 : Math.min(6, Math.max(0.1, d / 220, (cam.position.y - (S3.controls.target.y || 0)) / 400));
+    if (Math.abs(nr - cam.near) / cam.near > 0.04) { cam.near = nr; cam.updateProjectionMatrix(); } }
   S3.camera.updateMatrixWorld();
   const camChanged = !lastCam.equals(S3.camera.matrixWorld) || !lastProj.equals(S3.camera.projectionMatrix);
   if (!camChanged && !cont && P.inv <= 0) return;

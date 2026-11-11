@@ -5,7 +5,7 @@
 | Datei (Doppelklick, offline) | Edition | Schwerpunkt |
 |---|---|---|
 | `Healthcare_Simulation_Suite.html` | `health` | Krankenhäuser: Stationsplaner, Klinik-Planer, Material-, Waren- und Personenflüsse (wie bisher) |
-| `Fabric_Planning_Suite.html` | `fabrik` | Fabriken und Werke: Produktions-, Lager- und Hochregalhallen mit Shed-, Sattel- und Pultdach, Maschinen, Fördertechnik, Regale, Stapler, FTS, Silos, Tanks; Zonen Wareneingang → Lager → Produktion → Montage → Versand; Standardflüsse der Fabrik mit Stapler, Routenzug, FTS und LKW; Demo „UNITY Werk“ |
+| `Fabric_Planning_Suite.html` | `fabrik` | Fabriken und Werke: Produktions-, Lager- und Hochregalhallen mit Shed-, Sattel- und Pultdach, Maschinen, Fördertechnik, Regale, Stapler, FTS, Silos, Tanks; Hallenausbau mit Fahr-/Gehwegen, Bodenmarkierung, FTS-Leitlinien, Rollenbahnen, Kran und bewegten Personen/Fahrzeugen; Zonen Wareneingang → Lager → Produktion → Montage → Versand; Standardflüsse der Fabrik mit Stapler, Routenzug, FTS und LKW; Demo „UNITY Werk“ |
 | `Home_Planning_Suite.html` | `home` | Häuser und Wohnungen: Einfamilienhaus, Stadtvilla, Bungalow, Doppel-/Reihenhaus, Mehrfamilienhaus, Garage, Gartenhaus mit Dachformen; über 50 Möbel und Ausstattungen; „Grundriss vorschlagen“ legt Räume mit Türen und Möbeln an; Demo „Musterhaus“ |
 
 Alle drei teilen denselben Quellcode in `hss/`; die Edition steuert Namen, Startfenster, Arbeitsbereiche, Gebäudebausteine, Raumtypen, Bibliothek, Demo und das Ziel des OpenStreetMap-Imports (**Nur Umgebung** oder **Umgebung mit Krankenhaus / Werk / Haus**). Projekte und Browser-Ablage sind je Edition getrennt.
@@ -14,6 +14,19 @@ Alle drei teilen denselben Quellcode in `hss/`; die Edition steuert Namen, Start
 python3 tools/build_einzeldatei.py          # baut alle drei Einzeldateien (oder: … fabrik / home / health)
 python3 start.py fabrik                     # Entwicklungsstand im Browser (auch: home, ohne Angabe = Healthcare)
 ```
+
+**Fabric Planning Suite 1.4 – Hallenausbau & Intralogistik, ohne Flackern, ohne Klinikbegriffe**
+
+- **Hallenausbau** (Produktionsplaner → „Hallenausbau & Intralogistik“: *Halle ausbauen* / *Alle Hallen ausbauen*): Die Suite legt in jeder belegten Halle ein durchgehendes Wegenetz an und macht aus losen Maschineninseln eine zusammenhängende Fabrik:
+  - **Wege und Bodenmarkierung** nach ASR A1.8/A1.3: Hauptfahrweg 4,5 m mit gelber Fahrwegbegrenzung, Mittellinie und Fahrtrichtungspfeilen, Querwege zu jedem Bereich, Nebengänge, grüner Gehweg (1,2 m) mit Fußgängersymbolen, Schutzgeländer und Zebrastreifen an jeder Einmündung, gelb gestrichelte Flächenmarkierung der Produktionsbereiche, weiß umrandete Bereitstell- und Pufferzonen mit Paletten, Gitterboxen und Leerpaletten.
+  - **Intralogistik**: FTS-Leitlinie mit Stichstrecken in die Querwege, Haltemarken und Ladestation; Rollenbahnen von jedem Bereich zum Übergabeplatz am Gehweg; Brückenkran (Hallen ab 8,5 m) bzw. Elektrohängebahn über dem Fahrweg; Stützenraster mit gelb-schwarzem Anfahrschutz; Hallenleuchten; Sektionaltore.
+  - **Ausstattung**: Verkehrsspiegel an Kreuzungen, Fluchtwegschilder, Feuerlöscher an den Stützen, Erste-Hilfe-Station, Abfalltrennstation, Teamtafel, Pausenzone, Spinde, Wasserspender.
+  - **Hallenleben**: Gabelstapler (mit und ohne Palette), Routenzüge, Unterfahr-FTS mit KLT-Regal, Schwerlast-FTS mit Großmotor, Werker mit Behältern, Logistiker mit Kommissionierwagen bewegen sich auf ihren Wegen (Fahrzeuge halten Abstand zum Vordermann, Personen gehen rechts), KLT laufen über die Rollenbahnen, Gehänge über die Hängebahn, der Kran fährt. Der Fahrzeugmix folgt den Materialflüssen der Halle (Routenzug, Schwerlast-FTS, Stapler).
+  - Hallen ab 20 m Breite: Der Produktionsplaner hält das Hauptverkehrsband (Fahrweg + Gehweg, 7,1 m) frei; zwischen Bereichen bleiben 4 m Querweg. Deckenebene (Kran, Hängebahn, Leuchten, Stützen in voller Höhe) erscheint bei „Wände voll“ und beim Begehen, im Etagenschnitt bleibt der Blick frei. Beides abschaltbar.
+- **Neues Bibliothekspaket „Hallenausstattung & Intralogistik“** (`hss/library/hallenausstattung.js`, 20 Objekte) in den Kategorien Fabrik/Intralogistik, Fabrik/Personen und Fabrik/Hallenausstattung.
+- **Kein Flackern mehr**: Die Nahebene der Kamera wird mit dem Abstand zum Blickziel mitgeführt (Tiefenauflösung bei 300 m Abstand rund 20-mal feiner), Wände liegen 3 cm innerhalb des Grundrisses, Fensterbänder und Geschosslinien 2,5 cm davor – aneinanderstoßende Hallen, Fassadenbänder, Giebel und Bodenmarkierungen teilen sich keine Ebene mehr. Gilt für alle drei Editionen.
+- **Keine Krankenhausbegriffe in der Fabric Planning Suite** (`hss/js/fabrik-begriffe.js`): klinikspezifische Bibliotheksobjekte ausgeblendet und Schlagworte bereinigt, Fachbereiche der Flächenplanung (Montage, Mechanische Fertigung, Lackiererei, Prüffeld, Wareneingang, Supermarkt, Versand …), zentrale Orte, Transportmittel und Quellen der Fabrikplanung; verbliebene Formulierungen werden auf allen Oberflächen ersetzt. Geprüft mit einem automatischen Durchlauf über Startfenster, alle Arbeitsbereiche und Reiter, Bibliothek, Stammdaten und Hilfe.
+- **Werk 1 Friedrichshafen** neu erzeugt: 40 Hallen ausgebaut (Wege, Markierungen, FTS, Rollenbahnen, Krane, Ausstattung, Hallenleben); die Demo „UNITY Werk“ wird ebenfalls ausgebaut.
 
 **Fabric Planning Suite 1.3 – Produktionsplaner und Werk 1 Friedrichshafen**
 

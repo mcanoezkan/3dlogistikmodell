@@ -470,7 +470,7 @@ if (E !== 'health' && HSS.demo) {
     setTimeout(() => {
       const prj = E === 'fabrik' ? HSS.buildDemoFabrik() : HSS.buildDemoHome();
       HSS.load(prj, { demo: true, noAutosave: true });
-      if (E === 'fabrik') { try { const r = HSS.applyTemplates(HSS.STANDARDFLUESSE.map(t => t.id)); if (r.flows.length) HSS.change('Standardflüsse übernehmen', p => p.flows.push(...r.flows), { scope: 'none' }); } catch (e) { console.warn(e); } }
+      if (E === 'fabrik') { try { const r = HSS.applyTemplates(HSS.STANDARDFLUESSE.map(t => t.id)); if (r.flows.length) HSS.change('Standardflüsse übernehmen', p => p.flows.push(...r.flows), { scope: 'none' }); } catch (e) { console.warn(e); } try { if (HSS.alleHallenAusbauen) HSS.change('Hallenausbau', p => HSS.alleHallenAusbauen(p), { noUndo: true }); } catch (e) { console.warn(e); } }
       $('#demoCard').hidden = false;
       $('#demoCard').innerHTML = `<div class="k">Beispielprojekt</div><h3>${U.esc(ED.demo)}</h3><p>${E === 'fabrik' ? 'Werk mit Produktionshalle (Sheddach), Lager mit Hochregallager, Verwaltung, Sozialgebäude, Silos und Werksverkehr. Zonen der Hallen sind ausgestattet, die Standardflüsse sind angelegt – unter „Simulation“ den Tag durchrechnen.' : 'Einfamilienhaus mit Keller, Satteldach, Garage, Garten und Terrasse. Alle Räume sind möbliert – oben in der Ansichtsleiste eine Etage wählen oder mit „🚶 Begehen“ durchs Haus gehen.'}</p><div class="row"><div class="sp"></div><button class="primary" id="dEnd">Los geht’s</button></div>`;
       $('#dEnd').onclick = () => { $('#demoCard').hidden = true; };
