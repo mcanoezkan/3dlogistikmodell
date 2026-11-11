@@ -18801,7 +18801,7 @@ const T = HSS.PRODTYPEN = [
   { id: 'montage', name: 'Montagelinie (Fließ-/Taktmontage)', zone: 'montage', info: 'Motor wandert im Takt von Station zu Station – Pkw-Motoren auf Werkstückträgern (3-m-Takt), Großmotoren auf Schwerlast-FTS (8-m-Raster, Bühnen beidseitig).',
     def: { produkt: 'gross', stueck: 1800, inhalt: 6000, tage: 230, schichten: 2, h: 7.5, verf: 0.9, abtakt: 0.85 } },
   { id: 'fertigung', name: 'Serienfertigung (verkettete Bearbeitung)', zone: 'mechfertigung', info: 'Bearbeitungszentren in zwei Reihen an einer automatisierten Verkettung (Portallader/FTS), z. B. Kurbelgehäuse oder Zylinderköpfe; am Ende Waschen und Messen.',
-    def: { produkt: 'gross', stueck: 2000, zeit: 900, tage: 230, schichten: 3, h: 7.5, oee: 0.75 } },
+    def: { produkt: 'gross', maschine: 'auto', stueck: 2000, zeit: 900, tage: 230, schichten: 3, h: 7.5, oee: 0.75 } },
   { id: 'insel', name: 'Fertigungsinseln', zone: 'mechfertigung', info: 'Selbstständige Inseln mit Maschinen, Roboter, Messen und Bereitstellung – flexibel für Varianten und mittlere Stückzahlen.',
     def: { inseltyp: 'zylinderkopf', stueck: 30000, zeit: 22, tage: 230, schichten: 3, h: 7.5, oee: 0.75 } },
   { id: 'werkstatt', name: 'Werkstattfertigung (Verrichtungsprinzip)', zone: 'mechfertigung', info: 'Gleichartige Maschinen werden zu Bereichen zusammengefasst (Fräsen, Drehen, Honen, Messen, Nacharbeit) – für Einzelteile, Ersatzteile und Kleinserien.',
@@ -18853,7 +18853,7 @@ HSS.prodCalc = (inp, prj = HSS.project()) => {
       S({ frage: 'Wie viel Fläche brauchen die Inseln?', erkl: `Aufstellfläche einer Insel ${U.fmt(s.w, 1)} × ${U.fmt(s.d, 1)} m (inkl. Bedien-, Wartungs- und Bereitstellungsfläche) plus anteilig ${GANG} m Fahrweg ringsum.`, rechnung: `${n} × (${U.fmt(s.w, 1)} + ${GANG}) × (${U.fmt(s.d, 1)} + ${GANG}) m`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['asr18', 'fabrik'] });
       Object.assign(r, { maschinen: m, inseln: n, lib: isl.lib }); r.kpi = [[m, 'Maschinen'], [n, 'Inseln'], [Math.ceil(n * (isl.n > 2 ? 3 : 1.5)), 'Bediener/Schicht']];
     } else {
-      const lib = gross ? 'pm.gm.baz' : 'pm.hw.hbaz', s = sz(lib), raster = s.w + 1.2, proReihe = Math.ceil(m / 2);
+      const lib = v('maschine') === 'kwdreh' ? 'pm.gm.kwdreh' : v('maschine') === 'drehen' ? 'pm.hw.drehmaschine' : v('maschine') === 'schleifen' ? 'pm.hw.schleifmaschine' : gross ? 'pm.gm.baz' : 'pm.hw.hbaz', s = sz(lib), raster = s.w + 1.2, proReihe = Math.ceil(m / 2);
       const L = proReihe * raster + 14, B = 2 * s.d + 2 * 3.0 + 4.0;
       S({ frage: 'Wie wird die Linie angeordnet?', erkl: `Zwei Maschinenreihen, Bedienseite zur Verkettung in der Mitte (4 m für Portallader/FTS). Maschinenraster ${U.fmt(raster, 1)} m (Maschine ${U.fmt(s.w, 1)} m + 1,2 m Wartungsgang). Am Linienende Waschanlage, Messraum und Kühlschmierstoff-Anlage (ca. 14 m).`, rechnung: `${proReihe} × ${U.fmt(raster, 1)} m + 14 m = ${U.fmt(L)} m; 2 × ${U.fmt(s.d, 1)} m + 4 m + 2 × 3 m Fahrweg = ${U.fmt(B)} m`, ergebnis: `${U.fmt(L)} × ${U.fmt(B)} m`, quellen: ['datenblatt', 'asr18'] });
       r.bedarf = L * B;
@@ -19003,6 +19003,7 @@ UI.prInp = UI.prInp || { typ: 'montage', name: '', part: null, floor: 0 };
 const opt = (v, t, s) => `<option value="${U.esc(v)}" ${String(v) === String(s) ? 'selected' : ''}>${U.esc(t)}</option>`;
 const FELD = {
   produkt: ['Produkt', 'sel', [['gross', 'Großmotor (FTS, 8-m-Raster)'], ['pkw', 'Pkw-Motor (Förderer, 3-m-Takt)']]],
+  maschine: ['Maschinentyp', 'sel', [['auto', 'Bearbeitungszentrum (nach Produkt)'], ['kwdreh', 'Kurbelwellen-Dreh-Fräszentrum (groß)'], ['drehen', 'CNC-Drehmaschine'], ['schleifen', 'Schleifmaschine']]],
   inseltyp: ['Inseltyp', 'sel', Object.entries(INSELN).map(([k, i]) => [k, i.name])],
   stueck: ['Stückzahl/Jahr', 50], inhalt: ['Montageinhalt [min/Stück]', 10], zeit: ['Bearbeitungszeit [min/Stück]', 1],
   tage: ['Arbeitstage/Jahr', 1], schichten: ['Schichten/Tag', 1], h: ['Nettozeit je Schicht [h]', 0.25],
