@@ -33,7 +33,7 @@ HSS.bauGrundrisse = (prj = HSS.project()) => {
     if (pt.stackOn || (pt.floorOffset || 0) > 0) continue;
     const o = HSS.partFootprint(pt).outer; if (!o || o.length < 3) continue;
     const nb = pt.basements || 0;
-    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - (nb > 0 ? 0.3 : 0.08) });
+    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - 0.4 });
   }
   return out;
 };
@@ -46,8 +46,8 @@ HSS.unterBau = (B, x, z, rand = 0) => {
   }
   return y;
 };
-const etagenSicht = view => view && view.floor !== null && view.floor !== undefined && view.floor >= 0;
-// Höhen einer Geländeauflage unter Gebäuden absenken (nur in der Etagenansicht)
+const etagenSicht = view => !(view && view.floor !== null && view.floor !== undefined && view.floor < 0); // immer außer in Untergeschossen
+// Höhen einer Geländeauflage unter Gebäuden absenken (unter die Bodenplatte, damit nichts durchscheint)
 const absenken = (g, view, B) => {
   if (!etagenSicht(view)) return;
   B = B || HSS.bauGrundrisse(); if (!B.length) return;

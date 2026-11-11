@@ -187,7 +187,7 @@ const motorAufWT = (x, z = 0) => [...wt(x, z), ...motor(x, 0.98, z)];
 // Linienmodul: Umriss wie bei allen Objekten auf die Mitte gesetzt, Anschlusspunkte (ein/aus) entsprechend verschoben
 const linieObj = (id, name, tags, parts, linie, extra = {}) => {
   const f = fit(parts), R = v => Math.round(v * 1000) / 1000, mv = q => q && [R(q[0] - f.cx), R(q[1] - f.cz), ...q.slice(2)];
-  return Object.assign({ id, name, category: 'Produktionsmodule/Linienmodule', tags: ['Linie', 'Montagelinie', 'modular', ...tags], size: f.size, parts: f.parts, linie: { ein: mv(linie.ein), aus: mv(linie.aus), takt: LL } }, extra);
+  return Object.assign({ id, name, category: 'Produktionsmodule/Linienmodule', tags: ['Linie', 'Montagelinie', 'modular', ...tags], size: f.size, parts: f.parts, linie: { ein: mv(linie.ein), aus: mv(linie.aus), takt: extra.category ? GL : LL, familie: extra.category ? 'gross' : 'pkw' } }, extra);
 };
 const stationManuell = (beid = true) => {
   const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0), ...portal(LL, 2.8, 2.7), ...schrauber(-0.6, -0.9), ...schrauber(0.6, 0.9)];
@@ -385,6 +385,137 @@ const AUSR = [
   O('pm.hw.lichtgitter', 'Sicherheits-Lichtgitter', 'Ausrüstung', ['Sicherheit'], lichtgitter(0, 0, 1.2))
 ];
 
+
+/* ---------- Großmotoren (Baureihen im Stil MTU 2000/4000, Schiffs-, Bahn-, Energie- und Bergbauantriebe) ----------
+   Abmessungen gerundet nach öffentlichen Datenblättern der Baureihen (Motor ohne Anbauten):
+     12V (Baureihe 2000)   ca. 2,4 × 1,5 × 1,5 m, rund 4 t
+     16V (Baureihe 4000)   ca. 3,3 × 1,6 × 2,2 m, rund 9 t
+     20V (Baureihe 4000)   ca. 3,9 × 1,7 × 2,3 m, rund 11 t
+   Montage als Stationsmontage auf Schwerlast-FTS im 8-m-Raster mit beidseitigen Arbeitsbühnen. */
+const hebe = (parts, dy) => parts.map(p => Object.assign({}, p, { p: [p.p[0], p.p[1] + dy, p.p[2]] }, p.piv ? { piv: [p.piv[0], p.piv[1] + dy, p.piv[2]] } : {}));
+const MG = '#46525e', MG2 = '#2f363d';
+const grossmotor = (L, B, H, x = 0, y = 0, z = 0, a = 0, o = {}) => {
+  const c = o.farbe || MG, n = o.zyl || 8, P = [
+    box(0, y + H * 0.08, 0, L * 0.86, H * 0.16, B * 0.5, MG2, 'metall'),                                    // Ölwanne
+    box(0, y + H * 0.33, 0, L * 0.88, H * 0.34, B * 0.72, c, 'metall', { rr: 0.05 }),                       // Kurbelgehäuse
+    box(-L * 0.02, y + H * 0.62, 0, L * 0.8, H * 0.08, B * 0.3, c, 'metall'),                               // V-Raum
+    box(L * 0.47, y + H * 0.38, 0, 0.3, H * 0.62, B * 0.82, MG2, 'metall'),                                 // Schwungradgehäuse
+    cyl(L * 0.5 - 0.02, y + H * 0.36, 0, H * 0.24, 0.12, '#1f2328', 'metall', { ax: 'x', seg: 20 }),
+    box(-L * 0.47, y + H * 0.36, 0, 0.26, H * 0.5, B * 0.6, MG2, 'metall'),                                // Rädertrieb vorn
+    cyl(-L * 0.5 - 0.06, y + H * 0.26, 0, H * 0.1, 0.14, '#1f2328', 'metall', { ax: 'x' }),                // Schwingungsdämpfer
+    box(-L * 0.04, y + H * 0.9, 0, L * 0.66, H * 0.1, B * 0.22, '#5c6976', 'metall', { rr: 0.03 })        // Ladeluftleitung
+  ];
+  for (const s of [-1, 1]) {
+    P.push(box(-L * 0.04, y + H * 0.66, s * B * 0.27, L * 0.78, H * 0.28, B * 0.28, c, 'metall', { rr: 0.03 }));   // Zylinderbank
+    for (let i = 0; i < n; i++) P.push(box(-L * 0.42 + (i + 0.5) * L * 0.78 / n, y + H * 0.83, s * B * 0.32, L * 0.78 / n - 0.05, H * 0.07, B * 0.2, '#262c32', 'metall')); // Zylinderköpfe
+    P.push(cyl(-L * 0.04, y + H * 0.76, s * B * 0.46, H * 0.05, L * 0.76, '#a8aeb4', 'chrom', { ax: 'x' }));        // Abgassammelrohr (isoliert)
+    P.push(cyl(-L * 0.4, y + H * 0.82, s * B * 0.26, H * 0.12, B * 0.24, '#9aa1aa', 'metall', { ax: 'z', seg: 16 })); // Abgasturbolader
+    P.push(box(L * 0.1, y + H * 0.28, s * B * 0.38, L * 0.3, H * 0.16, 0.06, '#6b7782', 'metall'));               // Kurbelraumdeckel
+  }
+  P.push(cyl(-L * 0.4, y + H * 0.97, 0, H * 0.07, 0.3, '#9aa1aa', 'metall'));
+  return T(P, x, z, a);
+};
+const MOTOR = { m12: [2.4, 1.5, 1.5, 6], m16: [3.3, 1.6, 2.2, 8], m20: [3.9, 1.7, 2.3, 10] };
+const motorG = (k, x, y, z, a = 0, o = {}) => { const [L, B, H, n] = MOTOR[k]; return grossmotor(L, B, H, x, y, z, a, Object.assign({ zyl: n }, o)); };
+// Schwerlast-FTS mit Montagebock (Last bis 15 t)
+const ftsSchwer = (x = 0, z = 0, a = 0, last = true) => T([
+  box(0, 0.22, 0, 5.0, 0.4, 2.5, '#e0b334', 'lack', { rr: 0.06 }), box(0, 0.43, 0, 4.8, 0.04, 2.3, '#3b4450', 'metall'),
+  box(-2.52, 0.25, 0, 0.04, 0.2, 2.2, '#0A967A', 'leucht'), box(2.52, 0.25, 0, 0.04, 0.2, 2.2, '#c0392b', 'leucht'),
+  ...(last ? [box(-1.2, 0.68, 0, 0.5, 0.5, 1.4, '#59636e', 'metall'), box(1.2, 0.68, 0, 0.5, 0.5, 1.4, '#59636e', 'metall')] : [])
+], x, z, a);
+// Arbeitsbühne (Podest mit Geländer und Treppe) entlang x, Seite s (+1/−1: Geländer außen)
+const buehne = (x, z, L = 5.0, b = 1.3, h = 1.0, s = 1) => {
+  const P = [box(x, h, z, L, 0.06, b, '#9aa1aa', 'metall')];
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(box(x + sx * (L / 2 - 0.06), h / 2, z + sz * (b / 2 - 0.06), 0.08, h, 0.08, '#f2c94c', 'lack'));
+  P.push(box(x, h + 1.05, z + s * (b / 2 - 0.03), L, 0.05, 0.05, '#f2c94c', 'lack'), box(x, h + 0.55, z + s * (b / 2 - 0.03), L, 0.04, 0.04, '#f2c94c', 'lack'));
+  for (let i = 0; i <= Math.round(L / 1.25); i++) P.push(box(x - L / 2 + i * L / Math.round(L / 1.25), h + 0.55, z + s * (b / 2 - 0.03), 0.04, 1.05, 0.04, '#f2c94c', 'lack'));
+  for (let k = 0; k < 4; k++) P.push(box(x - L / 2 - 0.25 - k * 0.25, h * (4 - k) / 5, z, 0.25, 0.04, b - 0.1, '#9aa1aa', 'metall'));
+  return P;
+};
+const werkzeugwagen = (x, z, a = 0) => T([box(0, 0.5, 0, 0.9, 0.9, 0.5, '#c0392b', 'lack', { rr: 0.02 }), box(0, 0.97, 0, 0.92, 0.04, 0.52, '#2b3138', 'gummi'), ...K.casters(0.9, 0.5, 0.05)], x, z, a);
+const GL = 8.0;
+const stationGross = (art = 'manuell') => {
+  const P = [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(0, 0), ...motorG('m16', 0, 0.93, 0)];
+  for (const s of [-1, 1]) {
+    P.push(...buehne(0.3, s * 1.95, 4.6, 1.3, 1.0, s), ...werkzeugwagen(-2.6, s * 3.0, s > 0 ? 180 : 0), ...durchlaufregal(-0.6, s * 4.3, 2.6, s > 0 ? 180 : 0), ...durchlaufregal(2.2, s * 4.3, 2.6, s > 0 ? 180 : 0));
+    P.push(...hebe(werker(s > 0 ? 0.8 : -0.4, s * 2.0, s > 0 ? 180 : 0), 1.03));
+  }
+  P.push(...saeulenkran(3.4, -3.1, 3.2, 5.0, 115), ...infoTerminal(3.6, 3.2, 180), ...ampel(-3.7, -3.4, 0, 2.6), ...schrauber(-0.9, 1.0, 4.4), ...schrauber(1.2, -1.0, 4.4));
+  if (art === 'qs') P.push(...[-1, 1].map(s => box(0, 2.6, s * 1.4, 0.15, 5.2, 0.15, '#d5d9de', 'lack')), box(0, 5.2, 0, 0.3, 0.3, 3.0, '#d5d9de', 'lack'), box(0, 4.9, 0, 0.3, 0.25, 0.3, '#2b3138', 'kunststoff'));
+  return P;
+};
+const pufferGross = () => [linie(-GL / 2, -1.6, GL / 2, -1.6, '#f4f6f8', 0.12), linie(-GL / 2, 1.6, GL / 2, 1.6, '#f4f6f8', 0.12), ...ftsSchwer(0.4, 0), ...motorG('m16', 0.4, 0.93, 0)];
+const kurveGross = s => {
+  // Fahrspur als Bogen (Radius 4 m um die Ecke (−4, s·4)), FTS unter 45°
+  const P = [], cx = -4, cz = s * 4;
+  for (const r of [2.4, 5.6]) for (let i = 0; i < 9; i++) { const a0 = (i / 9) * Math.PI / 2, a1 = ((i + 1) / 9) * Math.PI / 2, x0 = cx + r * Math.sin(a0), z0 = cz - s * r * Math.cos(a0), x1 = cx + r * Math.sin(a1), z1 = cz - s * r * Math.cos(a1); P.push(linie(x0, z0, x1, z1, '#f4f6f8', 0.12)); }
+  P.push(...T(ftsSchwer(0, 0, 0, false), -1.2, s * 1.2, s * 45), box(0, 0.004, 0, 0.01, 0.008, 0.01, '#f4f6f8', 'lack'));
+  P.push(box(-3.9, 0.004, -s * 3.9, 0.1, 0.008, 0.1, '#f4f6f8', 'lack'), box(3.9, 0.004, s * 3.9, 0.1, 0.008, 0.1, '#f4f6f8', 'lack'));
+  return P;
+};
+const startGross = () => [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(0.6, 0), box(0.6, 1.33, 0, 3.0, 0.8, 1.2, MG, 'metall', { rr: 0.05 }), ...saeulenkran(-2.8, -2.6, 3.4, 5.0, 60), ...gitterbox(-2.6, 3.6), ...gitterbox(-1.0, 3.6), ...werkzeugwagen(2.4, 3.0, 180), ...werker(-1.2, 2.0, 180), ...werker(2.6, -2.2, 0), ...infoTerminal(3.6, 3.6, 180), ...ampel(3.7, -3.4, 0, 2.6)];
+const endeGross = () => [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(-1.2, 0), ...motorG('m16', -1.2, 0.93, 0), box(2.4, 0.3, -3.0, 3.8, 0.6, 2.0, '#59636e', 'metall'), ...motorG('m16', 2.4, 0.6, -3.0), ...saeulenkran(1.4, -1.0, 3.4, 5.0, 270), ...werker(1.8, 2.2, 180), ...ampel(3.7, 3.4, 0, 2.6)];
+// Prüfzelle Großmotor (Heißtest mit Wasserwirbelbremse) inkl. Leitwarte, 12 × 12 m
+const pruefzelle = () => {
+  const P = [box(0, 0.06, -1.5, 12, 0.12, 9, '#8d969f', 'matt')], W2 = '#cbc6ba';
+  P.push(box(0, 3.5, -6.0, 12, 7.0, 0.3, W2, 'lack'), box(-6.0, 3.5, -1.5, 0.3, 7.0, 9.0, W2, 'lack'), box(6.0, 3.5, -3.6, 0.3, 7.0, 4.8, W2, 'lack'), box(6.0, 5.6, 0.85, 0.3, 2.8, 4.1, W2, 'lack'), box(6.06, 2.1, 0.85, 0.06, 4.2, 4.0, '#9aa1aa', 'metall'));
+  P.push(box(-2.6, 2.5, 3.0, 6.8, 5.0, 0.3, W2, 'lack'), box(-2.6, 1.9, 3.06, 5.6, 1.4, 0.06, '#9fc4d8', 'glas'), box(3.3, 3.5, 3.0, 5.4, 7.0, 0.3, W2, 'lack'), box(-2.6, 6.0, 3.0, 6.8, 2.0, 0.3, W2, 'lack'));
+  P.push(box(0, 7.05, -6.0, 12.3, 0.12, 0.4, '#a9a395', 'lack'), box(0, 7.05, 3.0, 12.3, 0.12, 0.4, '#a9a395', 'lack'));
+  P.push(box(-1.2, 0.45, -1.8, 4.6, 0.7, 2.2, '#59636e', 'metall'), ...motorG('m20', -1.2, 0.8, -1.8), box(2.4, 1.0, -1.8, 1.8, 1.8, 1.6, '#2d6fa3', 'lack'), cyl(1.15, 1.2, -1.8, 0.12, 0.9, '#9aa1aa', 'chrom', { ax: 'x' }));
+  for (const s of [-1, 1]) P.push(cyl(-2.4, 5.2, -1.8 + s * 0.6, 0.3, 5.0, '#a8aeb4', 'metall'), cyl(-2.4, 7.8, -1.8 + s * 0.6, 0.32, 1.2, '#7d8791', 'metall'));
+  P.push(box(3.6, 6.4, -4.4, 3.0, 1.2, 1.6, '#9aa1aa', 'metall'), box(-4.8, 1.4, -4.8, 1.6, 2.8, 1.6, '#d5d9de', 'lack'), box(-4.6, 0.9, 1.4, 2.0, 1.8, 1.4, '#e0b334', 'lack'));
+  // Leitwarte
+  P.push(box(-2.6, 0.9, 4.4, 5.6, 0.06, 0.9, '#5a6573', 'matt'), ...K.legs(5.5, 0.85, 0.88, 0.03, '#9aa1aa', 0.04));
+  for (const x of [-4.6, -3.6, -2.6, -1.6, -0.6]) P.push(...K.screen(x, 1.25, 4.15, 0.62, 0.4));
+  P.push(...schaltschrank(3.3, 4.4, 4, 0), ...werker(-3.3, 5.1, 180), ...werker(-1.4, 5.2, 200, { top: '#3d5a80' }), ...ampel(5.8, 3.4, 0, 2.6), ...markierung(12.4, 12.6, '#f2c94c', 0.1).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] - 0.0] })));
+  return P;
+};
+// Bearbeitungszentrum für Großmotoren-Kurbelgehäuse (Portalbauweise), 9 × 6,5 × 5,2 m
+const bazGross = (x = 0, z = 0, a = 0) => T([
+  box(0, 0.4, 0, 8.4, 0.8, 5.6, '#59636e', 'metall'), box(0, 2.9, -0.2, 8.4, 4.2, 5.2, WS, 'lack', { rr: 0.08 }), box(0, 5.05, -0.6, 6.0, 0.3, 3.0, HG, 'lack'),
+  box(-0.8, 2.6, 2.41, 4.6, 2.6, 0.02, '#9fc4d8', 'glas'), box(-0.8, 2.6, 2.405, 4.8, 2.8, 0.01, '#4b5058', 'metall'), box(2.6, 1.4, 2.45, 1.4, 2.6, 0.04, NV, 'lack'),
+  ...pult(3.6, 1.6, 3.0), box(3.6, 1.6, 2.7, 0.06, 0.06, 0.6, AN, 'metall'), box(4.0, 4.9, 2.2, 0.1, 0.1, 0.1, GR, 'leucht'),
+  box(-5.0, 2.4, -0.8, 1.6, 4.8, 2.6, '#d5d9de', 'lack'), box(-5.0, 1.0, -0.8, 1.62, 0.1, 2.62, NV, 'lack'),       // Werkzeugmagazin
+  box(1.5, 0.6, -3.5, 4.0, 1.2, 1.0, '#59636e', 'metall'), box(4.0, 1.1, -3.8, 1.4, 0.15, 0.6, '#6d7680', 'metall'),   // Späneförderer
+  box(-2.4, 0.8, -3.7, 2.4, 1.6, 1.4, BL, 'lack'), box(4.6, 1.2, -1.2, 0.8, 2.4, 2.4, '#d5d9de', 'lack'),
+  box(-0.4, 0.95, 4.2, 3.6, 0.1, 2.0, '#9aa1aa', 'metall'), box(-0.4, 0.45, 4.2, 3.4, 0.9, 1.8, '#59636e', 'metall'), box(-0.4, 1.35, 4.2, 2.8, 0.7, 1.2, MG, 'metall', { rr: 0.05 })   // Rüstplatz mit Kurbelgehäuse
+], x, z, a);
+const kwDrehGross = (x = 0, z = 0, a = 0) => T([
+  box(0, 0.5, 0, 11.0, 1.0, 3.0, '#59636e', 'metall'), box(0, 1.9, -0.1, 11.0, 1.8, 2.8, WS, 'lack', { rr: 0.06 }), box(0, 1.8, 1.31, 8.0, 1.2, 0.02, '#9fc4d8', 'glas'),
+  cyl(0, 1.8, 0.2, 0.18, 7.6, '#9aa1aa', 'metall', { ax: 'x' }), ...pult(4.8, 1.7, 1.45), box(-6.0, 0.6, 0, 1.2, 1.2, 2.0, '#59636e', 'metall'), box(0, 0.5, -1.9, 6.0, 1.0, 0.8, HG, 'lack'), box(5.2, 2.9, 1.1, 0.1, 0.1, 0.1, GR, 'leucht')
+], x, z, a);
+// Lackiererei Großmotoren
+const skid = (x, z, mit = true, k = 'm16') => [box(x, 0.35, z, 5.0, 0.7, 2.0, '#59636e', 'metall'), ...Array.from({ length: 10 }, (_, i) => cyl(x - 2.25 + i * 0.5, 0.72, z, 0.06, 1.9, '#b8bec6', 'chrom', { ax: 'z' })), box(x, 0.82, z, 4.2, 0.12, 1.6, '#3b4450', 'metall'), ...(mit ? motorG(k, x, 0.88, z) : [])];
+const kabineHuelle = (L, B, H, c, fenster = true) => [box(0, H / 2, -B / 2, L, H, 0.15, c, 'lack'), box(-L / 2, H / 2, 0, 0.15, H, B, c, 'lack'), box(L / 2, H / 2, 0, 0.15, H, B, c, 'lack'), box(0, H * 0.75, B / 2, L, H * 0.5, 0.15, c, 'lack'), box(-L / 4, H * 0.25, B / 2, L / 2, H * 0.5, 0.15, c, 'lack'), ...(fenster ? [box(L / 4, H * 0.3, B / 2, L / 2 - 0.2, H * 0.5, 0.05, '#9fc4d8', 'glas')] : [box(L / 4, H * 0.25, B / 2, L / 2, H * 0.5, 0.15, c, 'lack')]), box(0, H + 0.4, 0, L, 0.8, B, '#cfd6dc', 'lack')];
+const lackKabine = () => [...kabineHuelle(12, 8, 6, '#e3e7ea'), ...skid(0, 0), ...werker(-2.2, 1.8, 200, { top: '#f4f6f8', vest: null }), ...werker(2.6, -1.8, 20, { top: '#f4f6f8' }), cyl(4.5, 8.0, -2.5, 0.5, 3.6, '#a8aeb4', 'metall'), box(-4.5, 7.0, -2.5, 2.6, 1.4, 2.2, '#9aa1aa', 'metall'), box(-6.6, 1.2, 2.0, 1.2, 2.4, 1.4, '#f2c94c', 'lack'), ...ampel(6.3, 3.6, 0, 2.6)];
+const vorbehandlung = () => [...kabineHuelle(10, 7, 5.5, '#d5dde3', false), ...skid(0, 0), box(-3.0, 6.6, 0, 3.0, 1.4, 4.0, BL, 'lack'), cyl(3.2, 6.8, -1.5, 0.4, 1.8, '#9aa1aa', 'metall'), box(5.6, 0.8, -2.0, 1.2, 1.6, 2.4, BL, 'lack'), ...pult(5.4, 1.4, 2.0)];
+const trockner = () => [...kabineHuelle(16, 7, 5.5, '#c9ced4', false), ...skid(-4, 0), ...skid(4, 0), box(0, 6.8, -1.5, 4.0, 1.8, 2.6, '#9aa1aa', 'metall'), cyl(4.0, 7.8, 1.2, 0.45, 3.2, '#a8aeb4', 'metall'), box(-8.6, 1.2, 1.6, 1.0, 2.4, 2.0, '#d5d9de', 'lack'), ...ampel(8.2, 3.6, 0, 2.6)];
+const abkleben = () => [...markierung(8, 6, '#f2c94c', 0.08), ...skid(0, 0), ...buehne(0, -1.75, 4.4, 1.1, 0.8, -1), ...werker(0.4, 1.6, 180), ...hebe(werker(-0.6, -1.75, 0), 0.83), ...K.shelf(2.0, 0.6, 2.0, 5, '#c8ced5', '#f2994a').map(p => Object.assign({}, p, { p: [p.p[0] + 2.6, p.p[1], p.p[2] + 2.6] })), ...werkzeugwagen(-2.8, 2.2, 180)];
+const mischraum = () => [box(0, 1.75, 0, 6.0, 3.5, 4.0, '#e8d27a', 'lack'), box(0, 1.2, 2.01, 1.4, 2.2, 0.02, '#b9a45a', 'lack'), box(1.8, 2.6, 2.02, 0.5, 0.45, 0.01, '#f2c94c', 'kunststoff'), cyl(-2.0, 4.0, -1.0, 0.25, 1.2, '#9aa1aa', 'metall'), ...[-1.8, -0.9, 0].map(x => cyl(x + 3.8, 0.45, -1.2, 0.29, 0.9, '#2d6fa3', 'lack'))];
+
+const GROSS = [
+  O('pm.gm.motor12v', 'Großmotor 12V (Baureihe 2000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m12', 0, 0, 0)),
+  O('pm.gm.motor16v', 'Großmotor 16V (Baureihe 4000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m16', 0, 0, 0)),
+  O('pm.gm.motor20v', 'Großmotor 20V (Baureihe 4000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m20', 0, 0, 0)),
+  O('pm.gm.fts', 'Schwerlast-FTS mit Montagebock (15 t)', 'Großmotoren', ['FTS', 'AGV', 'Montage'], ftsSchwer(0, 0)),
+  O('pm.gm.baz', 'Bearbeitungszentrum Kurbelgehäuse Großmotor (Portal)', 'Großmotoren', ['BAZ', 'Kurbelgehäuse', 'Zerspanung', 'Maschine'], bazGross()),
+  O('pm.gm.kwdreh', 'Kurbelwellen-Dreh-Fräszentrum Großmotor', 'Großmotoren', ['Kurbelwelle', 'Drehen', 'Maschine'], kwDrehGross()),
+  O('pm.gm.pruefzelle', 'Motorenprüfstand Großmotor (Heißtest-Zelle mit Leitwarte)', 'Großmotoren', ['Prüfstand', 'Heißtest', 'Prüffeld', 'Qualität'], pruefzelle(), { meta: { Prüfung: 'Abnahmelauf unter Last mit Wasserwirbelbremse', Technik: 'Abgas- und Zuluftanlage, Kraftstoff- und Kühlwasserkonditionierung' } }),
+  O('pm.lack.vorbehandlung', 'Lackiererei: Wasch-/Vorbehandlungskabine Großmotor', 'Lackiererei', ['Lackieren', 'Waschen', 'Vorbehandlung'], vorbehandlung()),
+  O('pm.lack.kabine', 'Lackiererei: Spritzkabine Großmotor (Nassabscheidung)', 'Lackiererei', ['Lackieren', 'Kabine'], lackKabine()),
+  O('pm.lack.trockner', 'Lackiererei: Umlufttrockner (2 Plätze)', 'Lackiererei', ['Lackieren', 'Trockner', 'Ofen'], trockner()),
+  O('pm.lack.abkleben', 'Lackiererei: Abklebe-/Maskierplatz mit Bühne', 'Lackiererei', ['Lackieren', 'Maskieren'], abkleben()),
+  O('pm.lack.skid', 'Lackiererei: Skidförderer mit Motor', 'Lackiererei', ['Förderer', 'Skid'], skid(0, 0)),
+  O('pm.lack.mischraum', 'Lackiererei: Farbmisch- und Lackraum (Ex-Bereich)', 'Lackiererei', ['Lack', 'Gefahrstoff'], mischraum()),
+  linieObj('pm.gm.station', 'Großmotor-Montagestation (FTS, Takt 8 m, Bühnen beidseitig)', ['Station', 'Großmotor', 'FTS', 'Stationsmontage'], stationGross(), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.station.qs', 'Großmotor-Qualitätsstation mit Kameraportal', ['Station', 'Großmotor', 'Qualität'], stationGross('qs'), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.puffer', 'Großmotor-Linie: FTS-Pufferplatz 8 m', ['Puffer', 'FTS', 'Großmotor'], pufferGross(), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.kurve90r', 'Großmotor-Linie: FTS-Kurve 90° rechts', ['Kurve', 'FTS', 'Drehmodul'], kurveGross(1), { ein: [-4, 0], aus: [0, 4, 90] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.kurve90l', 'Großmotor-Linie: FTS-Kurve 90° links', ['Kurve', 'FTS', 'Drehmodul'], kurveGross(-1), { ein: [-4, 0], aus: [0, -4, -90] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.start', 'Großmotor-Linie: Start (Kurbelgehäuse aufsetzen)', ['Start', 'Großmotor', 'Kran'], startGross(), { ein: null, aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.ende', 'Großmotor-Linie: Ende (Übergabe an Prüffeld)', ['Ende', 'Großmotor', 'Kran'], endeGross(), { ein: [-4, 0], aus: null }, { category: 'Produktionsmodule/Großmotoren-Linie' })
+];
+
 HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Produktionsmodule', objects: [
   O('pm.insel.zylinderkopf', 'Fertigungsinsel Zylinderkopf (2 BAZ, Roboter, Waschen, Messen)', 'Produktionsinseln', ['Insel', 'Zerspanung', 'BAZ', 'Roboter', 'Zylinderkopf', 'Motor'], inselZylinderkopf(), { meta: { Maschinen: '2 Horizontal-BAZ, Roboter 120 kg, Waschanlage, SPC-Messplatz', Bedienung: '1–2 Werker je Schicht', Medien: 'KSS-Anlage, Späneförderer, Druckluft' } }),
   O('pm.insel.kurbelwelle', 'Fertigungsinsel Kurbelwelle (Drehen, 2× Schleifen, Portallader)', 'Produktionsinseln', ['Insel', 'Schleifen', 'Drehen', 'Portallader', 'Kurbelwelle', 'Motor'], inselKurbelwelle(), { meta: { Maschinen: 'Drehräummaschine, 2 Schleifmaschinen, Waschanlage', Verkettung: 'Portallader 4,8 m, Ein-/Auslaufband' } }),
@@ -397,6 +528,7 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Produktions
   O('pm.station.pruefstand', 'Motorenprüfstand (Heißtest-Zelle mit Leitwarte)', 'Werkstattfertigung', ['Station', 'Prüfstand', 'Heißtest', 'Motor', 'Qualität'], stationPruefstand()),
   O('pm.station.nacharbeit', 'Nacharbeitsstation Motor (mit Schwenkkran)', 'Werkstattfertigung', ['Station', 'Nacharbeit', 'Reparatur', 'Motor'], stationNacharbeit()),
   ...LINIE,
-  ...AUSR
+  ...AUSR,
+  ...GROSS
 ] });
 })(HSS.library.kit);

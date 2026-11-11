@@ -534,7 +534,8 @@ function bar(show) {
   if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
   if (sel.kind === 'object') { const o = U.byId(prj().objects, sel.id), d = o && HSS.library.get(o.lib); if (d?.linie) {
-    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:pm.linie.station.manuell', '＋ Station', 'Montagestation (3 m) am Ausgang anhängen (Umschalt: Automatikstation)') + B('ln:pm.linie.foerder3', '＋ Förderer', 'Förderstrecke 3 m anhängen (Umschalt: 1,5 m)') + B('ln:pm.linie.dreh90r', '↱ 90°', 'Drehmodul 90° nach rechts anhängen') + B('ln:pm.linie.dreh90l', '↰ 90°', 'Drehmodul 90° nach links anhängen') + B('ln:pm.linie.wende180', '⮌ 180°', 'Wendemodul 180° anhängen (Rücklauf parallel, Achsabstand 9 m mit Versorgungsgang)') + B('ln:pm.linie.ende', '⏹ Ende', 'Linienende (Entnahme) anhängen');
+    const F = M.LINIENFAMILIEN[d.linie.familie || 'pkw'];
+    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:station', '＋ Station', 'Station am Ausgang anhängen (Umschalt: ' + (F.autoName || 'Automatikstation') + ')') + B('ln:foerder', '＋ ' + (F.foerderName || 'Förderer'), (F.foerderName || 'Förderstrecke') + ' anhängen') + B('ln:r', '↱ 90°', 'Nach rechts abbiegen') + B('ln:l', '↰ 90°', 'Nach links abbiegen') + B('ln:u', '⮌ 180°', 'Wenden: Rücklauf parallel (' + F.uText + ')') + B('ln:ende', '⏹ Ende', 'Linienende anhängen');
     if (!d.linie.ein) h += B('lnBau', '⚙ Linie', 'Ganze Linie ab diesem Linienanfang aufbauen (Anzahl Stationen, Wenden)');
   } }
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
@@ -586,7 +587,7 @@ function act(a, e) {
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
   if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
   if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
-  if (sel.kind === 'object' && a.startsWith('ln:')) { let lib = a.slice(3); if (big && lib === 'pm.linie.station.manuell') lib = 'pm.linie.station.roboter'; if (big && lib === 'pm.linie.foerder3') lib = 'pm.linie.foerder15'; const id = M.linieAnhaengen(sel.id, lib); if (id) S3.select({ kind: 'object', id }); return; }
+  if (sel.kind === 'object' && a.startsWith('ln:')) { const o = U.byId(prj().objects, sel.id), F = M.LINIENFAMILIEN[HSS.library.get(o?.lib)?.linie?.familie || 'pkw'], k = a.slice(3); const seq = { station: [big ? F.auto : F.station], foerder: [big ? F.kurz : F.foerder], r: [F.r], l: [F.l], u: F.u, ende: [F.ende] }[k]; let id = sel.id; for (const lib of seq || []) { id = M.linieAnhaengen(id, lib); if (!id) break; } if (id && id !== sel.id) S3.select({ kind: 'object', id }); return; }
   if (sel.kind === 'object' && a === 'lnBau') { M.linieAufbauen(sel.id); return; }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
@@ -599,6 +600,11 @@ function act(a, e) {
    Linienmodule (Bibliothek „Produktionsmodule/Linienmodule“) haben Anschlusspunkte linie.ein / linie.aus in lokalen
    Koordinaten (Fluss in +x, aus[2] = Richtungsänderung in Grad). Das neue Modul wird mit seinem Eingang auf den
    Ausgang des gewählten Moduls gesetzt und um dessen Richtung gedreht – im selben Bezug (Etage bzw. Gelände). */
+// Modulfamilien: Pkw-Motoren (Takt 3 m, Förderer) und Großmotoren (Stationsmontage auf FTS, Raster 8 m)
+M.LINIENFAMILIEN = {
+  pkw: { station: 'pm.linie.station.manuell', auto: 'pm.linie.station.roboter', autoName: 'Automatikstation', pruef: 'pm.linie.station.pruef', foerder: 'pm.linie.foerder3', kurz: 'pm.linie.foerder15', foerderName: 'Förderer', r: 'pm.linie.dreh90r', l: 'pm.linie.dreh90l', u: ['pm.linie.wende180'], uText: 'Achsabstand 9 m mit Versorgungsgang', ende: 'pm.linie.ende', start: 'pm.linie.start', raster: 3, breite: 6 },
+  gross: { station: 'pm.gm.station', auto: 'pm.gm.station.qs', autoName: 'Qualitätsstation', pruef: 'pm.gm.station.qs', foerder: 'pm.gm.puffer', kurz: 'pm.gm.puffer', foerderName: 'Pufferplatz', r: 'pm.gm.kurve90r', l: 'pm.gm.kurve90l', u: ['pm.gm.kurve90r', 'pm.gm.puffer', 'pm.gm.kurve90r'], uText: 'zwei FTS-Kurven, Achsabstand 16 m', ende: 'pm.gm.ende', start: 'pm.gm.start', raster: 8, breite: 10 }
+};
 const lnPort = (o, d, q) => { const s = o.size || d.size, kx = s.w / d.size.w, kz = s.d / d.size.d; return [q[0] * kx, q[1] * kz]; };
 M.linieNaechstes = (o, lib) => {
   const d = HSS.library.get(o.lib), n = HSS.library.get(lib); if (!d?.linie?.aus || !n?.linie?.ein) return null;
@@ -616,6 +622,15 @@ M.linieAnhaengen = (selId, lib) => {
   HSS.ui.toast(HSS.library.get(lib).name + ' angehängt', 1800);
   return q.id;
 };
+// Modulfolge einer Linie mit n Stationen, Wende nach k Stationen je Reihe (0 = gerade)
+M.linienFolge = (fam, n, k = 0) => {
+  const F = M.LINIENFAMILIEN[fam], seq = []; let inReihe = 0;
+  for (let i = 0; i < n; i++) {
+    if (k && inReihe === k) { seq.push(F.kurz, ...F.u, F.kurz); inReihe = 0; }
+    seq.push(i === n - 2 && n > 3 ? F.pruef : (i % 4 === 3 ? F.auto : F.station)); inReihe++;
+  }
+  seq.push(F.ende); return seq;
+};
 // Ganze Linie: Anfang → n Stationen (jede 4. automatisch, vorletzte Prüfstation), bei Bedarf in U-Form gewendet → Ende
 M.linieAufbauen = async (selId) => {
   const o0 = U.byId(prj().objects, selId); if (!o0) return;
@@ -623,15 +638,10 @@ M.linieAufbauen = async (selId) => {
   const n = U.clamp(Math.round(+nS || 12), 1, 80);
   const proReihe = await HSS.ui.prompt('Stationen je Reihe, danach wendet die Linie um 180° (0 = gerade Linie)', n > 10 ? String(Math.ceil(n / 2)) : '0'); if (proReihe === null) return;
   const k = Math.max(0, Math.round(+proReihe || 0));
-  const seq = []; let inReihe = 0;
-  for (let i = 0; i < n; i++) {
-    if (k && inReihe === k) { seq.push('pm.linie.foerder15', 'pm.linie.wende180', 'pm.linie.foerder15'); inReihe = 0; }
-    seq.push(i === n - 2 && n > 3 ? 'pm.linie.station.pruef' : (i % 4 === 3 ? 'pm.linie.station.roboter' : 'pm.linie.station.manuell')); inReihe++;
-  }
-  seq.push('pm.linie.ende');
+  const seq = M.linienFolge(HSS.library.get(o0.lib)?.linie?.familie || 'pkw', n, k);
   let last = null;
   HSS.change('Linie aufbauen', p => { let cur = U.byId(p.objects, selId); for (const lib of seq) { const q = M.linieNaechstes(cur, lib); if (!q) break; p.objects.push(q); cur = q; last = q.id; } }, { scope: 'objects' });
-  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * 3, 0)} m Taktstrecke)`, 3500);
+  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * (HSS.library.get(o0.lib)?.linie?.takt || 3), 0)} m Taktstrecke)`, 3500);
   if (last) S3.select({ kind: 'object', id: last });
 };
 // Sitzung: alles seit der Auswahl (bzw. seit dem Platzieren) lässt sich mit ✗ verwerfen

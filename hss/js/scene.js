@@ -123,7 +123,7 @@ S3.rebuild = (scope = 'all') => {
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
   const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor === null || V.floor === undefined ? 'og' : V.floor < 0 ? 'ug' : 'eg') + '|' + V.shell;
   // Etagenansicht: Gelände und Flächen werden unter den Gebäuden abgesenkt – Schlüssel hängt dann von den Grundrissen ab
-  const egSicht = V.floor !== null && V.floor !== undefined && V.floor >= 0;
+  const egSicht = !(V.floor !== null && V.floor !== undefined && V.floor < 0);
   let gkey = ''; if (egSicht) { let s = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) s += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.basements || 0) + ',' + (pt.baseOffset || 0) + ',' + (pt.baseY ?? '') + ',' + (pt.shape === 'poly' ? JSON.stringify(pt.poly || []) : pt.shape) + ';'; gkey = '|g' + U.hash(s); }
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };

@@ -390,6 +390,7 @@ UI.buildRail = () => {
     innen: '<path d="M3 4h18v16H3zM3 12h8v8M11 4v5M15 12h6"/>',
     bibliothek: '<rect x="4" y="5" width="5" height="15"/><rect x="10" y="3" width="4" height="17"/><path d="M15 6l4-1 3 14-4 1z"/>',
     station: '<rect x="3" y="7" width="18" height="12"/><path d="M12 9v8M8 13h8M8 4h8"/>',
+    produktion: '<path d="M3 20V10l5 3V10l5 3V6h8v14z"/><path d="M16 9h2M16 13h2M16 17h2"/>',
     fluesse: '<path d="M3 7h12l-3-3M21 17H9l3 3"/><circle cx="18" cy="7" r="2"/><circle cx="6" cy="17" r="2"/>',
     simulation: '<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/>',
     analyse: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'

@@ -6171,7 +6171,7 @@ const motorAufWT = (x, z = 0) => [...wt(x, z), ...motor(x, 0.98, z)];
 // Linienmodul: Umriss wie bei allen Objekten auf die Mitte gesetzt, Anschlusspunkte (ein/aus) entsprechend verschoben
 const linieObj = (id, name, tags, parts, linie, extra = {}) => {
   const f = fit(parts), R = v => Math.round(v * 1000) / 1000, mv = q => q && [R(q[0] - f.cx), R(q[1] - f.cz), ...q.slice(2)];
-  return Object.assign({ id, name, category: 'Produktionsmodule/Linienmodule', tags: ['Linie', 'Montagelinie', 'modular', ...tags], size: f.size, parts: f.parts, linie: { ein: mv(linie.ein), aus: mv(linie.aus), takt: LL } }, extra);
+  return Object.assign({ id, name, category: 'Produktionsmodule/Linienmodule', tags: ['Linie', 'Montagelinie', 'modular', ...tags], size: f.size, parts: f.parts, linie: { ein: mv(linie.ein), aus: mv(linie.aus), takt: extra.category ? GL : LL, familie: extra.category ? 'gross' : 'pkw' } }, extra);
 };
 const stationManuell = (beid = true) => {
   const P = [...foerder(-LL / 2, LL / 2, 0, 1.0), ...motorAufWT(0), ...portal(LL, 2.8, 2.7), ...schrauber(-0.6, -0.9), ...schrauber(0.6, 0.9)];
@@ -6369,6 +6369,137 @@ const AUSR = [
   O('pm.hw.lichtgitter', 'Sicherheits-Lichtgitter', 'Ausrüstung', ['Sicherheit'], lichtgitter(0, 0, 1.2))
 ];
 
+
+/* ---------- Großmotoren (Baureihen im Stil MTU 2000/4000, Schiffs-, Bahn-, Energie- und Bergbauantriebe) ----------
+   Abmessungen gerundet nach öffentlichen Datenblättern der Baureihen (Motor ohne Anbauten):
+     12V (Baureihe 2000)   ca. 2,4 × 1,5 × 1,5 m, rund 4 t
+     16V (Baureihe 4000)   ca. 3,3 × 1,6 × 2,2 m, rund 9 t
+     20V (Baureihe 4000)   ca. 3,9 × 1,7 × 2,3 m, rund 11 t
+   Montage als Stationsmontage auf Schwerlast-FTS im 8-m-Raster mit beidseitigen Arbeitsbühnen. */
+const hebe = (parts, dy) => parts.map(p => Object.assign({}, p, { p: [p.p[0], p.p[1] + dy, p.p[2]] }, p.piv ? { piv: [p.piv[0], p.piv[1] + dy, p.piv[2]] } : {}));
+const MG = '#46525e', MG2 = '#2f363d';
+const grossmotor = (L, B, H, x = 0, y = 0, z = 0, a = 0, o = {}) => {
+  const c = o.farbe || MG, n = o.zyl || 8, P = [
+    box(0, y + H * 0.08, 0, L * 0.86, H * 0.16, B * 0.5, MG2, 'metall'),                                    // Ölwanne
+    box(0, y + H * 0.33, 0, L * 0.88, H * 0.34, B * 0.72, c, 'metall', { rr: 0.05 }),                       // Kurbelgehäuse
+    box(-L * 0.02, y + H * 0.62, 0, L * 0.8, H * 0.08, B * 0.3, c, 'metall'),                               // V-Raum
+    box(L * 0.47, y + H * 0.38, 0, 0.3, H * 0.62, B * 0.82, MG2, 'metall'),                                 // Schwungradgehäuse
+    cyl(L * 0.5 - 0.02, y + H * 0.36, 0, H * 0.24, 0.12, '#1f2328', 'metall', { ax: 'x', seg: 20 }),
+    box(-L * 0.47, y + H * 0.36, 0, 0.26, H * 0.5, B * 0.6, MG2, 'metall'),                                // Rädertrieb vorn
+    cyl(-L * 0.5 - 0.06, y + H * 0.26, 0, H * 0.1, 0.14, '#1f2328', 'metall', { ax: 'x' }),                // Schwingungsdämpfer
+    box(-L * 0.04, y + H * 0.9, 0, L * 0.66, H * 0.1, B * 0.22, '#5c6976', 'metall', { rr: 0.03 })        // Ladeluftleitung
+  ];
+  for (const s of [-1, 1]) {
+    P.push(box(-L * 0.04, y + H * 0.66, s * B * 0.27, L * 0.78, H * 0.28, B * 0.28, c, 'metall', { rr: 0.03 }));   // Zylinderbank
+    for (let i = 0; i < n; i++) P.push(box(-L * 0.42 + (i + 0.5) * L * 0.78 / n, y + H * 0.83, s * B * 0.32, L * 0.78 / n - 0.05, H * 0.07, B * 0.2, '#262c32', 'metall')); // Zylinderköpfe
+    P.push(cyl(-L * 0.04, y + H * 0.76, s * B * 0.46, H * 0.05, L * 0.76, '#a8aeb4', 'chrom', { ax: 'x' }));        // Abgassammelrohr (isoliert)
+    P.push(cyl(-L * 0.4, y + H * 0.82, s * B * 0.26, H * 0.12, B * 0.24, '#9aa1aa', 'metall', { ax: 'z', seg: 16 })); // Abgasturbolader
+    P.push(box(L * 0.1, y + H * 0.28, s * B * 0.38, L * 0.3, H * 0.16, 0.06, '#6b7782', 'metall'));               // Kurbelraumdeckel
+  }
+  P.push(cyl(-L * 0.4, y + H * 0.97, 0, H * 0.07, 0.3, '#9aa1aa', 'metall'));
+  return T(P, x, z, a);
+};
+const MOTOR = { m12: [2.4, 1.5, 1.5, 6], m16: [3.3, 1.6, 2.2, 8], m20: [3.9, 1.7, 2.3, 10] };
+const motorG = (k, x, y, z, a = 0, o = {}) => { const [L, B, H, n] = MOTOR[k]; return grossmotor(L, B, H, x, y, z, a, Object.assign({ zyl: n }, o)); };
+// Schwerlast-FTS mit Montagebock (Last bis 15 t)
+const ftsSchwer = (x = 0, z = 0, a = 0, last = true) => T([
+  box(0, 0.22, 0, 5.0, 0.4, 2.5, '#e0b334', 'lack', { rr: 0.06 }), box(0, 0.43, 0, 4.8, 0.04, 2.3, '#3b4450', 'metall'),
+  box(-2.52, 0.25, 0, 0.04, 0.2, 2.2, '#0A967A', 'leucht'), box(2.52, 0.25, 0, 0.04, 0.2, 2.2, '#c0392b', 'leucht'),
+  ...(last ? [box(-1.2, 0.68, 0, 0.5, 0.5, 1.4, '#59636e', 'metall'), box(1.2, 0.68, 0, 0.5, 0.5, 1.4, '#59636e', 'metall')] : [])
+], x, z, a);
+// Arbeitsbühne (Podest mit Geländer und Treppe) entlang x, Seite s (+1/−1: Geländer außen)
+const buehne = (x, z, L = 5.0, b = 1.3, h = 1.0, s = 1) => {
+  const P = [box(x, h, z, L, 0.06, b, '#9aa1aa', 'metall')];
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) P.push(box(x + sx * (L / 2 - 0.06), h / 2, z + sz * (b / 2 - 0.06), 0.08, h, 0.08, '#f2c94c', 'lack'));
+  P.push(box(x, h + 1.05, z + s * (b / 2 - 0.03), L, 0.05, 0.05, '#f2c94c', 'lack'), box(x, h + 0.55, z + s * (b / 2 - 0.03), L, 0.04, 0.04, '#f2c94c', 'lack'));
+  for (let i = 0; i <= Math.round(L / 1.25); i++) P.push(box(x - L / 2 + i * L / Math.round(L / 1.25), h + 0.55, z + s * (b / 2 - 0.03), 0.04, 1.05, 0.04, '#f2c94c', 'lack'));
+  for (let k = 0; k < 4; k++) P.push(box(x - L / 2 - 0.25 - k * 0.25, h * (4 - k) / 5, z, 0.25, 0.04, b - 0.1, '#9aa1aa', 'metall'));
+  return P;
+};
+const werkzeugwagen = (x, z, a = 0) => T([box(0, 0.5, 0, 0.9, 0.9, 0.5, '#c0392b', 'lack', { rr: 0.02 }), box(0, 0.97, 0, 0.92, 0.04, 0.52, '#2b3138', 'gummi'), ...K.casters(0.9, 0.5, 0.05)], x, z, a);
+const GL = 8.0;
+const stationGross = (art = 'manuell') => {
+  const P = [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(0, 0), ...motorG('m16', 0, 0.93, 0)];
+  for (const s of [-1, 1]) {
+    P.push(...buehne(0.3, s * 1.95, 4.6, 1.3, 1.0, s), ...werkzeugwagen(-2.6, s * 3.0, s > 0 ? 180 : 0), ...durchlaufregal(-0.6, s * 4.3, 2.6, s > 0 ? 180 : 0), ...durchlaufregal(2.2, s * 4.3, 2.6, s > 0 ? 180 : 0));
+    P.push(...hebe(werker(s > 0 ? 0.8 : -0.4, s * 2.0, s > 0 ? 180 : 0), 1.03));
+  }
+  P.push(...saeulenkran(3.4, -3.1, 3.2, 5.0, 115), ...infoTerminal(3.6, 3.2, 180), ...ampel(-3.7, -3.4, 0, 2.6), ...schrauber(-0.9, 1.0, 4.4), ...schrauber(1.2, -1.0, 4.4));
+  if (art === 'qs') P.push(...[-1, 1].map(s => box(0, 2.6, s * 1.4, 0.15, 5.2, 0.15, '#d5d9de', 'lack')), box(0, 5.2, 0, 0.3, 0.3, 3.0, '#d5d9de', 'lack'), box(0, 4.9, 0, 0.3, 0.25, 0.3, '#2b3138', 'kunststoff'));
+  return P;
+};
+const pufferGross = () => [linie(-GL / 2, -1.6, GL / 2, -1.6, '#f4f6f8', 0.12), linie(-GL / 2, 1.6, GL / 2, 1.6, '#f4f6f8', 0.12), ...ftsSchwer(0.4, 0), ...motorG('m16', 0.4, 0.93, 0)];
+const kurveGross = s => {
+  // Fahrspur als Bogen (Radius 4 m um die Ecke (−4, s·4)), FTS unter 45°
+  const P = [], cx = -4, cz = s * 4;
+  for (const r of [2.4, 5.6]) for (let i = 0; i < 9; i++) { const a0 = (i / 9) * Math.PI / 2, a1 = ((i + 1) / 9) * Math.PI / 2, x0 = cx + r * Math.sin(a0), z0 = cz - s * r * Math.cos(a0), x1 = cx + r * Math.sin(a1), z1 = cz - s * r * Math.cos(a1); P.push(linie(x0, z0, x1, z1, '#f4f6f8', 0.12)); }
+  P.push(...T(ftsSchwer(0, 0, 0, false), -1.2, s * 1.2, s * 45), box(0, 0.004, 0, 0.01, 0.008, 0.01, '#f4f6f8', 'lack'));
+  P.push(box(-3.9, 0.004, -s * 3.9, 0.1, 0.008, 0.1, '#f4f6f8', 'lack'), box(3.9, 0.004, s * 3.9, 0.1, 0.008, 0.1, '#f4f6f8', 'lack'));
+  return P;
+};
+const startGross = () => [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(0.6, 0), box(0.6, 1.33, 0, 3.0, 0.8, 1.2, MG, 'metall', { rr: 0.05 }), ...saeulenkran(-2.8, -2.6, 3.4, 5.0, 60), ...gitterbox(-2.6, 3.6), ...gitterbox(-1.0, 3.6), ...werkzeugwagen(2.4, 3.0, 180), ...werker(-1.2, 2.0, 180), ...werker(2.6, -2.2, 0), ...infoTerminal(3.6, 3.6, 180), ...ampel(3.7, -3.4, 0, 2.6)];
+const endeGross = () => [...markierung(GL, 10, '#f2c94c', 0.1), ...ftsSchwer(-1.2, 0), ...motorG('m16', -1.2, 0.93, 0), box(2.4, 0.3, -3.0, 3.8, 0.6, 2.0, '#59636e', 'metall'), ...motorG('m16', 2.4, 0.6, -3.0), ...saeulenkran(1.4, -1.0, 3.4, 5.0, 270), ...werker(1.8, 2.2, 180), ...ampel(3.7, 3.4, 0, 2.6)];
+// Prüfzelle Großmotor (Heißtest mit Wasserwirbelbremse) inkl. Leitwarte, 12 × 12 m
+const pruefzelle = () => {
+  const P = [box(0, 0.06, -1.5, 12, 0.12, 9, '#8d969f', 'matt')], W2 = '#cbc6ba';
+  P.push(box(0, 3.5, -6.0, 12, 7.0, 0.3, W2, 'lack'), box(-6.0, 3.5, -1.5, 0.3, 7.0, 9.0, W2, 'lack'), box(6.0, 3.5, -3.6, 0.3, 7.0, 4.8, W2, 'lack'), box(6.0, 5.6, 0.85, 0.3, 2.8, 4.1, W2, 'lack'), box(6.06, 2.1, 0.85, 0.06, 4.2, 4.0, '#9aa1aa', 'metall'));
+  P.push(box(-2.6, 2.5, 3.0, 6.8, 5.0, 0.3, W2, 'lack'), box(-2.6, 1.9, 3.06, 5.6, 1.4, 0.06, '#9fc4d8', 'glas'), box(3.3, 3.5, 3.0, 5.4, 7.0, 0.3, W2, 'lack'), box(-2.6, 6.0, 3.0, 6.8, 2.0, 0.3, W2, 'lack'));
+  P.push(box(0, 7.05, -6.0, 12.3, 0.12, 0.4, '#a9a395', 'lack'), box(0, 7.05, 3.0, 12.3, 0.12, 0.4, '#a9a395', 'lack'));
+  P.push(box(-1.2, 0.45, -1.8, 4.6, 0.7, 2.2, '#59636e', 'metall'), ...motorG('m20', -1.2, 0.8, -1.8), box(2.4, 1.0, -1.8, 1.8, 1.8, 1.6, '#2d6fa3', 'lack'), cyl(1.15, 1.2, -1.8, 0.12, 0.9, '#9aa1aa', 'chrom', { ax: 'x' }));
+  for (const s of [-1, 1]) P.push(cyl(-2.4, 5.2, -1.8 + s * 0.6, 0.3, 5.0, '#a8aeb4', 'metall'), cyl(-2.4, 7.8, -1.8 + s * 0.6, 0.32, 1.2, '#7d8791', 'metall'));
+  P.push(box(3.6, 6.4, -4.4, 3.0, 1.2, 1.6, '#9aa1aa', 'metall'), box(-4.8, 1.4, -4.8, 1.6, 2.8, 1.6, '#d5d9de', 'lack'), box(-4.6, 0.9, 1.4, 2.0, 1.8, 1.4, '#e0b334', 'lack'));
+  // Leitwarte
+  P.push(box(-2.6, 0.9, 4.4, 5.6, 0.06, 0.9, '#5a6573', 'matt'), ...K.legs(5.5, 0.85, 0.88, 0.03, '#9aa1aa', 0.04));
+  for (const x of [-4.6, -3.6, -2.6, -1.6, -0.6]) P.push(...K.screen(x, 1.25, 4.15, 0.62, 0.4));
+  P.push(...schaltschrank(3.3, 4.4, 4, 0), ...werker(-3.3, 5.1, 180), ...werker(-1.4, 5.2, 200, { top: '#3d5a80' }), ...ampel(5.8, 3.4, 0, 2.6), ...markierung(12.4, 12.6, '#f2c94c', 0.1).map(p => Object.assign({}, p, { p: [p.p[0], p.p[1], p.p[2] - 0.0] })));
+  return P;
+};
+// Bearbeitungszentrum für Großmotoren-Kurbelgehäuse (Portalbauweise), 9 × 6,5 × 5,2 m
+const bazGross = (x = 0, z = 0, a = 0) => T([
+  box(0, 0.4, 0, 8.4, 0.8, 5.6, '#59636e', 'metall'), box(0, 2.9, -0.2, 8.4, 4.2, 5.2, WS, 'lack', { rr: 0.08 }), box(0, 5.05, -0.6, 6.0, 0.3, 3.0, HG, 'lack'),
+  box(-0.8, 2.6, 2.41, 4.6, 2.6, 0.02, '#9fc4d8', 'glas'), box(-0.8, 2.6, 2.405, 4.8, 2.8, 0.01, '#4b5058', 'metall'), box(2.6, 1.4, 2.45, 1.4, 2.6, 0.04, NV, 'lack'),
+  ...pult(3.6, 1.6, 3.0), box(3.6, 1.6, 2.7, 0.06, 0.06, 0.6, AN, 'metall'), box(4.0, 4.9, 2.2, 0.1, 0.1, 0.1, GR, 'leucht'),
+  box(-5.0, 2.4, -0.8, 1.6, 4.8, 2.6, '#d5d9de', 'lack'), box(-5.0, 1.0, -0.8, 1.62, 0.1, 2.62, NV, 'lack'),       // Werkzeugmagazin
+  box(1.5, 0.6, -3.5, 4.0, 1.2, 1.0, '#59636e', 'metall'), box(4.0, 1.1, -3.8, 1.4, 0.15, 0.6, '#6d7680', 'metall'),   // Späneförderer
+  box(-2.4, 0.8, -3.7, 2.4, 1.6, 1.4, BL, 'lack'), box(4.6, 1.2, -1.2, 0.8, 2.4, 2.4, '#d5d9de', 'lack'),
+  box(-0.4, 0.95, 4.2, 3.6, 0.1, 2.0, '#9aa1aa', 'metall'), box(-0.4, 0.45, 4.2, 3.4, 0.9, 1.8, '#59636e', 'metall'), box(-0.4, 1.35, 4.2, 2.8, 0.7, 1.2, MG, 'metall', { rr: 0.05 })   // Rüstplatz mit Kurbelgehäuse
+], x, z, a);
+const kwDrehGross = (x = 0, z = 0, a = 0) => T([
+  box(0, 0.5, 0, 11.0, 1.0, 3.0, '#59636e', 'metall'), box(0, 1.9, -0.1, 11.0, 1.8, 2.8, WS, 'lack', { rr: 0.06 }), box(0, 1.8, 1.31, 8.0, 1.2, 0.02, '#9fc4d8', 'glas'),
+  cyl(0, 1.8, 0.2, 0.18, 7.6, '#9aa1aa', 'metall', { ax: 'x' }), ...pult(4.8, 1.7, 1.45), box(-6.0, 0.6, 0, 1.2, 1.2, 2.0, '#59636e', 'metall'), box(0, 0.5, -1.9, 6.0, 1.0, 0.8, HG, 'lack'), box(5.2, 2.9, 1.1, 0.1, 0.1, 0.1, GR, 'leucht')
+], x, z, a);
+// Lackiererei Großmotoren
+const skid = (x, z, mit = true, k = 'm16') => [box(x, 0.35, z, 5.0, 0.7, 2.0, '#59636e', 'metall'), ...Array.from({ length: 10 }, (_, i) => cyl(x - 2.25 + i * 0.5, 0.72, z, 0.06, 1.9, '#b8bec6', 'chrom', { ax: 'z' })), box(x, 0.82, z, 4.2, 0.12, 1.6, '#3b4450', 'metall'), ...(mit ? motorG(k, x, 0.88, z) : [])];
+const kabineHuelle = (L, B, H, c, fenster = true) => [box(0, H / 2, -B / 2, L, H, 0.15, c, 'lack'), box(-L / 2, H / 2, 0, 0.15, H, B, c, 'lack'), box(L / 2, H / 2, 0, 0.15, H, B, c, 'lack'), box(0, H * 0.75, B / 2, L, H * 0.5, 0.15, c, 'lack'), box(-L / 4, H * 0.25, B / 2, L / 2, H * 0.5, 0.15, c, 'lack'), ...(fenster ? [box(L / 4, H * 0.3, B / 2, L / 2 - 0.2, H * 0.5, 0.05, '#9fc4d8', 'glas')] : [box(L / 4, H * 0.25, B / 2, L / 2, H * 0.5, 0.15, c, 'lack')]), box(0, H + 0.4, 0, L, 0.8, B, '#cfd6dc', 'lack')];
+const lackKabine = () => [...kabineHuelle(12, 8, 6, '#e3e7ea'), ...skid(0, 0), ...werker(-2.2, 1.8, 200, { top: '#f4f6f8', vest: null }), ...werker(2.6, -1.8, 20, { top: '#f4f6f8' }), cyl(4.5, 8.0, -2.5, 0.5, 3.6, '#a8aeb4', 'metall'), box(-4.5, 7.0, -2.5, 2.6, 1.4, 2.2, '#9aa1aa', 'metall'), box(-6.6, 1.2, 2.0, 1.2, 2.4, 1.4, '#f2c94c', 'lack'), ...ampel(6.3, 3.6, 0, 2.6)];
+const vorbehandlung = () => [...kabineHuelle(10, 7, 5.5, '#d5dde3', false), ...skid(0, 0), box(-3.0, 6.6, 0, 3.0, 1.4, 4.0, BL, 'lack'), cyl(3.2, 6.8, -1.5, 0.4, 1.8, '#9aa1aa', 'metall'), box(5.6, 0.8, -2.0, 1.2, 1.6, 2.4, BL, 'lack'), ...pult(5.4, 1.4, 2.0)];
+const trockner = () => [...kabineHuelle(16, 7, 5.5, '#c9ced4', false), ...skid(-4, 0), ...skid(4, 0), box(0, 6.8, -1.5, 4.0, 1.8, 2.6, '#9aa1aa', 'metall'), cyl(4.0, 7.8, 1.2, 0.45, 3.2, '#a8aeb4', 'metall'), box(-8.6, 1.2, 1.6, 1.0, 2.4, 2.0, '#d5d9de', 'lack'), ...ampel(8.2, 3.6, 0, 2.6)];
+const abkleben = () => [...markierung(8, 6, '#f2c94c', 0.08), ...skid(0, 0), ...buehne(0, -1.75, 4.4, 1.1, 0.8, -1), ...werker(0.4, 1.6, 180), ...hebe(werker(-0.6, -1.75, 0), 0.83), ...K.shelf(2.0, 0.6, 2.0, 5, '#c8ced5', '#f2994a').map(p => Object.assign({}, p, { p: [p.p[0] + 2.6, p.p[1], p.p[2] + 2.6] })), ...werkzeugwagen(-2.8, 2.2, 180)];
+const mischraum = () => [box(0, 1.75, 0, 6.0, 3.5, 4.0, '#e8d27a', 'lack'), box(0, 1.2, 2.01, 1.4, 2.2, 0.02, '#b9a45a', 'lack'), box(1.8, 2.6, 2.02, 0.5, 0.45, 0.01, '#f2c94c', 'kunststoff'), cyl(-2.0, 4.0, -1.0, 0.25, 1.2, '#9aa1aa', 'metall'), ...[-1.8, -0.9, 0].map(x => cyl(x + 3.8, 0.45, -1.2, 0.29, 0.9, '#2d6fa3', 'lack'))];
+
+const GROSS = [
+  O('pm.gm.motor12v', 'Großmotor 12V (Baureihe 2000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m12', 0, 0, 0)),
+  O('pm.gm.motor16v', 'Großmotor 16V (Baureihe 4000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m16', 0, 0, 0)),
+  O('pm.gm.motor20v', 'Großmotor 20V (Baureihe 4000-Klasse)', 'Großmotoren', ['Motor', 'Großmotor', 'Werkstück'], motorG('m20', 0, 0, 0)),
+  O('pm.gm.fts', 'Schwerlast-FTS mit Montagebock (15 t)', 'Großmotoren', ['FTS', 'AGV', 'Montage'], ftsSchwer(0, 0)),
+  O('pm.gm.baz', 'Bearbeitungszentrum Kurbelgehäuse Großmotor (Portal)', 'Großmotoren', ['BAZ', 'Kurbelgehäuse', 'Zerspanung', 'Maschine'], bazGross()),
+  O('pm.gm.kwdreh', 'Kurbelwellen-Dreh-Fräszentrum Großmotor', 'Großmotoren', ['Kurbelwelle', 'Drehen', 'Maschine'], kwDrehGross()),
+  O('pm.gm.pruefzelle', 'Motorenprüfstand Großmotor (Heißtest-Zelle mit Leitwarte)', 'Großmotoren', ['Prüfstand', 'Heißtest', 'Prüffeld', 'Qualität'], pruefzelle(), { meta: { Prüfung: 'Abnahmelauf unter Last mit Wasserwirbelbremse', Technik: 'Abgas- und Zuluftanlage, Kraftstoff- und Kühlwasserkonditionierung' } }),
+  O('pm.lack.vorbehandlung', 'Lackiererei: Wasch-/Vorbehandlungskabine Großmotor', 'Lackiererei', ['Lackieren', 'Waschen', 'Vorbehandlung'], vorbehandlung()),
+  O('pm.lack.kabine', 'Lackiererei: Spritzkabine Großmotor (Nassabscheidung)', 'Lackiererei', ['Lackieren', 'Kabine'], lackKabine()),
+  O('pm.lack.trockner', 'Lackiererei: Umlufttrockner (2 Plätze)', 'Lackiererei', ['Lackieren', 'Trockner', 'Ofen'], trockner()),
+  O('pm.lack.abkleben', 'Lackiererei: Abklebe-/Maskierplatz mit Bühne', 'Lackiererei', ['Lackieren', 'Maskieren'], abkleben()),
+  O('pm.lack.skid', 'Lackiererei: Skidförderer mit Motor', 'Lackiererei', ['Förderer', 'Skid'], skid(0, 0)),
+  O('pm.lack.mischraum', 'Lackiererei: Farbmisch- und Lackraum (Ex-Bereich)', 'Lackiererei', ['Lack', 'Gefahrstoff'], mischraum()),
+  linieObj('pm.gm.station', 'Großmotor-Montagestation (FTS, Takt 8 m, Bühnen beidseitig)', ['Station', 'Großmotor', 'FTS', 'Stationsmontage'], stationGross(), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.station.qs', 'Großmotor-Qualitätsstation mit Kameraportal', ['Station', 'Großmotor', 'Qualität'], stationGross('qs'), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.puffer', 'Großmotor-Linie: FTS-Pufferplatz 8 m', ['Puffer', 'FTS', 'Großmotor'], pufferGross(), { ein: [-4, 0], aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.kurve90r', 'Großmotor-Linie: FTS-Kurve 90° rechts', ['Kurve', 'FTS', 'Drehmodul'], kurveGross(1), { ein: [-4, 0], aus: [0, 4, 90] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.kurve90l', 'Großmotor-Linie: FTS-Kurve 90° links', ['Kurve', 'FTS', 'Drehmodul'], kurveGross(-1), { ein: [-4, 0], aus: [0, -4, -90] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.start', 'Großmotor-Linie: Start (Kurbelgehäuse aufsetzen)', ['Start', 'Großmotor', 'Kran'], startGross(), { ein: null, aus: [4, 0, 0] }, { category: 'Produktionsmodule/Großmotoren-Linie' }),
+  linieObj('pm.gm.ende', 'Großmotor-Linie: Ende (Übergabe an Prüffeld)', ['Ende', 'Großmotor', 'Kran'], endeGross(), { ein: [-4, 0], aus: null }, { category: 'Produktionsmodule/Großmotoren-Linie' })
+];
+
 HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Produktionsmodule', objects: [
   O('pm.insel.zylinderkopf', 'Fertigungsinsel Zylinderkopf (2 BAZ, Roboter, Waschen, Messen)', 'Produktionsinseln', ['Insel', 'Zerspanung', 'BAZ', 'Roboter', 'Zylinderkopf', 'Motor'], inselZylinderkopf(), { meta: { Maschinen: '2 Horizontal-BAZ, Roboter 120 kg, Waschanlage, SPC-Messplatz', Bedienung: '1–2 Werker je Schicht', Medien: 'KSS-Anlage, Späneförderer, Druckluft' } }),
   O('pm.insel.kurbelwelle', 'Fertigungsinsel Kurbelwelle (Drehen, 2× Schleifen, Portallader)', 'Produktionsinseln', ['Insel', 'Schleifen', 'Drehen', 'Portallader', 'Kurbelwelle', 'Motor'], inselKurbelwelle(), { meta: { Maschinen: 'Drehräummaschine, 2 Schleifmaschinen, Waschanlage', Verkettung: 'Portallader 4,8 m, Ein-/Auslaufband' } }),
@@ -6381,7 +6512,8 @@ HSS.library.registerPack({ format: 'hss-library', version: 1, name: 'Produktions
   O('pm.station.pruefstand', 'Motorenprüfstand (Heißtest-Zelle mit Leitwarte)', 'Werkstattfertigung', ['Station', 'Prüfstand', 'Heißtest', 'Motor', 'Qualität'], stationPruefstand()),
   O('pm.station.nacharbeit', 'Nacharbeitsstation Motor (mit Schwenkkran)', 'Werkstattfertigung', ['Station', 'Nacharbeit', 'Reparatur', 'Motor'], stationNacharbeit()),
   ...LINIE,
-  ...AUSR
+  ...AUSR,
+  ...GROSS
 ] });
 })(HSS.library.kit);
 
@@ -7073,7 +7205,7 @@ HSS.bauGrundrisse = (prj = HSS.project()) => {
     if (pt.stackOn || (pt.floorOffset || 0) > 0) continue;
     const o = HSS.partFootprint(pt).outer; if (!o || o.length < 3) continue;
     const nb = pt.basements || 0;
-    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - (nb > 0 ? 0.3 : 0.08) });
+    out.push({ o, q: G.bbox(o), y: HSS.floorY(pt, nb > 0 ? -nb : 0, prj) - 0.4 });
   }
   return out;
 };
@@ -7086,8 +7218,8 @@ HSS.unterBau = (B, x, z, rand = 0) => {
   }
   return y;
 };
-const etagenSicht = view => view && view.floor !== null && view.floor !== undefined && view.floor >= 0;
-// Höhen einer Geländeauflage unter Gebäuden absenken (nur in der Etagenansicht)
+const etagenSicht = view => !(view && view.floor !== null && view.floor !== undefined && view.floor < 0); // immer außer in Untergeschossen
+// Höhen einer Geländeauflage unter Gebäuden absenken (unter die Bodenplatte, damit nichts durchscheint)
 const absenken = (g, view, B) => {
   if (!etagenSicht(view)) return;
   B = B || HSS.bauGrundrisse(); if (!B.length) return;
@@ -8064,7 +8196,7 @@ S3.rebuild = (scope = 'all') => {
   // Außenanlagen nur neu bauen, wenn sich Gelände, Weg oder Fläche geändert haben (große Standortmodelle bleiben flüssig)
   const tkey = JSON.stringify(prj.terrain) + '|' + (V.umgebung || 'alle') + '|' + V.explode + '|' + (V.floor === null || V.floor === undefined ? 'og' : V.floor < 0 ? 'ug' : 'eg') + '|' + V.shell;
   // Etagenansicht: Gelände und Flächen werden unter den Gebäuden abgesenkt – Schlüssel hängt dann von den Grundrissen ab
-  const egSicht = V.floor !== null && V.floor !== undefined && V.floor >= 0;
+  const egSicht = !(V.floor !== null && V.floor !== undefined && V.floor < 0);
   let gkey = ''; if (egSicht) { let s = ''; for (const b of prj.buildings) for (const pt of b.parts) if (!pt.stackOn) s += pt.x + ',' + pt.z + ',' + pt.w + ',' + pt.d + ',' + (pt.rot || 0) + ',' + (pt.basements || 0) + ',' + (pt.baseOffset || 0) + ',' + (pt.baseY ?? '') + ',' + (pt.shape === 'poly' ? JSON.stringify(pt.poly || []) : pt.shape) + ';'; gkey = '|g' + U.hash(s); }
   const cache = S3._outCache || (S3._outCache = new Map());
   const cached = (id, key, make) => { const c = cache.get(id); if (c && c.key === key) return c.g; const g = make(); cache.set(id, { key, g }); return g; };
@@ -12195,6 +12327,7 @@ UI.buildRail = () => {
     innen: '<path d="M3 4h18v16H3zM3 12h8v8M11 4v5M15 12h6"/>',
     bibliothek: '<rect x="4" y="5" width="5" height="15"/><rect x="10" y="3" width="4" height="17"/><path d="M15 6l4-1 3 14-4 1z"/>',
     station: '<rect x="3" y="7" width="18" height="12"/><path d="M12 9v8M8 13h8M8 4h8"/>',
+    produktion: '<path d="M3 20V10l5 3V10l5 3V6h8v14z"/><path d="M16 9h2M16 13h2M16 17h2"/>',
     fluesse: '<path d="M3 7h12l-3-3M21 17H9l3 3"/><circle cx="18" cy="7" r="2"/><circle cx="6" cy="17" r="2"/>',
     simulation: '<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/>',
     analyse: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
@@ -13448,7 +13581,8 @@ function bar(show) {
   if (sel.kind === 'area') { h += B('rotL', '⟲', 'Drehen') + B('rotR', '⟳', 'Drehen'); const ar = U.byId(prj().areas, sel.id); if (ar?.poly && M.areaVtx !== undefined && ar.poly[M.areaVtx]) h += B('delVtx', '✕ Ecke', 'Zuletzt gezogene Ecke löschen (oder Alt+Klick auf eine Ecke)'); }
   if (sel.kind === 'object') h += B('rotL', '⟲', 'Um 90° drehen (Umschalt: 15°)') + B('rotR', '⟳', 'Um 90° drehen (Umschalt: 15°)');
   if (sel.kind === 'object') { const o = U.byId(prj().objects, sel.id), d = o && HSS.library.get(o.lib); if (d?.linie) {
-    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:pm.linie.station.manuell', '＋ Station', 'Montagestation (3 m) am Ausgang anhängen (Umschalt: Automatikstation)') + B('ln:pm.linie.foerder3', '＋ Förderer', 'Förderstrecke 3 m anhängen (Umschalt: 1,5 m)') + B('ln:pm.linie.dreh90r', '↱ 90°', 'Drehmodul 90° nach rechts anhängen') + B('ln:pm.linie.dreh90l', '↰ 90°', 'Drehmodul 90° nach links anhängen') + B('ln:pm.linie.wende180', '⮌ 180°', 'Wendemodul 180° anhängen (Rücklauf parallel, Achsabstand 9 m mit Versorgungsgang)') + B('ln:pm.linie.ende', '⏹ Ende', 'Linienende (Entnahme) anhängen');
+    const F = M.LINIENFAMILIEN[d.linie.familie || 'pkw'];
+    if (d.linie.aus) h += '<span class="sep"></span>' + B('ln:station', '＋ Station', 'Station am Ausgang anhängen (Umschalt: ' + (F.autoName || 'Automatikstation') + ')') + B('ln:foerder', '＋ ' + (F.foerderName || 'Förderer'), (F.foerderName || 'Förderstrecke') + ' anhängen') + B('ln:r', '↱ 90°', 'Nach rechts abbiegen') + B('ln:l', '↰ 90°', 'Nach links abbiegen') + B('ln:u', '⮌ 180°', 'Wenden: Rücklauf parallel (' + F.uText + ')') + B('ln:ende', '⏹ Ende', 'Linienende anhängen');
     if (!d.linie.ein) h += B('lnBau', '⚙ Linie', 'Ganze Linie ab diesem Linienanfang aufbauen (Anzahl Stationen, Wenden)');
   } }
   if (sel.kind === 'path') h += B('rotL', '⟲', 'Weg um 15° drehen') + B('rotR', '⟳', 'Weg um 15° drehen') + B('ext', '↦ +10 m', 'Weg am Ende um 10 m verlängern') + B('cut', '↤ −10 m', 'Weg am Ende um 10 m kürzen');
@@ -13500,7 +13634,7 @@ function act(a, e) {
   if (sel.kind === 'bridge' && a === 'wide') HSS.change('Brückenbreite', p => { const b = U.byId(p.bridges, sel.id); b.width = U.clamp((b.width || 4) + (big ? -1 : 1), 2, 20); });
   if (sel.kind === 'area' && (a === 'rotL' || a === 'rotR')) HSS.change('Fläche drehen', p => { const q = U.byId(p.areas, sel.id), da = a === 'rotL' ? -15 : 15; if (q.poly && q.poly.length >= 3) { const bb = G.bbox(q.poly); q.poly = q.poly.map(t => { const v = G.rot([t[0] - bb.cx, t[1] - bb.cz], U.rad(da)); return [Math.round((bb.cx + v[0]) * 10) / 10, Math.round((bb.cz + v[1]) * 10) / 10]; }); HSS.areaFit(q); } else q.rot = ((q.rot || 0) + da) % 360; }, { scope: 'outdoor' });
   if (sel.kind === 'area' && a === 'delVtx') { const i = M.areaVtx; M.areaVtx = undefined; HSS.change('Ecke löschen', p => { const q = U.byId(p.areas, sel.id); if (q?.poly && q.poly.length > 3 && i !== undefined) { q.poly.splice(i, 1); HSS.areaFit(q); } else HSS.ui.toast('Ein Vieleck braucht mindestens drei Ecken'); }, { scope: 'outdoor' }); }
-  if (sel.kind === 'object' && a.startsWith('ln:')) { let lib = a.slice(3); if (big && lib === 'pm.linie.station.manuell') lib = 'pm.linie.station.roboter'; if (big && lib === 'pm.linie.foerder3') lib = 'pm.linie.foerder15'; const id = M.linieAnhaengen(sel.id, lib); if (id) S3.select({ kind: 'object', id }); return; }
+  if (sel.kind === 'object' && a.startsWith('ln:')) { const o = U.byId(prj().objects, sel.id), F = M.LINIENFAMILIEN[HSS.library.get(o?.lib)?.linie?.familie || 'pkw'], k = a.slice(3); const seq = { station: [big ? F.auto : F.station], foerder: [big ? F.kurz : F.foerder], r: [F.r], l: [F.l], u: F.u, ende: [F.ende] }[k]; let id = sel.id; for (const lib of seq || []) { id = M.linieAnhaengen(id, lib); if (!id) break; } if (id && id !== sel.id) S3.select({ kind: 'object', id }); return; }
   if (sel.kind === 'object' && a === 'lnBau') { M.linieAufbauen(sel.id); return; }
   if (sel.kind === 'object' && (a === 'rotL' || a === 'rotR')) HSS.change('Objekt drehen', p => { const q = U.byId(p.objects, sel.id); q.rot = ((((q.rot || 0) + (a === 'rotL' ? -1 : 1) * (big ? 15 : 90)) % 360) + 360) % 360; }, { scope: 'objects' });
   if (sel.kind === 'path') {
@@ -13513,6 +13647,11 @@ function act(a, e) {
    Linienmodule (Bibliothek „Produktionsmodule/Linienmodule“) haben Anschlusspunkte linie.ein / linie.aus in lokalen
    Koordinaten (Fluss in +x, aus[2] = Richtungsänderung in Grad). Das neue Modul wird mit seinem Eingang auf den
    Ausgang des gewählten Moduls gesetzt und um dessen Richtung gedreht – im selben Bezug (Etage bzw. Gelände). */
+// Modulfamilien: Pkw-Motoren (Takt 3 m, Förderer) und Großmotoren (Stationsmontage auf FTS, Raster 8 m)
+M.LINIENFAMILIEN = {
+  pkw: { station: 'pm.linie.station.manuell', auto: 'pm.linie.station.roboter', autoName: 'Automatikstation', pruef: 'pm.linie.station.pruef', foerder: 'pm.linie.foerder3', kurz: 'pm.linie.foerder15', foerderName: 'Förderer', r: 'pm.linie.dreh90r', l: 'pm.linie.dreh90l', u: ['pm.linie.wende180'], uText: 'Achsabstand 9 m mit Versorgungsgang', ende: 'pm.linie.ende', start: 'pm.linie.start', raster: 3, breite: 6 },
+  gross: { station: 'pm.gm.station', auto: 'pm.gm.station.qs', autoName: 'Qualitätsstation', pruef: 'pm.gm.station.qs', foerder: 'pm.gm.puffer', kurz: 'pm.gm.puffer', foerderName: 'Pufferplatz', r: 'pm.gm.kurve90r', l: 'pm.gm.kurve90l', u: ['pm.gm.kurve90r', 'pm.gm.puffer', 'pm.gm.kurve90r'], uText: 'zwei FTS-Kurven, Achsabstand 16 m', ende: 'pm.gm.ende', start: 'pm.gm.start', raster: 8, breite: 10 }
+};
 const lnPort = (o, d, q) => { const s = o.size || d.size, kx = s.w / d.size.w, kz = s.d / d.size.d; return [q[0] * kx, q[1] * kz]; };
 M.linieNaechstes = (o, lib) => {
   const d = HSS.library.get(o.lib), n = HSS.library.get(lib); if (!d?.linie?.aus || !n?.linie?.ein) return null;
@@ -13530,6 +13669,15 @@ M.linieAnhaengen = (selId, lib) => {
   HSS.ui.toast(HSS.library.get(lib).name + ' angehängt', 1800);
   return q.id;
 };
+// Modulfolge einer Linie mit n Stationen, Wende nach k Stationen je Reihe (0 = gerade)
+M.linienFolge = (fam, n, k = 0) => {
+  const F = M.LINIENFAMILIEN[fam], seq = []; let inReihe = 0;
+  for (let i = 0; i < n; i++) {
+    if (k && inReihe === k) { seq.push(F.kurz, ...F.u, F.kurz); inReihe = 0; }
+    seq.push(i === n - 2 && n > 3 ? F.pruef : (i % 4 === 3 ? F.auto : F.station)); inReihe++;
+  }
+  seq.push(F.ende); return seq;
+};
 // Ganze Linie: Anfang → n Stationen (jede 4. automatisch, vorletzte Prüfstation), bei Bedarf in U-Form gewendet → Ende
 M.linieAufbauen = async (selId) => {
   const o0 = U.byId(prj().objects, selId); if (!o0) return;
@@ -13537,15 +13685,10 @@ M.linieAufbauen = async (selId) => {
   const n = U.clamp(Math.round(+nS || 12), 1, 80);
   const proReihe = await HSS.ui.prompt('Stationen je Reihe, danach wendet die Linie um 180° (0 = gerade Linie)', n > 10 ? String(Math.ceil(n / 2)) : '0'); if (proReihe === null) return;
   const k = Math.max(0, Math.round(+proReihe || 0));
-  const seq = []; let inReihe = 0;
-  for (let i = 0; i < n; i++) {
-    if (k && inReihe === k) { seq.push('pm.linie.foerder15', 'pm.linie.wende180', 'pm.linie.foerder15'); inReihe = 0; }
-    seq.push(i === n - 2 && n > 3 ? 'pm.linie.station.pruef' : (i % 4 === 3 ? 'pm.linie.station.roboter' : 'pm.linie.station.manuell')); inReihe++;
-  }
-  seq.push('pm.linie.ende');
+  const seq = M.linienFolge(HSS.library.get(o0.lib)?.linie?.familie || 'pkw', n, k);
   let last = null;
   HSS.change('Linie aufbauen', p => { let cur = U.byId(p.objects, selId); for (const lib of seq) { const q = M.linieNaechstes(cur, lib); if (!q) break; p.objects.push(q); cur = q; last = q.id; } }, { scope: 'objects' });
-  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * 3, 0)} m Taktstrecke)`, 3500);
+  HSS.ui.toast(`Linie mit ${n} Stationen aufgebaut (${U.fmt(n * (HSS.library.get(o0.lib)?.linie?.takt || 3), 0)} m Taktstrecke)`, 3500);
   if (last) S3.select({ kind: 'object', id: last });
 };
 // Sitzung: alles seit der Auswahl (bzw. seit dem Platzieren) lässt sich mit ✗ verwerfen
@@ -18616,6 +18759,308 @@ if (E !== 'health' && HSS.demo) {
     }, 30);
   };
 }
+})();
+
+</script>
+<script>
+/* =====================================================================
+   HSS · produktionsplaner.js – Produktionsplaner (Fabric Planning Suite)
+   Gleiches Prinzip wie der Stationsplaner: Fertigungsprinzip wählen, Mengen und Zeiten
+   angeben, Halle und Etage wählen – die Suite rechnet Takt, Maschinen, Stationen, Personal
+   und Fläche nachvollziehbar (Frage → Erklärung → Rechnung → Ergebnis, mit Grundlage) und
+   legt das Layout mit Maschinen, Linienmodulen und Umfeld in die Halle.
+   Fertigungsprinzipien: Montagelinie (Fließ-/Taktmontage), Serienfertigung (verkettete
+   Bearbeitung), Fertigungsinseln, Werkstattfertigung, Lackiererei, Prüffeld, Lager/Logistik.
+   Produktgröße: Pkw-Motor (Takt 3 m, Förderer) oder Großmotor (FTS-Stationsmontage, 8-m-Raster).
+   ===================================================================== */
+(function () {
+'use strict';
+const HSS = window.HSS, U = HSS.util, G = HSS.geo, UI = HSS.ui, $ = UI.$, $$ = UI.$$, W = UI.ws;
+if (HSS.EDITION !== 'fabrik') return;
+
+/* ---------- Grundlagen (erscheinen unter „Quellen & Planungsgrundlagen“) ---------- */
+Object.assign(HSS.QUELLEN, {
+  refa: { titel: 'REFA-Methodenlehre: Zeitarten, Planzeiten, Kapazitätsrechnung', art: 'Methode (Arbeitswirtschaft)', erklaerung: 'Gliederung der Betriebsmittel- und Auftragszeiten; Kapazität = verfügbare Zeit × Nutzungsgrad. Grundlage für Kundentakt, Maschinen- und Personalbedarf.' },
+  oee: { titel: 'VDMA 66412-1: MES-Kennzahlen (u. a. OEE – Gesamtanlageneffektivität)', art: 'Branchenstandard', erklaerung: 'OEE = Verfügbarkeit × Leistungsgrad × Qualitätsrate. Verkettete Zerspanung erreicht in der Serie häufig 65–85 %; der Wert ist je Werk zu erheben.' },
+  asr18: { titel: 'ASR A1.8 Verkehrswege', art: 'Technische Regel für Arbeitsstätten', erklaerung: 'Breite von Fahrwegen: Breite des Transportmittels bzw. der Last plus Randzuschläge von je 0,50 m, bei Begegnungsverkehr zusätzlich 0,40 m. Gänge zu Arbeitsplätzen mindestens 0,60–1,00 m.' },
+  asr12: { titel: 'ASR A1.2 Raumabmessungen und Bewegungsflächen', art: 'Technische Regel für Arbeitsstätten', erklaerung: 'Freie Bewegungsfläche am Arbeitsplatz mindestens 1,50 m² und mindestens 1,00 m breit; Flächen für Bereitstellung und Wartung zusätzlich.' },
+  fabrik: { titel: 'Grundig, C.-G.: Fabrikplanung – Planungssystematik, Methoden, Anwendungen (Hanser)', art: 'Fachliteratur', erklaerung: 'Ermittlung des Flächenbedarfs aus Betriebsmittel-, Bedien-, Wartungs- und Verkehrsflächen; Zuschläge für Bereitstellung und Verkehrswege je nach Fertigungsprinzip.' },
+  datenblatt: { titel: 'Herstellerangaben (Maschinen- und Motorendatenblätter), gerundet', art: 'Herstellerangabe', erklaerung: 'Aufstellmaße typischer Bearbeitungszentren, Schleifmaschinen, Prüfstände und Motorabmessungen. Für die Ausführungsplanung durch Aufstellpläne ersetzen.' }
+});
+{ const chip0 = UI.srcChip; const LBL = { refa: 'REFA', oee: 'VDMA 66412', asr18: 'ASR A1.8', asr12: 'ASR A1.2', fabrik: 'Fabrikplanung', datenblatt: 'Herstellerangaben' };
+  UI.srcChip = id => LBL[id] ? `<a href="#" class="src" data-src="${id}" title="${U.esc(HSS.QUELLEN[id].titel)}">${LBL[id]}</a>` : chip0(id); }
+
+/* ---------- Raumtypen ---------- */
+Object.assign(HSS.ROOMTYPES, { lackiererei: { name: 'Lackiererei', color: '#ead9e6', din: 'NUF3' }, prueffeld: { name: 'Prüffeld / Prüfstände', color: '#dfe3ec', din: 'NUF3' }, mechfertigung: { name: 'Mechanische Fertigung', color: '#dde4ef', din: 'NUF3' } });
+Object.assign(HSS.ROLLEN, { lackiererei: 'Lackiererei', prueffeld: 'Prüffeld', mechfertigung: 'Mechanische Fertigung' });
+if (HSS.ED?.raumtypen) for (const k of ['mechfertigung', 'lackiererei', 'prueffeld']) if (!HSS.ED.raumtypen.includes(k)) HSS.ED.raumtypen.splice(HSS.ED.raumtypen.indexOf('montage') + 1, 0, k);
+
+/* ---------- Fertigungsprinzipien ---------- */
+const FAM = () => HSS.manip.LINIENFAMILIEN;
+const T = HSS.PRODTYPEN = [
+  { id: 'montage', name: 'Montagelinie (Fließ-/Taktmontage)', zone: 'montage', info: 'Motor wandert im Takt von Station zu Station – Pkw-Motoren auf Werkstückträgern (3-m-Takt), Großmotoren auf Schwerlast-FTS (8-m-Raster, Bühnen beidseitig).',
+    def: { produkt: 'gross', stueck: 1800, inhalt: 6000, tage: 230, schichten: 2, h: 7.5, verf: 0.9, abtakt: 0.85 } },
+  { id: 'fertigung', name: 'Serienfertigung (verkettete Bearbeitung)', zone: 'mechfertigung', info: 'Bearbeitungszentren in zwei Reihen an einer automatisierten Verkettung (Portallader/FTS), z. B. Kurbelgehäuse oder Zylinderköpfe; am Ende Waschen und Messen.',
+    def: { produkt: 'gross', stueck: 2000, zeit: 900, tage: 230, schichten: 3, h: 7.5, oee: 0.75 } },
+  { id: 'insel', name: 'Fertigungsinseln', zone: 'mechfertigung', info: 'Selbstständige Inseln mit Maschinen, Roboter, Messen und Bereitstellung – flexibel für Varianten und mittlere Stückzahlen.',
+    def: { inseltyp: 'zylinderkopf', stueck: 30000, zeit: 22, tage: 230, schichten: 3, h: 7.5, oee: 0.75 } },
+  { id: 'werkstatt', name: 'Werkstattfertigung (Verrichtungsprinzip)', zone: 'mechfertigung', info: 'Gleichartige Maschinen werden zu Bereichen zusammengefasst (Fräsen, Drehen, Honen, Messen, Nacharbeit) – für Einzelteile, Ersatzteile und Kleinserien.',
+    def: { hFraesen: 9000, hDrehen: 6000, hHonen: 3000, hMessen: 2500, hNacharbeit: 2000, tage: 230, schichten: 2, h: 7.5, ausl: 0.8 } },
+  { id: 'lackierung', name: 'Lackiererei (Großmotoren)', zone: 'lackiererei', info: 'Durchlauf: Abkleben → Waschen/Vorbehandlung → Spritzkabine → Trockner → Entkleben, verbunden über Skidförderer; Farbmischraum im Ex-Bereich.',
+    def: { stueck: 2400, abkleben: 120, waschen: 40, lackieren: 75, trocknen: 150, tage: 230, schichten: 2, h: 7.5, ausl: 0.85 } },
+  { id: 'pruef', name: 'Prüffeld (Abnahmeläufe)', zone: 'prueffeld', info: 'Jeder Motor läuft vor der Auslieferung unter Last auf dem Prüfstand (Heißtest). Großmotoren-Prüfzellen mit Wasserwirbelbremse, Abgasanlage und Leitwarte.',
+    def: { produkt: 'gross', stueck: 1800, pruefh: 6, ruesth: 2, tage: 230, schichten: 3, h: 7.5, ausl: 0.8 } },
+  { id: 'lager', name: 'Lager & Bereitstellung (Logistik)', zone: 'lager_fab', info: 'Palettenregale mit Staplergassen und Fachbodenregale (KLT) für die Bereitstellung an Linie und Inseln.',
+    def: { paletten: 900, klt: 1500 } }
+];
+const INSELN = { zylinderkopf: { lib: 'pm.insel.zylinderkopf', n: 2, name: 'Zylinderkopf (2 BAZ)' }, kurbelwelle: { lib: 'pm.insel.kurbelwelle', n: 3, name: 'Kurbelwelle (Drehen, 2× Schleifen)' }, roboterzelle: { lib: 'pm.insel.roboterzelle', n: 1, name: 'Roboterzelle Entgraten' }, montageu: { lib: 'pm.insel.montage.u', n: 3, name: 'Montageinsel U-Form (3 Werker)' } };
+const WERKSTATT = [['hFraesen', 'Fräsen', 'pm.station.fraesen'], ['hDrehen', 'Drehen', 'pm.station.drehen'], ['hHonen', 'Honen', 'pm.station.honen'], ['hMessen', 'Messen (KMG)', 'pm.station.messraum'], ['hNacharbeit', 'Nacharbeit', 'pm.station.nacharbeit']];
+const GANG = 4.0; // Hauptgang Stapler/FTS, Begegnungsverkehr (ASR A1.8)
+const sz = lib => HSS.library.get(lib)?.size || { w: 1, d: 1, h: 1 };
+
+/* ---------- Rechnung ---------- */
+HSS.prodCalc = (inp, prj = HSS.project()) => {
+  const typ = T.find(t => t.id === inp.typ) || T[0], v = k => inp[k] ?? typ.def[k];
+  const r = { typ, steps: [], warn: [], kpi: [], bedarf: 0 };
+  const S = o => r.steps.push(o);
+  const netto = v('tage') * v('schichten') * v('h') * 60;
+  if (netto) S({ frage: 'Wie viel Arbeitszeit steht im Jahr zur Verfügung?', erkl: 'Arbeitstage × Schichten × Nettoarbeitszeit je Schicht (ohne Pausen). Grundlage jeder Takt- und Kapazitätsrechnung.', rechnung: `${v('tage')} Tage × ${v('schichten')} Schichten × ${U.fmt(v('h'), 1)} h × 60`, ergebnis: `${U.fmt(netto)} min/Jahr (${U.fmt(netto / 60)} h)`, quellen: ['refa'] });
+  r.netto = netto;
+  if (typ.id === 'montage') {
+    const F = FAM()[v('produkt')], wps = v('produkt') === 'gross' ? 3 : 2;
+    const takt = netto * v('verf') / v('stueck');
+    S({ frage: 'Welcher Takt ist nötig (Kundentakt)?', erkl: `Die verfügbare Zeit, gemindert um Störungen und Anlaufverluste (Verfügbarkeit ${U.pct(v('verf'))}), wird auf die geforderte Stückzahl verteilt. Alle ${U.fmt(takt, 1)} Minuten muss ein Motor die Linie verlassen.`, rechnung: `${U.fmt(netto)} min × ${U.pct(v('verf'))} ÷ ${U.fmt(v('stueck'))} Motoren`, ergebnis: `Takt ${U.fmt(takt, 1)} min`, quellen: ['refa'] });
+    const werker = Math.ceil(v('inhalt') / (takt * v('abtakt')));
+    S({ frage: 'Wie viele Werker braucht die Linie je Schicht?', erkl: `Der Montageinhalt (${U.fmt(v('inhalt'))} min je Motor) wird auf Werker verteilt, die je Takt arbeiten. Weil sich Arbeitsinhalte nie exakt gleich verteilen lassen, rechnet man mit einem Abtaktungsgrad von ${U.pct(v('abtakt'))}.`, rechnung: `${U.fmt(v('inhalt'))} min ÷ (${U.fmt(takt, 1)} min × ${U.pct(v('abtakt'))})`, ergebnis: `${werker} Werker je Schicht`, quellen: ['refa'] });
+    const st = Math.max(2, Math.ceil(werker / wps));
+    S({ frage: 'Wie viele Stationen hat die Linie?', erkl: v('produkt') === 'gross' ? 'An einem Großmotor arbeiten je Station bis zu drei Werker gleichzeitig (Arbeitsbühnen links und rechts, Stirnseite).' : 'An einer beidseitig zugänglichen Station arbeiten zwei Werker (links und rechts des Förderers).', rechnung: `${werker} Werker ÷ ${wps} Werker je Station`, ergebnis: `${st} Montagestationen`, quellen: ['annahme'] });
+    const L = (st + 2) * F.raster, B = F.breite + 2 * 3.0;
+    S({ frage: 'Wie lang und breit wird die Linie?', erkl: `Stationsraster ${F.raster} m (${v('produkt') === 'gross' ? 'FTS mit Motor, Bühnen, Werkzeugwagen' : 'Werkstückträger, Werker, Durchlaufregal'}); dazu Linienanfang und -ende. Beidseitig 3 m Versorgungs- und Fahrweg für Routenzug/Stapler.`, rechnung: `(${st} + 2) × ${F.raster} m = ${U.fmt(L)} m Länge; ${F.breite} m + 2 × 3 m = ${U.fmt(B)} m Breite`, ergebnis: `${U.fmt(L)} × ${U.fmt(B)} m = ${U.fmt(L * B)} m² (gerade Linie)`, quellen: ['asr18', 'datenblatt'] });
+    r.bedarf = L * B * 1.15;
+    S({ frage: 'Wie viel Hallenfläche braucht die Montage insgesamt?', erkl: 'Zuschlag 15 % für Pufferflächen, Leergut, Teamzonen und Nacharbeitsplatz an der Linie.', rechnung: `${U.fmt(L * B)} m² × 1,15`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['fabrik'] });
+    Object.assign(r, { takt, werker, stationen: st, laenge: L, familie: v('produkt') });
+    r.kpi = [[U.fmt(takt, 1) + ' min', 'Takt'], [st, 'Stationen'], [werker, 'Werker/Schicht'], [U.fmt(L) + ' m', 'Linienlänge (gestreckt)']];
+  } else if (typ.id === 'fertigung' || typ.id === 'insel') {
+    const isl = typ.id === 'insel' ? INSELN[v('inseltyp')] : null, gross = typ.id === 'fertigung' && v('produkt') === 'gross';
+    const bedarfMin = v('stueck') * v('zeit'), kap = netto * v('oee');
+    const m = Math.max(1, Math.ceil(bedarfMin / kap));
+    S({ frage: 'Wie viel Maschinenzeit wird im Jahr gebraucht?', erkl: `Stückzahl × Bearbeitungszeit je Teil (Summe aller Arbeitsgänge${isl ? ' auf den Maschinen der Insel' : ''}).`, rechnung: `${U.fmt(v('stueck'))} Teile × ${U.fmt(v('zeit'))} min`, ergebnis: `${U.fmt(bedarfMin / 60)} Maschinenstunden/Jahr`, quellen: ['refa'] });
+    S({ frage: 'Wie viele Maschinen sind nötig?', erkl: `Eine Maschine liefert die verfügbare Zeit mal Gesamtanlageneffektivität (OEE ${U.pct(v('oee'))}: Verfügbarkeit × Leistung × Qualität).`, rechnung: `${U.fmt(bedarfMin)} min ÷ (${U.fmt(netto)} min × ${U.pct(v('oee'))})`, ergebnis: `${m} Maschine${m > 1 ? 'n' : ''} (Auslastung ${U.pct(bedarfMin / (m * kap))})`, quellen: ['oee'] });
+    if (isl) {
+      const n = Math.ceil(m / isl.n), s = sz(isl.lib), cell = (s.w + GANG) * (s.d + GANG);
+      S({ frage: 'Wie viele Inseln entstehen?', erkl: `Eine Insel „${isl.name}“ umfasst ${isl.n} Maschine${isl.n > 1 ? 'n' : ''} bzw. Plätze mit Roboter, Bereitstellung, Messen und Schutzzaun.`, rechnung: `${m} ÷ ${isl.n} je Insel`, ergebnis: `${n} Insel${n > 1 ? 'n' : ''}`, quellen: ['annahme'] });
+      r.bedarf = n * cell;
+      S({ frage: 'Wie viel Fläche brauchen die Inseln?', erkl: `Aufstellfläche einer Insel ${U.fmt(s.w, 1)} × ${U.fmt(s.d, 1)} m (inkl. Bedien-, Wartungs- und Bereitstellungsfläche) plus anteilig ${GANG} m Fahrweg ringsum.`, rechnung: `${n} × (${U.fmt(s.w, 1)} + ${GANG}) × (${U.fmt(s.d, 1)} + ${GANG}) m`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['asr18', 'fabrik'] });
+      Object.assign(r, { maschinen: m, inseln: n, lib: isl.lib }); r.kpi = [[m, 'Maschinen'], [n, 'Inseln'], [Math.ceil(n * (isl.n > 2 ? 3 : 1.5)), 'Bediener/Schicht']];
+    } else {
+      const lib = gross ? 'pm.gm.baz' : 'pm.hw.hbaz', s = sz(lib), raster = s.w + 1.2, proReihe = Math.ceil(m / 2);
+      const L = proReihe * raster + 14, B = 2 * s.d + 2 * 3.0 + 4.0;
+      S({ frage: 'Wie wird die Linie angeordnet?', erkl: `Zwei Maschinenreihen, Bedienseite zur Verkettung in der Mitte (4 m für Portallader/FTS). Maschinenraster ${U.fmt(raster, 1)} m (Maschine ${U.fmt(s.w, 1)} m + 1,2 m Wartungsgang). Am Linienende Waschanlage, Messraum und Kühlschmierstoff-Anlage (ca. 14 m).`, rechnung: `${proReihe} × ${U.fmt(raster, 1)} m + 14 m = ${U.fmt(L)} m; 2 × ${U.fmt(s.d, 1)} m + 4 m + 2 × 3 m Fahrweg = ${U.fmt(B)} m`, ergebnis: `${U.fmt(L)} × ${U.fmt(B)} m`, quellen: ['datenblatt', 'asr18'] });
+      r.bedarf = L * B;
+      Object.assign(r, { maschinen: m, lib, proReihe, laenge: L }); r.kpi = [[m, 'Maschinen'], [proReihe, 'je Reihe'], [Math.ceil(m / 3), 'Bediener/Schicht'], [U.fmt(L) + ' m', 'Linienlänge']];
+    }
+  } else if (typ.id === 'werkstatt') {
+    const nh = netto / 60 * v('ausl'); r.gruppen = [];
+    for (const [k, name, lib] of WERKSTATT) {
+      const n = v(k) > 0 ? Math.max(1, Math.ceil(v(k) / nh)) : 0; if (!n) continue;
+      r.gruppen.push({ name, lib, n }); const s = sz(lib); r.bedarf += n * (s.w + 2) * (s.d + 2);
+    }
+    S({ frage: 'Wie viele Arbeitsplätze braucht jede Werkstattgruppe?', erkl: `Auftragsstunden je Verfahren ÷ nutzbare Stunden eines Platzes (${U.fmt(netto / 60)} h × Auslastung ${U.pct(v('ausl'))} = ${U.fmt(nh)} h). In der Werkstattfertigung bleibt Reserve für Rüsten und wechselnde Aufträge.`, rechnung: r.gruppen.map(g => `${g.name}: ${U.fmt(v(WERKSTATT.find(w => w[1] === g.name)[0]))} h ÷ ${U.fmt(nh)} h`).join(' · '), ergebnis: r.gruppen.map(g => `${g.n} × ${g.name}`).join(', '), quellen: ['refa'] });
+    S({ frage: 'Wie viel Fläche braucht die Werkstatt?', erkl: 'Jeder Platz bringt sein Umfeld mit (Werkzeugschrank, Werkbank, Kran, Gitterboxen); dazu 2 m Gang ringsum und ein Hauptgang zwischen den Gruppen.', rechnung: 'Σ Plätze × (Breite + 2 m) × (Tiefe + 2 m)', ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['fabrik', 'asr12'] });
+    r.kpi = [[U.sum(r.gruppen.map(g => g.n)), 'Arbeitsplätze'], [r.gruppen.length, 'Gruppen']];
+  } else if (typ.id === 'lackierung') {
+    const k = netto * v('ausl'), n = key => Math.max(1, Math.ceil(v('stueck') * v(key) / k));
+    const nA = n('abkleben'), nW = n('waschen'), nK = n('lackieren'), nT = Math.ceil(n('trocknen') / 2);
+    S({ frage: 'Wie viele Plätze braucht jeder Prozessschritt?', erkl: `Für jeden Schritt gilt: Stückzahl × Belegungszeit ÷ (verfügbare Zeit × ${U.pct(v('ausl'))}). Der Trockner hat zwei Plätze je Einheit.`, rechnung: `Abkleben ${v('abkleben')} min → ${nA} · Waschen ${v('waschen')} min → ${nW} · Lackieren ${v('lackieren')} min → ${nK} · Trocknen ${v('trocknen')} min → ${nT} Trockner`, ergebnis: `${nA} Abklebeplätze, ${nW} Waschkabine(n), ${nK} Spritzkabine(n), ${nT} Trockner`, quellen: ['refa'] });
+    r.prozess = [['pm.lack.abkleben', nA, 'Abkleben'], ['pm.lack.vorbehandlung', nW, 'Waschen'], ['pm.lack.kabine', nK, 'Lackieren'], ['pm.lack.trockner', nT, 'Trocknen'], ['pm.lack.abkleben', Math.max(1, Math.ceil(nA / 2)), 'Entkleben']];
+    const L = U.sum(r.prozess.map(([lib]) => sz(lib).w + 3)) + 8, B = Math.max(...r.prozess.map(([lib, m]) => m * (sz(lib).d + 2))) + 8;
+    r.bedarf = L * B;
+    S({ frage: 'Wie groß wird die Lackiererei?', erkl: 'Die Schritte liegen im Durchlauf hintereinander, parallele Einheiten nebeneinander; je 3 m Skidförderer zwischen den Schritten, Farbmischraum und Fahrweg (4 m) zusätzlich.', rechnung: `Länge Σ (Kabinenlänge + 3 m) + 8 m = ${U.fmt(L)} m; Breite ${U.fmt(B)} m`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['datenblatt', 'fabrik'] });
+    r.kpi = [[nK, 'Spritzkabinen'], [nT, 'Trockner'], [nA, 'Abklebeplätze']];
+  } else if (typ.id === 'pruef') {
+    const h = (v('pruefh') + v('ruesth')) * v('stueck'), kh = netto / 60 * v('ausl'), n = Math.max(1, Math.ceil(h / kh));
+    S({ frage: 'Wie viele Prüfstandsstunden werden gebraucht?', erkl: 'Jeder Motor läuft unter Last (Einlauf- und Abnahmeprogramm) und muss auf- und abgerüstet werden (Kraftstoff, Kühlwasser, Abgas, Welle zur Bremse).', rechnung: `${U.fmt(v('stueck'))} Motoren × (${v('pruefh')} h Lauf + ${v('ruesth')} h Rüsten)`, ergebnis: `${U.fmt(h)} h/Jahr`, quellen: ['annahme'] });
+    S({ frage: 'Wie viele Prüfstände sind nötig?', erkl: `Ein Prüfstand ist ${U.fmt(netto / 60)} h im Jahr besetzt und zu ${U.pct(v('ausl'))} nutzbar (Instandhaltung, Kalibrierung, Sonderläufe).`, rechnung: `${U.fmt(h)} h ÷ ${U.fmt(kh)} h`, ergebnis: `${n} Prüfstände`, quellen: ['refa'] });
+    const lib = v('produkt') === 'gross' ? 'pm.gm.pruefzelle' : 'pm.station.pruefstand', s = sz(lib);
+    r.bedarf = n * (s.w + 1) * s.d + n * (s.w + 1) * 6;
+    S({ frage: 'Wie viel Fläche braucht das Prüffeld?', erkl: `Prüfzelle mit Leitwarte ${U.fmt(s.w, 1)} × ${U.fmt(s.d, 1)} m; davor ein Transportgang von 6 m für FTS/Kran und Rüstplätze.`, rechnung: `${n} × ${U.fmt(s.w + 1, 1)} m × (${U.fmt(s.d, 1)} + 6) m`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['datenblatt', 'asr18'] });
+    Object.assign(r, { staende: n, lib }); r.kpi = [[n, 'Prüfstände'], [U.fmt(h / n / (netto / 60) * 100, 0) + ' %', 'Auslastung']];
+  } else if (typ.id === 'lager') {
+    const reg = Math.ceil(v('paletten') / 9), fb = Math.ceil(v('klt') / 24);
+    S({ frage: 'Wie viele Regale werden gebraucht?', erkl: 'Palettenregalfeld 2,8 m mit drei Ebenen à drei Paletten (9 Stellplätze); Fachbodenregal 2 m mit 6 Böden für rund 24 Kleinladungsträger.', rechnung: `${U.fmt(v('paletten'))} Paletten ÷ 9 · ${U.fmt(v('klt'))} KLT ÷ 24`, ergebnis: `${reg} Palettenregalfelder, ${fb} Fachbodenregale`, quellen: ['annahme'] });
+    r.bedarf = reg * 2.8 * (1.1 + 1.6) + fb * 2.0 * (0.6 + 1.2) + 120;
+    S({ frage: 'Wie viel Fläche braucht das Lager?', erkl: 'Doppelregalzeilen mit 3,2 m Gasse für Schubmaststapler (je Regalzeile halbe Gasse), Kommissionierzone und Bereitstellfläche (120 m²).', rechnung: `${reg} × 2,8 m × 2,7 m + ${fb} × 2 m × 1,8 m + 120 m²`, ergebnis: `${U.fmt(r.bedarf)} m²`, quellen: ['asr18'] });
+    Object.assign(r, { regale: reg, fachboden: fb }); r.kpi = [[reg, 'Regalfelder'], [fb, 'Fachbodenregale'], [U.fmt(v('paletten')), 'Palettenplätze']];
+  }
+  // Flächenabgleich mit der gewählten Halle
+  const P = inp.part && HSS.findPart(inp.part, prj);
+  if (P) {
+    const R = HSS.innenRechteck(HSS.partFootprintLocal(P.part).outer), frei = prodFrei(prj, P.part, inp.floor ?? 0, R);
+    r.verfuegbar = frei.flaeche; r.deckung = r.verfuegbar / r.bedarf;
+    S({ frage: 'Passt das in die gewählte Halle?', erkl: `Nutzbar ist das Innenrechteck der Halle${frei.belegt ? ' abzüglich bereits geplanter Bereiche' : ''}. Ab 100 % passt die Planung, darunter wird sie gekürzt bzw. es fehlen Plätze.`, rechnung: `${U.fmt(frei.L, 1)} m × ${U.fmt(frei.Q, 1)} m frei = ${U.fmt(r.verfuegbar)} m² ÷ ${U.fmt(r.bedarf)} m²`, ergebnis: `${U.pct(r.deckung)} – ${r.deckung >= 1 ? 'passt' : r.deckung >= 0.9 ? 'knapp' : 'zu klein'}`, ampel: r.deckung >= 1 ? 'g' : r.deckung >= 0.9 ? 'y' : 'r', quellen: ['annahme'] });
+  } else r.warn.push('Bitte eine Halle und Etage wählen, um den Flächenabgleich zu rechnen.');
+  return r;
+};
+
+/* ---------- Belegung der Halle (u entlang der Hallenlänge, v quer) ---------- */
+const frame = (pt, R) => {
+  const e = 0.6, x0 = R.x0 + e, x1 = R.x1 - e, z0 = R.z0 + e, z1 = R.z1 - e, alongX = (x1 - x0) >= (z1 - z0);
+  const L = alongX ? x1 - x0 : z1 - z0, Q = alongX ? z1 - z0 : x1 - x0, ang = alongX ? 0 : 90, O = alongX ? [x0, z0] : [x1, z0];
+  const toLoc = (u, v) => { const q = G.rot([u, v], U.rad(ang)); return [O[0] + q[0], O[1] + q[1]]; };
+  const toUV = (x, z) => G.rot([x - O[0], z - O[1]], -U.rad(ang));
+  return { L, Q, ang, toLoc, toUV };
+};
+function prodFrei(prj, pt, f, R) {
+  const F = frame(pt, R); let u0 = 0;
+  for (const e of prj.produktion || []) if (e.part === pt.id && e.floor === f) u0 = Math.max(u0, e.u1 + 3);
+  return { L: Math.max(0, F.L - u0), Q: F.Q, flaeche: Math.max(0, F.L - u0) * F.Q, belegt: u0 > 0, u0 };
+}
+// Umriss eines Objekts im (u, v)-Rahmen
+const objUV = (F, o) => { const d = HSS.library.get(o.lib), s = o.size || d.size, r = U.rad((o.rot || 0) - F.ang), hw = (Math.abs(Math.cos(r)) * s.w + Math.abs(Math.sin(r)) * s.d) / 2, hd = (Math.abs(Math.sin(r)) * s.w + Math.abs(Math.cos(r)) * s.d) / 2, c = F.toUV(o.x, o.z); return [c[0] - hw, c[0] + hw, c[1] - hd, c[1] + hd]; };
+
+HSS.prodGenerate = (prj, inp, calc, o = {}) => {
+  const P = HSS.findPart(inp.part, prj); if (!P) return { placed: 0, dropped: ['keine Halle gewählt'] };
+  const pt = P.part, f = inp.floor ?? 0, R = HSS.innenRechteck(HSS.partFootprintLocal(pt).outer), F = frame(pt, R);
+  prj.produktion = prj.produktion || [];
+  if (o.ersetzen) {
+    const ids = new Set(prj.produktion.filter(e => e.part === pt.id && e.floor === f).map(e => e.id));
+    prj.objects = prj.objects.filter(x => !(x.prod && ids.has(x.prod)) && !(o.leeren && x.host?.part === pt.id && x.host.floor === f));
+    const I = HSS.interior(pt.id, f, false, prj); if (I) I.rooms = I.rooms.filter(r => !(r.prod && ids.has(r.prod)) && !(o.leeren && r.noWalls));
+    prj.produktion = prj.produktion.filter(e => !ids.has(e.id));
+  }
+  const frei = prodFrei(prj, pt, f, R), id = U.uid('prod'), host = { part: pt.id, floor: f }, neu = [], rep = { placed: 0, dropped: [] };
+  const uMax = F.L, vMax = F.Q;
+  const put = (lib, u, v, rotUV = 0, extra = {}) => { const q = F.toLoc(u, v), ob = Object.assign({ id: U.uid('obj'), lib, x: Math.round(q[0] * 100) / 100, z: Math.round(q[1] * 100) / 100, rot: ((rotUV + F.ang) % 360 + 360) % 360, host: U.clone(host), prod: id, auto: true }, extra); const b = objUV(F, ob); if (b[0] < frei.u0 - 0.5 || b[1] > uMax + 0.5 || b[2] < -0.5 || b[3] > vMax + 0.5) { rep.dropped.push(HSS.library.get(lib)?.name || lib); return null; } prj.objects.push(ob); neu.push(ob); rep.placed++; return ob; };
+  const u0 = frei.u0 + 1.5, typ = calc.typ.id;
+  // Raster: Objekte in Zeilen quer zur Halle, mit Gängen
+  const raster = (items, gU = GANG, gV = GANG) => {
+    let u = u0, v = 1.5, zeileU = 0;
+    for (const lib of items) { const s = sz(lib); if (v + s.d > vMax - 0.5) { u += zeileU + gU; v = 1.5; zeileU = 0; } if (u + s.w > uMax) { rep.dropped.push(HSS.library.get(lib)?.name || lib); continue; } put(lib, u + s.w / 2, v + s.d / 2); v += s.d + gV; zeileU = Math.max(zeileU, s.w); }
+  };
+  if (typ === 'montage') {
+    const fam = calc.familie, FA = FAM()[fam], start = sz(FA.start).w;
+    const lenAvail = uMax - u0 - 2, k0 = Math.floor((lenAvail - start - sz(FA.ende).w - 2 * FA.raster) / FA.raster);
+    const zweiReihen = calc.stationen > k0 && vMax >= (fam === 'gross' ? 27 : 16);
+    const k = zweiReihen ? Math.max(1, Math.min(k0, Math.ceil(calc.stationen / 2))) : 0;
+    const v0 = zweiReihen ? (vMax / 2 - (fam === 'gross' ? 8 : 4.5)) : vMax / 2;
+    const s0 = put(FA.start, u0 + start / 2, v0, 0); if (s0) {
+      let cur = s0; const seq = HSS.manip.linienFolge(fam, calc.stationen, k);
+      for (const lib of seq) { const q = HSS.manip.linieNaechstes(cur, lib); if (!q) break; q.prod = id; q.auto = true; const b = objUV(F, q); if (b[1] > uMax + 0.5 || b[2] < -0.5 || b[3] > vMax + 0.5 || b[0] < frei.u0 - 0.5) { rep.dropped.push(HSS.library.get(lib).name); continue; } prj.objects.push(q); neu.push(q); rep.placed++; cur = q; }
+    }
+    // Bereitstellung entlang der Linie: Routenzug-Haltepunkte, Leergut
+    const b = neu.length ? neu.map(x => objUV(F, x)).reduce((a, c) => [Math.min(a[0], c[0]), Math.max(a[1], c[1]), Math.min(a[2], c[2]), Math.max(a[3], c[3])]) : null;
+    if (b && b[3] + 4 < vMax) for (let u = b[0] + 4; u < b[1] - 2; u += 12) put('fab.gitterbox', u, b[3] + 2.2, 0);
+    if (b && b[2] - 3 > 0) put('fab.fts', b[0] + 2, b[2] - 1.6, 0);
+  } else if (typ === 'fertigung') {
+    const s = sz(calc.lib), ras = s.w + 1.2, vm = vMax / 2;
+    for (let i = 0; i < calc.maschinen; i++) { const row = i % 2, j = Math.floor(i / 2), u = u0 + ras / 2 + j * ras; put(calc.lib, u, row ? vm + 2 + s.d / 2 : vm - 2 - s.d / 2, row ? 180 : 0); }
+    // Verkettung: Förderer/Portallader in der Mitte, FTS
+    const uEnd = u0 + Math.ceil(calc.maschinen / 2) * ras;
+    for (let u = u0 + 1.5; u + 1.5 <= uEnd; u += 3) put('pm.linie.foerder3', u + 0, vm, 0);
+    put('pm.hw.waschanlage', uEnd + 3, vm, 0); put('pm.station.messraum', uEnd + 9, vm - 1, 0); put('pm.hw.kss', uEnd + 3, vm + 4.5, 0); put('pm.hw.kss', uEnd + 3, vm - 4.5, 0);
+    put('pm.hw.spaene', uEnd + 1, vm + 7, 0); put('pm.hw.spaene', uEnd + 1, vm - 7, 0); put('fab.fts', u0 - 0.2, vm, 90);
+    put('pm.hw.schaltschrank', uEnd + 12, vm + 5, 180);
+  } else if (typ === 'insel') {
+    raster(Array(calc.inseln).fill(calc.lib));
+  } else if (typ === 'werkstatt') {
+    // Verrichtungsprinzip: je Gruppe eine Spalte, Hauptgang zwischen den Gruppen
+    let u = u0;
+    for (const g of calc.gruppen) { const s = sz(g.lib), proSp = Math.max(1, Math.floor((vMax - 3) / (s.d + 2))); for (let i = 0; i < g.n; i++) { const sp = Math.floor(i / proSp), r = i % proSp; put(g.lib, u + sp * (s.w + 2) + s.w / 2, 1.5 + r * (s.d + 2) + s.d / 2, 0); } u += Math.ceil(g.n / proSp) * (s.w + 2) + GANG; }
+  } else if (typ === 'lackierung') {
+    let u = u0; const vm = vMax / 2;
+    put('pm.lack.mischraum', u + 3, Math.min(vMax - 3, vm + 12), 0);
+    calc.prozess.forEach(([lib, n], i) => {
+      const s = sz(lib); for (let k = 0; k < n; k++) put(lib, u + s.w / 2, vm + (k - (n - 1) / 2) * (s.d + 2), 0);
+      u += s.w + 0.4; if (i < calc.prozess.length - 1) { put('pm.lack.skid', u + 1.2, vm, 90); u += 2.6; }
+    });
+  } else if (typ === 'pruef') {
+    const s = sz(calc.lib), vm = vMax / 2, zwei = vMax >= 2 * s.d + 7;
+    for (let i = 0; i < calc.staende; i++) { const row = zwei ? i % 2 : 0, j = zwei ? Math.floor(i / 2) : i, u = u0 + j * (s.w + 1) + s.w / 2; if (row) put(calc.lib, u, vm + 3 + s.d / 2, 180); else put(calc.lib, u, zwei ? vm - 3 - s.d / 2 : 1 + s.d / 2, 0); }
+    put('pm.gm.fts', u0 + 3, zwei ? vm : s.d + 4, 0);
+  } else if (typ === 'lager') {
+    // Doppelregalzeilen quer, 3,2 m Gasse
+    let v = 1.5, u = u0, n = 0; const reg = 'fab.palettenregal';
+    while (n < calc.regale && u + 2.8 <= uMax) { put(reg, u + 1.4, v + 0.55, 0); n++; if (n < calc.regale) { put(reg, u + 1.4, v + 1.65, 180); n++; } u += 2.8; if (u + 2.8 > Math.min(uMax, u0 + 40)) { u = u0; v += 2.2 + 3.2; if (v + 2.2 > vMax - 6) break; } }
+    if (n < calc.regale) rep.dropped.push(`${calc.regale - n} Regalfelder`);
+    let fb = 0; for (let uu = u0; fb < calc.fachboden && uu + 2 <= uMax; uu += 2.2) { put('fab.fachbodenregal', uu + 1, vMax - 1.2, 180); fb++; }
+    put('fab.schubmast', u0 + 1, v + 3.8, 90); put('fab.packtisch', u0 + 6, vMax - 4, 0);
+  }
+  // Fläche (Zone) über den belegten Bereich, Eintrag fürs Projekt
+  if (neu.length) {
+    const bb = neu.map(x => objUV(F, x)).reduce((a, c) => [Math.min(a[0], c[0]), Math.max(a[1], c[1]), Math.min(a[2], c[2]), Math.max(a[3], c[3])]);
+    const ua = Math.max(frei.u0, bb[0] - 1), ub = Math.min(uMax, bb[1] + 1), va = Math.max(0, bb[2] - 1), vb = Math.min(vMax, bb[3] + 1);
+    const c = F.toLoc((ua + ub) / 2, (va + vb) / 2), quer = F.ang === 90;
+    const I = HSS.interior(pt.id, f, true, prj), use = calc.typ.zone;
+    const name = inp.name || calc.typ.name.split(' (')[0];
+    I.rooms.push({ id: U.uid('r'), use, name, noWalls: true, role: use, prod: id, x: Math.round(c[0] * 10) / 10, z: Math.round(c[1] * 10) / 10, w: Math.round((quer ? vb - va : ub - ua) * 10) / 10, d: Math.round((quer ? ub - ua : vb - va) * 10) / 10 });
+    prj.produktion.push({ id, name, typ: calc.typ.id, part: pt.id, floor: f, u0: ua, u1: ub, inp: U.clone(inp), kpi: calc.kpi, bedarf: Math.round(calc.bedarf), quelle: 'Produktionsplaner' });
+  }
+  return rep;
+};
+
+/* ---------- Arbeitsbereich ---------- */
+UI.prInp = UI.prInp || { typ: 'montage', name: '', part: null, floor: 0 };
+const opt = (v, t, s) => `<option value="${U.esc(v)}" ${String(v) === String(s) ? 'selected' : ''}>${U.esc(t)}</option>`;
+const FELD = {
+  produkt: ['Produkt', 'sel', [['gross', 'Großmotor (FTS, 8-m-Raster)'], ['pkw', 'Pkw-Motor (Förderer, 3-m-Takt)']]],
+  inseltyp: ['Inseltyp', 'sel', Object.entries(INSELN).map(([k, i]) => [k, i.name])],
+  stueck: ['Stückzahl/Jahr', 50], inhalt: ['Montageinhalt [min/Stück]', 10], zeit: ['Bearbeitungszeit [min/Stück]', 1],
+  tage: ['Arbeitstage/Jahr', 1], schichten: ['Schichten/Tag', 1], h: ['Nettozeit je Schicht [h]', 0.25],
+  verf: ['Verfügbarkeit', 0.01], abtakt: ['Abtaktungsgrad', 0.01], oee: ['OEE', 0.01], ausl: ['Auslastung', 0.01],
+  hFraesen: ['Fräsen [h/Jahr]', 100], hDrehen: ['Drehen [h/Jahr]', 100], hHonen: ['Honen [h/Jahr]', 100], hMessen: ['Messen [h/Jahr]', 100], hNacharbeit: ['Nacharbeit [h/Jahr]', 100],
+  abkleben: ['Abkleben [min]', 5], waschen: ['Waschen [min]', 5], lackieren: ['Lackieren [min]', 5], trocknen: ['Trocknen [min]', 5],
+  pruefh: ['Prüflauf [h/Motor]', 0.5], ruesth: ['Rüsten [h/Motor]', 0.5], paletten: ['Palettenstellplätze', 50], klt: ['KLT-Plätze', 50]
+};
+W.produktion = { name: 'Produktionsplaner', short: 'Produktions-planer', step: '4', lead: 'Helfer für Produktionsbereiche: Fertigungsprinzip wählen (Montagelinie, Serienfertigung, Inseln, Werkstatt, Lackiererei, Prüffeld, Lager), Mengen und Zeiten angeben, Halle wählen – die Suite rechnet Takt, Maschinen, Stationen und Fläche nachvollziehbar und legt das Layout mit allen Maschinen in die Halle.',
+  render(el) {
+    const prj = HSS.project(), inp = UI.prInp, typ = T.find(t => t.id === inp.typ) || T[0];
+    const hallen = HSS.allParts(prj).filter(pt => !HSS.findPart(pt.id, prj).building.umgebung && pt.use !== 'tank').sort((a, b) => HSS.partArea(b) - HSS.partArea(a));
+    if (!inp.part && hallen[0]) inp.part = hallen[0].id;
+    const calc = HSS.prodCalc(inp);
+    const felder = Object.keys(typ.def).map(k => { const F = FELD[k]; if (!F) return ''; const val = inp[k] ?? typ.def[k]; return F[1] === 'sel' ? `<label class="f full"><span>${F[0]}</span><select data-k="${k}">${F[2].map(([a, b]) => opt(a, b, val)).join('')}</select></label>` : `<label class="f"><span>${F[0]}</span><input type="number" data-k="${k}" value="${val}" step="${F[1]}"></label>`; }).join('');
+    const P = inp.part && HSS.findPart(inp.part);
+    const amp = calc.deckung === undefined ? '' : calc.deckung >= 1 ? '<span class="amp g"></span>passt' : calc.deckung >= 0.9 ? '<span class="amp y"></span>knapp' : '<span class="amp r"></span>zu klein';
+    el.innerHTML = `<h3>1 · Fertigungsprinzip</h3>
+    <div class="fg"><label class="f full"><span>Bereich</span><select id="pT">${T.map(t => opt(t.id, t.name, inp.typ)).join('')}</select></label>
+    <label class="f full"><span>Bezeichnung</span><input type="text" id="pN" value="${U.esc(inp.name || '')}" placeholder="${U.esc(typ.name.split(' (')[0])}"></label></div>
+    <div class="note">${U.esc(typ.info)}</div>
+    <h3>2 · Mengen und Zeiten</h3><div class="fg">${felder}</div>
+    <h3>3 · Halle &amp; Etage</h3>
+    ${hallen.length ? `<div class="fg"><label class="f full"><span>Halle / Gebäude</span><select id="pP">${hallen.map(pt => opt(pt.id, `${HSS.findPart(pt.id).building.kurz} · ${pt.name} (${U.fmt(HSS.partArea(pt))} m²)`, inp.part)).join('')}</select></label>
+    ${P ? `<label class="f"><span>Etage</span><select id="pF">${HSS.partFloors(P.part).filter(f => f >= 0).map(f => opt(f, HSS.floorName(HSS.globalFloor(P.part, f)), inp.floor ?? 0)).join('')}</select></label>` : ''}</div>` : '<p class="note">Erst eine Halle anlegen (Arbeitsbereich „Gebäude“).</p>'}
+    <h3>Ergebnis</h3>
+    <div class="kpi">${calc.kpi.map(([a, b]) => `<div><b>${a}</b><span>${U.esc(b)}</span></div>`).join('')}<div><b>${U.fmt(calc.bedarf)} m²</b><span>Flächenbedarf</span></div>${calc.verfuegbar !== undefined ? `<div><b>${U.fmt(calc.verfuegbar)} m²</b><span>frei · ${amp}</span></div>` : ''}</div>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><b class="note" style="color:#0A223C">So wird gerechnet</b><button class="mini" id="pSrc">Quellen &amp; Planungsgrundlagen</button></div>
+    <div class="steps">${calc.steps.map((st, i) => UI.stepCard(st, i + 1)).join('')}</div>
+    ${calc.warn.map(w => `<div class="warnbox">${U.esc(w)}</div>`).join('')}
+    <label class="chk"><input type="checkbox" id="pRepl"> bisherige Planungen dieser Halle/Etage ersetzen</label>
+    <label class="chk"><input type="checkbox" id="pLeer"> Halle/Etage vorher komplett leeren (auch Zonen und Objekte)</label>
+    <div class="note">Der Bereich wird ab dem nächsten freien Abschnitt der Halle gelegt – mehrere Bereiche (z. B. Montage, Prüffeld, Lager) passen hintereinander in eine Halle.</div>
+    <div class="actions"><button class="primary" id="pGo" ${P ? '' : 'disabled'}>Bereich anlegen</button></div>
+    <h3>Produktionsbereiche im Projekt (${(prj.produktion || []).length})</h3>
+    <div class="list">${(prj.produktion || []).map(e => `<div class="li" data-pe="${e.id}"><span class="t">${U.esc(e.name)}</span><span class="s">${U.esc(HSS.findPart(e.part)?.part.name || '')} · ${(e.kpi || []).slice(0, 2).map(k => k[0] + ' ' + k[1]).join(' · ')}</span><button class="mini" data-ped="${e.id}">×</button></div>`).join('') || '<div class="li note">noch keine</div>'}</div>`;
+    const re = () => UI.renderPanel();
+    $('#pSrc', el).onclick = () => UI.sourcesDialog();
+    $$('[data-src]', el).forEach(b => b.onclick = e => { e.preventDefault(); UI.sourcesDialog(b.dataset.src); });
+    $('#pT', el).onchange = e => { const keep = { typ: e.target.value, name: '', part: inp.part, floor: inp.floor }; for (const k of Object.keys(inp)) delete inp[k]; Object.assign(inp, keep); re(); };
+    $('#pN', el).onchange = e => (inp.name = e.target.value);
+    $$('[data-k]', el).forEach(i => i.onchange = () => { inp[i.dataset.k] = i.tagName === 'SELECT' ? i.value : (i.value === '' ? undefined : +i.value); re(); });
+    $('#pP', el) && ($('#pP', el).onchange = e => { inp.part = e.target.value; inp.floor = 0; re(); });
+    $('#pF', el) && ($('#pF', el).onchange = e => { inp.floor = +e.target.value; re(); });
+    $('#pGo', el).onclick = () => {
+      if (HSS.state.demoReadonly) return UI.toast('Demo ist schreibgeschützt – „Als eigenes Projekt bearbeiten“ wählen.');
+      let rep; HSS.manip?.mark();
+      HSS.change('Produktionsbereich anlegen', p => { rep = HSS.prodGenerate(p, inp, calc, { ersetzen: $('#pRepl', el).checked || $('#pLeer', el).checked, leeren: $('#pLeer', el).checked }); });
+      const Pp = HSS.findPart(inp.part); if (Pp) { HSS.s3.setFloor(HSS.globalFloor(Pp.part, inp.floor ?? 0)); HSS.s3.focusSel({ kind: 'part', id: inp.part }); }
+      const drop = [...new Set(rep.dropped)];
+      UI.dialog(`<h2>Produktionsbereich angelegt</h2><p>${rep.placed} Maschinen, Module und Ausstattungen platziert, Fläche „${U.esc(inp.name || calc.typ.name.split(' (')[0])}“ angelegt.</p>${drop.length ? `<div class="warnbox">Nicht untergebracht (Halle zu klein oder belegt): ${drop.map(U.esc).join(', ')}</div>` : '<div class="okbox">Alles untergebracht.</div>'}<p class="note">Linienmodule lassen sich anklicken und über die Leiste am Objekt verlängern; die Fläche erhält eine Rolle für Materialflüsse.</p><div class="actions"><button class="primary" data-close>OK</button></div>`);
+      UI.renderPanel();
+    };
+    $$('[data-pe]', el).forEach(li => li.onclick = e => { if (e.target.dataset.ped) return; const x = (prj.produktion || []).find(q => q.id === li.dataset.pe), Pp = x && HSS.findPart(x.part); if (Pp) { HSS.s3.setFloor(HSS.globalFloor(Pp.part, x.floor)); HSS.s3.focusSel({ kind: 'part', id: x.part }); } });
+    $$('[data-ped]', el).forEach(b => b.onclick = async () => { if (!await UI.confirm('Bereich entfernen', 'Produktionsbereich mit seinen Maschinen und seiner Fläche entfernen?', 'Entfernen')) return; HSS.change('Produktionsbereich entfernen', p => { const id = b.dataset.ped; p.objects = p.objects.filter(o => o.prod !== id); for (const pid of Object.keys(p.interiors)) for (const f of Object.keys(p.interiors[pid])) p.interiors[pid][f].rooms = p.interiors[pid][f].rooms.filter(r => r.prod !== id); p.produktion = (p.produktion || []).filter(e => e.id !== id); }); UI.renderPanel(); });
+  } };
+// Reihenfolge der Arbeitsbereiche: Produktionsplaner an die Stelle des Stationsplaners
+{ const e = Object.entries(UI.ws), i = e.findIndex(([k]) => k === 'station'), pr = e.find(([k]) => k === 'produktion'); if (i >= 0 && pr) { const rest = e.filter(([k]) => k !== 'produktion'); rest.splice(i + 1, 0, pr); for (const [k] of e) delete UI.ws[k]; for (const [k, v] of rest) UI.ws[k] = v; } }
 })();
 
 </script>
