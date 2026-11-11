@@ -151,7 +151,7 @@
   if (!prj.transports.find(t => t.id === 't_schwer')) prj.transports.push({ id: 't_schwer', name: 'Schwerlast-FTS / Motorentransporter', mittel: 'schlepper', anzahl: 6, kapazitaet: 1, schicht: [6, 22], buendeln: false });
   const M = (id, name, farbe, einheit, pl = 1) => { if (!prj.materials.find(m => m.id === id)) prj.materials.push({ id, name, reinheit: 'rein', farbe, einheit, proLadung: pl, ladeMin: 5, entladeMin: 5, buendelbar: pl > 1 }); };
   M('m_motor', 'Motor (Großmotor, 9–12 t)', '#891F5E', 'Motoren'); M('m_kg', 'Kurbelgehäuse', '#144477', 'Teile'); M('m_kw', 'Kurbelwellen', '#2D7694', 'Teile', 2); M('m_zk', 'Zylinderköpfe', '#7b5ea7', 'Gestelle', 1); M('m_pleuel', 'Pleuel', '#0A967A', 'Gestelle', 1); M('m_rohguss', 'Rohguss / Schmiedeteile', '#8d6e63', 'Teile', 1);
-  { const pm = prj.materials.find(m => m.id === 'm_proben'); if (pm) pm.name = 'Prüfmuster (Qualität)'; }
+  for (const m of prj.materials) if (m.id === 'm_proben' || /Post/.test(m.name)) m.name = 'Prüfmuster (Qualität)';
   const id = r => r?.id;
   const F = (name, material, von, nach, menge, transport, fenster = [[6, 22]]) => { if (!von || !nach) { miss.push('Fluss ' + name); return; } prj.flows.push({ id: U.uid('flow'), name, material, von, nach, menge, periode: 'tag', betriebstage: 5, fenster, transport, fahrzeitMin: null, rueck: false, aktiv: true }); };
   const motTag = Math.round(1700 / 230 * 10) / 10; // ≈ 7,4 Motoren je Arbeitstag

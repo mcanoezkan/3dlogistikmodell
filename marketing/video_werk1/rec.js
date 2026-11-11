@@ -21,14 +21,14 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   // Projekt laden, Startdialog schließen, Darstellung einstellen
   await ev(txt => { document.getElementById('dlg')?.close?.(); HSS.load(JSON.parse(txt)); }, fs.readFileSync(path.join(ROOT, 'projekte', 'RollsRoyce_Werk1', 'Werk1_Friedrichshafen.hss.json'), 'utf8'));
   for (let i = 0; i < 60; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
-  await ev(() => {
+  await ev(process_Q => {
     document.getElementById('dlg')?.close?.(); document.querySelector('#navHelp .x')?.click(); document.getElementById('navHelp')?.remove();
-    const q = document.getElementById('vQ'); if (q) { q.value = '2'; q.dispatchEvent(new Event('change')); }
+    const q = document.getElementById('vQ'); if (q) { q.value = process_Q; q.dispatchEvent(new Event('change')); }
     HSS.stil.set('real'); const st = document.getElementById('vStil'); if (st) st.value = 'real';
     HSS.view.labels = false; HSS.ui.refreshViewbar(); HSS.s3.setSun?.(10.5); const vs = document.getElementById('vSun'); if (vs) vs.value = 10.5;
     HSS.s3.select(null); document.body.classList.add('nopanel'); window.dispatchEvent(new Event('resize'));
     HSS.runSimulation();
-  });
+  }, process.env.Q || '2');
   for (let i = 0; i < 150; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
 
   let f = 0, mx = 1500, my = 700, perFrame = null;
@@ -63,6 +63,8 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   const cam = (pos, tgt) => ev(([pos, tgt]) => { const S3 = HSS.s3; S3.camera.position.set(...pos); S3.controls.target.set(...tgt); S3.controls.update?.(); HSS.perf?.invalidate?.(2); }, [pos, tgt]);
   // Mittelpunkt eines Gebäudes (Bounding Box in Weltkoordinaten)
   const bld = n => ev(n => { const b = HSS.project().buildings.find(x => !x.umgebung && (x.name === n || x.name.startsWith(n + ' '))); const o = HSS.partFootprint(b.parts[0]).outer, g = HSS.geo.bbox(o); return { cx: (g.x0 + g.x1) / 2, cz: (g.z0 + g.z1) / 2, w: g.x1 - g.x0, d: g.z1 - g.z0, id: b.parts[0].id }; }, n);
+  // Schwerpunkt bestimmter Objekte in einer Halle (Kamera auf die Maschinen statt auf die Hallenmitte)
+  const objC = (pid, libs) => ev(([pid, libs]) => { const ws = HSS.project().objects.filter(o => o.host?.part === pid && libs.includes(o.lib)).map(o => HSS.objWorld(o)); if (!ws.length) return null; return { cx: ws.reduce((a, w) => a + w.x, 0) / ws.length, cz: ws.reduce((a, w) => a + w.z, 0) / ws.length }; }, [pid, libs]);
   const floorBtn = async t => { await ev(t => { const b = [...document.querySelectorAll('#floorNav button')].find(x => x.textContent.trim() === t); if (b) b.id = 'fb_' + (t === '⌂' ? 'all' : t); }, t); return '#fb_' + (t === '⌂' ? 'all' : t); };
   const logo = await ev(() => document.querySelector('.brand img, #top img')?.src || '');
 
@@ -107,15 +109,15 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
 
   /* ===== 22,5–28 s: Kurbelgehäusefertigung ===== */
   await cap('Mechanische Fertigung', 'Kurbelgehäuse: Portal-Bearbeitungszentren, verkettet, mit Waschen und Messen');
-  const g62 = await bld('G 62');
-  await cam([g62.cx - 70, 58, g62.cz + 75], [g62.cx, 0, g62.cz]);
+  const g62 = await bld('G 62'), k62 = (await objC(g62.id, ['pm.gm.baz'])) || g62;
+  await cam([k62.cx - 48, 40, k62.cz + 52], [k62.cx, 0, k62.cz]);
   perFrame = async () => orbit(0.16, 0.9993);
   await at(S(28.0)); perFrame = null;
 
   /* ===== 28–33 s: Prüffeld und Lackiererei ===== */
   await cap('Prüffeld & Lackiererei', 'Heißtest-Zellen mit Leitwarte, Lackierung im Durchlauf');
-  const g302 = await bld('G 30/2');
-  await cam([g302.cx + 60, 52, g302.cz + 78], [g302.cx + 10, 0, g302.cz]);
+  const g302 = await bld('G 30/2'), g301 = await bld('G 30/1'), k30 = (await objC(g302.id, ['pm.gm.pruefzelle'])) || g302, kL = (await objC(g301.id, ['pm.lack.kabine', 'pm.lack.trockner'])) || g301, mx30 = (k30.cx + kL.cx) / 2, mz30 = (k30.cz + kL.cz) / 2;
+  await cam([mx30 + 40, 46, mz30 + 58], [mx30, 0, mz30]);
   perFrame = async () => orbit(-0.14, 0.9994);
   await at(S(33.0)); perFrame = null;
 
@@ -147,7 +149,11 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
 
   /* ===== 50–56,4 s: Tagessimulation ===== */
   await cap('Tagessimulation', 'Rund 660 Touren am Tag – Auslastung der Werkstraßen auf einen Blick');
-  await ev(() => { HSS.flussbild.play?.(false); HSS.flussbild.set(false); HSS.drawNet('heat', null); const v = document.getElementById('vNet'); if (v) v.value = 'heat'; });
+  await ev(() => {
+    const T = window.THREEX.THREE, dn = HSS.drawNet;
+    HSS.drawNet = (mode, hour) => { const r = dn(mode, hour); if (mode === 'heat') { const Lr = HSS.s3.layers.net, ls = Lr.children.find(o => o.isLineSegments); if (ls) { const P = ls.geometry.attributes.position.array, Cc = ls.geometry.attributes.color.array, n = P.length / 6; const geo = new T.CylinderGeometry(1.1, 1.1, 1, 6, 1, true); geo.translate(0, 0.5, 0); geo.rotateX(Math.PI / 2); const im = new T.InstancedMesh(geo, new T.MeshBasicMaterial({ depthTest: false, transparent: true, opacity: 0.95 }), n); const o = new T.Object3D(), c = new T.Color(), a = new T.Vector3(), bb = new T.Vector3(); let k = 0; for (let i = 0; i < n; i++) { c.setRGB(Cc[6 * i], Cc[6 * i + 1], Cc[6 * i + 2]); if (Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 0.08) continue; a.fromArray(P, 6 * i); bb.fromArray(P, 6 * i + 3); const d = a.distanceTo(bb); if (d < 0.01) continue; o.position.copy(a); o.lookAt(bb); o.scale.set(1, 1, d); o.updateMatrix(); im.setMatrixAt(k, o.matrix); im.setColorAt(k, c); k++; } im.count = k; im.renderOrder = 5; Lr.add(im); } } HSS.perf?.invalidate?.(3); return r; };
+  });
+  await ev(() => { HSS.flussbild.play?.(false); HSS.flussbild.set(false); HSS.view.shell = 'transparent'; HSS.s3.rebuild('all'); HSS.drawNet('heat', null); const v = document.getElementById('vNet'); if (v) v.value = 'heat'; });
   await cam([C.x - 150, 260, C.z + 230], [C.x, 0, C.z]);
   perFrame = async () => orbit(0.12);
   await at(S(56.4)); perFrame = null;

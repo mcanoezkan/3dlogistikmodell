@@ -12,7 +12,7 @@ HSS.loadErrors = HSS.loadErrors || [];
 window.addEventListener('error', e => { if (HSS.booted) return; const t = e.target; if (t && t.tagName === 'SCRIPT') HSS.loadErrors.push({ datei: (t.src || '').split('/').pop(), meldung: 'Datei konnte nicht geladen werden' }); else if (e.message) HSS.loadErrors.push({ datei: (e.filename || '').split('/').pop().split('?')[0], meldung: e.message, zeile: e.lineno }); }, true);
 // Grundgerüst der Seite festhalten (Export als reine HTML-Ansicht, siehe ansicht.js)
 try { HSS._shell = { body: [...(document.body ? document.body.children : [])].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML) }; } catch (e) { /* */ }
-HSS.VERSION = '1.2.0';
+HSS.VERSION = '1.3.0';
 /* Edition: health (Healthcare Simulation Suite), fabrik (Fabric Planning Suite), home (Home Planning Suite).
    Gesetzt über window.HSS_EDITION (Einzeldatei) oder ?edition=… bzw. #fabrik/#home in der Adresse. */
 HSS.EDITION = (() => {

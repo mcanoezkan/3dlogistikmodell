@@ -15,6 +15,13 @@ python3 tools/build_einzeldatei.py          # baut alle drei Einzeldateien (oder
 python3 start.py fabrik                     # Entwicklungsstand im Browser (auch: home, ohne Angabe = Healthcare)
 ```
 
+**Fabric Planning Suite 1.3 – Produktionsplaner und Werk 1 Friedrichshafen**
+
+- **Produktionsplaner** (Arbeitsbereich links, wie der Stationsplaner): Fertigungsprinzip wählen – Montagelinie (Fließ-/Taktmontage), Serienfertigung (verkettete Bearbeitung), Fertigungsinseln, Werkstattfertigung, Lackiererei, Prüffeld, Lager –, Stückzahl, Zeiten, Schichten, OEE angeben und Halle wählen. Die Suite rechnet Takt, Werker, Stationen, Maschinen, Prüfstände und Fläche mit Rechenweg und Grundlagen (REFA, VDMA 66412, ASR A1.8/A1.2, Fabrikplanung, Herstellerangaben) und legt das Layout mit allen Maschinen, Linienmodulen und Umfeld in die Halle; mehrere Bereiche hintereinander in einer Halle.
+- **Großmotoren-Module**: 12V/16V/20V-Motoren (Baureihen-Klassen 2000/4000), Schwerlast-FTS, Montagestation im 8-m-Raster mit Arbeitsbühnen, Puffer, FTS-Kurven, Portal-BAZ für Kurbelgehäuse, Kurbelwellen-Dreh-Fräszentrum, Prüfzelle mit Leitwarte, Lackiererei (Vorbehandlung, Spritzkabine, Trockner, Abkleben, Skidförderer, Mischraum). Linienleiste erkennt die Familie (Pkw 3-m-Takt / Großmotor 8-m-Raster).
+- **Hallenboden**: Gelände und Flächen unter Gebäuden liegen jetzt immer unter der Bodenplatte – auch bei neu gesetzten Hallen.
+- **Planungsmodell Werk 1 Friedrichshafen** in [`projekte/RollsRoyce_Werk1`](projekte/RollsRoyce_Werk1): alle Werksgebäude aus OpenStreetMap, ausgestattet, mit 30 Materialflüssen; belegte und angenommene Funktionen getrennt dokumentiert. Demo-Video: [`marketing/FPS_Werk1_Friedrichshafen_Demo_60s_Realistisch.mp4`](marketing/FPS_Werk1_Friedrichshafen_Demo_60s_Realistisch.mp4).
+
 **Fabric Planning Suite 1.2 – Produktionsmodule (Motorenwerk)**: Neue Bibliothekssektion **Produktionsmodule** mit Größen im Maßstab eines Motorenwerks (Horizontal-BAZ ca. 2,8 × 5,6 × 3,2 m, Taktlänge der Montagelinie 3,0 m, Werkstückträger 0,8 × 0,8 m):
 
 - **Produktionsinseln**: Fertigungsinsel Zylinderkopf (2 BAZ, Roboter, Be-/Entladeband, Schutzzaun, Waschen, SPC-Messplatz, Schaltschränke, KSS, Späne), Fertigungsinsel Kurbelwelle (Drehen, 2× Schleifen, Portallader), Montageinsel U-Form, Roboterzelle mit Wendetisch
