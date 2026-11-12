@@ -440,6 +440,7 @@ S3.pick = (ev, list = S3.pickables) => {
     if (u.kind === 'part') return { kind: 'part', id: u.id, point: h.point, floor: u.floor };
     if (u.kind === 'bridge' || u.kind === 'path' || u.kind === 'area') return { kind: u.kind, id: u.id, point: h.point };
     if (u.kind === 'room' || u.kind === 'wall') return { kind: u.kind, id: u.id, part: u.part, floor: u.floor, point: h.point };
+    if ((u.kind === 'intra' || u.kind === 'agent') && u.id) return { kind: u.kind, id: u.id, point: h.point }; // Hallenausbau: Wege, Leitlinien, Fahrzeuge, Personen
   }
   return null;
 };

@@ -8672,6 +8672,7 @@ S3.pick = (ev, list = S3.pickables) => {
     if (u.kind === 'part') return { kind: 'part', id: u.id, point: h.point, floor: u.floor };
     if (u.kind === 'bridge' || u.kind === 'path' || u.kind === 'area') return { kind: u.kind, id: u.id, point: h.point };
     if (u.kind === 'room' || u.kind === 'wall') return { kind: u.kind, id: u.id, part: u.part, floor: u.floor, point: h.point };
+    if ((u.kind === 'intra' || u.kind === 'agent') && u.id) return { kind: u.kind, id: u.id, point: h.point }; // Hallenausbau: Wege, Leitlinien, Fahrzeuge, Personen
   }
   return null;
 };
@@ -19377,10 +19378,28 @@ HSS.hallAusbau = (prj, partId, f = 0, o = {}) => {
   const rooms = new Set(Object.values(prj.interiors[pt.id] || {}).flatMap(I => I.rooms).map(r => r.id)), tr = new Set();
   for (const fl of prj.flows || []) if (rooms.has(fl.von) || rooms.has(fl.nach)) tr.add(fl.transport);
   E('halle', [], { h, L: F.L, Q: F.Q0, verkehr: [...tr], main: { v: main.v, w: main.w, u0: main.u0, u1: main.u1 }, geh: geh ? { v: geh.v, u0: geh.u0, u1: geh.u1 } : null, quer: quer.map(q => ({ u: q.u, v1: q.v1 })), seite: gehSeite, ang: F.ang });
+  // 8 · Fahrzeuge und Personen (als bearbeitbare Einträge: anklicken, ändern, löschen)
+  let seed = [...pt.id].reduce((a, c) => a + c.charCodeAt(0), 7); const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const FZ = (lib, route, ptsUV, o = {}) => E('fahrzeug', ptsUV, Object.assign({ lib, route, v: 1, anzahl: 1, auto: true }, o));
+  const lane = Math.min(1.1, main.w / 2 - 0.55), a0 = main.u0 + 2.5, a1 = main.u1 - 2.5;
+  if (a1 - a0 > 8) {
+    const loopUV = [[a0, main.v - lane], [a1, main.v - lane], [a1 + 1.2, main.v], [a1, main.v + lane], [a0, main.v + lane], [a0 - 1.2, main.v], [a0, main.v - lane]];
+    const veh = [], nSt = Math.max(1, Math.min(3, Math.round((a1 - a0) / 45)));
+    for (let i = 0; i < nSt; i++) veh.push([i % 2 ? 'ha.stapler.leer' : 'ha.stapler.last', 2.2]);
+    if (tr.has('t_routenzug') || (a1 - a0) > 50) veh.push(['ha.routenzug', 1.6]);
+    if (tr.has('t_schwer')) veh.push(['ha.fts.motor', 0.7]);
+    veh.forEach(([lib, v], i) => FZ(lib, 'schleife', loopUV, { v, versatz: i / veh.length, gruppe: 'haupt' }));
+    FZ('ha.fts.klt', 'fts', [], { v: 1.0, anzahl: (a1 - a0) > 70 ? 2 : 1 });
+  }
+  if (geh) { const L = geh.u1 - geh.u0, n = Math.max(2, Math.min(5, Math.round(L / 25))), libs = ['ha.werker.klt', 'fab.werker', 'ha.werker.wagen', 'fab.staplerfahrer', 'ha.werker.klt'];
+    for (let i = 0; i < n; i++) { const lib = libs[i % libs.length], dir = i % 2 ? 1 : -1, off = lib === 'ha.werker.wagen' ? 0 : dir * 0.3 * gehSeite; FZ(lib, 'pendel', [[geh.u0 + 0.5, geh.v + off], [geh.u1 - 0.5, geh.v + off]], { v: +(1.1 + rnd() * 0.3).toFixed(2), versatz: +rnd().toFixed(3), richtung: dir }); } }
+  for (const nb of neben) FZ(rnd() > 0.5 ? 'fab.werker' : 'ha.werker.klt', 'pendel', [[nb.u0 + 0.3, nb.v], [nb.u1 - 0.3, nb.v]], { v: 1.2, versatz: +rnd().toFixed(3) });
+  for (const q of quer) if (rnd() > 0.45 && Math.abs(q.v1 - main.v) > 8) { const v0 = (geh ? geh.v : main.v) + gehSeite * 1.2; FZ('ha.werker.wagen', 'pendel', [[q.u - 0.9, v0], [q.u - 0.9, q.v1 - gehSeite * 1.0]], { v: 0.9, versatz: +rnd().toFixed(3) }); }
   return rep;
 };
-HSS.hallEntfernen = (prj, partId, f = 0) => {
-  prj.intralogistik = (prj.intralogistik || []).filter(e => !(e.part === partId && e.floor === f));
+// alles = true entfernt auch selbst angelegte Fahrzeuge/Personen; sonst bleiben sie beim Neuberechnen erhalten
+HSS.hallEntfernen = (prj, partId, f = 0, alles = false) => {
+  prj.intralogistik = (prj.intralogistik || []).filter(e => !(e.part === partId && e.floor === f && (alles || e.kind !== 'fahrzeug' || e.auto)));
   prj.objects = prj.objects.filter(o => !(o.ha && o.host?.part === partId && o.host.floor === f));
 };
 // Hallen eines Projekts: Bauteile mit Produktionsbereichen oder großen eingeschossigen Hallen
@@ -19407,13 +19426,14 @@ const segOff = (a, b, off) => { const dx = b[0] - a[0], dz = b[1] - a[1], l = Ma
 const dashed = (out, a, b, w, y, dash = 1.0, gap = 0.6) => { const L = G.dist(a, b); for (let s = 0; s < L; s += dash + gap) { const t0 = s / L, t1 = Math.min(1, (s + dash) / L); quad(out, [a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0], [a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1], w, y); } };
 const pfeil = (out, p, dir, y, s = 1) => { const sh = new THREE.Shape([[0, 0.9], [0.55, 0.15], [0.2, 0.15], [0.2, -0.9], [-0.2, -0.9], [-0.2, 0.15], [-0.55, 0.15]].map(([x, z]) => new THREE.Vector2(x * s, z * s))); const g = new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI / 2); g.rotateY(Math.atan2(dir[0], dir[1]) + Math.PI); g.translate(p[0], y, p[1]); out.push(g); };
 const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+const PICKMAT = new THREE.MeshBasicMaterial({ visible: false });
 const mesh = (geos, m, grp, shadow = false) => { if (!geos.length) return; const me = new THREE.Mesh(mergeGeometries(geos.map(g => g.index ? g.toNonIndexed() : g).map(g => { if (g.attributes.uv) g.deleteAttribute('uv'); return g; }), false), m); me.receiveShadow = true; me.castShadow = shadow; me.userData = { kind: 'intra' }; grp.add(me); };
 
 function buildHalle(pt, f, entries, prj) {
   const grp = new THREE.Group(), local = new THREE.Group(); grp.add(local);
   const gf = HSS.globalFloor(pt, f, prj), y0 = HSS.floorY(pt, f, prj) + gf * (V.explode || 0);
   local.position.set(pt.x, y0, pt.z); local.rotation.y = -U.rad(pt.rot || 0);
-  const g = { weg2: [], weg: [], gelb: [], weiss: [], gruen: [], fts: [], gelaender: [], stahl: [], schwarz: [], rolle: [], blau: [], kran: [], led: [], grau: [] };
+  const g = { orange: [], weg2: [], weg: [], gelb: [], weiss: [], gruen: [], fts: [], gelaender: [], stahl: [], schwarz: [], rolle: [], blau: [], kran: [], led: [], grau: [] };
   const halle = entries.find(e => e.kind === 'halle'), H = halle?.h || HSS.fh(pt, f);
   const quer = entries.filter(e => e.kind === 'fahrweg' && !e.haupt), geh = entries.find(e => e.kind === 'gehweg');
   for (const e of entries) {
@@ -19461,17 +19481,28 @@ function buildHalle(pt, f, entries, prj) {
       const c = ehbRing(e); for (let i = 0; i < c.length; i++) { const A = c[i], Bq = c[(i + 1) % c.length], l = G.dist(A, Bq), m = lerp(A, Bq, 0.5), an = -Math.atan2(Bq[1] - A[1], Bq[0] - A[0]); boxG(g.kran, m[0], e.y, m[1], l, 0.2, 0.12, an); boxG(g.kran, m[0], e.y + 0.11, m[1], l, 0.03, 0.22, an); for (let s = 0; s < l; s += 4) { const h2 = lerp(A, Bq, s / l); boxG(g.stahl, h2[0], (e.y + H) / 2, h2[1], 0.05, H - e.y, 0.05); } }
     }
   }
+  // Routen selbst angelegter Fahrzeuge: orange gestrichelt (Rundkurs geschlossen)
+  for (const e of entries) if (e.kind === 'fahrzeug' && !e.auto && (e.pts || []).length > 1) { const P = e.pts.slice(); if (e.route === 'schleife') P.push(P[0]); for (let i = 1; i < P.length; i++) dashed(g.orange, P[i - 1], P[i], 0.12, Y.fts + 0.002, 0.9, 0.5); }
+  // Klickflächen (unsichtbar): Wege, Leitlinien, Förderer, Zonen sind anklickbar und zeigen ihre Angaben
+  const pickMat = PICKMAT, picks = [];
+  for (const e of entries) {
+    if (!['fahrweg', 'nebengang', 'gehweg', 'fts', 'rollenbahn', 'zone', 'kran', 'ehb'].includes(e.kind) || (e.pts || []).length < 2) continue;
+    const segs = e.kind === 'fts' ? [e.pts, ...(e.stiche || [])] : e.kind === 'zone' || e.kind === 'kran' || e.kind === 'ehb' ? [[[e.pts[0][0], (e.pts[0][1] + e.pts[1][1]) / 2], [e.pts[1][0], (e.pts[0][1] + e.pts[1][1]) / 2]]] : [e.pts];
+    const w = e.kind === 'fts' ? 0.8 : e.kind === 'zone' || e.kind === 'kran' || e.kind === 'ehb' ? Math.abs(e.pts[1][1] - e.pts[0][1]) : e.w || 1.2;
+    const hgt = e.kind === 'fts' ? 0.14 : e.kind === 'rollenbahn' ? 0.9 : e.kind === 'kran' || e.kind === 'ehb' ? 0.04 : 0.08;
+    for (const [a, b] of segs) { const L = G.dist(a, b); if (L < 0.1) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(L, hgt, Math.max(0.3, w)), pickMat); m.rotation.y = -Math.atan2(b[1] - a[1], b[0] - a[0]); m.position.set((a[0] + b[0]) / 2, hgt / 2, (a[1] + b[1]) / 2); m.userData = { kind: 'intra', id: e.id, pick: true }; local.add(m); picks.push(m); }
+  }
   // Flächenmarkierung der Produktionsbereiche (gelb gestrichelt) und Bereitstellplätze (weiß)
   for (const r of HSS.interior(pt.id, f, false, prj)?.rooms || []) if (r.prod) { const x0 = r.x - r.w / 2 + 0.1, x1 = r.x + r.w / 2 - 0.1, z0 = r.z - r.d / 2 + 0.1, z1 = r.z + r.d / 2 - 0.1; for (const [p, q] of [[[x0, z0], [x1, z0]], [[x1, z0], [x1, z1]], [[x1, z1], [x0, z1]], [[x0, z1], [x0, z0]]]) dashed(g.gelb, p, q, 0.08, Y.linie - 0.002, 0.8, 0.4); }
   for (const o of prj.objects) if (o.ha && o.host?.part === pt.id && o.host.floor === f && (o.lib === 'ha.bereitstellung' || o.lib === 'ha.palettenstapel')) rahmen(g.weiss, [o.x, o.z], 1.6, 1.2, -U.rad(o.rot || 0), Y.linie);
   // Hallenleuchten (Deckenebene)
   if (decke() && halle) { const F = HSS.prodFrame(pt, true); for (let u = 3; u < F.L - 1; u += 7.5) for (let v = 3; v < F.Q0 - 1; v += 8) { const c = F.toLoc(u, v); const yl = H - 1.4; boxG(g.grau, c[0], yl + 0.04, c[1], F.ang ? 0.34 : 1.2, 0.08, F.ang ? 1.2 : 0.34); boxG(g.led, c[0], yl - 0.006, c[1], F.ang ? 0.28 : 1.12, 0.01, F.ang ? 1.12 : 0.28); boxG(g.stahl, c[0], (yl + H) / 2, c[1], 0.012, H - yl, 0.012); } }
   mesh(g.weg, floorMat('weg', '#868f97', 0), local); mesh(g.weg2, floorMat('weg2', '#b3bac1', 0), local); mesh(g.gruen, floorMat('gruen', '#3e9e6b', 1), local);
-  mesh(g.gelb, floorMat('gelb', '#f2c230', 2), local); mesh(g.weiss, floorMat('weiss', '#f4f6f8', 2), local); mesh(g.fts, floorMat('fts', '#1d4f91', 3), local);
+  mesh(g.gelb, floorMat('gelb', '#f2c230', 2), local); mesh(g.weiss, floorMat('weiss', '#f4f6f8', 2), local); mesh(g.fts, floorMat('fts', '#1d4f91', 3), local); mesh(g.orange, floorMat('orange', '#f2994a', 3), local);
   mesh(g.gelaender, mat('gel', '#f2c230', { roughness: 0.5 }), local, true); mesh(g.schwarz, mat('schw', '#24282d'), local); mesh(g.stahl, mat('stahl', '#6c7782', { metalness: 0.4, roughness: 0.5 }), local, true);
   mesh(g.blau, mat('blau', '#2d6fa3', { roughness: 0.5 }), local, true); mesh(g.rolle, mat('rolle', '#b8bec6', { metalness: 0.6, roughness: 0.3 }), local); mesh(g.kran, mat('kran', '#e8b923', { roughness: 0.5 }), local, true);
   mesh(g.grau, mat('lgrau', '#c3c9d0'), local); mesh(g.led, mat('led', '#fffbe8', { emissive: '#fff4d6', emissiveIntensity: 0.9 }), local);
-  return { grp, local, y0 };
+  return { grp, local, y0, picks };
 }
 function fussweg(out, c, dir, y) { // Fußgänger-Piktogramm (zwei Fußabdrücke)
   const n = [-dir[1], dir[0]];
@@ -19485,6 +19516,9 @@ function ehbRing(e) { const [p, q] = e.pts; return [[p[0], p[1]], [q[0], p[1]], 
 
 /* ---------- Szene: statische Teile und bewegte Hallenwelt ---------- */
 const ROOT = new THREE.Group(); ROOT.name = 'hallenausbau';
+// Klickziele (Wege, Leitlinien, Fahrzeuge) – bei jeder Auswahl im 3D-Bild mitgeprüft, unabhängig von der Pickliste der Szene
+const EXTRA = [];
+{ const pick0 = S3.pick; S3.pick = (ev, list) => pick0(ev, list || (EXTRA.length && OPT.klick !== false ? S3.pickables.concat(EXTRA.filter(m => { let o = m; while (o) { if (!o.visible) return false; o = o.parent; } return true; })) : S3.pickables)); }
 const LEBEN = new THREE.Group(); LEBEN.name = 'hallenleben';
 const HL = HSS.hallenleben = { agents: [], halls: [], active: () => OPT.leben && LEBEN.visible && HL.agents.some(a => a.obj.visible), opt: OPT };
 let cache = new Map(), lastKey = '';
@@ -19509,6 +19543,9 @@ function rebuild() {
   }
   for (const k of [...cache.keys()]) if (!live.has(k) && cache.size > 60) cache.delete(k);
   lastKey = key; agentsAufbauen(halls, prj);
+  EXTRA.length = 0; for (const h of halls) EXTRA.push(...(h.c.picks || []));
+  LEBEN.traverse(o => { if (o.isMesh && o.userData.kind === 'agent') EXTRA.push(o); });
+  for (const h of halls) for (const e of h.entries) if (e.kind !== 'fahrzeug') S3.groups.set(e.id, h.c.picks?.find(m => m.userData.id === e.id) || h.c.grp);
   HSS.perf?.invalidate(3);
 }
 
@@ -19534,43 +19571,36 @@ function kranBauen(c, pt, f, entries) {
 
 /* ---------- Agenten (Personen, Fahrzeuge, Förderbehälter, Gehänge) ---------- */
 let agentKey = '';
+const PERSONEN = new Set(['fab.werker', 'fab.staplerfahrer', 'ha.werker.klt', 'ha.werker.wagen']);
 function agentsAufbauen(halls, prj) {
-  const k = halls.map(h => h.c.key.length + h.k).join(',') + '|' + OPT.leben + V.stil + decke();
+  const k = halls.map(h => U.hash(h.c.key) + h.k).join(',') + '|' + OPT.leben + V.stil + decke();
   if (k === agentKey) return; agentKey = k;
   LEBEN.clear(); HL.agents = []; HL.halls = halls;
   if (!OPT.leben) return;
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   for (const h of halls) {
-    const hal = h.entries.find(e => e.kind === 'halle'); if (!hal) continue;
+    const hal = h.entries.find(e => e.kind === 'halle') || { L: 0, Q: 0 };
     const pt = h.pt, F = frameOf(pt), wy = h.c.y0 + 0.025;
     const W = (u, v) => HSS.toWorld(pt, F.toLoc(u, v));
-    const add = (lib, path, o = {}) => { const obj = HSS.library.build(lib, null, { noShadow: true }); obj.traverse(m => { if (m.isMesh) m.userData = { kind: 'intra' }; }); HSS.stil?.applyTo?.(obj); LEBEN.add(obj); const L = path.reduce((s, p, i) => i ? s + G.dist(p, path[i - 1]) : 0, 0); const a = Object.assign({ obj, path, L, s: (o.s0 ?? rnd()) * L, v: o.v || 1, dir: 1, wait: 0, y: wy + (o.dy || 0), hall: h.k, pos: W(hal.L / 2, hal.Q / 2), len: HSS.library.get(lib)?.size?.d || 1 }, o); HL.agents.push(a); return a; };
-    const m = hal.main, s = hal.seite; if (!m) continue;
-    // Fahrzeugschleife im Hauptfahrweg: hin auf der einen, zurück auf der anderen Spur
-    const lane = 1.1, u0 = m.u0 + 2.5, u1 = m.u1 - 2.5;
-    const loop = [W(u0, m.v - lane), W(u1, m.v - lane), W(u1 + 1.2, m.v), W(u1, m.v + lane), W(u0, m.v + lane), W(u0 - 1.2, m.v), W(u0, m.v - lane)];
-    const tr = new Set(hal.verkehr || []), vehicles = [];
-    const nSt = Math.max(1, Math.min(3, Math.round((u1 - u0) / 45)));
-    for (let i = 0; i < nSt; i++) vehicles.push(['ha.stapler.last', 2.2, i % 2 ? 'ha.stapler.leer' : null]);
-    if (tr.has('t_routenzug') || (u1 - u0) > 50) vehicles.push(['ha.routenzug', 1.6]);
-    if (tr.has('t_schwer')) vehicles.push(['ha.fts.motor', 0.7]);
-    const grp = []; vehicles.forEach(([lib, v, alt], i) => grp.push(add(alt || lib, loop, { v, s0: i / vehicles.length, loop: true, kind: 'fz' })));
-    grp.forEach(a => (a.group = grp));
-    // FTS auf der Leitlinie (Pendelbetrieb mit Stichfahrten in die Querwege)
-    const fts = h.entries.find(e => e.kind === 'fts');
-    if (fts && (u1 - u0) > 12) {
-      const pts = fts.pts.map(p => HSS.toWorld(pt, p)), stiche = (fts.stiche || []).map(st => st.map(p => HSS.toWorld(pt, p)));
-      const n = (u1 - u0) > 70 ? 2 : 1;
-      for (let i = 0; i < n; i++) { const a0 = lerp(pts[0], pts[1], i / n), a1 = lerp(pts[0], pts[1], (i + 1) / n); const mine = stiche.filter(st => { const t = G.dist(st[0], pts[0]) / G.dist(pts[0], pts[1]); return t >= i / n - 0.01 && t <= (i + 1) / n + 0.01; }); add('ha.fts.klt', [a0, a1], { v: 1.0, kind: 'fts', stiche: mine, base: [a0, a1], s0: rnd() }); }
+    const add = (lib, path, o = {}) => { const obj = HSS.library.build(lib, null, { noShadow: true }); const aid = o.entry ? o.entry.id + ':' + o.k : null; obj.traverse(m => { if (m.isMesh) m.userData = aid ? { kind: 'agent', id: aid, pick: true } : { kind: 'intra' }; }); if (aid) { obj.userData.agent = aid; S3.groups.set(aid, obj); } HSS.stil?.applyTo?.(obj); LEBEN.add(obj); const L = path.reduce((s, p, i) => i ? s + G.dist(p, path[i - 1]) : 0, 0); const a = Object.assign({ obj, path, L, s: (o.s0 ?? rnd()) * L, v: o.v || 1, dir: 1, wait: 0, y: wy + (o.dy || 0), hall: h.k, id: aid, pos: path[0], len: HSS.library.get(lib)?.size?.d || 1 }, o); HL.agents.push(a); return a; };
+    const grpOf = new Map();
+    for (const e of h.entries.filter(x => x.kind === 'fahrzeug')) {
+      if (!HSS.library.get(e.lib)) continue;
+      const pts = (e.pts || []).map(p => HSS.toWorld(pt, p)), n = Math.max(1, Math.min(40, Math.round(e.anzahl || 1))), person = PERSONEN.has(e.lib);
+      if (e.route === 'fts') {
+        const fts = h.entries.find(x => x.kind === 'fts'); if (!fts) continue;
+        const fp = fts.pts.map(p => HSS.toWorld(pt, p)), stiche = (fts.stiche || []).map(st => st.map(p => HSS.toWorld(pt, p)));
+        for (let i = 0; i < n; i++) { const b0 = lerp(fp[0], fp[1], i / n), b1 = lerp(fp[0], fp[1], (i + 1) / n); const mine = stiche.filter(st => { const t = G.dist(st[0], fp[0]) / G.dist(fp[0], fp[1]); return t >= i / n - 0.01 && t <= (i + 1) / n + 0.01; }); add(e.lib, [b0, b1], { v: e.v || 1, kind: 'fts', stiche: mine, base: [b0, b1], s0: rnd(), entry: e, k: i }); }
+        continue;
+      }
+      if (pts.length < 2) continue;
+      if (e.route === 'schleife') {
+        const ring = pts.slice(); if (G.dist(ring[0], ring[ring.length - 1]) > 0.05) ring.push(ring[0]);
+        const gk = e.gruppe || e.id; if (!grpOf.has(gk)) grpOf.set(gk, []);
+        for (let i = 0; i < n; i++) grpOf.get(gk).push(add(e.lib, ring, { v: e.v || 1, s0: ((e.versatz || 0) + i / n) % 1, loop: true, kind: person ? 'person' : 'fz', entry: e, k: i }));
+      } else for (let i = 0; i < n; i++) add(e.lib, pts, { v: e.v || 1, kind: person ? 'person' : 'fz', pendel: true, dir: (e.richtung || 1) * (i % 2 ? -1 : 1), s0: ((e.versatz ?? rnd()) + i / n) % 1, entry: e, k: i });
     }
-    // Personen auf dem Gehweg (rechts gehen) und in den Nebengängen
-    if (hal.geh) {
-      const g = hal.geh, L = g.u1 - g.u0, n = Math.max(2, Math.min(5, Math.round(L / 25)));
-      const libs = ['ha.werker.klt', 'fab.werker', 'ha.werker.wagen', 'fab.staplerfahrer', 'ha.werker.klt'];
-      for (let i = 0; i < n; i++) { const dir = i % 2 ? 1 : -1, off = libs[i % libs.length] === 'ha.werker.wagen' ? 0 : dir * 0.3 * s; add(libs[i % libs.length], [W(g.u0 + 0.5, g.v + off), W(g.u1 - 0.5, g.v + off)], { v: 1.1 + rnd() * 0.3, kind: 'person', pendel: true, dir, s0: rnd(), pauseAt: 0.5 }); }
-    }
-    for (const e of h.entries.filter(x => x.kind === 'nebengang')) { const pts = e.pts.map(p => HSS.toWorld(pt, p)); add(rnd() > 0.5 ? 'fab.werker' : 'ha.werker.klt', pts, { v: 1.2, kind: 'person', pendel: true, s0: rnd() }); }
-    for (const q of hal.quer) if (rnd() > 0.45 && Math.abs(q.v1 - m.v) > 8) { const v0 = (hal.geh ? hal.geh.v : m.v) + s * 1.2; add('ha.werker.wagen', [W(q.u - 0.9, v0), W(q.u - 0.9, q.v1 - s * 1.0)], { v: 0.9, kind: 'person', pendel: true, s0: rnd() }); }
+    for (const g of grpOf.values()) g.forEach(a => (a.group = g));
     // Behälter auf den Rollenbahnen
     for (const e of h.entries.filter(x => x.kind === 'rollenbahn')) { const pts = e.pts.map(p => HSS.toWorld(pt, p)), L = G.dist(pts[0], pts[1]); const n = Math.max(2, Math.floor(L / 1.8)); for (let i = 0; i < n; i++) add('ha.klt.eins', pts, { v: 0.35, kind: 'band', s0: i / n, dy: 0.76, loop: true }); }
     // Hängebahn-Gehänge
@@ -19634,8 +19664,133 @@ function ftsStep(a, dt) {
 /* ---------- Anbindung an die Szene ---------- */
 HSS.on('rebuilt', () => { try { rebuild(); } catch (e) { console.error('[Hallenausbau]', e); } });
 let lastDecke = null;
-HSS.on('frame', dt => { const dk = decke(); if (lastDecke !== null && dk !== lastDecke) { lastDecke = dk; agentKey = ''; rebuild(); } lastDecke = dk; if (OPT.leben && LEBEN.visible) update(dt); });
+HSS.on('frame', dt => { const dk = decke(); if (lastDecke !== null && dk !== lastDecke) { lastDecke = dk; agentKey = ''; rebuild(); } lastDecke = dk; if (OPT.leben && LEBEN.visible) update(dt); const sel = HSS.state.selection; if (sel?.kind === 'agent' && !S3.tool && (selTick = (selTick + 1) % 6) === 0) { S3.showSelection(); const st = document.getElementById('ilSt'), a = agentOf(sel.id); if (st && a) st.textContent = status(a); } });
+let selTick = 0;
 HSS.hallenAktualisieren = () => { agentKey = ''; cache.clear(); rebuild(); };
+
+/* ---------- Anklicken: Wege, Leitlinien und Fahrzeuge (Angaben, ändern, löschen) ---------- */
+const UX = HSS.ui;
+const FZTYPEN = [['ha.routenzug', 'Routenzug (Schlepper + 3 Anhänger)', 1.6], ['ha.stapler.last', 'Gabelstapler mit Palette', 2.2], ['ha.stapler.leer', 'Gabelstapler (leer)', 2.2], ['ha.fts.klt', 'FTS mit KLT-Regal', 1.0], ['ha.fts.motor', 'Schwerlast-FTS mit Großmotor', 0.7], ['fab.fts', 'FTS (Plattform)', 1.0], ['ha.werker.klt', 'Werker mit Kleinladungsträger', 1.2], ['ha.werker.wagen', 'Logistiker mit Kommissionierwagen', 0.9], ['fab.werker', 'Werker (Helm, Warnweste)', 1.3], ['fab.staplerfahrer', 'Logistiker/in zu Fuß', 1.3]];
+HSS.HALLE_FZTYPEN = FZTYPEN;
+const fzName = lib => FZTYPEN.find(f => f[0] === lib)?.[1] || HSS.library.get(lib)?.name || lib;
+const ROUTE = { schleife: 'Rundkurs', pendel: 'Pendelverkehr (hin und zurück)', fts: 'FTS-Leitlinie der Halle (mit Stichfahrten)' };
+const ART = e => ({ fahrweg: e.haupt ? 'Hauptfahrweg' : 'Querweg', nebengang: 'Nebengang', gehweg: 'Gehweg (Fußgänger)', fts: 'FTS-Leitlinie', rollenbahn: 'Rollenbahn', zone: 'Bereitstell- und Pufferzone', kran: 'Brückenkran', ehb: 'Elektrohängebahn', stuetzen: 'Stützenraster', fahrzeug: 'Fahrzeug / Person' }[e.kind] || e.kind);
+const INFO = {
+  fahrweg: e => e.haupt ? 'Hauptverkehrsweg für Stapler, Routenzüge und FTS im Begegnungsverkehr: zwei Fahrspuren, gelbe Fahrwegbegrenzung, Fahrtrichtungspfeile (ASR A1.8, ASR A1.3).' : 'Querweg vom Hauptfahrweg in den Bereich: Anfahrt der Bereitstellplätze durch Stapler und Routenzug, Einmündung mit Fußgängerüberweg.',
+  nebengang: () => 'Nebengang zwischen den Bereichen für Personal und Handwagen, gelb gestrichelt begrenzt.',
+  gehweg: () => 'Gehweg für Fußgänger, grün markiert, vom Fahrweg durch ein Schutzgeländer getrennt; Zebrastreifen an jeder Einmündung (ASR A1.3).',
+  fts: () => 'Leitlinie für fahrerlose Transportfahrzeuge in der Mitte des Fahrwegs mit Stichstrecken zu den Bereichen, Haltemarken und Ladestation (VDI 2510).',
+  rollenbahn: e => `Angetriebene Rollenbahn${e.name ? ' von „' + e.name + '“' : ''} zum Übergabeplatz am Gehweg; Behälter laufen zum Gehweg und werden dort abgeholt.`,
+  zone: () => 'Weiß umrandete Bereitstell- und Pufferzone mit Paletten, Gitterboxen und Leerpaletten an einem Fahrweg.',
+  kran: () => 'Brückenkran über die ganze Hallenbreite, Kranbahn an beiden Längswänden (sichtbar bei „Wände voll“ und beim Begehen).',
+  ehb: () => 'Elektrohängebahn als Rundkurs über dem Fahrweg, Gehänge mit Bauteilen (sichtbar bei „Wände voll“ und beim Begehen).'
+};
+const findE = (prj, id) => (prj.intralogistik || []).find(e => e.id === String(id).split(':')[0]);
+const hallName = e => { const P = HSS.findPart(e.part); return P ? (P.building.name || P.part.name) : ''; };
+const lenOf = e => { let L = 0; for (const seg of [e.pts || [], ...(e.stiche || [])]) for (let i = 1; i < seg.length; i++) L += G.dist(seg[i - 1], seg[i]); return L; };
+const agentOf = id => HL.agents.find(a => a.id === id);
+// Fahrzeuge, deren Route auf diesem Weg liegt
+const fahrzeugeAuf = (prj, e) => (prj.intralogistik || []).filter(x => x.kind === 'fahrzeug' && x.part === e.part && x.floor === e.floor && (e.kind === 'fts' ? x.route === 'fts' : (x.pts || []).some(q => G.dist(q, G.closestOnSeg(q, e.pts[0], e.pts[1]).pt) < (e.w || 1) / 2 + 1.6)));
+const status = a => !a ? '' : a.wait > 0 ? 'hält' : a.mode === 'stich' ? 'Stichfahrt zum Bereich' : a.moving === false ? 'wartet auf Vordermann' : 'fährt';
+// neues Fahrzeug entlang eines Wegs (lokale Koordinaten)
+const routeFuer = (e, lib) => {
+  const [a, b] = e.pts, L = G.dist(a, b), person = PERSONEN.has(lib);
+  if (e.kind === 'fts') return { route: 'fts', pts: [] };
+  const k = Math.min(2, L * 0.1), A = lerp(a, b, k / L), Bq = lerp(a, b, 1 - k / L);
+  if (e.kind === 'fahrweg' && !person && (e.w || 3) >= 3) { const lane = Math.min(1.1, (e.w || 3) / 2 - 0.55), [p0, p1] = segOff(A, Bq, -lane), [q0, q1] = segOff(A, Bq, lane); return { route: 'schleife', pts: [p0, p1, q1, q0] }; }
+  return { route: 'pendel', pts: [A, Bq] };
+};
+const neuesFahrzeug = (prj, e, lib, anzahl = 1) => { const r = routeFuer(e, lib), n = { id: U.uid('il'), part: e.part, floor: e.floor, kind: 'fahrzeug', lib, route: r.route, pts: r.pts, v: FZTYPEN.find(f => f[0] === lib)?.[2] || 1, anzahl, gruppe: r.route === 'schleife' && e.haupt ? 'haupt' : undefined }; (prj.intralogistik = prj.intralogistik || []).push(n); return n; };
+
+{ const d0 = UX.describe; UX.describe = h => {
+  if (h.kind === 'intra') { const e = findE(HSS.project(), h.id); if (!e) return ''; const n = fahrzeugeAuf(HSS.project(), e).reduce((s, x) => s + (x.anzahl || 1), 0); return `<b>${U.esc(e.name || ART(e))}</b><div class="s">${ART(e)} · ${U.fmt(lenOf(e))} m${e.w ? ' · ' + U.fmt(e.w, 1) + ' m breit' : ''}${n ? ' · ' + n + ' Fahrzeuge/Personen' : ''} · Klick: Angaben</div>`; }
+  if (h.kind === 'agent') { const e = findE(HSS.project(), h.id), a = agentOf(h.id); if (!e) return ''; return `<b>${U.esc(e.name || fzName(e.lib))}</b><div class="s">${ROUTE[e.route] || ''} · ${U.fmt((e.v || 1) * 3.6, 1)} km/h · ${status(a)} · Klick: Angaben</div>`; }
+  return d0(h);
+}; }
+const IN = UX.INSP, IB = UX.INSP_BIND;
+const kopf = (k, t) => `<div class="ih"><div><div class="kicker">${k}</div><h2>${U.esc(t)}</h2></div><button class="x" title="Auswahl aufheben (Esc)">×</button></div>`;
+const typOpts = sel => FZTYPEN.map(([id, n]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${U.esc(n)}</option>`).join('');
+IN.intra = sel => {
+  const prj = HSS.project(), e = findE(prj, sel.id); if (!e) return '';
+  const fz = fahrzeugeAuf(prj, e), befahrbar = ['fahrweg', 'nebengang', 'gehweg', 'fts'].includes(e.kind);
+  return kopf('Hallenausbau · ' + U.esc(hallName(e)), e.name || ART(e)) + `
+  <div class="note" style="color:#0A223C">${U.esc((INFO[e.kind] || (() => ''))(e))}</div>
+  <table class="t"><tr><td>Wegart</td><td><b>${U.esc(ART(e))}</b></td></tr><tr><td>Länge</td><td>${U.fmt(lenOf(e), 1)} m</td></tr>${e.w ? `<tr><td>Breite</td><td>${U.fmt(e.w, 2)} m</td></tr>` : ''}<tr><td>Halle</td><td>${U.esc(hallName(e))}</td></tr></table>
+  <h3>Angaben</h3><div class="fg">${UX.fTxt('Bezeichnung', 'name', e.name || '', { ph: ART(e) })}${e.w && e.kind !== 'rollenbahn' ? UX.fNum('Breite', 'w', e.w, { unit: 'm', min: 0.6, step: 0.1 }) : ''}</div>
+  ${befahrbar ? `<h3>Fahrzeuge und Personen auf diesem Weg (${fz.reduce((s, x) => s + (x.anzahl || 1), 0)})</h3>
+  <div class="list">${fz.map(x => `<div class="li" data-ag="${x.id}:0"><span class="t">${x.anzahl > 1 ? x.anzahl + ' × ' : ''}${U.esc(x.name || fzName(x.lib))}</span><span class="s">${ROUTE[x.route] || ''} · ${U.fmt((x.v || 1) * 3.6, 1)} km/h${x.auto ? '' : ' · eigenes'}</span></div>`).join('') || '<div class="li note">keine</div>'}</div>
+  <div class="fg"><label class="f full"><span>Hinzufügen</span><select id="ilTyp">${typOpts(e.kind === 'gehweg' || e.kind === 'nebengang' ? 'ha.werker.klt' : e.kind === 'fts' ? 'ha.fts.klt' : 'ha.routenzug')}</select></label><label class="f"><span>Anzahl</span><input type="number" id="ilN" value="1" min="1" max="20"></label></div>
+  <div class="actions"><button class="primary" id="ilAdd">＋ Auf diesen Weg setzen</button><button id="ilDraw">✎ Eigene Route zeichnen</button></div>` : ''}
+  <div class="actions"><button id="ilDel">${e.kind === 'zone' ? 'Zone' : 'Weg'} entfernen</button></div>`;
+};
+IB.intra = (el, sel) => {
+  UX.bind(el, prj => findE(prj, sel.id), 'Hallenausbau');
+  el.querySelectorAll('[data-ag]').forEach(li => li.onclick = () => S3.select({ kind: 'agent', id: li.dataset.ag }));
+  const add = el.querySelector('#ilAdd'); if (add) add.onclick = () => { let n; HSS.change('Fahrzeug hinzufügen', prj => { n = neuesFahrzeug(prj, findE(prj, sel.id), el.querySelector('#ilTyp').value, Math.max(1, +el.querySelector('#ilN').value || 1)); }); setTimeout(() => S3.select({ kind: 'agent', id: n.id + ':0' }), 50); };
+  const dr = el.querySelector('#ilDraw'); if (dr) dr.onclick = () => HSS.hallenRouteZeichnen({ lib: el.querySelector('#ilTyp').value, anzahl: Math.max(1, +el.querySelector('#ilN').value || 1) });
+  el.querySelector('#ilDel').onclick = () => UX.deleteSelection();
+};
+IN.agent = sel => {
+  const prj = HSS.project(), e = findE(prj, sel.id), a = agentOf(sel.id); if (!e) return '';
+  const umlauf = a ? a.L / Math.max(0.05, e.v || 1) * (e.route === 'pendel' ? 2 : 1) : 0;
+  return kopf('Fahrzeug · ' + U.esc(hallName(e)), e.name || fzName(e.lib)) + `
+  <table class="t"><tr><td>Typ</td><td><b>${U.esc(fzName(e.lib))}</b></td></tr><tr><td>Betrieb</td><td>${ROUTE[e.route] || ''}</td></tr><tr><td>Zustand</td><td id="ilSt">${status(a)}</td></tr>
+  ${a ? `<tr><td>Weglänge</td><td>${U.fmt(a.L, 1)} m</td></tr><tr><td>Umlauf</td><td>${U.fmt(umlauf / 60, 1)} min</td></tr>` : ''}<tr><td>Halle</td><td>${U.esc(hallName(e))}</td></tr><tr><td>Angelegt</td><td>${e.auto ? 'Hallenausbau (automatisch)' : 'selbst angelegt'}</td></tr></table>
+  ${e.auto ? '<div class="note">Automatisch angelegt. Wird es geändert, gilt es als eigenes Fahrzeug und bleibt beim Neuberechnen der Halle erhalten.</div>' : ''}
+  <h3>Angaben</h3><div class="fg">
+    <label class="f full"><span>Typ</span><select data-b="lib" data-t="s">${typOpts(e.lib)}</select></label>
+    ${e.route === 'fts' ? '' : `<label class="f full"><span>Betrieb</span><select data-b="route" data-t="s"><option value="schleife" ${e.route === 'schleife' ? 'selected' : ''}>${ROUTE.schleife}</option><option value="pendel" ${e.route === 'pendel' ? 'selected' : ''}>${ROUTE.pendel}</option></select></label>`}
+    ${UX.fNum('Anzahl', 'anzahl', e.anzahl || 1, { min: 1, step: 1 })}${UX.fNum('Geschwindigkeit', 'v', e.v || 1, { unit: 'm/s', min: 0.2, step: 0.1 })}
+    ${UX.fTxt('Bezeichnung', 'name', e.name || '', { ph: fzName(e.lib) })}</div>
+  <div class="actions">${e.route === 'fts' ? '' : '<button id="ilRe">✎ Route neu zeichnen</button>'}<button id="ilFokus">Hinfliegen</button><button id="ilDel">Entfernen</button></div>`;
+};
+IB.agent = (el, sel) => {
+  UX.bind(el, prj => findE(prj, sel.id), 'Fahrzeug', 'all', t => { t.auto = false; if (t.route === 'fts' && !['ha.fts.klt', 'ha.fts.motor', 'fab.fts'].includes(t.lib)) t.route = 'pendel'; });
+  const re = el.querySelector('#ilRe'); if (re) re.onclick = () => { const e = findE(HSS.project(), sel.id); HSS.hallenRouteZeichnen({ lib: e.lib, entry: e.id, route: e.route }); };
+  el.querySelector('#ilFokus').onclick = () => { const a = agentOf(sel.id); if (a) S3.animateCam(new THREE.Vector3(a.pos[0] + 10, a.y + 9, a.pos[1] + 12), new THREE.Vector3(a.pos[0], a.y, a.pos[1]), 700); };
+  el.querySelector('#ilDel').onclick = () => UX.deleteSelection();
+};
+{ const del0 = UX.deleteSelection; UX.deleteSelection = () => {
+  const s = HSS.state.selection;
+  if (s && (s.kind === 'intra' || s.kind === 'agent')) {
+    if (HSS.state.demoReadonly) return;
+    HSS.change(s.kind === 'agent' ? 'Fahrzeug entfernen' : 'Weg entfernen', prj => { const e = findE(prj, s.id); if (!e) return; if (e.kind === 'fahrzeug' && (e.anzahl || 1) > 1) { e.anzahl--; e.auto = false; } else prj.intralogistik = prj.intralogistik.filter(x => x !== e); });
+    S3.select(null); return;
+  }
+  return del0();
+}; }
+
+/* ---------- Werkzeug: Route für Fahrzeuge/Personen in einer Halle einzeichnen ---------- */
+HSS.hallenRouteZeichnen = (o = {}) => {
+  if (HSS.state.demoReadonly) return UX.toast('Demo ist schreibgeschützt – „Als eigenes Projekt bearbeiten“ wählen.');
+  if (V.floor === null || V.floor === undefined) S3.setFloor(0);
+  const prj = HSS.project(), alt = o.entry ? findE(prj, o.entry) : null;
+  let part = alt?.part || null, floor = alt?.floor ?? 0, pts = [], cur = null, rund = (o.route || alt?.route || OPT.betrieb || 'schleife') === 'schleife';
+  const ghost = S3.layers.ghost, M = new THREE.LineBasicMaterial({ color: '#f2994a', depthTest: false }), P = new THREE.MeshBasicMaterial({ color: '#f2994a', depthTest: false });
+  const welt = q => { const P2 = HSS.findPart(part); const w = HSS.toWorld(P2.part, q); return new THREE.Vector3(w[0], HSS.floorY(P2.part, floor) + 0.15, w[1]); };
+  const zeichne = () => { while (ghost.children.length) ghost.remove(ghost.children[0]); if (!part) return; const all = cur ? pts.concat([cur]) : pts.slice(); if (rund && all.length > 2) all.push(all[0]); if (all.length > 1) { const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(all.map(welt)), M); l.renderOrder = 20; ghost.add(l); } for (const q of pts) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10, 8), P); s.position.copy(welt(q)); s.renderOrder = 21; ghost.add(s); } HSS.perf?.invalidate(2); };
+  const L = () => { let s = 0; for (let i = 1; i < pts.length; i++) s += G.dist(pts[i - 1], pts[i]); return s; };
+  const hint = () => UX.hint(`<b>${U.esc(fzName(o.lib || alt?.lib))}</b> · ${rund ? 'Rundkurs' : 'Pendelstrecke'} · ${pts.length} Punkte · ${U.fmt(L(), 1)} m · in die Halle klicken · Umschalt: freier Winkel · <b>Doppelklick/Enter</b>: fertig · Rücktaste: Punkt zurück · <b>Esc</b>: abbrechen`);
+  const lokal = (ev) => { const gp = S3.groundPoint(ev); if (!gp?.host) return null; if (part && gp.host.part !== part) return null; let q = HSS.toLocal(HSS.findPart(gp.host.part).part, [gp.x, gp.z]); if (pts.length && !ev.shiftKey) { const l = pts[pts.length - 1]; q = Math.abs(q[0] - l[0]) >= Math.abs(q[1] - l[1]) ? [q[0], l[1]] : [l[0], q[1]]; } return { q: [Math.round(q[0] * 10) / 10, Math.round(q[1] * 10) / 10], host: gp.host }; };
+  const fertig = () => {
+    pts = pts.filter((q, i) => !i || G.dist(q, pts[i - 1]) > 0.3);
+    if (pts.length < 2) { UX.toast('Mindestens zwei Punkte in der Halle setzen.'); return; }
+    let id;
+    HSS.change(alt ? 'Route neu gezeichnet' : 'Fahrzeug mit Route angelegt', p => {
+      if (alt) { const e = findE(p, alt.id); e.pts = pts; e.route = rund ? 'schleife' : 'pendel'; e.auto = false; delete e.gruppe; id = e.id; }
+      else { const lib = o.lib || 'ha.routenzug'; const e = { id: U.uid('il'), part, floor, kind: 'fahrzeug', lib, route: rund ? 'schleife' : 'pendel', pts, v: o.v || FZTYPEN.find(f => f[0] === lib)?.[2] || 1, anzahl: o.anzahl || 1 }; (p.intralogistik = p.intralogistik || []).push(e); id = e.id; }
+    });
+    S3.setTool(null); UX.hint(null); setTimeout(() => S3.select({ kind: 'agent', id: id + ':0' }), 80); UX.renderPanel?.();
+  };
+  S3.setTool({ name: 'hallenroute',
+    move(ev) { const r = lokal(ev); cur = r ? r.q : null; if (!part) cur = null; zeichne(); },
+    click(ev) { const r = lokal(ev); if (!r) return UX.toast(part ? 'Die Route bleibt in derselben Halle.' : 'In eine Halle klicken (Etagenansicht EG).'); if (!part) { part = r.host.part; floor = r.host.floor; } pts.push(r.q); zeichne(); hint(); },
+    dbl() { fertig(); },
+    key(ev) { if (ev.key === 'Enter') { fertig(); return true; } if (ev.key === 'Backspace') { pts.pop(); zeichne(); hint(); return true; } if (ev.key.toLowerCase() === 'r') { rund = !rund; zeichne(); hint(); return true; } return false; },
+    cancel() { UX.hint(null); }
+  });
+  hint();
+};
 
 /* ---------- Bedienung: Abschnitt im Produktionsplaner ---------- */
 const UI = HSS.ui, W = UI.ws;
@@ -19652,12 +19807,24 @@ if (W.produktion) {
       <div class="actions"><button class="primary" id="haGo" ${hallen.length ? '' : 'disabled'}>Halle ausbauen</button><button id="haAll" ${hallen.length ? '' : 'disabled'}>Alle Hallen ausbauen</button><button id="haDel">Ausbau entfernen</button></div>
       <label class="chk"><input type="checkbox" id="haLeben" ${OPT.leben ? 'checked' : ''}> Personen und Fahrzeuge bewegen sich (Hallenleben)</label>
       <label class="chk"><input type="checkbox" id="haDecke" ${OPT.decke ? 'checked' : ''}> Deckenebene zeigen (Kran, Hängebahn, Leuchten)</label>
-      <div class="note">${aus.size} von ${hallen.length} Hallen ausgebaut. Sichtbar in der Etagenansicht (EG) oder mit Hülle „transparent“.</div>`;
+      <div class="note">${aus.size} von ${hallen.length} Hallen ausgebaut. Sichtbar in der Etagenansicht (EG) oder mit Hülle „transparent“. Wege, Leitlinien, Rollenbahnen, Fahrzeuge und Personen lassen sich im 3D-Bild anklicken: Angaben, Ändern, Löschen.</div>
+      <h3>Routenzüge, Stapler, FTS und Personen selbst einsetzen</h3>
+      <div class="fg"><label class="f full"><span>Fahrzeug / Person</span><select id="haTyp">${FZTYPEN.map(([id, n]) => `<option value="${id}" ${id === (OPT.typ || 'ha.routenzug') ? 'selected' : ''}>${U.esc(n)}</option>`).join('')}</select></label>
+      <label class="f"><span>Betrieb</span><select id="haRoute"><option value="schleife" ${(OPT.betrieb || 'schleife') === 'schleife' ? 'selected' : ''}>Rundkurs</option><option value="pendel" ${OPT.betrieb === 'pendel' ? 'selected' : ''}>Pendelverkehr</option></select></label>
+      <label class="f"><span>Anzahl</span><input type="number" id="haN" value="${OPT.anzahl || 1}" min="1" max="20"></label></div>
+      <div class="actions"><button class="primary" id="haDraw">✎ Route in der Halle einzeichnen</button></div>
+      <div class="note">Etagenansicht EG: Punkte in die Halle klicken (rechtwinklig, Umschalt = freier Winkel), <b>Doppelklick</b> oder <b>Enter</b> beendet, Rücktaste nimmt einen Punkt zurück, <b>R</b> wechselt Rundkurs/Pendel. Alternativ einen Weg anklicken und „Auf diesen Weg setzen“.</div>
+      ${(() => { const eig = (prj.intralogistik || []).filter(e => e.kind === 'fahrzeug' && !e.auto); return `<div class="list">${eig.map(e => `<div class="li" data-fz="${e.id}"><span class="t">${e.anzahl > 1 ? e.anzahl + ' × ' : ''}${U.esc(e.name || fzName(e.lib))}</span><span class="s">${U.esc(hallName(e))} · ${e.route === 'schleife' ? 'Rundkurs' : e.route === 'fts' ? 'FTS-Leitlinie' : 'Pendel'} · ${U.fmt((e.v || 1) * 3.6, 1)} km/h</span><button class="mini" data-fzd="${e.id}" title="Entfernen">×</button></div>`).join('') || '<div class="li note">noch keine eigenen Fahrzeuge</div>'}</div>`; })()}`;
     el.appendChild(d);
     const go = (fn, label) => { if (HSS.state.demoReadonly) return UI.toast('Demo ist schreibgeschützt – „Als eigenes Projekt bearbeiten“ wählen.'); let n = 0; HSS.change(label, p => { n = fn(p); }); UI.toast(label + (typeof n === 'number' ? ` (${n})` : '')); UI.renderPanel(); };
     d.querySelector('#haGo').onclick = () => { const id = d.querySelector('#haP').value; go(p => (HSS.hallAusbau(p, id, 0) ? 1 : 0), 'Halle ausgebaut'); const P = HSS.findPart(id); if (P) { HSS.s3.setFloor(HSS.globalFloor(P.part, 0)); HSS.s3.focusSel({ kind: 'part', id }); } };
     d.querySelector('#haAll').onclick = () => go(p => HSS.alleHallenAusbauen(p), 'Alle Hallen ausgebaut');
-    d.querySelector('#haDel').onclick = () => { const id = d.querySelector('#haP').value; go(p => { HSS.hallEntfernen(p, id, 0); return 1; }, 'Hallenausbau entfernt'); };
+    d.querySelector('#haDel').onclick = () => { const id = d.querySelector('#haP').value; go(p => { HSS.hallEntfernen(p, id, 0, true); return 1; }, 'Hallenausbau entfernt'); };
+    const merk = () => { OPT.typ = d.querySelector('#haTyp').value; OPT.betrieb = d.querySelector('#haRoute').value; OPT.anzahl = Math.max(1, +d.querySelector('#haN').value || 1); saveOpt(); };
+    ['#haTyp', '#haRoute', '#haN'].forEach(q => d.querySelector(q).onchange = merk);
+    d.querySelector('#haDraw').onclick = () => { merk(); HSS.hallenRouteZeichnen({ lib: OPT.typ, route: OPT.betrieb, anzahl: OPT.anzahl }); };
+    d.querySelectorAll('[data-fz]').forEach(li => li.onclick = ev => { if (ev.target.dataset.fzd) return; const e = findE(HSS.project(), li.dataset.fz); if (!e) return; const P = HSS.findPart(e.part); if (P) HSS.s3.setFloor(HSS.globalFloor(P.part, e.floor)); setTimeout(() => { S3.select({ kind: 'agent', id: e.id + ':0' }); d.ownerDocument.getElementById('ilFokus')?.click(); }, 120); });
+    d.querySelectorAll('[data-fzd]').forEach(b => b.onclick = () => { HSS.change('Fahrzeug entfernen', p => { p.intralogistik = p.intralogistik.filter(e => e.id !== b.dataset.fzd); }); UI.renderPanel(); });
     d.querySelector('#haLeben').onchange = e => { OPT.leben = e.target.checked; saveOpt(); HSS.hallenAktualisieren(); };
     d.querySelector('#haDecke').onchange = e => { OPT.decke = e.target.checked; saveOpt(); HSS.hallenAktualisieren(); };
   };

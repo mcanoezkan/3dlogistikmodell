@@ -1,19 +1,19 @@
-# Demo-Video Fabric Planning Suite · Werk 1 Friedrichshafen (60 s)
+# Demo-Video Fabric Planning Suite 1.4 · Werk 1 Friedrichshafen (60 s)
 
 Ergebnis: [`../FPS_Werk1_Friedrichshafen_Demo_60s_Realistisch.mp4`](../FPS_Werk1_Friedrichshafen_Demo_60s_Realistisch.mp4) – 1920×1080, 30 fps, H.264, 60,0 s, ohne Ton, Darstellungsstil „Realistisch“.
 
 | Zeit | Szene |
 |---|---|
 | 0–3,6 s | Titelkarte |
-| 3,6–10 s | Werksgelände: 92 Gebäude aus OpenStreetMap, Drehen und Anflug |
-| 10–17 s | Erdgeschoss, Montagelinie Großmotoren (18 Stationen, Schwerlast-FTS) |
-| 17–22,5 s | Kamerafahrt auf Augenhöhe entlang der Linie |
-| 22,5–28 s | Kurbelgehäusefertigung (Portal-BAZ, verkettet) |
-| 28–33 s | Prüffeld und Lackiererei |
-| 33–40 s | Produktionsplaner mit Rechenweg |
-| 40–50 s | Materialflüsse mit Tagesachse |
-| 50–56,4 s | Tagessimulation, Auslastung der Werkstraßen |
-| 56,4–60 s | Abspann |
+| 3,6–9 s | Werksgelände: 92 Gebäude aus OpenStreetMap, Drehen und Anflug |
+| 9–16 s | Hallenausbau G 60: Hauptfahrweg, Querwege, Gehweg mit Überwegen, FTS-Leitlinie, Rollenbahn |
+| 16–22 s | Hallenleben auf Augenhöhe in G 43: Stapler, Routenzüge, FTS, Werker |
+| 22–29 s | Querweg und Fahrzeug anklicken – Angaben im Inspektor |
+| 29–40 s | Eigenen Routenzug einzeichnen (2 Züge, Rundkurs um eine Bereitstellzone) |
+| 40–47 s | Montage Großmotoren mit „Wände voll“: Stützen, Brückenkran, Leuchten |
+| 47–53 s | Kurbelgehäusefertigung mit Wegen und Bereitstellung |
+| 53–57 s | Materialflüsse |
+| 57–60 s | Abspann |
 
 Grundlage: Planungsmodell `projekte/RollsRoyce_Werk1/Werk1_Friedrichshafen.hss.json` (öffentliche Informationen, Belegung teils Szenario – siehe README dort).
 

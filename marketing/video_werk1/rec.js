@@ -1,4 +1,4 @@
-// Demo-Video Fabric Planning Suite · Werk 1 Friedrichshafen (60 s, Stil Realistisch)
+// Demo-Video Fabric Planning Suite 1.4 · Werk 1 Friedrichshafen: Hallenausbau & Intralogistik (60 s, Stil Realistisch)
 // Aufnahme: node marketing/video_werk1/rec.js <outDir> <from> <to> [every]
 // rendert deterministisch Bild für Bild (30 fps, 1800 Bilder = 60 s); gespeichert werden nur Bilder in [from, to)
 const { chromium } = require('playwright'); const H = require('./harness.js'); const fs = require('fs'), path = require('path');
@@ -70,94 +70,95 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   const logo = await ev(() => document.querySelector('.brand img, #top img')?.src || '');
 
   const C = { x: -95, z: -10 };
+  // Welt → Bildschirm, lokaler Hallenpunkt (u, v) → Welt
+  const w2s = (x, y, z) => ev(([x, y, z]) => { const T = window.THREEX.THREE, v = new T.Vector3(x, y, z).project(HSS.s3.camera), r = HSS.s3.renderer.domElement.getBoundingClientRect(); return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height]; }, [x, y, z]);
+  const hallUV = (pid, u, v) => ev(([pid, u, v]) => { const pt = HSS.findPart(pid).part, F = HSS.prodFrame(pt, true), q = F.toLoc(u, v), w = HSS.toWorld(pt, q); return [w[0], HSS.floorY(pt, 0) + 0.05, w[1], q[0], q[1]]; }, [pid, u, v]);
+  const halle = pid => ev(pid => HSS.project().intralogistik.find(e => e.part === pid && e.kind === 'halle'), pid);
+  const setFloor = gf => ev(gf => { HSS.s3.setFloor(gf); }, gf);
   await cam([C.x - 330, 300, C.z + 380], [C.x, 0, C.z]);
   for (let i = 0; i < 20; i++) await ev(d => { window.__noDraw = true; __step(d); }, DT);
   await setCur(1500, 760, false);
 
   /* ===== 0–3,6 s: Titel ===== */
-  await ev(([logo, t]) => __ov.card(`${logo ? `<img src="${logo}">` : ''}<div class="t">Fabric Planning Suite</div><div class="line"></div><div class="s">Werk 1 Friedrichshafen · Großmotoren – Planungsmodell in 3D</div><div class="s2">Auf Basis öffentlich verfügbarer Informationen</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
+  await ev(([logo, t]) => __ov.card(`${logo ? `<img src="${logo}">` : ''}<div class="t">Fabric Planning Suite</div><div class="line"></div><div class="s">Werk 1 Friedrichshafen · Großmotoren – Planungsmodell in 3D</div><div class="s2">Hallenausbau &amp; Intralogistik</div>`, t - 1000, t + 3700, 1, 650), [logo, await ev(() => __vt())]);
   perFrame = async () => orbit(0.14, 0.9985);
   await at(S(3.6)); perFrame = null;
 
-  /* ===== 3,6–10 s: Werksgelände ===== */
-  await cap('Werksgelände', '92 Gebäude aus OpenStreetMap – Hallen, Wege, Bahn und Umgebung');
+  /* ===== 3,6–9 s: Werksgelände ===== */
+  await cap('Werksgelände', '92 Gebäude aus OpenStreetMap – Hallen, Werkstraßen, Bahn und Umgebung');
   await showCur(1); await moveTo(1150, 620, 16, false); await setCur(1150, 620); await wait(3);
-  await drag(-300, 0, 40); await wait(8);
-  const g43 = await bld('G 43');
-  await fly([g43.cx - 150, 140, g43.cz + 190], [g43.cx - 30, 0, g43.cz], 2600);
-  await moveTo(1500, 840, 30, false);
-  await at(S(10.0));
+  await drag(-260, 0, 36); await wait(6);
+  const g60 = await bld('G 60'), g43 = await bld('G 43'), g62 = await bld('G 62');
+  await fly([g60.cx - 120, 120, g60.cz + 150], [g60.cx, 0, g60.cz], 2300);
+  await moveTo(1500, 840, 26, false);
+  await at(S(9.0));
 
-  /* ===== 10–17 s: Montage im Erdgeschoss ===== */
-  await cap('Montage Großmotoren', 'Montagelinie mit 18 Stationen im 8-m-Raster auf Schwerlast-FTS');
+  /* ===== 9–16 s: Wege und Bodenmarkierung ===== */
+  await cap('Hallenausbau', 'Hauptfahrweg, Querwege, grüner Gehweg mit Überwegen, FTS-Leitlinie');
   const eg = await floorBtn('EG');
   await clickEl(eg, 20, 4);
-  await fly([g43.cx - 75, 62, g43.cz + 78], [g43.cx, 0, g43.cz], 2200);
+  const h60 = await halle(g60.id), m60 = await hallUV(g60.id, h60.main.u0 + h60.L * 0.45, h60.main.v + 6);
+  await fly([m60[0] + 42, 46, m60[2] + 52], [m60[0], 0, m60[2]], 2000);
   await moveTo(1600, 860, 20, false); await showCur(0);
-  await wait(70);
-  perFrame = async () => orbit(0.12);
-  await at(S(17.0)); perFrame = null;
+  await wait(60);
+  perFrame = async () => orbit(0.1, 0.9994);
+  await at(S(16.0)); perFrame = null;
 
-  /* ===== 17–22,5 s: Perspektive auf Augenhöhe entlang der Linie ===== */
-  await cap('Realistische Perspektive', 'Arbeitsbühnen, Säulenkran, Bereitstellung – maßstäblich');
-  const L = await ev(pid => { const prj = HSS.project(); const st = prj.objects.filter(o => o.host?.part === pid && o.lib === 'pm.gm.station').map(o => HSS.objWorld(o)); st.sort((a, b) => a.x - b.x || a.z - b.z); return st.slice(0, 8).map(w => [w.x, w.z, w.rot]); }, g43.id);
-  if (L.length >= 2) {
-    // entlang der ersten Reihe, seitlich versetzt im Versorgungsgang
-    const a = L[0], z = L[L.length - 1], dx = z[0] - a[0], dz = z[1] - a[1], len = Math.hypot(dx, dz) || 1, nx = -dz / len, nz = dx / len, off = 8.5, n0 = f, n1 = S(22.5);
-    perFrame = async fr => { const t = ease((fr - n0) / (n1 - n0)); const px = a[0] + dx * (0.05 + 0.7 * t) + nx * off, pz = a[1] + dz * (0.05 + 0.7 * t) + nz * off; await cam([px, 4.2, pz], [px - nx * off + dx / len * 9, 1.6, pz - nz * off + dz / len * 9]); };
-  }
-  await at(S(22.5)); perFrame = null;
+  /* ===== 16–22 s: Hallenleben auf Augenhöhe ===== */
+  await cap('Hallenleben', 'Stapler, Routenzüge, FTS und Werker bewegen sich auf ihren Wegen');
+  const h43 = await halle(g43.id);
+  { const A = await hallUV(g43.id, h43.main.u0 + 6, h43.main.v + 4.2), B = await hallUV(g43.id, h43.main.u0 + 44, h43.main.v + 4.2), D = await hallUV(g43.id, h43.main.u0 + 30, h43.main.v - 1), n0 = f, n1 = S(22.0);
+    perFrame = async fr => { const t = ease((fr - n0) / (n1 - n0)), px = A[0] + (B[0] - A[0]) * t * 0.6, pz = A[2] + (B[2] - A[2]) * t * 0.6; await cam([px, 3.4, pz], [D[0] + (B[0] - A[0]) * t * 0.6, 1.0, D[2] + (B[2] - A[2]) * t * 0.6]); }; }
+  await at(S(22.0)); perFrame = null;
 
-  /* ===== 22,5–28 s: Kurbelgehäusefertigung ===== */
-  await cap('Mechanische Fertigung', 'Kurbelgehäuse: Portal-Bearbeitungszentren, verkettet, mit Waschen und Messen');
-  const g62 = await bld('G 62'), k62 = (await objC(g62.id, ['pm.gm.baz'])) || g62;
-  await cam([k62.cx - 48, 40, k62.cz + 52], [k62.cx, 0, k62.cz]);
-  perFrame = async () => orbit(0.16, 0.9993);
-  await at(S(28.0)); perFrame = null;
-
-  /* ===== 28–33 s: Prüffeld und Lackiererei ===== */
-  await cap('Prüffeld & Lackiererei', 'Heißtest-Zellen mit Leitwarte, Lackierung im Durchlauf');
-  const g302 = await bld('G 30/2'), g301 = await bld('G 30/1'), k30 = (await objC(g302.id, ['pm.gm.pruefzelle'])) || g302, kL = (await objC(g301.id, ['pm.lack.kabine', 'pm.lack.trockner'])) || g301, mx30 = (k30.cx + kL.cx) / 2, mz30 = (k30.cz + kL.cz) / 2;
-  await cam([mx30 + 40, 46, mz30 + 58], [mx30, 0, mz30]);
-  perFrame = async () => orbit(-0.14, 0.9994);
-  await at(S(33.0)); perFrame = null;
-
-  /* ===== 33–40 s: Produktionsplaner ===== */
-  await cap('Produktionsplaner', 'Takt, Stationen, Werker und Fläche – mit Rechenweg und Quellen');
-  await ev(pid => { HSS.ui.prInp = { typ: 'montage', name: 'Montagelinie Großmotoren', part: pid, floor: 0, produkt: 'gross', stueck: 1700, inhalt: 5000 }; }, g43.id);
-  await cam([g43.cx - 70, 70, g43.cz + 85], [g43.cx + 5, 0, g43.cz]);
+  /* ===== 22–29 s: Wege und Fahrzeuge anklicken ===== */
+  await cap('Anklicken', 'Jeder Weg und jedes Fahrzeug zeigt seine Angaben');
+  await cam([m60[0] + 26, 34, m60[2] + 34], [m60[0], 0, m60[2]]); await wait(4);
   await showCur(1);
-  await ev(() => document.body.classList.remove('nopanel'));
-  await clickEl('#rail button[data-ws="produktion"]', 24, 10);
-  await ev(() => { window.dispatchEvent(new Event('resize')); });
-  await moveTo(330, 560, 26, false);
-  const sc = async (k) => ev(k => { const el = document.querySelector('#panel .body, #panel'); const s = [...document.querySelectorAll('#panel *')].find(e => e.scrollHeight > e.clientHeight + 40 && getComputedStyle(e).overflowY !== 'visible'); if (s) s.scrollTop = k * (s.scrollHeight - s.clientHeight); }, k);
-  for (let i = 1; i <= 60; i++) { await sc(0.62 * ease(i / 60)); await frame(); }
-  perFrame = async () => orbit(0.08);
+  { const q = await ev(pid => { const e = HSS.project().intralogistik.find(e => e.part === pid && e.kind === 'fahrweg' && !e.haupt); const pt = HSS.findPart(pid).part, m = [(e.pts[0][0] + e.pts[1][0]) / 2, (e.pts[0][1] + e.pts[1][1]) / 2], w = HSS.toWorld(pt, m); return [w[0], HSS.floorY(pt, 0) + 0.05, w[1]]; }, g60.id);
+    const [x, y] = await w2s(...q); await moveTo(x + 18, y + 10, 24); await wait(4); await click(); await wait(70); }
+  { const a = await ev(pid => { const T = window.THREEX.THREE, c = HSS.s3.controls.target; const ag = HSS.hallenleben.agents.filter(a => a.id && a.obj.visible && a.hall.startsWith(pid) && a.kind === 'fz').sort((x, y) => x.obj.position.distanceTo(c) - y.obj.position.distanceTo(c))[0]; if (!ag) return null; ag.wait = 4; return [ag.obj.position.x, ag.obj.position.y + 1.0, ag.obj.position.z]; }, g60.id);
+    if (a) { const [x, y] = await w2s(...a); await moveTo(x, y, 22); await wait(3); await click(); } await wait(66); }
+  await at(S(29.0));
+
+  /* ===== 29–40 s: Eigenen Routenzug einzeichnen ===== */
+  await cap('Eigene Routenzüge', 'Route in die Halle zeichnen – Rundkurs oder Pendelverkehr, Anzahl, Tempo');
+  await ev(() => { HSS.s3.select(null); document.body.classList.remove('nopanel'); HSS.ui.setWS('produktion'); window.dispatchEvent(new Event('resize')); });
+  await wait(4);
+  await ev(() => document.getElementById('haDraw')?.scrollIntoView({ block: 'center' })); await wait(3);
+  await moveToEl('#haTyp', 18); await ev(() => { const s = document.getElementById('haTyp'); s.value = 'ha.routenzug'; s.dispatchEvent(new Event('change')); const n = document.getElementById('haN'); n.value = 2; n.dispatchEvent(new Event('change')); const r = document.getElementById('haRoute'); r.value = 'schleife'; r.dispatchEvent(new Event('change')); }); await wait(8);
+  await clickEl('#haDraw', 16, 6);
+  { const z = await ev(pid => { const e = HSS.project().intralogistik.filter(e => e.part === pid && e.kind === 'zone').sort((a, b) => a.pts[0][0] - b.pts[0][0])[1] || HSS.project().intralogistik.find(e => e.part === pid && e.kind === 'zone'); const pt = HSS.findPart(pid).part, [p, q] = e.pts, x0 = Math.min(p[0], q[0]) - 1.6, x1 = Math.max(p[0], q[0]) + 1.6, z0 = Math.min(p[1], q[1]) - 1.6, z1 = Math.max(p[1], q[1]) + 1.6; return [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(l => { const w = HSS.toWorld(pt, l); return [w[0], HSS.floorY(pt, 0) + 0.05, w[1]]; }); }, g60.id);
+    const zc = [(z[0][0] + z[2][0]) / 2, 0, (z[0][2] + z[2][2]) / 2];
+    await cam([zc[0] + 20, 30, zc[2] + 24], zc); await wait(4);
+    for (const q of z) { const [x, y] = await w2s(...q); await moveTo(x, y, 16); await wait(3); await click(); await wait(6); }
+    await ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))); await wait(10);
+    await ev(() => { document.body.classList.add('nopanel'); window.dispatchEvent(new Event('resize')); }); await wait(4);
+    await moveTo(1600, 860, 20, false); await showCur(0);
+    perFrame = async () => orbit(0.12, 0.9992); }
   await at(S(40.0)); perFrame = null;
 
-  /* ===== 40–50 s: Materialflüsse ===== */
-  await cap('Materialflüsse', '30 Flüsse vom Wareneingang über Montage und Prüffeld bis zum Versand');
-  await ev(() => { document.body.classList.add('nopanel'); window.dispatchEvent(new Event('resize')); });
-  const all = await floorBtn('⌂');
-  await clickEl(all, 22, 4);
-  await clickEl('#vFlow', 22, 8);
-  await cam([C.x - 210, 230, C.z + 270], [C.x + 10, 0, C.z - 10]);
-  await moveTo(1500, 860, 24, false); await showCur(0);
-  await ev(() => { HSS.flussbild.tempo = 2.5; HSS.flussbild.setHour?.(9); HSS.flussbild.play?.(true); });
-  perFrame = async () => orbit(0.1, 0.9993);
-  await at(S(50.0)); perFrame = null;
+  /* ===== 40–47 s: Halle mit Tragwerk, Kran und Leuchten ===== */
+  await cap('Montage Großmotoren', 'Montagelinie, Stützen, Brückenkran und Hallenleuchten – „Wände voll“');
+  await ev(() => { HSS.s3.select(null); HSS.view.cut = 'voll'; HSS.s3.rebuild('all'); });
+  { const c = await hallUV(g43.id, h43.L * 0.55, h43.Q * 0.55); await cam([c[0] + 30, 9, c[2] + 34], [c[0], 3, c[2]]); }
+  perFrame = async () => orbit(0.13);
+  await at(S(47.0)); perFrame = null;
 
-  /* ===== 50–56,4 s: Tagessimulation ===== */
-  await cap('Tagessimulation', 'Rund 660 Touren am Tag – Auslastung der Werkstraßen auf einen Blick');
-  await ev(() => {
-    const T = window.THREEX.THREE, dn = HSS.drawNet;
-    HSS.drawNet = (mode, hour) => { const r = dn(mode, hour); if (mode === 'heat') { const Lr = HSS.s3.layers.net, ls = Lr.children.find(o => o.isLineSegments); if (ls) { const P = ls.geometry.attributes.position.array, Cc = ls.geometry.attributes.color.array, n = P.length / 6; const geo = new T.CylinderGeometry(1.1, 1.1, 1, 6, 1, true); geo.translate(0, 0.5, 0); geo.rotateX(Math.PI / 2); const im = new T.InstancedMesh(geo, new T.MeshBasicMaterial({ depthTest: false, transparent: true, opacity: 0.95 }), n); const o = new T.Object3D(), c = new T.Color(), a = new T.Vector3(), bb = new T.Vector3(); let k = 0; for (let i = 0; i < n; i++) { c.setRGB(Cc[6 * i], Cc[6 * i + 1], Cc[6 * i + 2]); if (Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 0.08) continue; a.fromArray(P, 6 * i); bb.fromArray(P, 6 * i + 3); const d = a.distanceTo(bb); if (d < 0.01) continue; o.position.copy(a); o.lookAt(bb); o.scale.set(1, 1, d); o.updateMatrix(); im.setMatrixAt(k, o.matrix); im.setColorAt(k, c); k++; } im.count = k; im.renderOrder = 5; Lr.add(im); } } HSS.perf?.invalidate?.(3); return r; };
-  });
-  await ev(() => { HSS.flussbild.play?.(false); HSS.flussbild.set(false); HSS.view.shell = 'transparent'; HSS.s3.rebuild('all'); HSS.drawNet('heat', null); const v = document.getElementById('vNet'); if (v) v.value = 'heat'; });
-  await cam([C.x - 150, 260, C.z + 230], [C.x, 0, C.z]);
-  perFrame = async () => orbit(0.12);
-  await at(S(56.4)); perFrame = null;
+  /* ===== 47–53 s: Mechanische Fertigung ===== */
+  await cap('Mechanische Fertigung', 'Kurbelgehäuse: verkettete Portal-BAZ, Rollenbahn, Bereitstellung am Fahrweg');
+  await ev(() => { HSS.view.cut = 'halb'; HSS.s3.rebuild('all'); });
+  { const k62 = (await objC(g62.id, ['pm.gm.baz'])) || g62; await cam([k62.cx - 46, 40, k62.cz + 50], [k62.cx, 0, k62.cz]); }
+  perFrame = async () => orbit(0.16, 0.9993);
+  await at(S(53.0)); perFrame = null;
+
+  /* ===== 53–57 s: Materialflüsse ===== */
+  await cap('Materialflüsse', '30 Flüsse vom Wareneingang über Montage und Prüffeld bis zum Versand');
+  await setFloor(null);
+  await ev(() => { document.getElementById('vFlow')?.click(); HSS.flussbild.tempo = 2.5; HSS.flussbild.setHour?.(9); HSS.flussbild.play?.(true); });
+  await cam([C.x - 210, 230, C.z + 270], [C.x + 10, 0, C.z - 10]);
+  perFrame = async () => orbit(0.1, 0.9993);
+  await at(S(57.0)); perFrame = null;
 
   /* ===== Abspann ===== */
   await capOff();
