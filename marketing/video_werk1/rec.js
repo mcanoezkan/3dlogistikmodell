@@ -141,7 +141,7 @@ const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(
   /* ===== 40–47 s: Halle mit Tragwerk, Kran und Leuchten ===== */
   await cap('Montage Großmotoren', 'Montagelinie, Stützen, Brückenkran und Hallenleuchten – „Wände voll“');
   await ev(() => { HSS.s3.select(null); HSS.view.cut = 'voll'; HSS.s3.rebuild('all'); });
-  { const c = await hallUV(g43.id, h43.L * 0.55, h43.Q * 0.55); await cam([c[0] + 30, 9, c[2] + 34], [c[0], 3, c[2]]); }
+  { const c = (await objC(g43.id, ['pm.gm.station'])) || g43; await cam([c.cx + 24, 8.5, c.cz + 28], [c.cx, 2.5, c.cz]); }
   perFrame = async () => orbit(0.13);
   await at(S(47.0)); perFrame = null;
 
