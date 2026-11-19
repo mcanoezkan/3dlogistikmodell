@@ -1,0 +1,24 @@
+<title>Soll-Prozessmodell Zentrallager UK Essen – Halle 8</title>
+<style id="appcss">@@CSS@@</style>
+<header id="top">
+  <div class="brand"><img class="logo" src="@@LOGO@@" alt="UNITY"><div style="min-width:0"><div class="t1">Soll-Prozessmodell Zentrallager</div><button type="button" class="t2" id="prjName" title="Untertitel ändern"></button></div></div>
+  <div class="grp"><button type="button" id="bUndo" title="Rückgängig (Strg+Z)">↶ Rückgängig</button><button type="button" id="bRedo" title="Wiederholen (Strg+Y)">↷</button></div>
+  <span class="sp"></span>
+  <span class="badge" id="saveState">Gespeichert</span>
+  <button type="button" id="bSave" class="save" title="Speichert den Stand dauerhaft in diesem Artefakt für alle mit Zugriff (Strg+S)">Speichern</button>
+  <div class="grp"><button type="button" id="bExport">Export</button><button type="button" id="bImport">Import</button></div>
+  <button type="button" id="bHelp" title="Bedienung" aria-label="Bedienung">?</button>
+</header>
+<nav id="rail" aria-label="Arbeitsbereiche"></nav>
+<aside id="panel"><div id="panelBody"></div></aside>
+<main id="main"></main>
+<aside id="inspector" aria-label="Inspektor"></aside>
+<div id="hint" hidden></div>
+<div id="toast" hidden role="status"></div>
+<div id="modal"><div class="box" id="modalBox" role="dialog" aria-modal="true"></div></div>
+<script type="text/plain" id="planData">@@PLAN@@</script>
+<script type="application/json" id="state"></script>
+<script id="app">
+const METHOD_HTML=@@METHOD@@;
+@@APP@@
+</script>

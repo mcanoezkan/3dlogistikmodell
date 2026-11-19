@@ -1,0 +1,31 @@
+  <h2>Vorschlag zur Methodik (Erstaufschlag)</h2>
+  <h3>Bezugsgrößen je Prozessabschnitt</h3>
+  <table class="t small" style="max-width:980px"><tr><th>Abschnitt</th><th>Bezugsgröße</th><th>Kennzahl für den Vergleich</th><th>Begründung</th></tr>
+  <tr><td>Wareneingang</td><td>je Anlieferung (LKW / Lieferschein)</td><td>s je Anlieferung und s je Position</td><td>Rüstanteile (Tor, Papiere, Folie, Foto) fallen je Anlieferung an, Scannen und Handhaben je Position bzw. Packung. Beide Werte zusammen zeigen, ob eine Variante beim Rüsten oder bei der Erfassung spart.</td></tr>
+  <tr><td>Verräumung</td><td>je Einlagerwagen</td><td>s je Position</td><td>Wagenfahrt ist fix je Wagen, Platzsuche und Einlagern je Position.</td></tr>
+  <tr><td>Kommissionierung Palette / Fachboden</td><td>je Auftrag (Lieferscheinteil)</td><td>s je Position der Kommissionierliste</td><td>Basis-, Weg-, Greif- und Totzeiten werden getrennt erfasst. Die Wegzeit hängt von der Positionszahl ab (S-Strategie), daher wird je Auftrag gerechnet und auf die Position umgelegt.</td></tr>
+  <tr><td>Konsolidierung, Warenausgang</td><td>je Auftrag</td><td>s je Auftrag und je Position</td><td>Zusammenführen und Verladen hängen vor allem an Wagen und Aufträgen.</td></tr>
+  <tr><td>Wäscherei / Apotheke</td><td>je Caddy bzw. Wagen</td><td>s je Caddy / Wagen</td><td>Reine Transportprozesse ohne Positionen.</td></tr></table>
+  <h3>Zeitermittlung</h3>
+  <ul style="max-width:980px">
+   <li><b>Grundzeit</b> = Σ (Zeitbaustein in TMU × Menge) × 0,036 s. Die Menge ist eine Formel aus den Parametern der Variante, zum Beispiel <code>pos*kolli</code> für einen Scan je Packung.</li>
+   <li><b>Gateways</b> werden über Anteile gewichtet: Der Zweig „Charge manuell“ trägt <code>pos*pCh*(1-pBC)</code>. So bleibt die BPMN-Logik vollständig, die Zeit ist ein Erwartungswert.</li>
+   <li><b>Wege</b> kommen aus dem Layout. <code>d('A','B')</code> misst rechtwinklig über den Hauptverkehrsweg zwischen den Ankerpunkten der Flächen, <code>dd('A','B')</code> direkt als L-Weg. Verschieben Sie eine Fläche, ändern sich alle Zeiten mit.</li>
+   <li><b>Kommissionierweg</b>: <code>sshape('PAL',n)</code> schätzt die Tourlänge bei Schleifengang (S-Strategie) und zufällig verteilten Plätzen: erwartete Zahl besuchter Gassen × Ganglänge + halbe Ganglänge + Bereichstiefe. Gassenzahl und Ganglänge stehen an der Fläche im Layout.</li>
+   <li><b>Vorgabezeit</b> = Grundzeit × (1 + Verteilzeit + Erholzeit). Wartezeiten zählen nur für die Durchlaufzeit.</li>
+   <li><b>Durchlaufzeit Auftrag</b>: Palettenteil und Fachbodenteil laufen parallel; die Konsolidierung startet mit dem späteren Teilwagen. Bei Multi-Order verlängert sich die Durchlaufzeit um die übrigen Aufträge des Batches, der Arbeitsinhalt je Auftrag sinkt.</li>
+  </ul>
+  <h3>Annahmen, die zu prüfen sind</h3>
+  <ul style="max-width:980px">
+   <li>Im Plan sind <b>7 Ladedocks</b> erkennbar. Die genannte Aufteilung (1 Wäscherei, 5 Zentrallager, 1 Flex, 2 Apotheke) ergibt 9. Vorbelegt ist D1 Wäscherei, D2–D4 Zentrallager, D5 Flex, D6–D7 Apotheke; zusätzlich gibt es 5 Bereitstellbahnen für das Zentrallager. Die Zuordnung ist im Layout-Reiter umstellbar.</li>
+   <li>Der <b>Puffer Fachboden</b> ist ein Vorschlag (Fläche zwischen Palettenlager und Fachbodenlager am Schnelllauftor). Er verkürzt die Wege der Fachboden-Kommissionierer, da die Konsolidierung rund 100 m entfernt liegt.</li>
+   <li>Mengen und Anteile (Positionen je Auftrag, Packungen je Position, Chargenquote) sind Platzhalter und mit SHS-/SAP-Daten zu ersetzen.</li>
+   <li>Die Planzeiten für Scannen, Systemantwort, Etikett, Klärfall sollten mit 20–30 Zeitaufnahmen je Baustein im Echtbetrieb oder im Testlager validiert werden.</li>
+  </ul>
+  <h3>Bedienung</h3>
+  <ul style="max-width:980px">
+   <li>Jeder Arbeitsbereich ist gleich aufgebaut: <b>links auswählen</b>, <b>in der Mitte ansehen</b>, <b>rechts im Inspektor bearbeiten</b>. Alles, was im Inspektor steht, ist änderbar und wirkt sofort auf alle Zeiten.</li>
+   <li>Rückgängig und Wiederholen (Strg+Z / Strg+Y) nehmen jede Änderung zurück, auch Löschen.</li>
+   <li>„Speichern“ legt den Stand dauerhaft im Artefakt ab (Strg+S). Bis dahin merkt sich der Browser Änderungen lokal.</li>
+   <li>„Export“ liefert das gesamte Modell als JSON (für Ablage und Versionierung), eine CSV mit allen Schrittzeiten für Excel und je Variante eine BPMN-2.0-XML-Datei.</li>
+  </ul>
