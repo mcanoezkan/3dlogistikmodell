@@ -5,7 +5,7 @@
 const PAGE_TPL=(()=>{
   const ser=n=>n.nodeType===1?n.outerHTML:n.nodeType===3?n.textContent.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])):'';
   const title=document.querySelector('title'),css=document.getElementById('appcss');
-  let out=(title?title.outerHTML:'<title>Prozessplaner Logistik</title>')+'\n'+(css?css.outerHTML:'')+'\n';
+  let out=(title?title.outerHTML:'<title>ProzessWerk – Logistikabläufe planen, takten und vergleichen</title>')+'\n'+(css?css.outerHTML:'')+'\n';
   let on=false;
   for(const n of [...document.body.childNodes]){
     if(n.nodeType===1&&n.id==='top')on=true;

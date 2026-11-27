@@ -1,4 +1,4 @@
-<title>Prozessplaner Logistik</title>
+<title>ProzessWerk – Logistikabläufe planen, takten und vergleichen</title>
 <style id="appcss">/* UNITY-Gestaltung wie Healthcare Simulation Suite.
    Layout: Kopfzeile navy · Arbeitsbereichsleiste links · Auswahl-Panel · Arbeitsfläche · Inspektor rechts.
    Bewusst nur helles Erscheinungsbild (UNITY-Hausfarben), alle Farben explizit gesetzt. */
@@ -273,7 +273,7 @@ const METHOD_HTML="<h2>Vorschlag zur Methodik (Erstaufschlag)<\/h2>\n  <h3>Bezug
 const PAGE_TPL=(()=>{
   const ser=n=>n.nodeType===1?n.outerHTML:n.nodeType===3?n.textContent.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])):'';
   const title=document.querySelector('title'),css=document.getElementById('appcss');
-  let out=(title?title.outerHTML:'<title>Prozessplaner Logistik</title>')+'\n'+(css?css.outerHTML:'')+'\n';
+  let out=(title?title.outerHTML:'<title>ProzessWerk – Logistikabläufe planen, takten und vergleichen</title>')+'\n'+(css?css.outerHTML:'')+'\n';
   let on=false;
   for(const n of [...document.body.childNodes]){
     if(n.nodeType===1&&n.id==='top')on=true;
